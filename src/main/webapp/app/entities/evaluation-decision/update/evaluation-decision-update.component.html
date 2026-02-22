@@ -1,0 +1,130 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-evaluation-decision-heading"
+        data-cy="EvaluationDecisionCreateUpdateHeading"
+        jhiTranslate="liferadarApp.evaluationDecision.home.createOrEditLabel"
+      >
+        Create or edit a Evaluation Decision
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="liferadarApp.evaluationDecision.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let decisionRef = editForm.get('decision')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_decision" jhiTranslate="liferadarApp.evaluationDecision.decision">Decision</label>
+          <input type="text" class="form-control" name="decision" id="field_decision" data-cy="decision" formControlName="decision" />
+          @if (decisionRef.invalid && (decisionRef.dirty || decisionRef.touched)) {
+            <div>
+              @if (editForm.get('decision')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('decision')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '500' }"
+                  >This field cannot be longer than 500 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_date" jhiTranslate="liferadarApp.evaluationDecision.date">Date</label>
+          <div class="d-flex">
+            <input
+              id="field_date"
+              data-cy="date"
+              type="datetime-local"
+              class="form-control"
+              name="date"
+              formControlName="date"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_owner" jhiTranslate="liferadarApp.evaluationDecision.owner">Owner</label>
+          <select
+            class="form-control"
+            id="field_owner"
+            data-cy="owner"
+            name="owner"
+            formControlName="owner"
+            [compareWith]="compareExtendedUser"
+          >
+            @if (!editForm.get('owner')!.value) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (extendedUserOption of extendedUsersSharedCollection; track $index) {
+              <option [ngValue]="extendedUserOption">{{ extendedUserOption.id }}</option>
+            }
+          </select>
+        </div>
+        @if (editForm.get(['owner'])!.invalid && (editForm.get(['owner'])!.dirty || editForm.get(['owner'])!.touched)) {
+          <div>
+            @if (editForm.get(['owner'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" for="field_lifeEvaluation" jhiTranslate="liferadarApp.evaluationDecision.lifeEvaluation"
+            >Life Evaluation</label
+          >
+          <select
+            class="form-control"
+            id="field_lifeEvaluation"
+            data-cy="lifeEvaluation"
+            name="lifeEvaluation"
+            formControlName="lifeEvaluation"
+            [compareWith]="compareLifeEvaluation"
+          >
+            @if (editForm.get(['lifeEvaluation'])!.value === null) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (lifeEvaluationOption of lifeEvaluationsSharedCollection; track $index) {
+              <option [ngValue]="lifeEvaluationOption">{{ lifeEvaluationOption.id }}</option>
+            }
+          </select>
+        </div>
+        @if (
+          editForm.get(['lifeEvaluation'])!.invalid &&
+          (editForm.get(['lifeEvaluation'])!.dirty || editForm.get(['lifeEvaluation'])!.touched)
+        ) {
+          <div>
+            @if (editForm.get(['lifeEvaluation'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

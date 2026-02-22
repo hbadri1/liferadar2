@@ -1,0 +1,29 @@
+{
+  "liferadarApp": {
+    "tripPlanStep": {
+      "home": {
+        "title": "TripPlanSteps",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Trip Plan Step",
+        "createOrEditLabel": "Créer ou éditer un Trip Plan Step",
+        "notFound": "Aucun Trip Plan Step trouvé"
+      },
+      "created": "Un nouveau Trip Plan Step a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Trip Plan Step avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Trip Plan Step avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Trip Plan Step {{ id }} ?"
+      },
+      "detail": {
+        "title": "Trip Plan Step"
+      },
+      "id": "ID",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "actionName": "Action Name",
+      "sequence": "Sequence",
+      "notes": "Notes",
+      "tripPlan": "Trip Plan"
+    }
+  }
+}

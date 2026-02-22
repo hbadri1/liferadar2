@@ -1,0 +1,41 @@
+{
+  "annotations": {
+    "changelogDate": "20260218143716"
+  },
+  "applications": "*",
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "code",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "60"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "SubLifePillar",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "subLifePillarTranslation",
+      "otherEntityRelationshipName": "subLifePillar",
+      "relationshipName": "translations",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "extendedUser",
+      "relationshipName": "owner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

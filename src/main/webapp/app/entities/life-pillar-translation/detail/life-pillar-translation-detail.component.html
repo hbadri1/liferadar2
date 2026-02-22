@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (lifePillarTranslation(); as lifePillarTranslationRef) {
+      <div>
+        <h2 data-cy="lifePillarTranslationDetailsHeading">
+          <span jhiTranslate="liferadarApp.lifePillarTranslation.detail.title">Life Pillar Translation</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ lifePillarTranslationRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifePillarTranslation.lang">Lang</span></dt>
+          <dd>
+            <span [jhiTranslate]="'liferadarApp.LangCode.' + (lifePillarTranslationRef.lang ?? 'null')">{{
+              { null: '', EN: 'EN', AR: 'AR', FR: 'FR' }[lifePillarTranslationRef.lang ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifePillarTranslation.name">Name</span></dt>
+          <dd>
+            <span>{{ lifePillarTranslationRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifePillarTranslation.description">Description</span></dt>
+          <dd>
+            <span>{{ lifePillarTranslationRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifePillarTranslation.lifePillar">Life Pillar</span></dt>
+          <dd>
+            @if (lifePillarTranslation()!.lifePillar) {
+              <div>
+                <a [routerLink]="['/life-pillar', lifePillarTranslation()!.lifePillar?.id, 'view']">{{
+                  lifePillarTranslationRef.lifePillar?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/life-pillar-translation', lifePillarTranslationRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

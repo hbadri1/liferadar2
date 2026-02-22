@@ -1,0 +1,27 @@
+{
+  "liferadarApp": {
+    "lifePillar": {
+      "home": {
+        "title": "LifePillars",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Life Pillar",
+        "createOrEditLabel": "Créer ou éditer un Life Pillar",
+        "notFound": "Aucun Life Pillar trouvé"
+      },
+      "created": "Un nouveau Life Pillar a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Life Pillar avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Life Pillar avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Life Pillar {{ id }} ?"
+      },
+      "detail": {
+        "title": "Life Pillar"
+      },
+      "id": "ID",
+      "code": "Code",
+      "isActive": "Is Active",
+      "translations": "Translations",
+      "owner": "Owner"
+    }
+  }
+}

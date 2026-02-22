@@ -1,0 +1,28 @@
+{
+  "liferadarApp": {
+    "extendedUser": {
+      "home": {
+        "title": "Extended Users",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Extended User",
+        "createOrEditLabel": "Create or edit a Extended User",
+        "notFound": "No Extended Users found"
+      },
+      "created": "A new Extended User is created with identifier {{ param }}",
+      "updated": "A Extended User is updated with identifier {{ param }}",
+      "deleted": "A Extended User is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Extended User {{ id }}?"
+      },
+      "detail": {
+        "title": "Extended User"
+      },
+      "id": "ID",
+      "fullName": "Full Name",
+      "mobile": "Mobile",
+      "avatar": "Avatar",
+      "active": "Active",
+      "user": "User"
+    }
+  }
+}

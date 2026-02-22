@@ -1,0 +1,41 @@
+{
+  "annotations": {
+    "changelogDate": "20260218143717"
+  },
+  "applications": "*",
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "lang",
+      "fieldType": "LangCode",
+      "fieldTypeDocumentation": "=========================================================\\nLifeRadar - Clean v2 (Schema-per-User)\\n- Master/Public schema: User, Authority, ExtendedUser, Tenant\\n- Per-user schema: business entities below\\n=========================================================",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "EN,AR,FR"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "120"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "500"
+    }
+  ],
+  "name": "SubLifePillarTranslation",
+  "relationships": [
+    {
+      "otherEntityName": "subLifePillar",
+      "otherEntityRelationshipName": "translations",
+      "relationshipName": "subLifePillar",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

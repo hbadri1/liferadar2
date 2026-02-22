@@ -1,0 +1,27 @@
+{
+  "liferadarApp": {
+    "lifePillarTranslation": {
+      "home": {
+        "title": "Life Pillar Translations",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Life Pillar Translation",
+        "createOrEditLabel": "Create or edit a Life Pillar Translation",
+        "notFound": "No Life Pillar Translations found"
+      },
+      "created": "A new Life Pillar Translation is created with identifier {{ param }}",
+      "updated": "A Life Pillar Translation is updated with identifier {{ param }}",
+      "deleted": "A Life Pillar Translation is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Life Pillar Translation {{ id }}?"
+      },
+      "detail": {
+        "title": "Life Pillar Translation"
+      },
+      "id": "ID",
+      "lang": "Lang",
+      "name": "Name",
+      "description": "Description",
+      "lifePillar": "Life Pillar"
+    }
+  }
+}

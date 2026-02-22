@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (extendedUser(); as extendedUserRef) {
+      <div>
+        <h2 data-cy="extendedUserDetailsHeading"><span jhiTranslate="liferadarApp.extendedUser.detail.title">Extended User</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ extendedUserRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.extendedUser.fullName">Full Name</span></dt>
+          <dd>
+            <span>{{ extendedUserRef.fullName }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.extendedUser.mobile">Mobile</span></dt>
+          <dd>
+            <span>{{ extendedUserRef.mobile }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.extendedUser.avatar">Avatar</span></dt>
+          <dd>
+            <span>{{ extendedUserRef.avatar }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.extendedUser.active">Active</span></dt>
+          <dd>
+            <span>{{ extendedUserRef.active }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.extendedUser.user">User</span></dt>
+          <dd>
+            <span>{{ extendedUserRef.user?.id }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/extended-user', extendedUserRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

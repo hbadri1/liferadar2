@@ -1,0 +1,27 @@
+{
+  "liferadarApp": {
+    "lifePillar": {
+      "home": {
+        "title": "Life Pillars",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Life Pillar جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Life Pillar",
+        "notFound": "لم يتم العثور على Life Pillars"
+      },
+      "created": "Life Pillar جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Life Pillar تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Life Pillar تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Life Pillar {{ id }}؟"
+      },
+      "detail": {
+        "title": "Life Pillar"
+      },
+      "id": "ID",
+      "code": "Code",
+      "isActive": "Is Active",
+      "translations": "Translations",
+      "owner": "Owner"
+    }
+  }
+}

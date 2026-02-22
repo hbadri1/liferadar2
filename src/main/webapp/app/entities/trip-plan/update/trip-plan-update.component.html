@@ -1,0 +1,152 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-trip-plan-heading" data-cy="TripPlanCreateUpdateHeading" jhiTranslate="liferadarApp.tripPlan.home.createOrEditLabel">
+        Create or edit a Trip Plan
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="liferadarApp.tripPlan.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let titleRef = editForm.get('title')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_title" jhiTranslate="liferadarApp.tripPlan.title">Title</label>
+          <input type="text" class="form-control" name="title" id="field_title" data-cy="title" formControlName="title" />
+          @if (titleRef.invalid && (titleRef.dirty || titleRef.touched)) {
+            <div>
+              @if (editForm.get('title')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('title')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '160' }"
+                  >This field cannot be longer than 160 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let descriptionRef = editForm.get('description')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_description" jhiTranslate="liferadarApp.tripPlan.description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            id="field_description"
+            data-cy="description"
+            formControlName="description"
+          />
+          @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
+            <div>
+              @if (editForm.get('description')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '800' }"
+                  >This field cannot be longer than 800 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let startDateRef = editForm.get('startDate')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_startDate" jhiTranslate="liferadarApp.tripPlan.startDate">Start Date</label>
+          <div class="input-group">
+            <input
+              id="field_startDate"
+              data-cy="startDate"
+              type="text"
+              class="form-control"
+              name="startDate"
+              ngbDatepicker
+              #startDateDp="ngbDatepicker"
+              formControlName="startDate"
+            />
+            <button type="button" class="btn btn-secondary" (click)="startDateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+          </div>
+          @if (startDateRef.invalid && (startDateRef.dirty || startDateRef.touched)) {
+            <div>
+              @if (editForm.get('startDate')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let endDateRef = editForm.get('endDate')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_endDate" jhiTranslate="liferadarApp.tripPlan.endDate">End Date</label>
+          <div class="input-group">
+            <input
+              id="field_endDate"
+              data-cy="endDate"
+              type="text"
+              class="form-control"
+              name="endDate"
+              ngbDatepicker
+              #endDateDp="ngbDatepicker"
+              formControlName="endDate"
+            />
+            <button type="button" class="btn btn-secondary" (click)="endDateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+          </div>
+          @if (endDateRef.invalid && (endDateRef.dirty || endDateRef.touched)) {
+            <div>
+              @if (editForm.get('endDate')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_owner" jhiTranslate="liferadarApp.tripPlan.owner">Owner</label>
+          <select
+            class="form-control"
+            id="field_owner"
+            data-cy="owner"
+            name="owner"
+            formControlName="owner"
+            [compareWith]="compareExtendedUser"
+          >
+            @if (!editForm.get('owner')!.value) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (extendedUserOption of extendedUsersSharedCollection; track $index) {
+              <option [ngValue]="extendedUserOption">{{ extendedUserOption.id }}</option>
+            }
+          </select>
+        </div>
+        @if (editForm.get(['owner'])!.invalid && (editForm.get(['owner'])!.dirty || editForm.get(['owner'])!.touched)) {
+          <div>
+            @if (editForm.get(['owner'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

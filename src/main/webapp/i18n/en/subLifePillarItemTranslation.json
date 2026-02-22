@@ -1,0 +1,27 @@
+{
+  "liferadarApp": {
+    "subLifePillarItemTranslation": {
+      "home": {
+        "title": "Sub Life Pillar Item Translations",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Sub Life Pillar Item Translation",
+        "createOrEditLabel": "Create or edit a Sub Life Pillar Item Translation",
+        "notFound": "No Sub Life Pillar Item Translations found"
+      },
+      "created": "A new Sub Life Pillar Item Translation is created with identifier {{ param }}",
+      "updated": "A Sub Life Pillar Item Translation is updated with identifier {{ param }}",
+      "deleted": "A Sub Life Pillar Item Translation is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Sub Life Pillar Item Translation {{ id }}?"
+      },
+      "detail": {
+        "title": "Sub Life Pillar Item Translation"
+      },
+      "id": "ID",
+      "lang": "Lang",
+      "name": "Name",
+      "description": "Description",
+      "subLifePillarItem": "Sub Life Pillar Item"
+    }
+  }
+}

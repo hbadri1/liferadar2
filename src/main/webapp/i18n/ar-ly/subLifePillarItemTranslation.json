@@ -1,0 +1,27 @@
+{
+  "liferadarApp": {
+    "subLifePillarItemTranslation": {
+      "home": {
+        "title": "Sub Life Pillar Item Translations",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Sub Life Pillar Item Translation جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Sub Life Pillar Item Translation",
+        "notFound": "لم يتم العثور على Sub Life Pillar Item Translations"
+      },
+      "created": "Sub Life Pillar Item Translation جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Sub Life Pillar Item Translation تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Sub Life Pillar Item Translation تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Sub Life Pillar Item Translation {{ id }}؟"
+      },
+      "detail": {
+        "title": "Sub Life Pillar Item Translation"
+      },
+      "id": "ID",
+      "lang": "Lang",
+      "name": "Name",
+      "description": "Description",
+      "subLifePillarItem": "Sub Life Pillar Item"
+    }
+  }
+}

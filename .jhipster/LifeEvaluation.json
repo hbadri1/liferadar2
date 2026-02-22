@@ -1,0 +1,63 @@
+{
+  "annotations": {
+    "changelogDate": "20260218143720"
+  },
+  "applications": "*",
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "evaluationDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "reminderEnabled",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "reminderAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "score",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "10",
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "notes",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "800"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "LifeEvaluation",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "evaluationDecision",
+      "otherEntityRelationshipName": "lifeEvaluation",
+      "relationshipName": "decisions",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "extendedUser",
+      "relationshipName": "owner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityName": "subLifePillarItem",
+      "relationshipName": "subLifePillarItem",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

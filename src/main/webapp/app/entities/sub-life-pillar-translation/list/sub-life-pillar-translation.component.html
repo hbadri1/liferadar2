@@ -1,0 +1,132 @@
+<div>
+  <h2 id="page-heading" data-cy="SubLifePillarTranslationHeading">
+    <span jhiTranslate="liferadarApp.subLifePillarTranslation.home.title">Sub Life Pillar Translations</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="liferadarApp.subLifePillarTranslation.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-sub-life-pillar-translation"
+        [routerLink]="['/sub-life-pillar-translation/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="liferadarApp.subLifePillarTranslation.home.createLabel">Create a new Sub Life Pillar Translation</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (subLifePillarTranslations().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="liferadarApp.subLifePillarTranslation.home.notFound">No Sub Life Pillar Translations found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="lang">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.subLifePillarTranslation.lang">Lang</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="name">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.subLifePillarTranslation.name">Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="description">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.subLifePillarTranslation.description">Description</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="subLifePillar.id">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.subLifePillarTranslation.subLifePillar">Sub Life Pillar</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (subLifePillarTranslation of subLifePillarTranslations(); track trackId(subLifePillarTranslation)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/sub-life-pillar-translation', subLifePillarTranslation.id, 'view']">{{
+                  subLifePillarTranslation.id
+                }}</a>
+              </td>
+              <td [jhiTranslate]="'liferadarApp.LangCode.' + (subLifePillarTranslation.lang ?? 'null')">
+                {{ { null: '', EN: 'EN', AR: 'AR', FR: 'FR' }[subLifePillarTranslation.lang ?? 'null'] }}
+              </td>
+              <td>{{ subLifePillarTranslation.name }}</td>
+              <td>{{ subLifePillarTranslation.description }}</td>
+              <td>
+                @if (subLifePillarTranslation.subLifePillar) {
+                  <div>
+                    <a [routerLink]="['/sub-life-pillar', subLifePillarTranslation.subLifePillar.id, 'view']">{{
+                      subLifePillarTranslation.subLifePillar.id
+                    }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a
+                    [routerLink]="['/sub-life-pillar-translation', subLifePillarTranslation.id, 'view']"
+                    class="btn btn-info btn-sm"
+                    data-cy="entityDetailsButton"
+                  >
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a
+                    [routerLink]="['/sub-life-pillar-translation', subLifePillarTranslation.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button
+                    type="submit"
+                    (click)="delete(subLifePillarTranslation)"
+                    class="btn btn-danger btn-sm"
+                    data-cy="entityDeleteButton"
+                  >
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

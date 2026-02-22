@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (evaluationDecision(); as evaluationDecisionRef) {
+      <div>
+        <h2 data-cy="evaluationDecisionDetailsHeading">
+          <span jhiTranslate="liferadarApp.evaluationDecision.detail.title">Evaluation Decision</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ evaluationDecisionRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.evaluationDecision.decision">Decision</span></dt>
+          <dd>
+            <span>{{ evaluationDecisionRef.decision }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.evaluationDecision.date">Date</span></dt>
+          <dd>
+            <span>{{ evaluationDecisionRef.date | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.evaluationDecision.owner">Owner</span></dt>
+          <dd>
+            @if (evaluationDecision()!.owner) {
+              <div>
+                <a [routerLink]="['/extended-user', evaluationDecision()!.owner?.id, 'view']">{{ evaluationDecisionRef.owner?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.evaluationDecision.lifeEvaluation">Life Evaluation</span></dt>
+          <dd>
+            @if (evaluationDecision()!.lifeEvaluation) {
+              <div>
+                <a [routerLink]="['/life-evaluation', evaluationDecision()!.lifeEvaluation?.id, 'view']">{{
+                  evaluationDecisionRef.lifeEvaluation?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/evaluation-decision', evaluationDecisionRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

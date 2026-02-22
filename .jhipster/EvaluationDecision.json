@@ -1,0 +1,40 @@
+{
+  "annotations": {
+    "changelogDate": "20260218143721"
+  },
+  "applications": "*",
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "decision",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "500"
+    },
+    {
+      "fieldName": "date",
+      "fieldType": "Instant"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "EvaluationDecision",
+  "relationships": [
+    {
+      "otherEntityName": "extendedUser",
+      "relationshipName": "owner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityName": "lifeEvaluation",
+      "otherEntityRelationshipName": "decisions",
+      "relationshipName": "lifeEvaluation",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

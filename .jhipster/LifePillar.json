@@ -1,0 +1,42 @@
+{
+  "annotations": {
+    "changelogDate": "20260218143714"
+  },
+  "applications": "*",
+  "documentation": "Core business aggregates (per-user schema)",
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "code",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "LifePillar",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "lifePillarTranslation",
+      "otherEntityRelationshipName": "lifePillar",
+      "relationshipName": "translations",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "extendedUser",
+      "relationshipName": "owner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

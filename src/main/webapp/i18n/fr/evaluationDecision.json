@@ -1,0 +1,27 @@
+{
+  "liferadarApp": {
+    "evaluationDecision": {
+      "home": {
+        "title": "EvaluationDecisions",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Evaluation Decision",
+        "createOrEditLabel": "Créer ou éditer un Evaluation Decision",
+        "notFound": "Aucun Evaluation Decision trouvé"
+      },
+      "created": "Un nouveau Evaluation Decision a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Evaluation Decision avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Evaluation Decision avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Evaluation Decision {{ id }} ?"
+      },
+      "detail": {
+        "title": "Evaluation Decision"
+      },
+      "id": "ID",
+      "decision": "Decision",
+      "date": "Date",
+      "owner": "Owner",
+      "lifeEvaluation": "Life Evaluation"
+    }
+  }
+}

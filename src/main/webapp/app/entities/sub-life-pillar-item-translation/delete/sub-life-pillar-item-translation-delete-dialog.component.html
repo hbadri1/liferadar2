@@ -1,0 +1,30 @@
+@if (subLifePillarItemTranslation) {
+  <form name="deleteForm" (ngSubmit)="confirmDelete(subLifePillarItemTranslation.id!)">
+    <div class="modal-header">
+      <h4 class="modal-title" data-cy="subLifePillarItemTranslationDeleteDialogHeading" jhiTranslate="entity.delete.title">
+        Confirm delete operation
+      </h4>
+    </div>
+
+    <div class="modal-body">
+      <jhi-alert-error />
+      <p
+        id="jhi-delete-subLifePillarItemTranslation-heading"
+        jhiTranslate="liferadarApp.subLifePillarItemTranslation.delete.question"
+        [translateValues]="{ id: subLifePillarItemTranslation.id }"
+      >
+        Are you sure you want to delete Sub Life Pillar Item Translation {{ subLifePillarItemTranslation.id }}?
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">
+        <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+      </button>
+
+      <button id="jhi-confirm-delete-subLifePillarItemTranslation" data-cy="entityConfirmDeleteButton" type="submit" class="btn btn-danger">
+        <fa-icon icon="times"></fa-icon>&nbsp;<span jhiTranslate="entity.action.delete">Delete</span>
+      </button>
+    </div>
+  </form>
+}

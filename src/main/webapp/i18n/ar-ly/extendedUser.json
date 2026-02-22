@@ -1,0 +1,28 @@
+{
+  "liferadarApp": {
+    "extendedUser": {
+      "home": {
+        "title": "Extended Users",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Extended User جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Extended User",
+        "notFound": "لم يتم العثور على Extended Users"
+      },
+      "created": "Extended User جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Extended User تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Extended User تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Extended User {{ id }}؟"
+      },
+      "detail": {
+        "title": "Extended User"
+      },
+      "id": "ID",
+      "fullName": "Full Name",
+      "mobile": "Mobile",
+      "avatar": "Avatar",
+      "active": "Active",
+      "user": "User"
+    }
+  }
+}

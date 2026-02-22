@@ -1,0 +1,117 @@
+<div>
+  <h2 id="page-heading" data-cy="ExtendedUserHeading">
+    <span jhiTranslate="liferadarApp.extendedUser.home.title">Extended Users</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="liferadarApp.extendedUser.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-extended-user"
+        [routerLink]="['/extended-user/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="liferadarApp.extendedUser.home.createLabel">Create a new Extended User</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (extendedUsers().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="liferadarApp.extendedUser.home.notFound">No Extended Users found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="fullName">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.extendedUser.fullName">Full Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="mobile">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.extendedUser.mobile">Mobile</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="avatar">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.extendedUser.avatar">Avatar</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="active">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.extendedUser.active">Active</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="user.id">
+              <div class="d-flex">
+                <span jhiTranslate="liferadarApp.extendedUser.user">User</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (extendedUser of extendedUsers(); track trackId(extendedUser)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/extended-user', extendedUser.id, 'view']">{{ extendedUser.id }}</a>
+              </td>
+              <td>{{ extendedUser.fullName }}</td>
+              <td>{{ extendedUser.mobile }}</td>
+              <td>{{ extendedUser.avatar }}</td>
+              <td>{{ extendedUser.active }}</td>
+              <td>
+                {{ extendedUser.user?.id }}
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/extended-user', extendedUser.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/extended-user', extendedUser.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(extendedUser)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,133 @@
+/** =========================================================
+ *  LifeRadar - Clean v2 (Schema-per-User)
+ *  - Master/Public schema: User, Authority, ExtendedUser, Tenant
+ *  - Per-user schema: business entities below
+ * ========================================================= */
+
+enum LangCode {
+  EN, AR, FR
+}
+
+/** Tenant record lives in master/public schema
+ *  Holds the schema name created for that user.
+
+/** Extended profile for each JHipster User (master/public schema) */
+entity ExtendedUser {
+  fullName String required maxlength(120)
+  mobile String maxlength(30)
+  avatar String maxlength(255)
+  active Boolean required
+}
+
+/** Core business aggregates (per-user schema) */
+entity LifePillar {
+  code String required maxlength(50) // e.g., FAMILY, HEALTH, WORK (stable key)
+  isActive Boolean required
+}
+
+entity LifePillarTranslation {
+  lang LangCode required
+  name String required maxlength(120)
+  description String maxlength(500)
+}
+
+entity SubLifePillar {
+  code String required maxlength(60)
+  isActive Boolean required
+}
+
+entity SubLifePillarTranslation {
+  lang LangCode required
+  name String required maxlength(120)
+  description String maxlength(500)
+}
+
+entity SubLifePillarItem {
+  code String required maxlength(80)
+  sortOrder Integer min(1)
+  isActive Boolean required
+}
+
+entity SubLifePillarItemTranslation {
+  lang LangCode required
+  name String required maxlength(160)
+  description String maxlength(700)
+}
+
+entity LifeEvaluation {
+  evaluationDate LocalDate required
+  reminderEnabled Boolean
+  reminderAt Instant
+  score Integer required min(1) max(10)
+  notes String maxlength(800)
+}
+
+entity EvaluationDecision {
+  decision String required maxlength(500)
+  date Instant
+}
+
+entity TripPlan {
+  title String required maxlength(160)
+  description String maxlength(800)
+  startDate LocalDate required
+  endDate LocalDate required
+}
+
+entity TripPlanStep {
+  startDate LocalDate required
+  endDate LocalDate required
+  actionName String required maxlength(200)
+  sequence Integer required min(1)
+  notes String maxlength(800)
+}
+
+/** =========================================================
+ *  Relationships
+ * ========================================================= */
+
+/** Ownership: every aggregate belongs to the user's ExtendedUser */
+relationship ManyToOne {
+  LifePillar{owner required} to ExtendedUser
+  SubLifePillar{owner required} to ExtendedUser
+  SubLifePillarItem{owner required} to ExtendedUser
+  LifeEvaluation{owner required} to ExtendedUser
+  EvaluationDecision{owner required} to ExtendedUser
+  TripPlan{owner required} to ExtendedUser
+
+  LifeEvaluation{subLifePillarItem required} to SubLifePillarItem
+  TripPlanStep{tripPlan required} to TripPlan
+}
+
+/** Hierarchy + dependent objects (should be cascade-deleted from parent) */
+relationship OneToMany {
+
+  LifePillar{translations} to LifePillarTranslation{lifePillar required}
+  SubLifePillar{translations} to SubLifePillarTranslation{subLifePillar required}
+  SubLifePillarItem{translations} to SubLifePillarItemTranslation{subLifePillarItem required}
+
+  LifeEvaluation{decisions} to EvaluationDecision{lifeEvaluation required}
+}
+
+relationship OneToOne {
+  ExtendedUser{user required} to User with builtInEntity
+}
+
+
+/** =========================================================
+ *  Generation options
+ * ========================================================= */
+
+/** Service classes only for main aggregates */
+service LifePillar, SubLifePillar, SubLifePillarItem, LifeEvaluation, TripPlan with serviceClass
+
+/** No search engine */
+search * with no
+
+/** Pagination only for list screens (not for translations/steps/decisions) */
+paginate LifePillar, SubLifePillar, SubLifePillarItem, LifeEvaluation, TripPlan with pagination
+
+/** Filtering only where it makes sense */
+filter LifePillar, SubLifePillar, SubLifePillarItem, LifeEvaluation, TripPlan, EvaluationDecision
+
+dto * with no

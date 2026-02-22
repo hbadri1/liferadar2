@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (subLifePillarItemTranslation(); as subLifePillarItemTranslationRef) {
+      <div>
+        <h2 data-cy="subLifePillarItemTranslationDetailsHeading">
+          <span jhiTranslate="liferadarApp.subLifePillarItemTranslation.detail.title">Sub Life Pillar Item Translation</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ subLifePillarItemTranslationRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItemTranslation.lang">Lang</span></dt>
+          <dd>
+            <span [jhiTranslate]="'liferadarApp.LangCode.' + (subLifePillarItemTranslationRef.lang ?? 'null')">{{
+              { null: '', EN: 'EN', AR: 'AR', FR: 'FR' }[subLifePillarItemTranslationRef.lang ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItemTranslation.name">Name</span></dt>
+          <dd>
+            <span>{{ subLifePillarItemTranslationRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItemTranslation.description">Description</span></dt>
+          <dd>
+            <span>{{ subLifePillarItemTranslationRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItemTranslation.subLifePillarItem">Sub Life Pillar Item</span></dt>
+          <dd>
+            @if (subLifePillarItemTranslation()!.subLifePillarItem) {
+              <div>
+                <a [routerLink]="['/sub-life-pillar-item', subLifePillarItemTranslation()!.subLifePillarItem?.id, 'view']">{{
+                  subLifePillarItemTranslationRef.subLifePillarItem?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button
+          type="button"
+          [routerLink]="['/sub-life-pillar-item-translation', subLifePillarItemTranslationRef.id, 'edit']"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

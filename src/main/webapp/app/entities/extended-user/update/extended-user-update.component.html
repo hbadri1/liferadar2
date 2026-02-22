@@ -1,0 +1,120 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-extended-user-heading"
+        data-cy="ExtendedUserCreateUpdateHeading"
+        jhiTranslate="liferadarApp.extendedUser.home.createOrEditLabel"
+      >
+        Create or edit a Extended User
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="liferadarApp.extendedUser.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let fullNameRef = editForm.get('fullName')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_fullName" jhiTranslate="liferadarApp.extendedUser.fullName">Full Name</label>
+          <input type="text" class="form-control" name="fullName" id="field_fullName" data-cy="fullName" formControlName="fullName" />
+          @if (fullNameRef.invalid && (fullNameRef.dirty || fullNameRef.touched)) {
+            <div>
+              @if (editForm.get('fullName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('fullName')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '120' }"
+                  >This field cannot be longer than 120 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let mobileRef = editForm.get('mobile')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_mobile" jhiTranslate="liferadarApp.extendedUser.mobile">Mobile</label>
+          <input type="text" class="form-control" name="mobile" id="field_mobile" data-cy="mobile" formControlName="mobile" />
+          @if (mobileRef.invalid && (mobileRef.dirty || mobileRef.touched)) {
+            <div>
+              @if (editForm.get('mobile')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '30' }"
+                  >This field cannot be longer than 30 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let avatarRef = editForm.get('avatar')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_avatar" jhiTranslate="liferadarApp.extendedUser.avatar">Avatar</label>
+          <input type="text" class="form-control" name="avatar" id="field_avatar" data-cy="avatar" formControlName="avatar" />
+          @if (avatarRef.invalid && (avatarRef.dirty || avatarRef.touched)) {
+            <div>
+              @if (editForm.get('avatar')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '255' }"
+                  >This field cannot be longer than 255 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let activeRef = editForm.get('active')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_active" jhiTranslate="liferadarApp.extendedUser.active">Active</label>
+          <input type="checkbox" class="form-check" name="active" id="field_active" data-cy="active" formControlName="active" />
+          @if (activeRef.invalid && (activeRef.dirty || activeRef.touched)) {
+            <div>
+              @if (editForm.get('active')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_user" jhiTranslate="liferadarApp.extendedUser.user">User</label>
+          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
+            @if (!editForm.get('user')!.value) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+        @if (editForm.get(['user'])!.invalid && (editForm.get(['user'])!.dirty || editForm.get(['user'])!.touched)) {
+          <div>
+            @if (editForm.get(['user'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

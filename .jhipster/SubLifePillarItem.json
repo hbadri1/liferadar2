@@ -1,0 +1,47 @@
+{
+  "annotations": {
+    "changelogDate": "20260218143718"
+  },
+  "applications": "*",
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "code",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "80"
+    },
+    {
+      "fieldName": "sortOrder",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["min"],
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "SubLifePillarItem",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "subLifePillarItemTranslation",
+      "otherEntityRelationshipName": "subLifePillarItem",
+      "relationshipName": "translations",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "extendedUser",
+      "relationshipName": "owner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

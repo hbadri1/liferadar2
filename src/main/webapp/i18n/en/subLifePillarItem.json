@@ -1,0 +1,28 @@
+{
+  "liferadarApp": {
+    "subLifePillarItem": {
+      "home": {
+        "title": "Sub Life Pillar Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Sub Life Pillar Item",
+        "createOrEditLabel": "Create or edit a Sub Life Pillar Item",
+        "notFound": "No Sub Life Pillar Items found"
+      },
+      "created": "A new Sub Life Pillar Item is created with identifier {{ param }}",
+      "updated": "A Sub Life Pillar Item is updated with identifier {{ param }}",
+      "deleted": "A Sub Life Pillar Item is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Sub Life Pillar Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Sub Life Pillar Item"
+      },
+      "id": "ID",
+      "code": "Code",
+      "sortOrder": "Sort Order",
+      "isActive": "Is Active",
+      "translations": "Translations",
+      "owner": "Owner"
+    }
+  }
+}

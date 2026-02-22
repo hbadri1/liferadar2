@@ -1,0 +1,28 @@
+{
+  "liferadarApp": {
+    "subLifePillarItem": {
+      "home": {
+        "title": "Sub Life Pillar Items",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Sub Life Pillar Item جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Sub Life Pillar Item",
+        "notFound": "لم يتم العثور على Sub Life Pillar Items"
+      },
+      "created": "Sub Life Pillar Item جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Sub Life Pillar Item تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Sub Life Pillar Item تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Sub Life Pillar Item {{ id }}؟"
+      },
+      "detail": {
+        "title": "Sub Life Pillar Item"
+      },
+      "id": "ID",
+      "code": "Code",
+      "sortOrder": "Sort Order",
+      "isActive": "Is Active",
+      "translations": "Translations",
+      "owner": "Owner"
+    }
+  }
+}

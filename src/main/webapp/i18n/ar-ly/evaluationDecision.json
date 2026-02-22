@@ -1,0 +1,27 @@
+{
+  "liferadarApp": {
+    "evaluationDecision": {
+      "home": {
+        "title": "Evaluation Decisions",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Evaluation Decision جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Evaluation Decision",
+        "notFound": "لم يتم العثور على Evaluation Decisions"
+      },
+      "created": "Evaluation Decision جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Evaluation Decision تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Evaluation Decision تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Evaluation Decision {{ id }}؟"
+      },
+      "detail": {
+        "title": "Evaluation Decision"
+      },
+      "id": "ID",
+      "decision": "Decision",
+      "date": "Date",
+      "owner": "Owner",
+      "lifeEvaluation": "Life Evaluation"
+    }
+  }
+}

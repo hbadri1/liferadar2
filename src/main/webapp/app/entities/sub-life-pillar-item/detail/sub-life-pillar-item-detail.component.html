@@ -1,0 +1,52 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (subLifePillarItem(); as subLifePillarItemRef) {
+      <div>
+        <h2 data-cy="subLifePillarItemDetailsHeading">
+          <span jhiTranslate="liferadarApp.subLifePillarItem.detail.title">Sub Life Pillar Item</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ subLifePillarItemRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItem.code">Code</span></dt>
+          <dd>
+            <span>{{ subLifePillarItemRef.code }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItem.sortOrder">Sort Order</span></dt>
+          <dd>
+            <span>{{ subLifePillarItemRef.sortOrder }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItem.isActive">Is Active</span></dt>
+          <dd>
+            <span>{{ subLifePillarItemRef.isActive }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subLifePillarItem.owner">Owner</span></dt>
+          <dd>
+            @if (subLifePillarItem()!.owner) {
+              <div>
+                <a [routerLink]="['/extended-user', subLifePillarItem()!.owner?.id, 'view']">{{ subLifePillarItemRef.owner?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/sub-life-pillar-item', subLifePillarItemRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

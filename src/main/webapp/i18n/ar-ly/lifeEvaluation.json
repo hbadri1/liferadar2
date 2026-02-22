@@ -1,0 +1,31 @@
+{
+  "liferadarApp": {
+    "lifeEvaluation": {
+      "home": {
+        "title": "Life Evaluations",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Life Evaluation جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Life Evaluation",
+        "notFound": "لم يتم العثور على Life Evaluations"
+      },
+      "created": "Life Evaluation جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Life Evaluation تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Life Evaluation تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Life Evaluation {{ id }}؟"
+      },
+      "detail": {
+        "title": "Life Evaluation"
+      },
+      "id": "ID",
+      "evaluationDate": "Evaluation Date",
+      "reminderEnabled": "Reminder Enabled",
+      "reminderAt": "Reminder At",
+      "score": "Score",
+      "notes": "Notes",
+      "decisions": "Decisions",
+      "owner": "Owner",
+      "subLifePillarItem": "Sub Life Pillar Item"
+    }
+  }
+}

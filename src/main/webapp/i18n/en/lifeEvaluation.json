@@ -1,0 +1,31 @@
+{
+  "liferadarApp": {
+    "lifeEvaluation": {
+      "home": {
+        "title": "Life Evaluations",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Life Evaluation",
+        "createOrEditLabel": "Create or edit a Life Evaluation",
+        "notFound": "No Life Evaluations found"
+      },
+      "created": "A new Life Evaluation is created with identifier {{ param }}",
+      "updated": "A Life Evaluation is updated with identifier {{ param }}",
+      "deleted": "A Life Evaluation is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Life Evaluation {{ id }}?"
+      },
+      "detail": {
+        "title": "Life Evaluation"
+      },
+      "id": "ID",
+      "evaluationDate": "Evaluation Date",
+      "reminderEnabled": "Reminder Enabled",
+      "reminderAt": "Reminder At",
+      "score": "Score",
+      "notes": "Notes",
+      "decisions": "Decisions",
+      "owner": "Owner",
+      "subLifePillarItem": "Sub Life Pillar Item"
+    }
+  }
+}

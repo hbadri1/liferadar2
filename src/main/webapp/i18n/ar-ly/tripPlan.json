@@ -1,0 +1,28 @@
+{
+  "liferadarApp": {
+    "tripPlan": {
+      "home": {
+        "title": "Trip Plans",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Trip Plan جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Trip Plan",
+        "notFound": "لم يتم العثور على Trip Plans"
+      },
+      "created": "Trip Plan جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Trip Plan تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Trip Plan تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Trip Plan {{ id }}؟"
+      },
+      "detail": {
+        "title": "Trip Plan"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "owner": "Owner"
+    }
+  }
+}

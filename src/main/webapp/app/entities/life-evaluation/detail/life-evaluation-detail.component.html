@@ -1,0 +1,68 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (lifeEvaluation(); as lifeEvaluationRef) {
+      <div>
+        <h2 data-cy="lifeEvaluationDetailsHeading"><span jhiTranslate="liferadarApp.lifeEvaluation.detail.title">Life Evaluation</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ lifeEvaluationRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.evaluationDate">Evaluation Date</span></dt>
+          <dd>
+            <span>{{ lifeEvaluationRef.evaluationDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.reminderEnabled">Reminder Enabled</span></dt>
+          <dd>
+            <span>{{ lifeEvaluationRef.reminderEnabled }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.reminderAt">Reminder At</span></dt>
+          <dd>
+            <span>{{ lifeEvaluationRef.reminderAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.score">Score</span></dt>
+          <dd>
+            <span>{{ lifeEvaluationRef.score }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.notes">Notes</span></dt>
+          <dd>
+            <span>{{ lifeEvaluationRef.notes }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.owner">Owner</span></dt>
+          <dd>
+            @if (lifeEvaluation()!.owner) {
+              <div>
+                <a [routerLink]="['/extended-user', lifeEvaluation()!.owner?.id, 'view']">{{ lifeEvaluationRef.owner?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.subLifePillarItem">Sub Life Pillar Item</span></dt>
+          <dd>
+            @if (lifeEvaluation()!.subLifePillarItem) {
+              <div>
+                <a [routerLink]="['/sub-life-pillar-item', lifeEvaluation()!.subLifePillarItem?.id, 'view']">{{
+                  lifeEvaluationRef.subLifePillarItem?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/life-evaluation', lifeEvaluationRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

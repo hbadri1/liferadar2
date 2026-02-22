@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (tripPlanStep(); as tripPlanStepRef) {
+      <div>
+        <h2 data-cy="tripPlanStepDetailsHeading"><span jhiTranslate="liferadarApp.tripPlanStep.detail.title">Trip Plan Step</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ tripPlanStepRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.tripPlanStep.startDate">Start Date</span></dt>
+          <dd>
+            <span>{{ tripPlanStepRef.startDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.tripPlanStep.endDate">End Date</span></dt>
+          <dd>
+            <span>{{ tripPlanStepRef.endDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.tripPlanStep.actionName">Action Name</span></dt>
+          <dd>
+            <span>{{ tripPlanStepRef.actionName }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.tripPlanStep.sequence">Sequence</span></dt>
+          <dd>
+            <span>{{ tripPlanStepRef.sequence }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.tripPlanStep.notes">Notes</span></dt>
+          <dd>
+            <span>{{ tripPlanStepRef.notes }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.tripPlanStep.tripPlan">Trip Plan</span></dt>
+          <dd>
+            @if (tripPlanStep()!.tripPlan) {
+              <div>
+                <a [routerLink]="['/trip-plan', tripPlanStep()!.tripPlan?.id, 'view']">{{ tripPlanStepRef.tripPlan?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/trip-plan-step', tripPlanStepRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
