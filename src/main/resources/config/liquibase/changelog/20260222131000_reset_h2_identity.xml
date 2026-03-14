@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog-ext.xsd">
+    <changeSet id="20260222131000-1" author="jhipster">
+        <sql dbms="h2">ALTER TABLE jhi_user ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM jhi_user)</sql>
+        <sql dbms="h2">ALTER TABLE extended_user ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM extended_user)</sql>
+        <sql dbms="h2">ALTER TABLE life_pillar ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM life_pillar)</sql>
+        <sql dbms="h2">ALTER TABLE life_pillar_translation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM life_pillar_translation)</sql>
+        <sql dbms="h2">ALTER TABLE sub_life_pillar ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM sub_life_pillar)</sql>
+        <sql dbms="h2">ALTER TABLE sub_life_pillar_translation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM sub_life_pillar_translation)</sql>
+        <sql dbms="h2">ALTER TABLE sub_life_pillar_item ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM sub_life_pillar_item)</sql>
+        <sql dbms="h2">ALTER TABLE sub_life_pillar_item_translation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM sub_life_pillar_item_translation)</sql>
+        <sql dbms="h2">ALTER TABLE life_evaluation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM life_evaluation)</sql>
+        <sql dbms="h2">ALTER TABLE evaluation_decision ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM evaluation_decision)</sql>
+        <sql dbms="h2">ALTER TABLE trip_plan ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM trip_plan)</sql>
+        <sql dbms="h2">ALTER TABLE trip_plan_step ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM trip_plan_step)</sql>
+    </changeSet>
+</databaseChangeLog>
+

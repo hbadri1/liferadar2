@@ -36,7 +36,6 @@ type LifeEvaluationFormGroupContent = {
   reminderAt: FormControl<LifeEvaluationFormRawValue['reminderAt']>;
   score: FormControl<LifeEvaluationFormRawValue['score']>;
   notes: FormControl<LifeEvaluationFormRawValue['notes']>;
-  owner: FormControl<LifeEvaluationFormRawValue['owner']>;
   subLifePillarItem: FormControl<LifeEvaluationFormRawValue['subLifePillarItem']>;
 };
 
@@ -67,9 +66,6 @@ export class LifeEvaluationFormService {
       }),
       notes: new FormControl(lifeEvaluationRawValue.notes, {
         validators: [Validators.maxLength(800)],
-      }),
-      owner: new FormControl(lifeEvaluationRawValue.owner, {
-        validators: [Validators.required],
       }),
       subLifePillarItem: new FormControl(lifeEvaluationRawValue.subLifePillarItem, {
         validators: [Validators.required],

@@ -1,7 +1,12 @@
 package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.LifeEvaluation;
+import com.atharsense.lr.domain.ExtendedUser;
+import com.atharsense.lr.domain.User;
 import com.atharsense.lr.repository.LifeEvaluationRepository;
+import com.atharsense.lr.repository.UserRepository;
+import com.atharsense.lr.repository.ExtendedUserRepository;
+import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.LifeEvaluationQueryService;
 import com.atharsense.lr.service.LifeEvaluationService;
 import com.atharsense.lr.service.criteria.LifeEvaluationCriteria;
@@ -46,14 +51,22 @@ public class LifeEvaluationResource {
 
     private final LifeEvaluationQueryService lifeEvaluationQueryService;
 
+    private final UserRepository userRepository;
+
+    private final ExtendedUserRepository extendedUserRepository;
+
     public LifeEvaluationResource(
         LifeEvaluationService lifeEvaluationService,
         LifeEvaluationRepository lifeEvaluationRepository,
-        LifeEvaluationQueryService lifeEvaluationQueryService
+        LifeEvaluationQueryService lifeEvaluationQueryService,
+        UserRepository userRepository,
+        ExtendedUserRepository extendedUserRepository
     ) {
         this.lifeEvaluationService = lifeEvaluationService;
         this.lifeEvaluationRepository = lifeEvaluationRepository;
         this.lifeEvaluationQueryService = lifeEvaluationQueryService;
+        this.userRepository = userRepository;
+        this.extendedUserRepository = extendedUserRepository;
     }
 
     /**
@@ -70,10 +83,35 @@ public class LifeEvaluationResource {
         if (lifeEvaluation.getId() != null) {
             throw new BadRequestAlertException("A new lifeEvaluation cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Automatically set the current user as owner
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("User not authenticated", ENTITY_NAME, "notauthenticated"));
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
+
+        // Get or create ExtendedUser if it doesn't exist
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+            .orElseGet(() -> {
+                ExtendedUser newExtendedUser = new ExtendedUser();
+                newExtendedUser.setUser(currentUser);
+                newExtendedUser.setFullName(buildFullName(currentUser));
+                newExtendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(newExtendedUser);
+            });
+        lifeEvaluation.setOwner(extendedUser);
+
         lifeEvaluation = lifeEvaluationService.save(lifeEvaluation);
         return ResponseEntity.created(new URI("/api/life-evaluations/" + lifeEvaluation.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, lifeEvaluation.getId().toString()))
             .body(lifeEvaluation);
+    }
+
+    private String buildFullName(User user) {
+        String firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
+        String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
+        String fullName = (firstName + " " + lastName).trim();
+        return fullName.isEmpty() ? user.getLogin() : fullName;
     }
 
     /**
@@ -101,6 +139,21 @@ public class LifeEvaluationResource {
 
         if (!lifeEvaluationRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        // Preserve the owner and decisions if not provided in the request
+        if (lifeEvaluation.getOwner() == null || lifeEvaluation.getDecisions() == null || lifeEvaluation.getDecisions().isEmpty()) {
+            LifeEvaluation existingEvaluation = lifeEvaluationService.findOneWithDecisions(id)
+                .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+
+            if (lifeEvaluation.getOwner() == null) {
+                lifeEvaluation.setOwner(existingEvaluation.getOwner());
+            }
+
+            // Preserve decisions to prevent orphan removal
+            if (lifeEvaluation.getDecisions() == null || lifeEvaluation.getDecisions().isEmpty()) {
+                lifeEvaluation.setDecisions(existingEvaluation.getDecisions());
+            }
         }
 
         lifeEvaluation = lifeEvaluationService.update(lifeEvaluation);

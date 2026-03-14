@@ -72,30 +72,30 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_owner" jhiTranslate="liferadarApp.subLifePillarItem.owner">Owner</label>
+          <label class="form-label" for="field_subLifePillar" jhiTranslate="liferadarApp.subLifePillarItem.subLifePillar">Sub Life Pillar</label>
           <select
             class="form-control"
-            id="field_owner"
-            data-cy="owner"
-            name="owner"
-            formControlName="owner"
-            [compareWith]="compareExtendedUser"
+            id="field_subLifePillar"
+            data-cy="subLifePillar"
+            name="subLifePillar"
+            formControlName="subLifePillar"
+            [compareWith]="compareSubLifePillar"
           >
-            @if (!editForm.get('owner')!.value) {
+            @if (!editForm.get('subLifePillar')!.value) {
               <option [ngValue]="null" selected></option>
             }
-            @for (extendedUserOption of extendedUsersSharedCollection; track $index) {
-              <option [ngValue]="extendedUserOption">{{ extendedUserOption.id }}</option>
+            @for (subLifePillarOption of subLifePillarsSharedCollection; track $index) {
+              <option [ngValue]="subLifePillarOption">{{ subLifePillarOption.code }}</option>
             }
           </select>
+          @if (editForm.get(['subLifePillar'])!.invalid && (editForm.get(['subLifePillar'])!.dirty || editForm.get(['subLifePillar'])!.touched)) {
+            <div>
+              @if (editForm.get(['subLifePillar'])?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
         </div>
-        @if (editForm.get(['owner'])!.invalid && (editForm.get(['owner'])!.dirty || editForm.get(['owner'])!.touched)) {
-          <div>
-            @if (editForm.get(['owner'])?.errors?.required) {
-              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
-            }
-          </div>
-        }
       </div>
 
       <div>

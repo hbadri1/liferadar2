@@ -7,6 +7,8 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { ISubLifePillar } from 'app/entities/sub-life-pillar/sub-life-pillar.model';
+import { SubLifePillarService } from 'app/entities/sub-life-pillar/service/sub-life-pillar.service';
 import { IExtendedUser } from 'app/entities/extended-user/extended-user.model';
 import { ExtendedUserService } from 'app/entities/extended-user/service/extended-user.service';
 import { ISubLifePillarItem } from '../sub-life-pillar-item.model';
@@ -22,18 +24,18 @@ export class SubLifePillarItemUpdateComponent implements OnInit {
   isSaving = false;
   subLifePillarItem: ISubLifePillarItem | null = null;
 
-  extendedUsersSharedCollection: IExtendedUser[] = [];
+  subLifePillarsSharedCollection: ISubLifePillar[] = [];
 
   protected subLifePillarItemService = inject(SubLifePillarItemService);
   protected subLifePillarItemFormService = inject(SubLifePillarItemFormService);
-  protected extendedUserService = inject(ExtendedUserService);
+  protected subLifePillarService = inject(SubLifePillarService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: SubLifePillarItemFormGroup = this.subLifePillarItemFormService.createSubLifePillarItemFormGroup();
 
-  compareExtendedUser = (o1: IExtendedUser | null, o2: IExtendedUser | null): boolean =>
-    this.extendedUserService.compareExtendedUser(o1, o2);
+  compareSubLifePillar = (o1: ISubLifePillar | null, o2: ISubLifePillar | null): boolean =>
+    this.subLifePillarService.compareSubLifePillar(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ subLifePillarItem }) => {
@@ -43,6 +45,7 @@ export class SubLifePillarItemUpdateComponent implements OnInit {
       }
 
       this.loadRelationshipsOptions();
+      this.applySubLifePillarFromQueryParam();
     });
   }
 
@@ -83,21 +86,48 @@ export class SubLifePillarItemUpdateComponent implements OnInit {
     this.subLifePillarItem = subLifePillarItem;
     this.subLifePillarItemFormService.resetForm(this.editForm, subLifePillarItem);
 
-    this.extendedUsersSharedCollection = this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(
-      this.extendedUsersSharedCollection,
-      subLifePillarItem.owner,
+    this.subLifePillarsSharedCollection = this.subLifePillarService.addSubLifePillarToCollectionIfMissing<ISubLifePillar>(
+      this.subLifePillarsSharedCollection,
+      subLifePillarItem.subLifePillar,
     );
   }
 
   protected loadRelationshipsOptions(): void {
-    this.extendedUserService
+    this.subLifePillarService
       .query()
-      .pipe(map((res: HttpResponse<IExtendedUser[]>) => res.body ?? []))
+      .pipe(map((res: HttpResponse<ISubLifePillar[]>) => res.body ?? []))
       .pipe(
-        map((extendedUsers: IExtendedUser[]) =>
-          this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(extendedUsers, this.subLifePillarItem?.owner),
+        map((subLifePillars: ISubLifePillar[]) =>
+          this.subLifePillarService.addSubLifePillarToCollectionIfMissing<ISubLifePillar>(
+            subLifePillars,
+            this.subLifePillarItem?.subLifePillar,
+          ),
         ),
       )
-      .subscribe((extendedUsers: IExtendedUser[]) => (this.extendedUsersSharedCollection = extendedUsers));
+      .subscribe((subLifePillars: ISubLifePillar[]) => (this.subLifePillarsSharedCollection = subLifePillars));
+  }
+
+  protected applySubLifePillarFromQueryParam(): void {
+    const subLifePillarIdParam = this.activatedRoute.snapshot.queryParamMap.get('subLifePillarId');
+    if (!subLifePillarIdParam || this.subLifePillarItem !== null) {
+      return;
+    }
+
+    const subLifePillarId = Number(subLifePillarIdParam);
+    if (Number.isNaN(subLifePillarId)) {
+      return;
+    }
+
+    this.subLifePillarService.find(subLifePillarId).subscribe(({ body }) => {
+      if (!body) {
+        return;
+      }
+
+      this.editForm.patchValue({ subLifePillar: body });
+      this.subLifePillarsSharedCollection = this.subLifePillarService.addSubLifePillarToCollectionIfMissing<ISubLifePillar>(
+        this.subLifePillarsSharedCollection,
+        body,
+      );
+    });
   }
 }

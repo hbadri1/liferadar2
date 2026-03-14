@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <fa-icon icon="exclamation-triangle" class="text-warning me-2"></fa-icon>
+    {{ title }}
+  </h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  <p class="mb-0">{{ message }}</p>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    <fa-icon icon="times"></fa-icon>
+    <span>{{ cancelButtonText }}</span>
+  </button>
+  <button type="button" class="btn" [ngClass]="confirmButtonClass" (click)="confirm()">
+    <fa-icon icon="check"></fa-icon>
+    <span>{{ confirmButtonText }}</span>
+  </button>
+</div>
+
