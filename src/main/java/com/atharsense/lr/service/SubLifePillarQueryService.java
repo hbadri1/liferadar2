@@ -42,7 +42,12 @@ public class SubLifePillarQueryService extends QueryService<SubLifePillar> {
     public Page<SubLifePillar> findByCriteria(SubLifePillarCriteria criteria, Pageable page) {
         LOG.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<SubLifePillar> specification = createSpecification(criteria);
-        return subLifePillarRepository.findAll(specification, page);
+        Page<SubLifePillar> result = subLifePillarRepository.findAll(specification, page);
+
+        // Eagerly load translations to avoid N+1 queries
+        result.getContent().forEach(subPillar -> subPillar.getTranslations().size());
+
+        return result;
     }
 
     /**
@@ -74,7 +79,8 @@ public class SubLifePillarQueryService extends QueryService<SubLifePillar> {
                 buildSpecification(criteria.getTranslationsId(), root ->
                     root.join(SubLifePillar_.translations, JoinType.LEFT).get(SubLifePillarTranslation_.id)
                 ),
-                buildSpecification(criteria.getOwnerId(), root -> root.join(SubLifePillar_.owner, JoinType.LEFT).get(ExtendedUser_.id))
+                buildSpecification(criteria.getOwnerId(), root -> root.join(SubLifePillar_.owner, JoinType.LEFT).get(ExtendedUser_.id)),
+                buildSpecification(criteria.getLifePillarId(), root -> root.join(SubLifePillar_.lifePillar, JoinType.LEFT).get(LifePillar_.id))
             );
         }
         return specification;

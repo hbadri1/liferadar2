@@ -52,31 +52,6 @@
           </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_owner" jhiTranslate="liferadarApp.evaluationDecision.owner">Owner</label>
-          <select
-            class="form-control"
-            id="field_owner"
-            data-cy="owner"
-            name="owner"
-            formControlName="owner"
-            [compareWith]="compareExtendedUser"
-          >
-            @if (!editForm.get('owner')!.value) {
-              <option [ngValue]="null" selected></option>
-            }
-            @for (extendedUserOption of extendedUsersSharedCollection; track $index) {
-              <option [ngValue]="extendedUserOption">{{ extendedUserOption.id }}</option>
-            }
-          </select>
-        </div>
-        @if (editForm.get(['owner'])!.invalid && (editForm.get(['owner'])!.dirty || editForm.get(['owner'])!.touched)) {
-          <div>
-            @if (editForm.get(['owner'])?.errors?.required) {
-              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
-            }
-          </div>
-        }
 
         <div class="mb-3">
           <label class="form-label" for="field_lifeEvaluation" jhiTranslate="liferadarApp.evaluationDecision.lifeEvaluation"

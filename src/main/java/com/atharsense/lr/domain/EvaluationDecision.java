@@ -17,8 +17,7 @@ public class EvaluationDecision implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -30,8 +29,7 @@ public class EvaluationDecision implements Serializable {
     @Column(name = "date")
     private Instant date;
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(optional = true)
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
     private ExtendedUser owner;
 

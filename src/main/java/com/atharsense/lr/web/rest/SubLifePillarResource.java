@@ -1,7 +1,12 @@
 package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.SubLifePillar;
+import com.atharsense.lr.domain.ExtendedUser;
+import com.atharsense.lr.domain.User;
 import com.atharsense.lr.repository.SubLifePillarRepository;
+import com.atharsense.lr.repository.UserRepository;
+import com.atharsense.lr.repository.ExtendedUserRepository;
+import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.SubLifePillarQueryService;
 import com.atharsense.lr.service.SubLifePillarService;
 import com.atharsense.lr.service.criteria.SubLifePillarCriteria;
@@ -13,6 +18,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import tech.jhipster.service.filter.LongFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,14 +52,22 @@ public class SubLifePillarResource {
 
     private final SubLifePillarQueryService subLifePillarQueryService;
 
+    private final UserRepository userRepository;
+
+    private final ExtendedUserRepository extendedUserRepository;
+
     public SubLifePillarResource(
         SubLifePillarService subLifePillarService,
         SubLifePillarRepository subLifePillarRepository,
-        SubLifePillarQueryService subLifePillarQueryService
+        SubLifePillarQueryService subLifePillarQueryService,
+        UserRepository userRepository,
+        ExtendedUserRepository extendedUserRepository
     ) {
         this.subLifePillarService = subLifePillarService;
         this.subLifePillarRepository = subLifePillarRepository;
         this.subLifePillarQueryService = subLifePillarQueryService;
+        this.userRepository = userRepository;
+        this.extendedUserRepository = extendedUserRepository;
     }
 
     /**
@@ -69,10 +83,35 @@ public class SubLifePillarResource {
         if (subLifePillar.getId() != null) {
             throw new BadRequestAlertException("A new subLifePillar cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Automatically set the current user as owner
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("User not authenticated", ENTITY_NAME, "notauthenticated"));
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
+
+        // Get or create ExtendedUser if it doesn't exist
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+            .orElseGet(() -> {
+                ExtendedUser newExtendedUser = new ExtendedUser();
+                newExtendedUser.setUser(currentUser);
+                newExtendedUser.setFullName(buildFullName(currentUser));
+                newExtendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(newExtendedUser);
+            });
+        subLifePillar.setOwner(extendedUser);
+
         subLifePillar = subLifePillarService.save(subLifePillar);
         return ResponseEntity.created(new URI("/api/sub-life-pillars/" + subLifePillar.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, subLifePillar.getId().toString()))
             .body(subLifePillar);
+    }
+
+    private String buildFullName(User user) {
+        String firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
+        String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
+        String fullName = (firstName + " " + lastName).trim();
+        return fullName.isEmpty() ? user.getLogin() : fullName;
     }
 
     /**
@@ -100,6 +139,25 @@ public class SubLifePillarResource {
 
         if (!subLifePillarRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        // Preserve the owner, translations, and items if not provided in the request
+        if (subLifePillar.getOwner() == null || subLifePillar.getTranslations() == null || subLifePillar.getTranslations().isEmpty()) {
+            SubLifePillar existingSubLifePillar = subLifePillarService.findOneWithTranslations(id)
+                .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+
+            if (subLifePillar.getOwner() == null) {
+                subLifePillar.setOwner(existingSubLifePillar.getOwner());
+            }
+
+            if (subLifePillar.getTranslations() == null || subLifePillar.getTranslations().isEmpty()) {
+                subLifePillar.setTranslations(existingSubLifePillar.getTranslations());
+            }
+
+            // Preserve items to prevent orphan removal
+            if (subLifePillar.getItems() == null || subLifePillar.getItems().isEmpty()) {
+                subLifePillar.setItems(existingSubLifePillar.getItems());
+            }
         }
 
         subLifePillar = subLifePillarService.update(subLifePillar);
@@ -158,6 +216,30 @@ public class SubLifePillarResource {
     ) {
         LOG.debug("REST request to get SubLifePillars by criteria: {}", criteria);
 
+        // Filter by current user automatically
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("User not authenticated", ENTITY_NAME, "notauthenticated"));
+
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
+
+        // Get or create ExtendedUser if it doesn't exist
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+            .orElseGet(() -> {
+                ExtendedUser newExtendedUser = new ExtendedUser();
+                newExtendedUser.setUser(currentUser);
+                newExtendedUser.setFullName(buildFullName(currentUser));
+                newExtendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(newExtendedUser);
+            });
+
+        // Set owner filter to current user
+        if (criteria.getOwnerId() == null) {
+            LongFilter ownerFilter = new LongFilter();
+            ownerFilter.setEquals(extendedUser.getId());
+            criteria.setOwnerId(ownerFilter);
+        }
+
         Page<SubLifePillar> page = subLifePillarQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -179,12 +261,18 @@ public class SubLifePillarResource {
      * {@code GET  /sub-life-pillars/:id} : get the "id" subLifePillar.
      *
      * @param id the id of the subLifePillar to retrieve.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the subLifePillar, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SubLifePillar> getSubLifePillar(@PathVariable("id") Long id) {
+    public ResponseEntity<SubLifePillar> getSubLifePillar(
+        @PathVariable("id") Long id,
+        @RequestParam(value = "eagerload", required = false, defaultValue = "false") boolean eagerload
+    ) {
         LOG.debug("REST request to get SubLifePillar : {}", id);
-        Optional<SubLifePillar> subLifePillar = subLifePillarService.findOne(id);
+        Optional<SubLifePillar> subLifePillar = eagerload
+            ? subLifePillarService.findOneWithTranslations(id)
+            : subLifePillarService.findOne(id);
         return ResponseUtil.wrapOrNotFound(subLifePillar);
     }
 

@@ -46,6 +46,24 @@ public class SubLifePillarService {
     }
 
     /**
+     * Find a subLifePillar with translations and items eagerly loaded.
+     *
+     * @param id the id of the entity.
+     * @return the entity with relationships loaded.
+     */
+    @Transactional(readOnly = true)
+    public Optional<SubLifePillar> findOneWithTranslations(Long id) {
+        LOG.debug("Request to get SubLifePillar with relationships : {}", id);
+        return subLifePillarRepository.findById(id).map(subPillar -> {
+            // Initialize translations within transaction
+            subPillar.getTranslations().size();
+            // Initialize items within transaction
+            subPillar.getItems().size();
+            return subPillar;
+        });
+    }
+
+    /**
      * Partially update a subLifePillar.
      *
      * @param subLifePillar the entity to update partially.

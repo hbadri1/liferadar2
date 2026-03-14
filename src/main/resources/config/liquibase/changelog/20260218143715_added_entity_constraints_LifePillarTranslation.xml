@@ -17,4 +17,16 @@
                                  referencedTableName="life_pillar"
                                  />
     </changeSet>
+
+    <changeSet id="20260218143715-3" author="jhipster">
+        <dropForeignKeyConstraint baseTableName="life_pillar_translation"
+                                  constraintName="fk_life_pillar_translation__life_pillar_id"/>
+        <addForeignKeyConstraint baseColumnNames="life_pillar_id"
+                                 baseTableName="life_pillar_translation"
+                                 constraintName="fk_life_pillar_translation__life_pillar_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="life_pillar"
+                                 onDelete="CASCADE"
+                                 />
+    </changeSet>
 </databaseChangeLog>

@@ -2,13 +2,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { IExtendedUser } from 'app/entities/extended-user/extended-user.model';
-import { ExtendedUserService } from 'app/entities/extended-user/service/extended-user.service';
 import { ILifePillar } from '../life-pillar.model';
 import { LifePillarService } from '../service/life-pillar.service';
 import { LifePillarFormGroup, LifePillarFormService } from './life-pillar-form.service';
@@ -22,18 +20,12 @@ export class LifePillarUpdateComponent implements OnInit {
   isSaving = false;
   lifePillar: ILifePillar | null = null;
 
-  extendedUsersSharedCollection: IExtendedUser[] = [];
-
   protected lifePillarService = inject(LifePillarService);
   protected lifePillarFormService = inject(LifePillarFormService);
-  protected extendedUserService = inject(ExtendedUserService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: LifePillarFormGroup = this.lifePillarFormService.createLifePillarFormGroup();
-
-  compareExtendedUser = (o1: IExtendedUser | null, o2: IExtendedUser | null): boolean =>
-    this.extendedUserService.compareExtendedUser(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ lifePillar }) => {
@@ -41,8 +33,6 @@ export class LifePillarUpdateComponent implements OnInit {
       if (lifePillar) {
         this.updateForm(lifePillar);
       }
-
-      this.loadRelationshipsOptions();
     });
   }
 
@@ -82,22 +72,5 @@ export class LifePillarUpdateComponent implements OnInit {
   protected updateForm(lifePillar: ILifePillar): void {
     this.lifePillar = lifePillar;
     this.lifePillarFormService.resetForm(this.editForm, lifePillar);
-
-    this.extendedUsersSharedCollection = this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(
-      this.extendedUsersSharedCollection,
-      lifePillar.owner,
-    );
-  }
-
-  protected loadRelationshipsOptions(): void {
-    this.extendedUserService
-      .query()
-      .pipe(map((res: HttpResponse<IExtendedUser[]>) => res.body ?? []))
-      .pipe(
-        map((extendedUsers: IExtendedUser[]) =>
-          this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(extendedUsers, this.lifePillar?.owner),
-        ),
-      )
-      .subscribe((extendedUsers: IExtendedUser[]) => (this.extendedUsersSharedCollection = extendedUsers));
   }
 }

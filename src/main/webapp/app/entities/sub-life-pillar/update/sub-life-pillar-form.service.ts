@@ -20,7 +20,7 @@ type SubLifePillarFormGroupContent = {
   id: FormControl<ISubLifePillar['id'] | NewSubLifePillar['id']>;
   code: FormControl<ISubLifePillar['code']>;
   isActive: FormControl<ISubLifePillar['isActive']>;
-  owner: FormControl<ISubLifePillar['owner']>;
+  lifePillar: FormControl<ISubLifePillar['lifePillar']>;
 };
 
 export type SubLifePillarFormGroup = FormGroup<SubLifePillarFormGroupContent>;
@@ -46,7 +46,7 @@ export class SubLifePillarFormService {
       isActive: new FormControl(subLifePillarRawValue.isActive, {
         validators: [Validators.required],
       }),
-      owner: new FormControl(subLifePillarRawValue.owner, {
+      lifePillar: new FormControl(subLifePillarRawValue.lifePillar, {
         validators: [Validators.required],
       }),
     });

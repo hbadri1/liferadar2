@@ -21,7 +21,7 @@ type SubLifePillarItemFormGroupContent = {
   code: FormControl<ISubLifePillarItem['code']>;
   sortOrder: FormControl<ISubLifePillarItem['sortOrder']>;
   isActive: FormControl<ISubLifePillarItem['isActive']>;
-  owner: FormControl<ISubLifePillarItem['owner']>;
+  subLifePillar: FormControl<ISubLifePillarItem['subLifePillar']>;
 };
 
 export type SubLifePillarItemFormGroup = FormGroup<SubLifePillarItemFormGroupContent>;
@@ -50,7 +50,7 @@ export class SubLifePillarItemFormService {
       isActive: new FormControl(subLifePillarItemRawValue.isActive, {
         validators: [Validators.required],
       }),
-      owner: new FormControl(subLifePillarItemRawValue.owner, {
+      subLifePillar: new FormControl(subLifePillarItemRawValue.subLifePillar, {
         validators: [Validators.required],
       }),
     });

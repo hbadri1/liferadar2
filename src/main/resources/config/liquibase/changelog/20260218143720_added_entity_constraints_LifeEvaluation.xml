@@ -24,4 +24,16 @@
                                  referencedTableName="sub_life_pillar_item"
                                  />
     </changeSet>
+
+    <changeSet id="20260218143720-3" author="jhipster">
+        <dropForeignKeyConstraint baseTableName="life_evaluation"
+                                  constraintName="fk_life_evaluation__sub_life_pillar_item_id"/>
+        <addForeignKeyConstraint baseColumnNames="sub_life_pillar_item_id"
+                                 baseTableName="life_evaluation"
+                                 constraintName="fk_life_evaluation__sub_life_pillar_item_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sub_life_pillar_item"
+                                 onDelete="CASCADE"
+                                 />
+    </changeSet>
 </databaseChangeLog>

@@ -7,8 +7,6 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { IExtendedUser } from 'app/entities/extended-user/extended-user.model';
-import { ExtendedUserService } from 'app/entities/extended-user/service/extended-user.service';
 import { ILifeEvaluation } from 'app/entities/life-evaluation/life-evaluation.model';
 import { LifeEvaluationService } from 'app/entities/life-evaluation/service/life-evaluation.service';
 import { EvaluationDecisionService } from '../service/evaluation-decision.service';
@@ -24,20 +22,15 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
   isSaving = false;
   evaluationDecision: IEvaluationDecision | null = null;
 
-  extendedUsersSharedCollection: IExtendedUser[] = [];
   lifeEvaluationsSharedCollection: ILifeEvaluation[] = [];
 
   protected evaluationDecisionService = inject(EvaluationDecisionService);
   protected evaluationDecisionFormService = inject(EvaluationDecisionFormService);
-  protected extendedUserService = inject(ExtendedUserService);
   protected lifeEvaluationService = inject(LifeEvaluationService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: EvaluationDecisionFormGroup = this.evaluationDecisionFormService.createEvaluationDecisionFormGroup();
-
-  compareExtendedUser = (o1: IExtendedUser | null, o2: IExtendedUser | null): boolean =>
-    this.extendedUserService.compareExtendedUser(o1, o2);
 
   compareLifeEvaluation = (o1: ILifeEvaluation | null, o2: ILifeEvaluation | null): boolean =>
     this.lifeEvaluationService.compareLifeEvaluation(o1, o2);
@@ -90,10 +83,6 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
     this.evaluationDecision = evaluationDecision;
     this.evaluationDecisionFormService.resetForm(this.editForm, evaluationDecision);
 
-    this.extendedUsersSharedCollection = this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(
-      this.extendedUsersSharedCollection,
-      evaluationDecision.owner,
-    );
     this.lifeEvaluationsSharedCollection = this.lifeEvaluationService.addLifeEvaluationToCollectionIfMissing<ILifeEvaluation>(
       this.lifeEvaluationsSharedCollection,
       evaluationDecision.lifeEvaluation,
@@ -101,16 +90,6 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
   }
 
   protected loadRelationshipsOptions(): void {
-    this.extendedUserService
-      .query()
-      .pipe(map((res: HttpResponse<IExtendedUser[]>) => res.body ?? []))
-      .pipe(
-        map((extendedUsers: IExtendedUser[]) =>
-          this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(extendedUsers, this.evaluationDecision?.owner),
-        ),
-      )
-      .subscribe((extendedUsers: IExtendedUser[]) => (this.extendedUsersSharedCollection = extendedUsers));
-
     this.lifeEvaluationService
       .query()
       .pipe(map((res: HttpResponse<ILifeEvaluation[]>) => res.body ?? []))

@@ -20,8 +20,7 @@ public class LifeEvaluation implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -45,18 +44,17 @@ public class LifeEvaluation implements Serializable {
     @Column(name = "notes", length = 800)
     private String notes;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lifeEvaluation")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lifeEvaluation", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "owner", "lifeEvaluation" }, allowSetters = true)
     private Set<EvaluationDecision> decisions = new HashSet<>();
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(optional = true)
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
     private ExtendedUser owner;
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "translations", "owner" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "translations", "owner", "evaluations" }, allowSetters = true)
     private SubLifePillarItem subLifePillarItem;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="20260222130000-1" author="jhipster">
+        <addAutoIncrement tableName="jhi_user" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="extended_user" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="life_pillar" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="life_pillar_translation" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="sub_life_pillar" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="sub_life_pillar_translation" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="sub_life_pillar_item" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="sub_life_pillar_item_translation" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="life_evaluation" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="evaluation_decision" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="trip_plan" columnName="id" columnDataType="bigint"/>
+        <addAutoIncrement tableName="trip_plan_step" columnName="id" columnDataType="bigint"/>
+    </changeSet>
+</databaseChangeLog>
+

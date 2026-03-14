@@ -1,6 +1,7 @@
 package com.atharsense.lr.repository;
 
 import com.atharsense.lr.domain.SubLifePillar;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface SubLifePillarRepository extends JpaRepository<SubLifePillar, Long>, JpaSpecificationExecutor<SubLifePillar> {}
+public interface SubLifePillarRepository extends JpaRepository<SubLifePillar, Long>, JpaSpecificationExecutor<SubLifePillar> {
+	Optional<SubLifePillar> findByOwnerIdAndCode(Long ownerId, String code);
+}

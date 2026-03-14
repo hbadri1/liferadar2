@@ -33,7 +33,6 @@ type EvaluationDecisionFormGroupContent = {
   id: FormControl<EvaluationDecisionFormRawValue['id'] | NewEvaluationDecision['id']>;
   decision: FormControl<EvaluationDecisionFormRawValue['decision']>;
   date: FormControl<EvaluationDecisionFormRawValue['date']>;
-  owner: FormControl<EvaluationDecisionFormRawValue['owner']>;
   lifeEvaluation: FormControl<EvaluationDecisionFormRawValue['lifeEvaluation']>;
 };
 
@@ -58,9 +57,6 @@ export class EvaluationDecisionFormService {
         validators: [Validators.required, Validators.maxLength(500)],
       }),
       date: new FormControl(evaluationDecisionRawValue.date),
-      owner: new FormControl(evaluationDecisionRawValue.owner, {
-        validators: [Validators.required],
-      }),
       lifeEvaluation: new FormControl(evaluationDecisionRawValue.lifeEvaluation, {
         validators: [Validators.required],
       }),

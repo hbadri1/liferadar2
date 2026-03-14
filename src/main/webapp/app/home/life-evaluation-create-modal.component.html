@@ -1,0 +1,80 @@
+<div class="modal-header">
+  <h4 class="modal-title" jhiTranslate="liferadarApp.lifeEvaluation.home.createLabel">Create new Life Evaluation</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  <jhi-alert-error />
+
+  <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <div class="row g-2 align-items-end mb-2">
+      <div class="col-12 col-md-5">
+        <label class="form-label" for="field_score" jhiTranslate="liferadarApp.lifeEvaluation.score">Score (1-5)</label>
+        <input
+          type="number"
+          class="form-control"
+          id="field_score"
+          data-cy="score"
+          formControlName="score"
+          min="1"
+          max="5" />
+        @if (editForm.get('score')?.invalid && (editForm.get('score')?.dirty || editForm.get('score')?.touched)) {
+          <div>
+            @if (editForm.get('score')?.errors?.min) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '1' }">
+                This field should be at least 1.
+              </small>
+            }
+            @if (editForm.get('score')?.errors?.max) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.max" [translateValues]="{ max: '5' }">
+                This field should be no more than 5.
+              </small>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="col-12 col-md-7">
+        <div class="form-check mt-1">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="field_reminderEnabled"
+            name="reminderEnabled"
+            formControlName="reminderEnabled" />
+          <label class="form-check-label" for="field_reminderEnabled" jhiTranslate="liferadarApp.lifeEvaluation.reminderEnabled">
+            Enable Reminder
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label" for="field_notes" jhiTranslate="liferadarApp.lifeEvaluation.notes">Notes</label>
+      <textarea class="form-control" id="field_notes" data-cy="notes" formControlName="notes" rows="2"></textarea>
+    </div>
+
+    @if (editForm.get('reminderEnabled')?.value) {
+      <div class="mb-2">
+        <label class="form-label" for="field_reminderAt" jhiTranslate="liferadarApp.lifeEvaluation.reminderAt">Reminder Date</label>
+        <input
+          type="datetime-local"
+          class="form-control"
+          id="field_reminderAt"
+          data-cy="reminderAt"
+          formControlName="reminderAt" />
+      </div>
+    }
+
+    <div class="modal-footer pt-2">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+      </button>
+
+      <button type="submit" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+        <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+      </button>
+    </div>
+  </form>
+</div>
+

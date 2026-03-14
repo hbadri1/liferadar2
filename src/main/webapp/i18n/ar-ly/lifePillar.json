@@ -2,26 +2,29 @@
   "liferadarApp": {
     "lifePillar": {
       "home": {
-        "title": "Life Pillars",
+        "title": "أركان الحياة",
         "refreshListLabel": "تحديث القائمة",
-        "createLabel": "إنشاء Life Pillar جديد",
-        "createOrEditLabel": "إنشاء أو تعديل Life Pillar",
-        "notFound": "لم يتم العثور على Life Pillars"
+        "createLabel": "إنشاء ركن حياة جديد",
+        "createOrEditLabel": "إنشاء أو تعديل ركن حياة",
+        "notFound": "لم يتم العثور على أركان حياة",
+        "createFirst": "أنشئ أول ركن حياة للبدء!"
       },
-      "created": "Life Pillar جديد تم إنشاؤه بالمعرف {{ param }}",
-      "updated": "Life Pillar تم تحديثه بالمعرف {{ param }}",
-      "deleted": "Life Pillar تم حذفه بالمعرف {{ param }}",
+      "created": "تم إنشاء ركن حياة جديد بالمعرف {{ param }}",
+      "updated": "تم تحديث ركن الحياة بالمعرف {{ param }}",
+      "deleted": "تم حذف ركن الحياة بالمعرف {{ param }}",
       "delete": {
-        "question": "هل أنت متأكد أنك تريد حذف Life Pillar {{ id }}؟"
+        "question": "هل أنت متأكد أنك تريد حذف ركن الحياة {{ id }}؟"
       },
       "detail": {
-        "title": "Life Pillar"
+        "title": "ركن الحياة"
       },
-      "id": "ID",
-      "code": "Code",
-      "isActive": "Is Active",
-      "translations": "Translations",
-      "owner": "Owner"
+      "id": "المعرف",
+      "code": "الرمز",
+      "isActive": "نشط",
+      "translations": "الترجمات",
+      "owner": "المالك",
+      "noDescription": "لا يوجد وصف متاح",
+      "viewSubPillars": "عرض الأركان الفرعية"
     }
   }
 }

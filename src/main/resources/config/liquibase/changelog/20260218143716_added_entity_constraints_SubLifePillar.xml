@@ -17,4 +17,14 @@
                                  referencedTableName="extended_user"
                                  />
     </changeSet>
+
+    <changeSet id="20260218143716-3" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="life_pillar_id"
+                                 baseTableName="sub_life_pillar"
+                                 constraintName="fk_sub_life_pillar__life_pillar_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="life_pillar"
+                                 onDelete="CASCADE"
+                                 />
+    </changeSet>
 </databaseChangeLog>

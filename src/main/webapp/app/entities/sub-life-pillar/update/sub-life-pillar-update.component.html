@@ -51,30 +51,30 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_owner" jhiTranslate="liferadarApp.subLifePillar.owner">Owner</label>
+          <label class="form-label" for="field_lifePillar" jhiTranslate="liferadarApp.subLifePillar.lifePillar">Life Pillar</label>
           <select
             class="form-control"
-            id="field_owner"
-            data-cy="owner"
-            name="owner"
-            formControlName="owner"
-            [compareWith]="compareExtendedUser"
+            id="field_lifePillar"
+            data-cy="lifePillar"
+            name="lifePillar"
+            formControlName="lifePillar"
+            [compareWith]="compareLifePillar"
           >
-            @if (!editForm.get('owner')!.value) {
+            @if (!editForm.get('lifePillar')!.value) {
               <option [ngValue]="null" selected></option>
             }
-            @for (extendedUserOption of extendedUsersSharedCollection; track $index) {
-              <option [ngValue]="extendedUserOption">{{ extendedUserOption.id }}</option>
+            @for (lifePillarOption of lifePillarsSharedCollection; track $index) {
+              <option [ngValue]="lifePillarOption">{{ lifePillarOption.code }}</option>
             }
           </select>
+          @if (editForm.get(['lifePillar'])!.invalid && (editForm.get(['lifePillar'])!.dirty || editForm.get(['lifePillar'])!.touched)) {
+            <div>
+              @if (editForm.get(['lifePillar'])?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
         </div>
-        @if (editForm.get(['owner'])!.invalid && (editForm.get(['owner'])!.dirty || editForm.get(['owner'])!.touched)) {
-          <div>
-            @if (editForm.get(['owner'])?.errors?.required) {
-              <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
-            }
-          </div>
-        }
       </div>
 
       <div>

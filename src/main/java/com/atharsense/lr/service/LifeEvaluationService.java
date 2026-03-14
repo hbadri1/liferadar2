@@ -46,6 +46,22 @@ public class LifeEvaluationService {
     }
 
     /**
+     * Find a lifeEvaluation with decisions eagerly loaded.
+     *
+     * @param id the id of the entity.
+     * @return the entity with relationships loaded.
+     */
+    @Transactional(readOnly = true)
+    public Optional<LifeEvaluation> findOneWithDecisions(Long id) {
+        LOG.debug("Request to get LifeEvaluation with decisions : {}", id);
+        return lifeEvaluationRepository.findById(id).map(evaluation -> {
+            // Initialize decisions within transaction
+            evaluation.getDecisions().size();
+            return evaluation;
+        });
+    }
+
+    /**
      * Partially update a lifeEvaluation.
      *
      * @param lifeEvaluation the entity to update partially.

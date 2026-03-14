@@ -7,6 +7,8 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { ILifePillar } from 'app/entities/life-pillar/life-pillar.model';
+import { LifePillarService } from 'app/entities/life-pillar/service/life-pillar.service';
 import { IExtendedUser } from 'app/entities/extended-user/extended-user.model';
 import { ExtendedUserService } from 'app/entities/extended-user/service/extended-user.service';
 import { ISubLifePillar } from '../sub-life-pillar.model';
@@ -22,18 +24,18 @@ export class SubLifePillarUpdateComponent implements OnInit {
   isSaving = false;
   subLifePillar: ISubLifePillar | null = null;
 
-  extendedUsersSharedCollection: IExtendedUser[] = [];
+  lifePillarsSharedCollection: ILifePillar[] = [];
 
   protected subLifePillarService = inject(SubLifePillarService);
   protected subLifePillarFormService = inject(SubLifePillarFormService);
-  protected extendedUserService = inject(ExtendedUserService);
+  protected lifePillarService = inject(LifePillarService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: SubLifePillarFormGroup = this.subLifePillarFormService.createSubLifePillarFormGroup();
 
-  compareExtendedUser = (o1: IExtendedUser | null, o2: IExtendedUser | null): boolean =>
-    this.extendedUserService.compareExtendedUser(o1, o2);
+  compareLifePillar = (o1: ILifePillar | null, o2: ILifePillar | null): boolean =>
+    this.lifePillarService.compareLifePillar(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ subLifePillar }) => {
@@ -43,6 +45,7 @@ export class SubLifePillarUpdateComponent implements OnInit {
       }
 
       this.loadRelationshipsOptions();
+      this.applyLifePillarFromQueryParam();
     });
   }
 
@@ -83,21 +86,48 @@ export class SubLifePillarUpdateComponent implements OnInit {
     this.subLifePillar = subLifePillar;
     this.subLifePillarFormService.resetForm(this.editForm, subLifePillar);
 
-    this.extendedUsersSharedCollection = this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(
-      this.extendedUsersSharedCollection,
-      subLifePillar.owner,
+    this.lifePillarsSharedCollection = this.lifePillarService.addLifePillarToCollectionIfMissing<ILifePillar>(
+      this.lifePillarsSharedCollection,
+      subLifePillar.lifePillar,
     );
   }
 
   protected loadRelationshipsOptions(): void {
-    this.extendedUserService
+    this.lifePillarService
       .query()
-      .pipe(map((res: HttpResponse<IExtendedUser[]>) => res.body ?? []))
+      .pipe(map((res: HttpResponse<ILifePillar[]>) => res.body ?? []))
       .pipe(
-        map((extendedUsers: IExtendedUser[]) =>
-          this.extendedUserService.addExtendedUserToCollectionIfMissing<IExtendedUser>(extendedUsers, this.subLifePillar?.owner),
+        map((lifePillars: ILifePillar[]) =>
+          this.lifePillarService.addLifePillarToCollectionIfMissing<ILifePillar>(
+            lifePillars,
+            this.subLifePillar?.lifePillar,
+          ),
         ),
       )
-      .subscribe((extendedUsers: IExtendedUser[]) => (this.extendedUsersSharedCollection = extendedUsers));
+      .subscribe((lifePillars: ILifePillar[]) => (this.lifePillarsSharedCollection = lifePillars));
+  }
+
+  protected applyLifePillarFromQueryParam(): void {
+    const lifePillarIdParam = this.activatedRoute.snapshot.queryParamMap.get('lifePillarId');
+    if (!lifePillarIdParam || this.subLifePillar !== null) {
+      return;
+    }
+
+    const lifePillarId = Number(lifePillarIdParam);
+    if (Number.isNaN(lifePillarId)) {
+      return;
+    }
+
+    this.lifePillarService.find(lifePillarId).subscribe(({ body }) => {
+      if (!body) {
+        return;
+      }
+
+      this.editForm.patchValue({ lifePillar: body });
+      this.lifePillarsSharedCollection = this.lifePillarService.addLifePillarToCollectionIfMissing<ILifePillar>(
+        this.lifePillarsSharedCollection,
+        body,
+      );
+    });
   }
 }

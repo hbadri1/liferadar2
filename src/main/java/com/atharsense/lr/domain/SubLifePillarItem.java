@@ -18,8 +18,7 @@ public class SubLifePillarItem implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -36,12 +35,20 @@ public class SubLifePillarItem implements Serializable {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subLifePillarItem")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subLifePillarItem", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "subLifePillarItem" }, allowSetters = true)
     private Set<SubLifePillarItemTranslation> translations = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subLifePillarItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties(value = { "owner", "subLifePillarItem" }, allowSetters = true)
+    private Set<LifeEvaluation> evaluations = new HashSet<>();
+
     @ManyToOne(optional = false)
     @NotNull
+    @JsonIgnoreProperties(value = { "translations", "lifePillar", "owner", "items" }, allowSetters = true)
+    private SubLifePillar subLifePillar;
+
+    @ManyToOne(optional = true)
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
     private ExtendedUser owner;
 
@@ -127,6 +134,50 @@ public class SubLifePillarItem implements Serializable {
     public SubLifePillarItem removeTranslations(SubLifePillarItemTranslation subLifePillarItemTranslation) {
         this.translations.remove(subLifePillarItemTranslation);
         subLifePillarItemTranslation.setSubLifePillarItem(null);
+        return this;
+    }
+
+    public Set<LifeEvaluation> getEvaluations() {
+        return this.evaluations;
+    }
+
+    public void setEvaluations(Set<LifeEvaluation> lifeEvaluations) {
+        if (this.evaluations != null) {
+            this.evaluations.forEach(i -> i.setSubLifePillarItem(null));
+        }
+        if (lifeEvaluations != null) {
+            lifeEvaluations.forEach(i -> i.setSubLifePillarItem(this));
+        }
+        this.evaluations = lifeEvaluations;
+    }
+
+    public SubLifePillarItem evaluations(Set<LifeEvaluation> lifeEvaluations) {
+        this.setEvaluations(lifeEvaluations);
+        return this;
+    }
+
+    public SubLifePillarItem addEvaluations(LifeEvaluation lifeEvaluation) {
+        this.evaluations.add(lifeEvaluation);
+        lifeEvaluation.setSubLifePillarItem(this);
+        return this;
+    }
+
+    public SubLifePillarItem removeEvaluations(LifeEvaluation lifeEvaluation) {
+        this.evaluations.remove(lifeEvaluation);
+        lifeEvaluation.setSubLifePillarItem(null);
+        return this;
+    }
+
+    public SubLifePillar getSubLifePillar() {
+        return this.subLifePillar;
+    }
+
+    public void setSubLifePillar(SubLifePillar subLifePillar) {
+        this.subLifePillar = subLifePillar;
+    }
+
+    public SubLifePillarItem subLifePillar(SubLifePillar subLifePillar) {
+        this.setSubLifePillar(subLifePillar);
         return this;
     }
 

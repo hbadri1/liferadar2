@@ -20,8 +20,7 @@ public class LifePillar implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -34,12 +33,15 @@ public class LifePillar implements Serializable {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lifePillar")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lifePillar", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "lifePillar" }, allowSetters = true)
     private Set<LifePillarTranslation> translations = new HashSet<>();
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lifePillar", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties(value = { "translations", "owner", "lifePillar" }, allowSetters = true)
+    private Set<SubLifePillar> subLifePillars = new HashSet<>();
+
+    @ManyToOne(optional = true)
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
     private ExtendedUser owner;
 
@@ -112,6 +114,37 @@ public class LifePillar implements Serializable {
     public LifePillar removeTranslations(LifePillarTranslation lifePillarTranslation) {
         this.translations.remove(lifePillarTranslation);
         lifePillarTranslation.setLifePillar(null);
+        return this;
+    }
+
+    public Set<SubLifePillar> getSubLifePillars() {
+        return this.subLifePillars;
+    }
+
+    public void setSubLifePillars(Set<SubLifePillar> subLifePillars) {
+        if (this.subLifePillars != null) {
+            this.subLifePillars.forEach(i -> i.setLifePillar(null));
+        }
+        if (subLifePillars != null) {
+            subLifePillars.forEach(i -> i.setLifePillar(this));
+        }
+        this.subLifePillars = subLifePillars;
+    }
+
+    public LifePillar subLifePillars(Set<SubLifePillar> subLifePillars) {
+        this.setSubLifePillars(subLifePillars);
+        return this;
+    }
+
+    public LifePillar addSubLifePillar(SubLifePillar subLifePillar) {
+        this.subLifePillars.add(subLifePillar);
+        subLifePillar.setLifePillar(this);
+        return this;
+    }
+
+    public LifePillar removeSubLifePillar(SubLifePillar subLifePillar) {
+        this.subLifePillars.remove(subLifePillar);
+        subLifePillar.setLifePillar(null);
         return this;
     }
 

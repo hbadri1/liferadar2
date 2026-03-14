@@ -1,7 +1,7 @@
 {
   "home": {
-    "title": "Welcome, Java Hipster!",
-    "subtitle": "This is your homepage",
+    "title": "Welcome to LifeRadar",
+    "subtitle": "Your Life Pillars",
     "logged": {
       "message": "You are logged in as user \"{{username}}\"."
     },

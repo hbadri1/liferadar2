@@ -8,9 +8,16 @@ import { createRequestOption } from 'app/core/request/request-util';
 import { ILifePillar, NewLifePillar } from '../life-pillar.model';
 
 export type PartialUpdateLifePillar = Partial<ILifePillar> & Pick<ILifePillar, 'id'>;
+export interface SuggestedLifePillarImportResult {
+  lifePillarsCreated: number;
+  subLifePillarsCreated: number;
+  subLifePillarItemsCreated: number;
+  translationsCreated: number;
+}
 
 export type EntityResponseType = HttpResponse<ILifePillar>;
 export type EntityArrayResponseType = HttpResponse<ILifePillar[]>;
+export type SuggestedImportResponseType = HttpResponse<SuggestedLifePillarImportResult>;
 
 @Injectable({ providedIn: 'root' })
 export class LifePillarService {
@@ -35,8 +42,9 @@ export class LifePillarService {
     });
   }
 
-  find(id: number): Observable<EntityResponseType> {
-    return this.http.get<ILifePillar>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  find(id: number, req?: any): Observable<EntityResponseType> {
+    const options = createRequestOption(req);
+    return this.http.get<ILifePillar>(`${this.resourceUrl}/${id}`, { params: options, observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -46,6 +54,10 @@ export class LifePillarService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  loadSuggested(): Observable<SuggestedImportResponseType> {
+    return this.http.post<SuggestedLifePillarImportResult>(`${this.resourceUrl}/load-suggested`, {}, { observe: 'response' });
   }
 
   getLifePillarIdentifier(lifePillar: Pick<ILifePillar, 'id'>): number {

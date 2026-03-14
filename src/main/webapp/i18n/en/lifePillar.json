@@ -6,7 +6,8 @@
         "refreshListLabel": "Refresh list",
         "createLabel": "Create a new Life Pillar",
         "createOrEditLabel": "Create or edit a Life Pillar",
-        "notFound": "No Life Pillars found"
+        "notFound": "No Life Pillars found",
+        "createFirst": "Create your first Life Pillar to get started!"
       },
       "created": "A new Life Pillar is created with identifier {{ param }}",
       "updated": "A Life Pillar is updated with identifier {{ param }}",
@@ -21,7 +22,9 @@
       "code": "Code",
       "isActive": "Is Active",
       "translations": "Translations",
-      "owner": "Owner"
+      "owner": "Owner",
+      "noDescription": "No description available",
+      "viewSubPillars": "View Sub-Pillars"
     }
   }
 }

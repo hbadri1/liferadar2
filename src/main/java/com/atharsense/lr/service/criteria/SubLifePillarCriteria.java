@@ -32,6 +32,8 @@ public class SubLifePillarCriteria implements Serializable, Criteria {
 
     private LongFilter ownerId;
 
+    private LongFilter lifePillarId;
+
     private Boolean distinct;
 
     public SubLifePillarCriteria() {}
@@ -42,6 +44,7 @@ public class SubLifePillarCriteria implements Serializable, Criteria {
         this.isActive = other.optionalIsActive().map(BooleanFilter::copy).orElse(null);
         this.translationsId = other.optionalTranslationsId().map(LongFilter::copy).orElse(null);
         this.ownerId = other.optionalOwnerId().map(LongFilter::copy).orElse(null);
+        this.lifePillarId = other.optionalLifePillarId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -145,6 +148,25 @@ public class SubLifePillarCriteria implements Serializable, Criteria {
         this.ownerId = ownerId;
     }
 
+    public LongFilter getLifePillarId() {
+        return lifePillarId;
+    }
+
+    public Optional<LongFilter> optionalLifePillarId() {
+        return Optional.ofNullable(lifePillarId);
+    }
+
+    public LongFilter lifePillarId() {
+        if (lifePillarId == null) {
+            setLifePillarId(new LongFilter());
+        }
+        return lifePillarId;
+    }
+
+    public void setLifePillarId(LongFilter lifePillarId) {
+        this.lifePillarId = lifePillarId;
+    }
+
     public Boolean getDistinct() {
         return distinct;
     }
@@ -179,13 +201,14 @@ public class SubLifePillarCriteria implements Serializable, Criteria {
             Objects.equals(isActive, that.isActive) &&
             Objects.equals(translationsId, that.translationsId) &&
             Objects.equals(ownerId, that.ownerId) &&
+            Objects.equals(lifePillarId, that.lifePillarId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, code, isActive, translationsId, ownerId, distinct);
+        return Objects.hash(id, code, isActive, translationsId, ownerId, lifePillarId, distinct);
     }
 
     // prettier-ignore
@@ -197,6 +220,7 @@ public class SubLifePillarCriteria implements Serializable, Criteria {
             optionalIsActive().map(f -> "isActive=" + f + ", ").orElse("") +
             optionalTranslationsId().map(f -> "translationsId=" + f + ", ").orElse("") +
             optionalOwnerId().map(f -> "ownerId=" + f + ", ").orElse("") +
+            optionalLifePillarId().map(f -> "lifePillarId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

@@ -27,6 +27,12 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="20260218143716-2" author="jhipster">
+        <addColumn tableName="sub_life_pillar">
+            <column name="life_pillar_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--

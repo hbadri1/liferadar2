@@ -1,7 +1,12 @@
 package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.EvaluationDecision;
+import com.atharsense.lr.domain.ExtendedUser;
+import com.atharsense.lr.domain.User;
 import com.atharsense.lr.repository.EvaluationDecisionRepository;
+import com.atharsense.lr.repository.UserRepository;
+import com.atharsense.lr.repository.ExtendedUserRepository;
+import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.EvaluationDecisionQueryService;
 import com.atharsense.lr.service.EvaluationDecisionService;
 import com.atharsense.lr.service.criteria.EvaluationDecisionCriteria;
@@ -41,14 +46,22 @@ public class EvaluationDecisionResource {
 
     private final EvaluationDecisionQueryService evaluationDecisionQueryService;
 
+    private final UserRepository userRepository;
+
+    private final ExtendedUserRepository extendedUserRepository;
+
     public EvaluationDecisionResource(
         EvaluationDecisionService evaluationDecisionService,
         EvaluationDecisionRepository evaluationDecisionRepository,
-        EvaluationDecisionQueryService evaluationDecisionQueryService
+        EvaluationDecisionQueryService evaluationDecisionQueryService,
+        UserRepository userRepository,
+        ExtendedUserRepository extendedUserRepository
     ) {
         this.evaluationDecisionService = evaluationDecisionService;
         this.evaluationDecisionRepository = evaluationDecisionRepository;
         this.evaluationDecisionQueryService = evaluationDecisionQueryService;
+        this.userRepository = userRepository;
+        this.extendedUserRepository = extendedUserRepository;
     }
 
     /**
@@ -65,10 +78,35 @@ public class EvaluationDecisionResource {
         if (evaluationDecision.getId() != null) {
             throw new BadRequestAlertException("A new evaluationDecision cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Automatically set the current user as owner
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("User not authenticated", ENTITY_NAME, "notauthenticated"));
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
+
+        // Get or create ExtendedUser if it doesn't exist
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+            .orElseGet(() -> {
+                ExtendedUser newExtendedUser = new ExtendedUser();
+                newExtendedUser.setUser(currentUser);
+                newExtendedUser.setFullName(buildFullName(currentUser));
+                newExtendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(newExtendedUser);
+            });
+        evaluationDecision.setOwner(extendedUser);
+
         evaluationDecision = evaluationDecisionService.save(evaluationDecision);
         return ResponseEntity.created(new URI("/api/evaluation-decisions/" + evaluationDecision.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, evaluationDecision.getId().toString()))
             .body(evaluationDecision);
+    }
+
+    private String buildFullName(User user) {
+        String firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
+        String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
+        String fullName = (firstName + " " + lastName).trim();
+        return fullName.isEmpty() ? user.getLogin() : fullName;
     }
 
     /**
@@ -96,6 +134,13 @@ public class EvaluationDecisionResource {
 
         if (!evaluationDecisionRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        // Preserve the owner if not provided in the request
+        if (evaluationDecision.getOwner() == null) {
+            EvaluationDecision existingDecision = evaluationDecisionRepository.findById(id)
+                .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+            evaluationDecision.setOwner(existingDecision.getOwner());
         }
 
         evaluationDecision = evaluationDecisionService.update(evaluationDecision);

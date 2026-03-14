@@ -45,6 +45,30 @@ public class SubLifePillarItemQueryService extends QueryService<SubLifePillarIte
         return subLifePillarItemRepository.findAll(specification, page);
     }
 
+
+
+    /**
+     * Return a {@link Page} of {@link SubLifePillarItem} with eager loaded relationships which matches the criteria from the database.
+     * @param criteria The object which holds all the filters, which the entities should match.
+     * @param page The page, which should be returned.
+     * @return the matching entities with eager loaded relationships.
+     */
+    @Transactional(readOnly = true)
+    public Page<SubLifePillarItem> findByCriteriaWithEagerRelationships(SubLifePillarItemCriteria criteria, Pageable page) {
+        LOG.debug("find by criteria with eager relationships : {}, page: {}", criteria, page);
+        final Specification<SubLifePillarItem> specification = createSpecification(criteria);
+        Page<SubLifePillarItem> result = subLifePillarItemRepository.findAll(specification, page);
+
+        // Initialize lazy collections within transaction
+        result.getContent().forEach(item -> {
+            if (item.getTranslations() != null) {
+                item.getTranslations().size();
+            }
+        });
+
+        return result;
+    }
+
     /**
      * Return the number of matching entities in the database.
      * @param criteria The object which holds all the filters, which the entities should match.
@@ -75,7 +99,8 @@ public class SubLifePillarItemQueryService extends QueryService<SubLifePillarIte
                 buildSpecification(criteria.getTranslationsId(), root ->
                     root.join(SubLifePillarItem_.translations, JoinType.LEFT).get(SubLifePillarItemTranslation_.id)
                 ),
-                buildSpecification(criteria.getOwnerId(), root -> root.join(SubLifePillarItem_.owner, JoinType.LEFT).get(ExtendedUser_.id))
+                buildSpecification(criteria.getOwnerId(), root -> root.join(SubLifePillarItem_.owner, JoinType.LEFT).get(ExtendedUser_.id)),
+                buildSpecification(criteria.getSubLifePillarId(), root -> root.join(SubLifePillarItem_.subLifePillar, JoinType.LEFT).get(SubLifePillar_.id))
             );
         }
         return specification;
