@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.service.QueryService;
 
+
 /**
  * Service for executing complex queries for {@link LifePillar} entities in the database.
  * The main input is a {@link LifePillarCriteria} which gets converted to {@link Specification},
@@ -42,7 +43,12 @@ public class LifePillarQueryService extends QueryService<LifePillar> {
     public Page<LifePillar> findByCriteria(LifePillarCriteria criteria, Pageable page) {
         LOG.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<LifePillar> specification = createSpecification(criteria);
-        return lifePillarRepository.findAll(specification, page);
+        Page<LifePillar> result = lifePillarRepository.findAll(specification, page);
+
+        // Eagerly load translations to avoid N+1 queries
+        result.getContent().forEach(pillar -> pillar.getTranslations().size());
+
+        return result;
     }
 
     /**

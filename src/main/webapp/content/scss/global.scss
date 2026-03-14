@@ -207,4 +207,19 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
     }
   }
 }
+
+/* Compact LifeEvaluation modal (about 25% smaller than lg) */
+.compact-evaluation-modal .modal-dialog {
+  max-width: 600px;
+}
+
+.compact-evaluation-modal .modal-body {
+  padding: 0.9rem 1rem;
+}
+
+.compact-evaluation-modal .modal-header,
+.compact-evaluation-modal .modal-footer {
+  padding: 0.7rem 1rem;
+}
+
 /* jhipster-needle-scss-add-main JHipster will add new css style */

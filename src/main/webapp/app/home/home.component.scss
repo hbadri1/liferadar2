@@ -21,3 +21,130 @@ Main page styles
     background-size: contain;
   }
 }
+
+/* Life Pillar Cards Styling */
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: 12px;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  &.card-expanded {
+    border-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2) !important;
+  }
+}
+
+.card-title {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.card-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.075);
+}
+
+.btn-group-sm > .btn {
+  padding: 0.25rem 0.5rem;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+label.fw-bold {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+// Show More/Less button styling
+.btn-outline-info, .btn-outline-secondary {
+  transition: all 0.3s ease;
+
+  fa-icon {
+    transition: transform 0.3s ease;
+  }
+}
+
+// Sub-Pillars Container
+.sub-pillars-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+
+    &:hover {
+      background: #555;
+    }
+  }
+}
+
+// Sub-Pillar Card
+.sub-pillar-card {
+  background-color: #f8f9fa;
+  border-left: 3px solid #28a745;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #e9ecef;
+    border-left-color: #20c997;
+    transform: translateX(3px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-body {
+    background-color: transparent;
+  }
+
+  .card-subtitle {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+}
+
+// Loading spinner for sub-pillars
+.spinner-border-sm {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+// Small button variants for table actions
+.btn-xs {
+  padding: 0.25rem 0.4rem;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+// RTL tweaks: ensure action cells align to the visual left when in RTL
+:host-context([dir='rtl']) .text-end {
+  text-align: left !important;
+}

@@ -2,8 +2,10 @@ package com.atharsense.lr.service;
 
 import com.atharsense.lr.config.Constants;
 import com.atharsense.lr.domain.Authority;
+import com.atharsense.lr.domain.ExtendedUser;
 import com.atharsense.lr.domain.User;
 import com.atharsense.lr.repository.AuthorityRepository;
+import com.atharsense.lr.repository.ExtendedUserRepository;
 import com.atharsense.lr.repository.UserRepository;
 import com.atharsense.lr.security.AuthoritiesConstants;
 import com.atharsense.lr.security.SecurityUtils;
@@ -38,10 +40,18 @@ public class UserService {
 
     private final AuthorityRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
+    private final ExtendedUserRepository extendedUserRepository;
+
+    public UserService(
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder,
+        AuthorityRepository authorityRepository,
+        ExtendedUserRepository extendedUserRepository
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
+        this.extendedUserRepository = extendedUserRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -110,14 +120,15 @@ public class UserService {
         }
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
-        // new user is not active
-        newUser.setActivated(false);
-        // new user gets registration key
-        newUser.setActivationKey(RandomUtil.generateActivationKey());
+        // new user is activated automatically for self-registration
+        newUser.setActivated(true);
+        // no activation key needed for auto-activated users
+        newUser.setActivationKey(null);
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
+        ensureExtendedUser(newUser, userDTO);
         LOG.debug("Created Information for User: {}", newUser);
         return newUser;
     }
@@ -161,8 +172,27 @@ public class UserService {
             user.setAuthorities(authorities);
         }
         userRepository.save(user);
+        ensureExtendedUser(user, userDTO);
         LOG.debug("Created Information for User: {}", user);
         return user;
+    }
+
+    private void ensureExtendedUser(User user, AdminUserDTO userDTO) {
+        if (user.getId() == null || extendedUserRepository.findOneByUserId(user.getId()).isPresent()) {
+            return;
+        }
+        ExtendedUser extendedUser = new ExtendedUser();
+        extendedUser.setUser(user);
+        extendedUser.setFullName(buildFullName(userDTO, user));
+        extendedUser.setActive(user.isActivated());
+        extendedUserRepository.save(extendedUser);
+    }
+
+    private String buildFullName(AdminUserDTO userDTO, User user) {
+        String firstName = userDTO.getFirstName() != null ? userDTO.getFirstName().trim() : "";
+        String lastName = userDTO.getLastName() != null ? userDTO.getLastName().trim() : "";
+        String fullName = (firstName + " " + lastName).trim();
+        return fullName.isEmpty() ? user.getLogin() : fullName;
     }
 
     /**

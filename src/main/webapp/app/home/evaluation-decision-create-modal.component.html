@@ -1,0 +1,25 @@
+<div class="modal-header">
+  <h4 class="modal-title" jhiTranslate="liferadarApp.evaluationDecision.home.createLabel">Create new Evaluation Decision</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  <jhi-alert-error />
+
+  <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <div class="mb-3">
+      <label class="form-label" for="field_decision" jhiTranslate="liferadarApp.evaluationDecision.decision">Decision</label>
+      <textarea class="form-control" id="field_decision" data-cy="decision" formControlName="decision" rows="4"></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+      </button>
+
+      <button type="submit" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+        <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+      </button>
+    </div>
+  </form>
+</div>

@@ -20,7 +20,6 @@ type LifePillarFormGroupContent = {
   id: FormControl<ILifePillar['id'] | NewLifePillar['id']>;
   code: FormControl<ILifePillar['code']>;
   isActive: FormControl<ILifePillar['isActive']>;
-  owner: FormControl<ILifePillar['owner']>;
 };
 
 export type LifePillarFormGroup = FormGroup<LifePillarFormGroupContent>;
@@ -44,9 +43,6 @@ export class LifePillarFormService {
         validators: [Validators.required, Validators.maxLength(50)],
       }),
       isActive: new FormControl(lifePillarRawValue.isActive, {
-        validators: [Validators.required],
-      }),
-      owner: new FormControl(lifePillarRawValue.owner, {
         validators: [Validators.required],
       }),
     });

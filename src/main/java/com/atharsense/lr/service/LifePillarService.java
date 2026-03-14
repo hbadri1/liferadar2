@@ -46,6 +46,24 @@ public class LifePillarService {
     }
 
     /**
+     * Find a lifePillar with translations and subLifePillars eagerly loaded.
+     *
+     * @param id the id of the entity.
+     * @return the entity with relationships loaded.
+     */
+    @Transactional(readOnly = true)
+    public Optional<LifePillar> findOneWithTranslations(Long id) {
+        LOG.debug("Request to get LifePillar with relationships : {}", id);
+        return lifePillarRepository.findById(id).map(pillar -> {
+            // Initialize translations within transaction
+            pillar.getTranslations().size();
+            // Initialize subLifePillars within transaction
+            pillar.getSubLifePillars().size();
+            return pillar;
+        });
+    }
+
+    /**
      * Partially update a lifePillar.
      *
      * @param lifePillar the entity to update partially.

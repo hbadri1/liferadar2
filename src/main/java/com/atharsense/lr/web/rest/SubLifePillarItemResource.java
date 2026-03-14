@@ -1,7 +1,12 @@
 package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.SubLifePillarItem;
+import com.atharsense.lr.domain.ExtendedUser;
+import com.atharsense.lr.domain.User;
 import com.atharsense.lr.repository.SubLifePillarItemRepository;
+import com.atharsense.lr.repository.UserRepository;
+import com.atharsense.lr.repository.ExtendedUserRepository;
+import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.SubLifePillarItemQueryService;
 import com.atharsense.lr.service.SubLifePillarItemService;
 import com.atharsense.lr.service.criteria.SubLifePillarItemCriteria;
@@ -46,14 +51,22 @@ public class SubLifePillarItemResource {
 
     private final SubLifePillarItemQueryService subLifePillarItemQueryService;
 
+    private final UserRepository userRepository;
+
+    private final ExtendedUserRepository extendedUserRepository;
+
     public SubLifePillarItemResource(
         SubLifePillarItemService subLifePillarItemService,
         SubLifePillarItemRepository subLifePillarItemRepository,
-        SubLifePillarItemQueryService subLifePillarItemQueryService
+        SubLifePillarItemQueryService subLifePillarItemQueryService,
+        UserRepository userRepository,
+        ExtendedUserRepository extendedUserRepository
     ) {
         this.subLifePillarItemService = subLifePillarItemService;
         this.subLifePillarItemRepository = subLifePillarItemRepository;
         this.subLifePillarItemQueryService = subLifePillarItemQueryService;
+        this.userRepository = userRepository;
+        this.extendedUserRepository = extendedUserRepository;
     }
 
     /**
@@ -70,10 +83,35 @@ public class SubLifePillarItemResource {
         if (subLifePillarItem.getId() != null) {
             throw new BadRequestAlertException("A new subLifePillarItem cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Automatically set the current user as owner
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("User not authenticated", ENTITY_NAME, "notauthenticated"));
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
+
+        // Get or create ExtendedUser if it doesn't exist
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+            .orElseGet(() -> {
+                ExtendedUser newExtendedUser = new ExtendedUser();
+                newExtendedUser.setUser(currentUser);
+                newExtendedUser.setFullName(buildFullName(currentUser));
+                newExtendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(newExtendedUser);
+            });
+        subLifePillarItem.setOwner(extendedUser);
+
         subLifePillarItem = subLifePillarItemService.save(subLifePillarItem);
         return ResponseEntity.created(new URI("/api/sub-life-pillar-items/" + subLifePillarItem.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, subLifePillarItem.getId().toString()))
             .body(subLifePillarItem);
+    }
+
+    private String buildFullName(User user) {
+        String firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
+        String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
+        String fullName = (firstName + " " + lastName).trim();
+        return fullName.isEmpty() ? user.getLogin() : fullName;
     }
 
     /**
@@ -101,6 +139,25 @@ public class SubLifePillarItemResource {
 
         if (!subLifePillarItemRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        // Preserve the owner, translations, and evaluations if not provided in the request
+        if (subLifePillarItem.getOwner() == null || subLifePillarItem.getTranslations() == null || subLifePillarItem.getTranslations().isEmpty()) {
+            SubLifePillarItem existingItem = subLifePillarItemService.findOneWithTranslations(id)
+                .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+
+            if (subLifePillarItem.getOwner() == null) {
+                subLifePillarItem.setOwner(existingItem.getOwner());
+            }
+
+            if (subLifePillarItem.getTranslations() == null || subLifePillarItem.getTranslations().isEmpty()) {
+                subLifePillarItem.setTranslations(existingItem.getTranslations());
+            }
+
+            // Preserve evaluations to prevent orphan removal
+            if (subLifePillarItem.getEvaluations() == null || subLifePillarItem.getEvaluations().isEmpty()) {
+                subLifePillarItem.setEvaluations(existingItem.getEvaluations());
+            }
         }
 
         subLifePillarItem = subLifePillarItemService.update(subLifePillarItem);
@@ -150,16 +207,21 @@ public class SubLifePillarItemResource {
      *
      * @param pageable the pagination information.
      * @param criteria the criteria which the requested entities should match.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of subLifePillarItems in body.
      */
     @GetMapping("")
     public ResponseEntity<List<SubLifePillarItem>> getAllSubLifePillarItems(
         SubLifePillarItemCriteria criteria,
-        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(value = "eagerload", required = false, defaultValue = "false") boolean eagerload
     ) {
         LOG.debug("REST request to get SubLifePillarItems by criteria: {}", criteria);
 
-        Page<SubLifePillarItem> page = subLifePillarItemQueryService.findByCriteria(criteria, pageable);
+        Page<SubLifePillarItem> page = eagerload
+            ? subLifePillarItemQueryService.findByCriteriaWithEagerRelationships(criteria, pageable)
+            : subLifePillarItemQueryService.findByCriteria(criteria, pageable);
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -180,12 +242,18 @@ public class SubLifePillarItemResource {
      * {@code GET  /sub-life-pillar-items/:id} : get the "id" subLifePillarItem.
      *
      * @param id the id of the subLifePillarItem to retrieve.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the subLifePillarItem, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SubLifePillarItem> getSubLifePillarItem(@PathVariable("id") Long id) {
+    public ResponseEntity<SubLifePillarItem> getSubLifePillarItem(
+        @PathVariable("id") Long id,
+        @RequestParam(value = "eagerload", required = false, defaultValue = "false") boolean eagerload
+    ) {
         LOG.debug("REST request to get SubLifePillarItem : {}", id);
-        Optional<SubLifePillarItem> subLifePillarItem = subLifePillarItemService.findOne(id);
+        Optional<SubLifePillarItem> subLifePillarItem = eagerload
+            ? subLifePillarItemService.findOneWithTranslations(id)
+            : subLifePillarItemService.findOne(id);
         return ResponseUtil.wrapOrNotFound(subLifePillarItem);
     }
 

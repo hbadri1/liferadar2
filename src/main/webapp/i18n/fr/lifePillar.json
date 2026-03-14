@@ -2,26 +2,29 @@
   "liferadarApp": {
     "lifePillar": {
       "home": {
-        "title": "LifePillars",
+        "title": "Piliers de Vie",
         "refreshListLabel": "Actualiser la liste",
-        "createLabel": "Créer un nouveau Life Pillar",
-        "createOrEditLabel": "Créer ou éditer un Life Pillar",
-        "notFound": "Aucun Life Pillar trouvé"
+        "createLabel": "Créer un nouveau Pilier de Vie",
+        "createOrEditLabel": "Créer ou éditer un Pilier de Vie",
+        "notFound": "Aucun Pilier de Vie trouvé",
+        "createFirst": "Créez votre premier Pilier de Vie pour commencer!"
       },
-      "created": "Un nouveau Life Pillar a été créé avec l'identifiant {{ param }}",
-      "updated": "Le Life Pillar avec l'identifiant {{ param }} a été mis à jour",
-      "deleted": "Le Life Pillar avec l'identifiant {{ param }} a été supprimé",
+      "created": "Un nouveau Pilier de Vie a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Pilier de Vie avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Pilier de Vie avec l'identifiant {{ param }} a été supprimé",
       "delete": {
-        "question": "Êtes-vous certain de vouloir supprimer le Life Pillar {{ id }} ?"
+        "question": "Êtes-vous certain de vouloir supprimer le Pilier de Vie {{ id }} ?"
       },
       "detail": {
-        "title": "Life Pillar"
+        "title": "Pilier de Vie"
       },
       "id": "ID",
       "code": "Code",
-      "isActive": "Is Active",
-      "translations": "Translations",
-      "owner": "Owner"
+      "isActive": "Est Actif",
+      "translations": "Traductions",
+      "owner": "Propriétaire",
+      "noDescription": "Aucune description disponible",
+      "viewSubPillars": "Voir les Sous-Piliers"
     }
   }
 }
