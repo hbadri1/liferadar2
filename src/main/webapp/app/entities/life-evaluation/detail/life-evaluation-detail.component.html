@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-center">
+﻿<div class="d-flex justify-content-center">
   <div class="col-8">
     @if (lifeEvaluation(); as lifeEvaluationRef) {
       <div>
@@ -43,12 +43,12 @@
               </div>
             }
           </dd>
-          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.subLifePillarItem">Sub Life Pillar Item</span></dt>
+          <dt><span jhiTranslate="liferadarApp.lifeEvaluation.subPillarItem">Sub Life Pillar Item</span></dt>
           <dd>
-            @if (lifeEvaluation()!.subLifePillarItem) {
+            @if (lifeEvaluation()!.subPillarItem) {
               <div>
-                <a [routerLink]="['/sub-life-pillar-item', lifeEvaluation()!.subLifePillarItem?.id, 'view']">{{
-                  lifeEvaluationRef.subLifePillarItem?.id
+                <a [routerLink]="['/sub-pillar-item', lifeEvaluation()!.subPillarItem?.id, 'view']">{{
+                  lifeEvaluationRef.subPillarItem?.id
                 }}</a>
               </div>
             }

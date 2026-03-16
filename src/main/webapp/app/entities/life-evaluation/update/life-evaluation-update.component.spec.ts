@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -6,8 +6,8 @@ import { Subject, from, of } from 'rxjs';
 
 import { IExtendedUser } from 'app/entities/extended-user/extended-user.model';
 import { ExtendedUserService } from 'app/entities/extended-user/service/extended-user.service';
-import { ISubLifePillarItem } from 'app/entities/sub-life-pillar-item/sub-life-pillar-item.model';
-import { SubLifePillarItemService } from 'app/entities/sub-life-pillar-item/service/sub-life-pillar-item.service';
+import { ISubPillarItem } from 'app/entities/sub-pillar-item/sub-pillar-item.model';
+import { SubPillarItemService } from 'app/entities/sub-pillar-item/service/sub-pillar-item.service';
 import { ILifeEvaluation } from '../life-evaluation.model';
 import { LifeEvaluationService } from '../service/life-evaluation.service';
 import { LifeEvaluationFormService } from './life-evaluation-form.service';
@@ -21,7 +21,7 @@ describe('LifeEvaluation Management Update Component', () => {
   let lifeEvaluationFormService: LifeEvaluationFormService;
   let lifeEvaluationService: LifeEvaluationService;
   let extendedUserService: ExtendedUserService;
-  let subLifePillarItemService: SubLifePillarItemService;
+  let subPillarItemService: SubPillarItemService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -45,7 +45,7 @@ describe('LifeEvaluation Management Update Component', () => {
     lifeEvaluationFormService = TestBed.inject(LifeEvaluationFormService);
     lifeEvaluationService = TestBed.inject(LifeEvaluationService);
     extendedUserService = TestBed.inject(ExtendedUserService);
-    subLifePillarItemService = TestBed.inject(SubLifePillarItemService);
+    subPillarItemService = TestBed.inject(SubPillarItemService);
 
     comp = fixture.componentInstance;
   });
@@ -73,40 +73,40 @@ describe('LifeEvaluation Management Update Component', () => {
       expect(comp.extendedUsersSharedCollection).toEqual(expectedCollection);
     });
 
-    it('should call SubLifePillarItem query and add missing value', () => {
+    it('should call SubPillarItem query and add missing value', () => {
       const lifeEvaluation: ILifeEvaluation = { id: 27366 };
-      const subLifePillarItem: ISubLifePillarItem = { id: 7992 };
-      lifeEvaluation.subLifePillarItem = subLifePillarItem;
+      const subPillarItem: ISubPillarItem = { id: 7992 };
+      lifeEvaluation.subPillarItem = subPillarItem;
 
-      const subLifePillarItemCollection: ISubLifePillarItem[] = [{ id: 7992 }];
-      jest.spyOn(subLifePillarItemService, 'query').mockReturnValue(of(new HttpResponse({ body: subLifePillarItemCollection })));
-      const additionalSubLifePillarItems = [subLifePillarItem];
-      const expectedCollection: ISubLifePillarItem[] = [...additionalSubLifePillarItems, ...subLifePillarItemCollection];
-      jest.spyOn(subLifePillarItemService, 'addSubLifePillarItemToCollectionIfMissing').mockReturnValue(expectedCollection);
+      const subPillarItemCollection: ISubPillarItem[] = [{ id: 7992 }];
+      jest.spyOn(subPillarItemService, 'query').mockReturnValue(of(new HttpResponse({ body: subPillarItemCollection })));
+      const additionalSubPillarItems = [subPillarItem];
+      const expectedCollection: ISubPillarItem[] = [...additionalSubPillarItems, ...subPillarItemCollection];
+      jest.spyOn(subPillarItemService, 'addSubPillarItemToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ lifeEvaluation });
       comp.ngOnInit();
 
-      expect(subLifePillarItemService.query).toHaveBeenCalled();
-      expect(subLifePillarItemService.addSubLifePillarItemToCollectionIfMissing).toHaveBeenCalledWith(
-        subLifePillarItemCollection,
-        ...additionalSubLifePillarItems.map(expect.objectContaining),
+      expect(subPillarItemService.query).toHaveBeenCalled();
+      expect(subPillarItemService.addSubPillarItemToCollectionIfMissing).toHaveBeenCalledWith(
+        subPillarItemCollection,
+        ...additionalSubPillarItems.map(expect.objectContaining),
       );
-      expect(comp.subLifePillarItemsSharedCollection).toEqual(expectedCollection);
+      expect(comp.subPillarItemsSharedCollection).toEqual(expectedCollection);
     });
 
     it('should update editForm', () => {
       const lifeEvaluation: ILifeEvaluation = { id: 27366 };
       const owner: IExtendedUser = { id: 26328 };
       lifeEvaluation.owner = owner;
-      const subLifePillarItem: ISubLifePillarItem = { id: 7992 };
-      lifeEvaluation.subLifePillarItem = subLifePillarItem;
+      const subPillarItem: ISubPillarItem = { id: 7992 };
+      lifeEvaluation.subPillarItem = subPillarItem;
 
       activatedRoute.data = of({ lifeEvaluation });
       comp.ngOnInit();
 
       expect(comp.extendedUsersSharedCollection).toContainEqual(owner);
-      expect(comp.subLifePillarItemsSharedCollection).toContainEqual(subLifePillarItem);
+      expect(comp.subPillarItemsSharedCollection).toContainEqual(subPillarItem);
       expect(comp.lifeEvaluation).toEqual(lifeEvaluation);
     });
   });
@@ -190,13 +190,13 @@ describe('LifeEvaluation Management Update Component', () => {
       });
     });
 
-    describe('compareSubLifePillarItem', () => {
-      it('should forward to subLifePillarItemService', () => {
+    describe('compareSubPillarItem', () => {
+      it('should forward to subPillarItemService', () => {
         const entity = { id: 7992 };
         const entity2 = { id: 25568 };
-        jest.spyOn(subLifePillarItemService, 'compareSubLifePillarItem');
-        comp.compareSubLifePillarItem(entity, entity2);
-        expect(subLifePillarItemService.compareSubLifePillarItem).toHaveBeenCalledWith(entity, entity2);
+        jest.spyOn(subPillarItemService, 'compareSubPillarItem');
+        comp.compareSubPillarItem(entity, entity2);
+        expect(subPillarItemService.compareSubPillarItem).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

@@ -22,34 +22,11 @@ Main page styles
   }
 }
 
-/* Life Pillar Cards Styling */
-.card {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  border-radius: 12px;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
-  }
-
-  &.card-expanded {
-    border-color: #0d6efd;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2) !important;
-  }
-}
-
-.card-title {
-  color: #2c3e50;
-  font-weight: 600;
-  font-size: 1.25rem;
-}
-
-.card-footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.075);
-}
-
-.btn-group-sm > .btn {
-  padding: 0.25rem 0.5rem;
+// Small button variant
+.btn-xs {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
 .spinner-border {
@@ -57,94 +34,154 @@ Main page styles
   height: 3rem;
 }
 
-.shadow-sm {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-label.fw-bold {
+// ── Tree View ───────────────────────────────────────────────────
+.tree-container {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
   font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.25rem;
 }
 
-// Show More/Less button styling
-.btn-outline-info, .btn-outline-secondary {
-  transition: all 0.3s ease;
-
-  fa-icon {
-    transition: transform 0.3s ease;
-  }
-}
-
-// Sub-Pillars Container
-.sub-pillars-container {
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 5px;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 3px;
-
-    &:hover {
-      background: #555;
-    }
+// Pillar (level 0)
+.tree-level-0 {
+  > .tree-row {
+    background: linear-gradient(90deg, #eef2ff, #f8f9fa);
+    border-left: 3px solid #4f46e5;
+    border-radius: 4px;
+    padding: 0.3rem 0.5rem;
+    margin-bottom: 2px;
   }
 }
 
-// Sub-Pillar Card
-.sub-pillar-card {
-  background-color: #f8f9fa;
-  border-left: 3px solid #28a745;
-  transition: all 0.2s ease-in-out;
+// Sub-Pillar (level 1)
+.tree-level-1 {
+  > .tree-row {
+    background: #f6fdf7;
+    border-left: 2px solid #22c55e;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 2px;
+  }
+}
+
+// Generic row hover
+.tree-row {
+  transition: background-color 0.15s;
+  &:hover {
+    filter: brightness(0.97);
+  }
+}
+
+// Leaf items
+.tree-leaf {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+}
+
+// Indented children container
+.tree-children {
+  border-left: 1px dashed #ced4da;
+  margin-left: 1.1rem;
+  padding-left: 0.6rem;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+// Expand / Collapse (+/-) button
+.tree-expand-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  background: #fff;
+  color: #6c757d;
+  flex-shrink: 0;
+  font-size: 0.6rem;
+
+  &.expanded {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+  }
 
   &:hover {
-    background-color: #e9ecef;
-    border-left-color: #20c997;
-    transform: translateX(3px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .card-body {
-    background-color: transparent;
-  }
-
-  .card-subtitle {
-    color: #495057;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-
-  .badge {
-    font-size: 0.75rem;
-    font-weight: 500;
+    background: #e9ecef;
   }
 }
 
-// Loading spinner for sub-pillars
-.spinner-border-sm {
-  width: 1.5rem;
-  height: 1.5rem;
+.tree-label {
+  font-size: 0.875rem;
+  min-width: 0;
 }
 
-// Small button variants for table actions
-.btn-xs {
-  padding: 0.25rem 0.4rem;
-  font-size: 0.7rem;
-  line-height: 1;
+// Bold black name for Pillars, Sub-Pillars and Items
+.tree-name {
+  font-weight: 700;
+  color: #000;
+  font-size: 0.875rem;
+
+  // Slightly smaller variant for leaf items
+  &--item {
+    font-size: 0.82rem;
+  }
 }
 
-// RTL tweaks: ensure action cells align to the visual left when in RTL
+// Grey, smaller description text
+.tree-desc {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  flex-shrink: 1;
+}
+
+.tree-text-pair {
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.tree-leaf-bullet {
+  width: 20px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.tree-empty {
+  padding: 0.2rem 0.4rem;
+  font-style: italic;
+  color: #adb5bd;
+}
+
+.tree-actions {
+  flex-shrink: 0;
+}
+
+// RTL tweaks
 :host-context([dir='rtl']) .text-end {
   text-align: left !important;
+}
+
+:host-context([dir='rtl']) .tree-level-0 > .tree-row {
+  border-left: none;
+  border-right: 3px solid #4f46e5;
+}
+
+:host-context([dir='rtl']) .tree-level-1 > .tree-row {
+  border-left: none;
+  border-right: 2px solid #22c55e;
+}
+
+:host-context([dir='rtl']) .tree-children {
+  border-left: none;
+  border-right: 1px dashed #ced4da;
+  margin-left: 0;
+  margin-right: 1.1rem;
+  padding-left: 0;
+  padding-right: 0.6rem;
 }

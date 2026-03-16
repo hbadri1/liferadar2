@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 
 const routes: Routes = [
   {
@@ -12,34 +12,34 @@ const routes: Routes = [
     loadChildren: () => import('./extended-user/extended-user.routes'),
   },
   {
-    path: 'life-pillar',
-    data: { pageTitle: 'liferadarApp.lifePillar.home.title' },
-    loadChildren: () => import('./life-pillar/life-pillar.routes'),
+    path: 'pillar',
+    data: { pageTitle: 'liferadarApp.pillar.home.title' },
+    loadChildren: () => import('./pillar/pillar.routes'),
   },
   {
-    path: 'life-pillar-translation',
-    data: { pageTitle: 'liferadarApp.lifePillarTranslation.home.title' },
-    loadChildren: () => import('./life-pillar-translation/life-pillar-translation.routes'),
+    path: 'pillar-translation',
+    data: { pageTitle: 'liferadarApp.pillarTranslation.home.title' },
+    loadChildren: () => import('./pillar-translation/pillar-translation.routes'),
   },
   {
-    path: 'sub-life-pillar',
-    data: { pageTitle: 'liferadarApp.subLifePillar.home.title' },
-    loadChildren: () => import('./sub-life-pillar/sub-life-pillar.routes'),
+    path: 'sub-pillar',
+    data: { pageTitle: 'liferadarApp.subPillar.home.title' },
+    loadChildren: () => import('./sub-pillar/sub-pillar.routes'),
   },
   {
-    path: 'sub-life-pillar-translation',
-    data: { pageTitle: 'liferadarApp.subLifePillarTranslation.home.title' },
-    loadChildren: () => import('./sub-life-pillar-translation/sub-life-pillar-translation.routes'),
+    path: 'sub-pillar-translation',
+    data: { pageTitle: 'liferadarApp.subPillarTranslation.home.title' },
+    loadChildren: () => import('./sub-pillar-translation/sub-pillar-translation.routes'),
   },
   {
-    path: 'sub-life-pillar-item',
-    data: { pageTitle: 'liferadarApp.subLifePillarItem.home.title' },
-    loadChildren: () => import('./sub-life-pillar-item/sub-life-pillar-item.routes'),
+    path: 'sub-pillar-item',
+    data: { pageTitle: 'liferadarApp.subPillarItem.home.title' },
+    loadChildren: () => import('./sub-pillar-item/sub-pillar-item.routes'),
   },
   {
-    path: 'sub-life-pillar-item-translation',
-    data: { pageTitle: 'liferadarApp.subLifePillarItemTranslation.home.title' },
-    loadChildren: () => import('./sub-life-pillar-item-translation/sub-life-pillar-item-translation.routes'),
+    path: 'sub-pillar-item-translation',
+    data: { pageTitle: 'liferadarApp.subPillarItemTranslation.home.title' },
+    loadChildren: () => import('./sub-pillar-item-translation/sub-pillar-item-translation.routes'),
   },
   {
     path: 'life-evaluation',

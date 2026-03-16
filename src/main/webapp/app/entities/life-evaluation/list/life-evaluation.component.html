@@ -1,4 +1,4 @@
-<div>
+﻿<div>
   <h2 id="page-heading" data-cy="LifeEvaluationHeading">
     <span jhiTranslate="liferadarApp.lifeEvaluation.home.title">Life Evaluations</span>
 
@@ -83,9 +83,9 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="subLifePillarItem.id">
+            <th scope="col" jhiSortBy="subPillarItem.id">
               <div class="d-flex">
-                <span jhiTranslate="liferadarApp.lifeEvaluation.subLifePillarItem">Sub Life Pillar Item</span>
+                <span jhiTranslate="liferadarApp.lifeEvaluation.subPillarItem">Sub Life Pillar Item</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -111,10 +111,10 @@
                 }
               </td>
               <td>
-                @if (lifeEvaluation.subLifePillarItem) {
+                @if (lifeEvaluation.subPillarItem) {
                   <div>
-                    <a [routerLink]="['/sub-life-pillar-item', lifeEvaluation.subLifePillarItem.id, 'view']">{{
-                      lifeEvaluation.subLifePillarItem.id
+                    <a [routerLink]="['/sub-pillar-item', lifeEvaluation.subPillarItem.id, 'view']">{{
+                      lifeEvaluation.subPillarItem.id
                     }}</a>
                   </div>
                 }

@@ -1,20 +1,21 @@
-{
+﻿{
   "global": {
     "title": "Liferadar",
     "browsehappy": "أنت تستخدم متصفح <strong>قديم</strong> . من فضلك <a href=\"http://browsehappy.com/?locale=en\">قم بتحديث متصفحك</a> لتحسين تجربتك.",
     "menu": {
       "home": "الصفحة الرئيسية",
+      "actionItems": "بنود العمل",
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "الكيانات",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
         "extendedUser": "Extended User",
-        "lifePillar": "Life Pillar",
-        "lifePillarTranslation": "Life Pillar Translation",
-        "subLifePillar": "Sub Life Pillar",
-        "subLifePillarTranslation": "Sub Life Pillar Translation",
-        "subLifePillarItem": "Sub Life Pillar Item",
-        "subLifePillarItemTranslation": "Sub Life Pillar Item Translation",
+        "pillar": "Life Pillar",
+        "pillarTranslation": "Life Pillar Translation",
+        "subPillar": "Sub Life Pillar",
+        "subPillarTranslation": "Sub Life Pillar Translation",
+        "subPillarItem": "Sub Life Pillar Item",
+        "subPillarItemTranslation": "Sub Life Pillar Item Translation",
         "lifeEvaluation": "Life Evaluation",
         "evaluationDecision": "Evaluation Decision",
         "tripPlan": "Trip Plan",
@@ -153,5 +154,5 @@
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
     }
   },
-  "footer": "هنا يضع الفووتر"
+  "footer": "لايفرادار هو منتج لشركة أثرسنس."
 }

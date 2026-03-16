@@ -18,6 +18,13 @@ Navbar
 
 .navbar {
   padding: 0.2rem 1rem;
+  position: relative;
+  z-index: $zindex-sticky + 1;
+
+  .dropdown-menu {
+    z-index: $zindex-sticky + 2;
+  }
+
   .dropdown-item.active,
   .dropdown-item.active:focus,
   .dropdown-item.active:hover {
