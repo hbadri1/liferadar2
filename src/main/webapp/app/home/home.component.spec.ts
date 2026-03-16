@@ -1,4 +1,4 @@
-jest.mock('app/core/auth/account.service');
+﻿jest.mock('app/core/auth/account.service');
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpResponse } from '@angular/common/http';
@@ -9,9 +9,9 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
-import { LifePillarService } from 'app/entities/life-pillar/service/life-pillar.service';
-import { SubLifePillarService } from 'app/entities/sub-life-pillar/service/sub-life-pillar.service';
-import { SubLifePillarItemService } from 'app/entities/sub-life-pillar-item/service/sub-life-pillar-item.service';
+import { PillarService } from 'app/entities/pillar/service/pillar.service';
+import { SubPillarService } from 'app/entities/sub-pillar/service/sub-pillar.service';
+import { SubPillarItemService } from 'app/entities/sub-pillar-item/service/sub-pillar-item.service';
 import { LifeEvaluationService } from 'app/entities/life-evaluation/service/life-evaluation.service';
 import { EvaluationDecisionService } from 'app/entities/evaluation-decision/service/evaluation-decision.service';
 
@@ -22,8 +22,9 @@ describe('Home Component', () => {
   let fixture: ComponentFixture<HomeComponent>;
   let mockAccountService: AccountService;
   let mockRouter: Router;
-  let mockLifePillarService: LifePillarService;
+  let mockPillarService: PillarService;
   let mockModalService: NgbModal;
+  let mockTranslateService: TranslateService;
   const account: Account = {
     activated: true,
     authorities: [],
@@ -37,7 +38,7 @@ describe('Home Component', () => {
 
   beforeEach(waitForAsync(() => {
     const modalServiceMock = { open: jest.fn() };
-    const translateServiceMock = { currentLang: 'en', onLangChange: of({}) };
+    const translateServiceMock = { currentLang: 'en', onLangChange: of({}), instant: jest.fn((key: string) => key) };
 
     TestBed.configureTestingModule({
       imports: [HomeComponent],
@@ -45,9 +46,9 @@ describe('Home Component', () => {
         AccountService,
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: TranslateService, useValue: translateServiceMock },
-        { provide: LifePillarService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))), loadSuggested: jest.fn() } },
-        { provide: SubLifePillarService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))), find: jest.fn() } },
-        { provide: SubLifePillarItemService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))), find: jest.fn() } },
+        { provide: PillarService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))), loadSuggested: jest.fn() } },
+        { provide: SubPillarService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))), find: jest.fn() } },
+        { provide: SubPillarItemService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))), find: jest.fn() } },
         { provide: LifeEvaluationService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))) } },
         { provide: EvaluationDecisionService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))) } },
       ],
@@ -60,8 +61,9 @@ describe('Home Component', () => {
     fixture = TestBed.createComponent(HomeComponent);
     comp = fixture.componentInstance;
     mockAccountService = TestBed.inject(AccountService);
-    mockLifePillarService = TestBed.inject(LifePillarService);
+    mockPillarService = TestBed.inject(PillarService);
     mockModalService = TestBed.inject(NgbModal);
+    mockTranslateService = TestBed.inject(TranslateService);
     mockAccountService.identity = jest.fn(() => of(null));
     mockAccountService.getAuthenticationState = jest.fn(() => of(null));
 
@@ -105,6 +107,50 @@ describe('Home Component', () => {
     });
   });
 
+  describe('translation resolution', () => {
+    it('should resolve AR pillar translation when current language is ar-ly', () => {
+      (mockTranslateService as any).currentLang = 'ar-ly';
+      const pillar: any = {
+        translations: [
+          { lang: 'EN', name: 'Health', description: 'desc en' },
+          { lang: 'AR', name: 'الصحة', description: 'وصف عربي' },
+        ],
+      };
+
+      const translation = comp.getTranslation(pillar);
+      expect(translation?.lang).toBe('AR');
+      expect(translation?.name).toBe('الصحة');
+    });
+
+    it('should resolve AR sub-pillar translation when current language is ar-ly', () => {
+      (mockTranslateService as any).currentLang = 'ar-ly';
+      const subPillar: any = {
+        translations: [
+          { lang: 'EN', name: 'Fitness', description: 'desc en' },
+          { lang: 'AR', name: 'اللياقة', description: 'وصف عربي' },
+        ],
+      };
+
+      const translation = comp.getSubPillarTranslation(subPillar);
+      expect(translation?.lang).toBe('AR');
+      expect(translation?.name).toBe('اللياقة');
+    });
+
+    it('should resolve AR item name and description when current language is ar-ly', () => {
+      (mockTranslateService as any).currentLang = 'ar-ly';
+      const item: any = {
+        translations: [
+          { lang: 'EN', name: 'Nutrition', description: 'desc en' },
+          { lang: 'AR', name: 'التغذية', description: 'وصف عربي' },
+        ],
+      };
+
+      expect(comp.getSubPillarItemTranslation(item)).toBe('التغذية');
+      expect(comp.getSubPillarItemDescription(item)).toBe('وصف عربي');
+    });
+  });
+
+
   describe('loadSuggestedPillars', () => {
     it('should import suggested pillars after confirmation and reload the list', () => {
       const modalRef = {
@@ -113,13 +159,13 @@ describe('Home Component', () => {
       } as any;
 
       jest.spyOn(mockModalService, 'open').mockReturnValue(modalRef);
-      jest.spyOn(mockLifePillarService, 'loadSuggested').mockReturnValue(
+      jest.spyOn(mockPillarService, 'loadSuggested').mockReturnValue(
         of(
           new HttpResponse({
             body: {
-              lifePillarsCreated: 4,
-              subLifePillarsCreated: 19,
-              subLifePillarItemsCreated: 54,
+              pillarsCreated: 4,
+              subPillarsCreated: 19,
+              subPillarItemsCreated: 54,
               translationsCreated: 231,
             },
           }),
@@ -130,7 +176,7 @@ describe('Home Component', () => {
       comp.loadSuggestedPillars();
 
       expect(mockModalService.open).toHaveBeenCalled();
-      expect(mockLifePillarService.loadSuggested).toHaveBeenCalled();
+      expect(mockPillarService.loadSuggested).toHaveBeenCalled();
       expect(loadPillarsSpy).toHaveBeenCalled();
     });
   });

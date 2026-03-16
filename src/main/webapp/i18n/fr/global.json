@@ -1,20 +1,21 @@
-{
+﻿{
   "global": {
     "title": "Liferadar",
     "browsehappy": "Vous utilisez un <strong>ancien</strong> navigateur. Veuillez <a href=\"http://browsehappy.com/?locale=fr\">mettre à jour votre navigateur</a> pour une meilleure expérience.",
     "menu": {
       "home": "Accueil",
+      "actionItems": "Actions",
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entités",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
         "extendedUser": "Extended User",
-        "lifePillar": "Life Pillar",
-        "lifePillarTranslation": "Life Pillar Translation",
-        "subLifePillar": "Sub Life Pillar",
-        "subLifePillarTranslation": "Sub Life Pillar Translation",
-        "subLifePillarItem": "Sub Life Pillar Item",
-        "subLifePillarItemTranslation": "Sub Life Pillar Item Translation",
+        "pillar": "Life Pillar",
+        "pillarTranslation": "Life Pillar Translation",
+        "subPillar": "Sub Life Pillar",
+        "subPillarTranslation": "Sub Life Pillar Translation",
+        "subPillarItem": "Sub Life Pillar Item",
+        "subPillarItemTranslation": "Sub Life Pillar Item Translation",
         "lifeEvaluation": "Life Evaluation",
         "evaluationDecision": "Evaluation Decision",
         "tripPlan": "Trip Plan",
@@ -154,5 +155,5 @@
       "not.image": "Le fichier doit être une image et non du type \"{{ fileType }}\""
     }
   },
-  "footer": "Ceci est votre pied de page"
+  "footer": "Liferadar est un produit d'Atharsense."
 }

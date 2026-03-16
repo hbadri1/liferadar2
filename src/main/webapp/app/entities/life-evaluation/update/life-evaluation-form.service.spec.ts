@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+﻿import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../life-evaluation.test-samples';
 
@@ -25,10 +25,15 @@ describe('LifeEvaluation Form Service', () => {
             reminderAt: expect.any(Object),
             score: expect.any(Object),
             notes: expect.any(Object),
-            owner: expect.any(Object),
-            subLifePillarItem: expect.any(Object),
+            subPillarItem: expect.any(Object),
           }),
         );
+      });
+
+      it('should default score to 5 for new forms', () => {
+        const formGroup = service.createLifeEvaluationFormGroup();
+
+        expect(formGroup.controls.score.value).toBe(5);
       });
 
       it('passing ILifeEvaluation should create a new form with FormGroup', () => {
@@ -42,8 +47,7 @@ describe('LifeEvaluation Form Service', () => {
             reminderAt: expect.any(Object),
             score: expect.any(Object),
             notes: expect.any(Object),
-            owner: expect.any(Object),
-            subLifePillarItem: expect.any(Object),
+            subPillarItem: expect.any(Object),
           }),
         );
       });

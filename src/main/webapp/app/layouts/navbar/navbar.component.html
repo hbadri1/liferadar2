@@ -1,4 +1,4 @@
-<nav data-cy="navbar" class="navbar navbar-dark navbar-expand-md bg-primary">
+﻿<nav data-cy="navbar" class="navbar navbar-dark navbar-expand-md bg-primary">
   <div class="container-fluid">
     <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
       <span class="logo-img"></span>
@@ -29,6 +29,15 @@
         </li>
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         @if (account() !== null) {
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/action-items" (click)="collapseNavbar()" data-cy="actionItems">
+              <span>
+                <fa-icon icon="tasks"></fa-icon>
+                <span jhiTranslate="global.menu.actionItems">Action Items</span>
+              </span>
+            </a>
+          </li>
+
           <li
             ngbDropdown
             class="nav-item dropdown pointer"
@@ -58,73 +67,73 @@
               <li>
                 <a
                   class="dropdown-item"
-                  routerLink="/life-pillar"
+                  routerLink="/pillar"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
                   (click)="collapseNavbar()"
                 >
                   <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.entities.lifePillar">Life Pillar</span>
+                  <span jhiTranslate="global.menu.entities.pillar">Life Pillar</span>
                 </a>
               </li>
               <li>
                 <a
                   class="dropdown-item"
-                  routerLink="/life-pillar-translation"
+                  routerLink="/pillar-translation"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
                   (click)="collapseNavbar()"
                 >
                   <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.entities.lifePillarTranslation">Life Pillar Translation</span>
+                  <span jhiTranslate="global.menu.entities.pillarTranslation">Life Pillar Translation</span>
                 </a>
               </li>
               <li>
                 <a
                   class="dropdown-item"
-                  routerLink="/sub-life-pillar"
+                  routerLink="/sub-pillar"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
                   (click)="collapseNavbar()"
                 >
                   <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.entities.subLifePillar">Sub Life Pillar</span>
+                  <span jhiTranslate="global.menu.entities.subPillar">Sub Life Pillar</span>
                 </a>
               </li>
               <li>
                 <a
                   class="dropdown-item"
-                  routerLink="/sub-life-pillar-translation"
+                  routerLink="/sub-pillar-translation"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
                   (click)="collapseNavbar()"
                 >
                   <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.entities.subLifePillarTranslation">Sub Life Pillar Translation</span>
+                  <span jhiTranslate="global.menu.entities.subPillarTranslation">Sub Life Pillar Translation</span>
                 </a>
               </li>
               <li>
                 <a
                   class="dropdown-item"
-                  routerLink="/sub-life-pillar-item"
+                  routerLink="/sub-pillar-item"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
                   (click)="collapseNavbar()"
                 >
                   <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.entities.subLifePillarItem">Sub Life Pillar Item</span>
+                  <span jhiTranslate="global.menu.entities.subPillarItem">Sub Life Pillar Item</span>
                 </a>
               </li>
               <li>
                 <a
                   class="dropdown-item"
-                  routerLink="/sub-life-pillar-item-translation"
+                  routerLink="/sub-pillar-item-translation"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: true }"
                   (click)="collapseNavbar()"
                 >
                   <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.entities.subLifePillarItemTranslation">Sub Life Pillar Item Translation</span>
+                  <span jhiTranslate="global.menu.entities.subPillarItemTranslation">Sub Life Pillar Item Translation</span>
                 </a>
               </li>
               <li>

@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import tech.jhipster.service.filter.LongFilter;
 
 /**
  * REST controller for managing {@link com.atharsense.lr.domain.EvaluationDecision}.
@@ -95,6 +97,10 @@ public class EvaluationDecisionResource {
                 return extendedUserRepository.save(newExtendedUser);
             });
         evaluationDecision.setOwner(extendedUser);
+
+        if (evaluationDecision.getDate() == null) {
+            evaluationDecision.setDate(Instant.now());
+        }
 
         evaluationDecision = evaluationDecisionService.save(evaluationDecision);
         return ResponseEntity.created(new URI("/api/evaluation-decisions/" + evaluationDecision.getId()))
@@ -195,6 +201,8 @@ public class EvaluationDecisionResource {
     public ResponseEntity<List<EvaluationDecision>> getAllEvaluationDecisions(EvaluationDecisionCriteria criteria) {
         LOG.debug("REST request to get EvaluationDecisions by criteria: {}", criteria);
 
+        applyCurrentUserOwnerFilter(criteria);
+
         List<EvaluationDecision> entityList = evaluationDecisionQueryService.findByCriteria(criteria);
         return ResponseEntity.ok().body(entityList);
     }
@@ -208,7 +216,35 @@ public class EvaluationDecisionResource {
     @GetMapping("/count")
     public ResponseEntity<Long> countEvaluationDecisions(EvaluationDecisionCriteria criteria) {
         LOG.debug("REST request to count EvaluationDecisions by criteria: {}", criteria);
+
+        applyCurrentUserOwnerFilter(criteria);
+
         return ResponseEntity.ok().body(evaluationDecisionQueryService.countByCriteria(criteria));
+    }
+
+    private void applyCurrentUserOwnerFilter(EvaluationDecisionCriteria criteria) {
+        if (criteria.getOwnerId() != null) {
+            return;
+        }
+
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("User not authenticated", ENTITY_NAME, "notauthenticated"));
+
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
+
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+            .orElseGet(() -> {
+                ExtendedUser newExtendedUser = new ExtendedUser();
+                newExtendedUser.setUser(currentUser);
+                newExtendedUser.setFullName(buildFullName(currentUser));
+                newExtendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(newExtendedUser);
+            });
+
+        LongFilter ownerFilter = new LongFilter();
+        ownerFilter.setEquals(extendedUser.getId());
+        criteria.setOwnerId(ownerFilter);
     }
 
     /**

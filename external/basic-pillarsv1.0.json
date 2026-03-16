@@ -1,5 +1,5 @@
 {
-  "lifePillars": [
+  "pillars": [
     {
       "code": "P",
       "name": {
@@ -12,7 +12,7 @@
         "ar": "تطوير الذات ",
         "fr": "Développement personnel et bien-être"
       },
-      "subLifePillars": [
+      "subPillars": [
         {
           "code": "P-H",
           "name": {
@@ -325,7 +325,7 @@
         "ar": "العلاقات والمسؤوليات العائلية",
         "fr": "Relations et responsabilités familiales"
       },
-      "subLifePillars": [
+      "subPillars": [
         {
           "code": "F-S",
           "name": {
@@ -703,7 +703,7 @@
         "ar": "التطور المهني والإنتاجية",
         "fr": "Développement de carrière et productivité"
       },
-      "subLifePillars": [
+      "subPillars": [
         {
           "code": "W-CJ",
           "name": {
@@ -921,7 +921,7 @@
         "ar": "النمو الروحي والإيمان",
         "fr": "Croissance spirituelle et foi"
       },
-      "subLifePillars": [
+      "subPillars": [
         {
           "code": "R-DP",
           "name": {

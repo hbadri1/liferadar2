@@ -4,6 +4,7 @@
       "home": {
         "title": "EvaluationDecisions",
         "refreshListLabel": "Actualiser la liste",
+        "exportExcel": "Exporter vers Excel",
         "createLabel": "Créer un nouveau Evaluation Decision",
         "createOrEditLabel": "Créer ou éditer un Evaluation Decision",
         "notFound": "Aucun Evaluation Decision trouvé"
@@ -19,9 +20,11 @@
       },
       "id": "ID",
       "decision": "Decision",
-      "date": "Date",
+      "date": "Date d'échéance",
+      "futureDateRequired": "La date d'échéance doit être dans le futur.",
       "owner": "Owner",
-      "lifeEvaluation": "Life Evaluation"
+      "lifeEvaluation": "Life Evaluation",
+      "subPillar": "Sous-pilier de vie"
     }
   }
 }

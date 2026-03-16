@@ -4,6 +4,7 @@
       "home": {
         "title": "Evaluation Decisions",
         "refreshListLabel": "تحديث القائمة",
+        "exportExcel": "تصدير إلى إكسل",
         "createLabel": "إنشاء Evaluation Decision جديد",
         "createOrEditLabel": "إنشاء أو تعديل Evaluation Decision",
         "notFound": "لم يتم العثور على Evaluation Decisions"
@@ -19,9 +20,11 @@
       },
       "id": "ID",
       "decision": "Decision",
-      "date": "Date",
+      "date": "تاريخ الاستحقاق",
+      "futureDateRequired": "يجب أن يكون تاريخ الاستحقاق في المستقبل.",
       "owner": "Owner",
-      "lifeEvaluation": "Life Evaluation"
+      "lifeEvaluation": "Life Evaluation",
+      "subPillar": "الركيزة الفرعية"
     }
   }
 }

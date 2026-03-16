@@ -1,9 +1,19 @@
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IEvaluationDecision, NewEvaluationDecision } from '../evaluation-decision.model';
+
+export function futureDateValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) {
+      return null;
+    }
+    const selected = dayjs(control.value, DATE_TIME_FORMAT);
+    return selected.isAfter(dayjs()) ? null : { futureDate: true };
+  };
+}
 
 /**
  * A partial Type with required key is used as form input.
@@ -56,7 +66,9 @@ export class EvaluationDecisionFormService {
       decision: new FormControl(evaluationDecisionRawValue.decision, {
         validators: [Validators.required, Validators.maxLength(500)],
       }),
-      date: new FormControl(evaluationDecisionRawValue.date),
+      date: new FormControl(evaluationDecisionRawValue.date, {
+        validators: [Validators.required, futureDateValidator()],
+      }),
       lifeEvaluation: new FormControl(evaluationDecisionRawValue.lifeEvaluation, {
         validators: [Validators.required],
       }),
@@ -83,11 +95,9 @@ export class EvaluationDecisionFormService {
   }
 
   private getFormDefaults(): EvaluationDecisionFormDefaults {
-    const currentTime = dayjs();
-
     return {
       id: null,
-      date: currentTime,
+      date: dayjs().add(1, 'day').startOf('hour'),
     };
   }
 

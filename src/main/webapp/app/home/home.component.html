@@ -1,4 +1,4 @@
-<div class="row h-100">
+﻿<div class="row h-100">
   <div class="col-12">
     @if (account() !== null) {
       <div class="mb-4">
@@ -9,225 +9,196 @@
       </div>
 
       <div class="row">
-        <!-- Left Column: Life Pillars (3/4 width) -->
-        <div class="col-lg-9">
-          <div class="mb-4">
-            <button class="btn btn-success" (click)="createNewPillar()">
+        <!-- Left Column: Life Pillars (2/3 width) -->
+        <div class="col-lg-8">
+
+          <!-- Toolbar -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="mb-0 text-secondary text-uppercase fw-semibold" style="font-size:0.75rem;letter-spacing:.05em">
+              <fa-icon icon="list" class="me-1"></fa-icon>
+              <span jhiTranslate="liferadarApp.pillar.home.sectionTitle">Life Pillars</span>
+            </h6>
+            <button class="btn btn-success btn-sm" (click)="createNewPillar()">
               <fa-icon icon="plus"></fa-icon>
-              <span jhiTranslate="liferadarApp.lifePillar.home.createLabel">Create new Life Pillar</span>
+              <span class="ms-1" jhiTranslate="liferadarApp.pillar.home.addPillar">Add Pillar</span>
             </button>
           </div>
 
           <!-- Loading Indicator -->
           @if (isLoading()) {
-            <div class="text-center my-5">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+            <div class="text-center my-4">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.loading">Loading pillars...</span>
               </div>
+              <p class="small text-muted mt-2" jhiTranslate="liferadarApp.pillar.home.loading">Loading pillars...</p>
             </div>
           }
 
-          <!-- Pillars Cards -->
+          <!-- Tree View -->
           @if (!isLoading() && pillars().length > 0) {
-            <div class="row row-cols-1 row-cols-md-2 g-4 align-items-start">
+            <div class="tree-container">
               @for (pillar of pillars(); track pillar.id) {
                 @let translation = getTranslation(pillar);
-                <div class="col">
-                  <div class="card shadow-sm" [class.card-expanded]="isPillarExpanded(pillar.id)">
-                    <div class="card-body">
-                      <!-- Card Header - Always Visible -->
-                      <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="flex-grow-1">
-                          <h5 class="card-title mb-1">
-                            {{ translation?.name || pillar.code || 'N/A' }}
-                            @if (translation && translation.description) {
-                              <span class="text-muted" style="font-size: 0.875rem; margin-left: 0.25rem;">
-                                , {{ translation.description }}
-                              </span>
-                            }
-                          </h5>
-                        </div>
-                        <div class="d-flex flex-wrap gap-1 ms-2">
-                          <button
-                            class="btn btn-outline-dark btn-sm"
-                            (click)="viewSubPillars(pillar.id)"
-                            type="button"
-                            [title]="hasSubPillars(pillar.id) ? 'Hide Sub-Pillars' : 'View Sub-Pillars'">
-                            <fa-icon [icon]="hasSubPillars(pillar.id) ? 'eye-slash' : 'list'"></fa-icon>
-                            <span class="d-none d-md-inline ms-1">{{ hasSubPillars(pillar.id) ? 'Hide' : 'View' }}</span>
-                          </button>
-                          <button class="btn btn-outline-success btn-sm" (click)="createSubPillar(pillar.id)" type="button" title="Add Sub-Pillar">
-                            <fa-icon icon="plus"></fa-icon>
-                            <span class="d-none d-md-inline ms-1">Add</span>
-                          </button>
-                          <button
-                            class="btn btn-outline-primary btn-sm"
-                            (click)="editPillar(pillar.id)"
-                            title="Edit">
-                            <fa-icon icon="pencil-alt"></fa-icon>
-                          </button>
-                          <button
-                            class="btn btn-outline-danger btn-sm"
-                            (click)="deletePillar(pillar)"
-                            title="Delete">
-                            <fa-icon icon="trash-alt"></fa-icon>
-                          </button>
-                        </div>
-                      </div>
-
-                      <!-- Sub-Pillars Loading -->
-                      @if (isLoadingSubPillars(pillar.id)) {
-                        <div class="text-center my-2">
-                          <div class="spinner-border spinner-border-sm text-success" role="status">
-                            <span class="visually-hidden">Loading sub-pillars...</span>
-                          </div>
-                          <p class="small text-muted mt-2">Loading sub-pillars...</p>
-                        </div>
+                <div class="tree-item tree-level-0">
+                  <!-- Pillar Row -->
+                  <div class="tree-row d-flex align-items-center gap-1">
+                    <button
+                      class="btn btn-xs tree-expand-btn"
+                      [class.expanded]="hasSubPillars(pillar.id)"
+                      (click)="viewSubPillars(pillar.id)"
+                      type="button"
+                      [title]="(hasSubPillars(pillar.id) ? 'liferadarApp.pillar.home.collapse' : 'liferadarApp.pillar.home.expand') | translate">
+                      <fa-icon [icon]="hasSubPillars(pillar.id) ? 'minus' : 'plus'"></fa-icon>
+                    </button>
+                    <div class="tree-label tree-text-pair flex-grow-1 d-flex align-items-baseline gap-1 overflow-hidden">
+                      <span class="tree-name text-truncate" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">{{ translation?.name || pillar.code }}</span>
+                      @if (translation?.description) {
+                        <span class="tree-desc text-truncate" dir="ltr">{{ translation?.description }}</span>
                       }
+                    </div>
+                    <div class="tree-actions d-flex gap-1 flex-shrink-0">
+                      <button class="btn btn-outline-success btn-xs" (click)="createSubPillar(pillar.id)"
+                        [title]="'liferadarApp.pillar.home.addSubPillar' | translate">
+                        <fa-icon icon="plus"></fa-icon>
+                      </button>
+                      <button class="btn btn-outline-primary btn-xs" (click)="editPillar(pillar.id)"
+                        [title]="'entity.action.edit' | translate">
+                        <fa-icon icon="pencil-alt"></fa-icon>
+                      </button>
+                      <button class="btn btn-outline-danger btn-xs" (click)="deletePillar(pillar)"
+                        [title]="'entity.action.delete' | translate">
+                        <fa-icon icon="trash-alt"></fa-icon>
+                      </button>
+                    </div>
+                  </div>
 
-                      <!-- Sub-Pillars Cards -->
-                      @if (hasSubPillars(pillar.id) && !isLoadingSubPillars(pillar.id)) {
-                        <div class="mt-2">
-                          <h6 class="text-secondary mb-2">
-                            <fa-icon icon="list"></fa-icon>
-                            Sub-Pillars
-                          </h6>
+                  <!-- Sub-Pillars loading -->
+                  @if (isLoadingSubPillars(pillar.id)) {
+                    <div class="tree-children d-flex align-items-center gap-2 py-1">
+                      <div class="spinner-border spinner-border-sm text-success" role="status">
+                        <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.loadingSubPillars">Loading sub-pillars...</span>
+                      </div>
+                      <span class="small text-muted" jhiTranslate="liferadarApp.pillar.home.loadingSubPillars">Loading sub-pillars...</span>
+                    </div>
+                  }
 
-                          @if (getSubPillars(pillar.id).length > 0) {
-                            <div class="sub-pillars-container">
-                              @for (subPillar of getSubPillars(pillar.id); track subPillar.id) {
-                                @let subTranslation = getSubPillarTranslation(subPillar);
-                                <div class="card sub-pillar-card mb-2">
-                                  <div class="card-body p-2">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                      <div class="flex-grow-1">
-                                        <h6 class="card-subtitle mb-1">
-                                          {{ subTranslation?.name || subPillar.code || 'N/A' }}
-                                          @if (subTranslation && subTranslation.description) {
-                                            <span class="text-muted" style="font-size: 0.8rem; margin-left: 0.25rem;">
-                                              , {{ subTranslation.description }}
-                                            </span>
-                                          }
-                                        </h6>
-                                      </div>
-                                      <div class="ms-2 d-flex flex-wrap gap-1">
-                                        <button class="btn btn-outline-dark btn-sm" (click)="viewSubPillarItems(subPillar.id)" type="button" [title]="hasSubPillarItems(subPillar.id) ? 'Hide Items' : 'View Items'">
-                                          <fa-icon [icon]="hasSubPillarItems(subPillar.id) ? 'eye-slash' : 'list'"></fa-icon>
-                                          <span class="d-none d-md-inline ms-1">{{ hasSubPillarItems(subPillar.id) ? 'Hide' : 'View' }}</span>
-                                        </button>
-                                        <button class="btn btn-outline-success btn-sm" (click)="createSubPillarItem(subPillar.id)" type="button" title="Add Item">
-                                          <fa-icon icon="plus"></fa-icon>
-                                          <span class="d-none d-md-inline ms-1">Add</span>
-                                        </button>
-                                        <button class="btn btn-outline-primary btn-sm" (click)="editSubPillar(subPillar)" type="button" title="Edit">
-                                          <fa-icon icon="pencil-alt"></fa-icon>
-                                        </button>
-                                        <button class="btn btn-outline-danger btn-sm" (click)="deleteSubPillar(subPillar)" type="button" title="Delete">
-                                          <fa-icon icon="trash-alt"></fa-icon>
-                                        </button>
-                                      </div>
-                                    </div>
+                  <!-- Sub-Pillars -->
+                  @if (hasSubPillars(pillar.id) && !isLoadingSubPillars(pillar.id)) {
+                    <div class="tree-children">
+                      @if (getSubPillars(pillar.id).length === 0) {
+                        <div class="tree-empty small text-muted" jhiTranslate="liferadarApp.pillar.home.noSubPillars">No sub-pillars yet.</div>
+                      }
+                      @for (subPillar of getSubPillars(pillar.id); track subPillar.id) {
+                        @let subTranslation = getSubPillarTranslation(subPillar);
+                        <div class="tree-item tree-level-1">
+                          <!-- Sub-Pillar Row -->
+                          <div class="tree-row d-flex align-items-center gap-1">
+                            <button
+                              class="btn btn-xs tree-expand-btn"
+                              [class.expanded]="hasSubPillarItems(subPillar.id)"
+                              (click)="viewSubPillarItems(subPillar.id)"
+                              type="button"
+                              [title]="(hasSubPillarItems(subPillar.id) ? 'liferadarApp.pillar.home.collapse' : 'liferadarApp.pillar.home.expand') | translate">
+                              <fa-icon [icon]="hasSubPillarItems(subPillar.id) ? 'minus' : 'plus'"></fa-icon>
+                            </button>
+                            <div class="tree-label tree-text-pair flex-grow-1 d-flex align-items-baseline gap-1 overflow-hidden">
+                              <span class="tree-name text-truncate" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">{{ subTranslation?.name || subPillar.code }}</span>
+                              @if (subTranslation?.description) {
+                                <span class="tree-desc text-truncate" dir="ltr">{{ subTranslation?.description }}</span>
+                              }
+                            </div>
+                            <div class="tree-actions d-flex gap-1 flex-shrink-0">
+                              <button class="btn btn-outline-success btn-xs" (click)="createSubPillarItem(subPillar.id)"
+                                [title]="'liferadarApp.pillar.home.addItem' | translate">
+                                <fa-icon icon="plus"></fa-icon>
+                              </button>
+                              <button class="btn btn-outline-primary btn-xs" (click)="editSubPillar(subPillar)"
+                                [title]="'entity.action.edit' | translate">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                              </button>
+                              <button class="btn btn-outline-danger btn-xs" (click)="deleteSubPillar(subPillar)"
+                                [title]="'entity.action.delete' | translate">
+                                <fa-icon icon="trash-alt"></fa-icon>
+                              </button>
+                            </div>
+                          </div>
 
-                                    @if (isLoadingSubPillarItems(subPillar.id)) {
-                                      <div class="text-center my-2">
-                                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
-                                          <span class="visually-hidden">Loading items...</span>
-                                        </div>
-                                        <p class="small text-muted mt-2">Loading items...</p>
-                                      </div>
+                          <!-- Items loading -->
+                          @if (isLoadingSubPillarItems(subPillar.id)) {
+                            <div class="tree-children d-flex align-items-center gap-2 py-1">
+                              <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                                <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.loadingItems">Loading items...</span>
+                              </div>
+                              <span class="small text-muted" jhiTranslate="liferadarApp.pillar.home.loadingItems">Loading items...</span>
+                            </div>
+                          }
+
+                          <!-- Items -->
+                          @if (hasSubPillarItems(subPillar.id) && !isLoadingSubPillarItems(subPillar.id)) {
+                            <div class="tree-children">
+                              @if (getSubPillarItems(subPillar.id).length === 0) {
+                                <div class="tree-empty small text-muted" jhiTranslate="liferadarApp.pillar.home.noItems">No items yet.</div>
+                              }
+                              @for (item of getSubPillarItems(subPillar.id); track item.id) {
+                                @let itemName = getSubPillarItemTranslation(item);
+                                @let itemDescription = getSubPillarItemDescription(item);
+                                <div class="tree-row tree-leaf d-flex align-items-center gap-1">
+                                  <span class="tree-leaf-bullet text-muted flex-shrink-0">•</span>
+                                  <div class="tree-text-pair flex-grow-1 d-flex align-items-baseline gap-1 overflow-hidden">
+                                    <span class="tree-name tree-name--item text-truncate" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">{{ itemName || item.code }}</span>
+                                    @if (itemDescription) {
+                                      <span class="tree-desc text-truncate" dir="ltr">{{ itemDescription }}</span>
                                     }
-
-                                    @if (hasSubPillarItems(subPillar.id) && !isLoadingSubPillarItems(subPillar.id)) {
-                                      <div class="table-responsive mt-2">
-                                        @if (getSubPillarItems(subPillar.id).length > 0) {
-                                          <table class="table table-sm table-striped align-middle mb-0">
-                                            <thead>
-                                              <tr>
-                                                <th>Name</th>
-                                                <th class="text-end">Actions</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              @for (item of getSubPillarItems(subPillar.id); track item.id) {
-                                                @let itemName = getSubPillarItemTranslation(item);
-                                                <tr>
-                                                  <td>{{ itemName || item.code || 'N/A' }}</td>
-                                                  <td class="text-end">
-                                                    <button
-                                                      class="btn btn-outline-success btn-xs me-1"
-                                                      (click)="createLifeEvaluation(item)"
-                                                      type="button"
-                                                      title="Create Life Evaluation">
-                                                      <fa-icon icon="clipboard-check"></fa-icon>
-                                                    </button>
-                                                    <button
-                                                      class="btn btn-outline-primary btn-xs me-1"
-                                                      (click)="editSubPillarItem(item)"
-                                                      type="button"
-                                                      title="Edit">
-                                                      <fa-icon icon="pencil-alt"></fa-icon>
-                                                    </button>
-                                                    <button
-                                                      class="btn btn-outline-danger btn-xs"
-                                                      (click)="deleteSubPillarItem(item)"
-                                                      type="button"
-                                                      title="Delete">
-                                                      <fa-icon icon="trash-alt"></fa-icon>
-                                                    </button>
-                                                  </td>
-                                                </tr>
-                                              }
-                                            </tbody>
-                                          </table>
-                                        } @else {
-                                          <div class="alert alert-light small mb-0">
-                                            <fa-icon icon="info-circle"></fa-icon>
-                                            No items found for this sub-pillar.
-                                          </div>
-                                        }
-                                      </div>
-                                    }
+                                  </div>
+                                  <div class="tree-actions d-flex gap-1 flex-shrink-0">
+                                    <button class="btn btn-outline-success btn-xs" (click)="createLifeEvaluation(item)"
+                                      [title]="'liferadarApp.pillar.home.createEvaluation' | translate">
+                                      <span jhiTranslate="liferadarApp.pillar.home.createEvaluation">Create Evaluation</span>
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-xs" (click)="editSubPillarItem(item)"
+                                      [title]="'entity.action.edit' | translate">
+                                      <fa-icon icon="pencil-alt"></fa-icon>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-xs" (click)="deleteSubPillarItem(item)"
+                                      [title]="'entity.action.delete' | translate">
+                                      <fa-icon icon="trash-alt"></fa-icon>
+                                    </button>
                                   </div>
                                 </div>
                               }
-                            </div>
-                          } @else {
-                            <div class="alert alert-light small mb-0">
-                              <fa-icon icon="info-circle"></fa-icon>
-                              No sub-pillars found for this pillar.
                             </div>
                           }
                         </div>
                       }
                     </div>
-              </div>
-            </div>
+                  }
+                </div>
               }
             </div>
           }
 
-      <!-- Empty State -->
-      @if (!isLoading() && pillars().length === 0) {
-        <div class="alert alert-info text-center my-5">
-          <fa-icon icon="info-circle" size="2x" class="mb-3"></fa-icon>
-          <h4 jhiTranslate="liferadarApp.lifePillar.home.notFound">No Life Pillars found</h4>
-          <p jhiTranslate="liferadarApp.lifePillar.home.createFirst">Create your first Life Pillar to get started!</p>
-          <div class="d-flex gap-2 justify-content-center mt-3">
-            <button class="btn btn-success" (click)="createNewPillar()">
-              <fa-icon icon="plus"></fa-icon>
-              <span jhiTranslate="liferadarApp.lifePillar.home.createLabel">Create new Life Pillar</span>
-            </button>
-            <button class="btn btn-info" (click)="loadSuggestedPillars()">
-              <fa-icon icon="lightbulb"></fa-icon>
-              <span>Load Suggested LifePillars</span>
-            </button>
-          </div>
-        </div>
-      }
+          <!-- Empty State -->
+          @if (!isLoading() && pillars().length === 0) {
+            <div class="alert alert-info text-center my-5">
+              <fa-icon icon="info-circle" size="2x" class="mb-3"></fa-icon>
+              <h4 jhiTranslate="liferadarApp.pillar.home.notFound">No Pillars found</h4>
+              <p jhiTranslate="liferadarApp.pillar.home.createFirst">Create your first Pillar to get started!</p>
+              <div class="d-flex gap-2 justify-content-center mt-3">
+                <button class="btn btn-success" (click)="createNewPillar()">
+                  <fa-icon icon="plus"></fa-icon>
+                  <span jhiTranslate="liferadarApp.pillar.home.createLabel">Create new Pillar</span>
+                </button>
+                <button class="btn btn-info" (click)="loadSuggestedPillars()">
+                  <fa-icon icon="lightbulb"></fa-icon>
+                  <span jhiTranslate="liferadarApp.pillar.home.suggested.button">Load Suggested Pillars</span>
+                </button>
+              </div>
+            </div>
+          }
         </div>
 
-        <!-- Right Column: Life Evaluations (1/4 width) -->
-        <div class="col-lg-3">
+        <!-- Right Column: Life Evaluations (1/3 width) -->
+        <div class="col-lg-4">
           <div class="sticky-top" style="top: 20px;">
             <div class="card shadow-sm">
               <div class="card-header bg-success text-white">
@@ -241,9 +212,9 @@
                 @if (isLoadingEvaluations()) {
                   <div class="text-center my-3">
                     <div class="spinner-border spinner-border-sm text-success" role="status">
-                      <span class="visually-hidden">Loading evaluations...</span>
+                      <span class="visually-hidden" jhiTranslate="liferadarApp.lifeEvaluation.home.loading">Loading...</span>
                     </div>
-                    <p class="small text-muted mt-2">Loading...</p>
+                    <p class="small text-muted mt-2" jhiTranslate="liferadarApp.lifeEvaluation.home.loading">Loading...</p>
                   </div>
                 }
 
@@ -271,14 +242,14 @@
                                   class="btn btn-outline-primary btn-xs"
                                   (click)="createEvaluationDecision(evaluation)"
                                   type="button"
-                                  title="Create Decision">
-                                  <fa-icon icon="check-circle"></fa-icon>
+                                  [title]="'liferadarApp.lifeEvaluation.home.takeDecision' | translate">
+                                  <span jhiTranslate="liferadarApp.lifeEvaluation.home.takeDecision">Take Decision</span>
                                 </button>
                                 <button
                                   class="btn btn-outline-danger btn-xs"
                                   (click)="deleteLifeEvaluation(evaluation)"
                                   type="button"
-                                  title="Delete Evaluation">
+                                  [title]="'liferadarApp.lifeEvaluation.home.deleteEvaluation' | translate">
                                   <fa-icon icon="trash-alt"></fa-icon>
                                 </button>
                               </div>
@@ -293,25 +264,23 @@
 
                             @if (getEvaluationDecisions(evaluation.id).length > 0) {
                               <div class="mt-1 pt-1 border-top">
-                                <p class="small fw-semibold mb-1">Decisions</p>
+                                <p class="small fw-semibold mb-1" jhiTranslate="liferadarApp.lifeEvaluation.decisions">Decisions</p>
                                 @for (decision of getEvaluationDecisions(evaluation.id); track decision.id) {
-                                  <div class="small text-muted mb-1 d-flex justify-content-between align-items-start">
+                                  <div class="small text-muted mb-1 d-flex justify-content-between align-items-start"
+                                    [dir]="isArabicLang() ? 'rtl' : 'ltr'">
                                     <div class="flex-grow-1">
-                                      @if (decision.date) {
-                                        <span>
-                                          <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
-                                          {{ decision.date.toDate() | date: 'short': riyadhTimeZone }}
-                                        </span>
-                                      }
-                                      @if (decision.decision) {
-                                        <div class="ms-3">{{ decision.decision }}</div>
-                                      }
+                                      <span>
+                                        {{ decision.decision || '-' }}
+                                        @if (decision.date) {
+                                          , {{ decision.date.toDate() | date: 'dd-MM-yyyy HH:mm': riyadhTimeZone }}
+                                        }
+                                      </span>
                                     </div>
                                     <button
                                       class="btn btn-outline-danger btn-xs ms-2"
                                       (click)="deleteEvaluationDecision(decision)"
                                       type="button"
-                                      title="Delete Decision">
+                                      [title]="'liferadarApp.lifeEvaluation.home.deleteDecision' | translate">
                                       <fa-icon icon="trash-alt"></fa-icon>
                                     </button>
                                   </div>

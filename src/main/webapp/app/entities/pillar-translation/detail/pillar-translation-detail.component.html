@@ -1,0 +1,56 @@
+﻿<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (pillarTranslation(); as pillarTranslationRef) {
+      <div>
+        <h2 data-cy="pillarTranslationDetailsHeading">
+          <span jhiTranslate="liferadarApp.pillarTranslation.detail.title">Life Pillar Translation</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ pillarTranslationRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.pillarTranslation.lang">Lang</span></dt>
+          <dd>
+            <span [jhiTranslate]="'liferadarApp.LangCode.' + (pillarTranslationRef.lang ?? 'null')">{{
+              { null: '', EN: 'EN', AR: 'AR', FR: 'FR' }[pillarTranslationRef.lang ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.pillarTranslation.name">Name</span></dt>
+          <dd>
+            <span>{{ pillarTranslationRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.pillarTranslation.description">Description</span></dt>
+          <dd>
+            <span>{{ pillarTranslationRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.pillarTranslation.pillar">Life Pillar</span></dt>
+          <dd>
+            @if (pillarTranslation()!.pillar) {
+              <div>
+                <a [routerLink]="['/pillar', pillarTranslation()!.pillar?.id, 'view']">{{
+                  pillarTranslationRef.pillar?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/pillar-translation', pillarTranslationRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
