@@ -35,7 +35,7 @@ public class EvaluationDecision implements Serializable {
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "decisions", "owner", "subLifePillarItem" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "decisions", "owner" }, allowSetters = true)
     private LifeEvaluation lifeEvaluation;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

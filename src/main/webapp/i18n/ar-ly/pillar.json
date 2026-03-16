@@ -1,0 +1,48 @@
+﻿{
+  "liferadarApp": {
+    "pillar": {
+      "home": {
+        "title": "الأركان",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء ركن جديد",
+        "createOrEditLabel": "إنشاء أو تعديل ركن",
+        "notFound": "لم يتم العثور على أركان",
+        "createFirst": "أنشئ أول ركن للبدء!",
+        "sectionTitle": "أركان الحياة",
+        "addPillar": "إضافة ركن",
+        "loading": "جاري تحميل الأركان...",
+        "loadingSubPillars": "جاري تحميل الأركان الفرعية...",
+        "loadingItems": "جاري تحميل العناصر...",
+        "noSubPillars": "لا توجد أركان فرعية بعد.",
+        "noItems": "لا توجد عناصر بعد.",
+        "expand": "توسيع",
+        "collapse": "طي",
+        "addSubPillar": "إضافة ركن فرعي",
+        "addItem": "إضافة عنصر",
+        "createEvaluation": "إنشاء تقييم",
+        "suggested": {
+          "button": "تحميل الأركان المقترحة",
+          "title": "تحميل الأركان المقترحة",
+          "message": "سيؤدي هذا إلى تحميل الأركان والأركان الفرعية والعناصر والترجمات المقترحة إلى حسابك. هل تريد المتابعة؟",
+          "confirmButton": "تحميل"
+        }
+      },
+      "created": "تم إنشاء ركن جديد بالمعرف {{ param }}",
+      "updated": "تم تحديث الركن بالمعرف {{ param }}",
+      "deleted": "تم حذف الركن بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف الركن {{ id }}؟"
+      },
+      "detail": {
+        "title": "ركن"
+      },
+      "id": "المعرف",
+      "code": "الرمز",
+      "isActive": "نشط",
+      "translations": "الترجمات",
+      "owner": "المالك",
+      "noDescription": "لا يوجد وصف متاح",
+      "viewSubPillars": "عرض الأركان الفرعية"
+    }
+  }
+}

@@ -4,6 +4,7 @@
       "home": {
         "title": "Evaluation Decisions",
         "refreshListLabel": "Refresh list",
+        "exportExcel": "Export to Excel",
         "createLabel": "Create a new Evaluation Decision",
         "createOrEditLabel": "Create or edit a Evaluation Decision",
         "notFound": "No Evaluation Decisions found"
@@ -19,9 +20,11 @@
       },
       "id": "ID",
       "decision": "Decision",
-      "date": "Date",
+      "date": "Due Date",
+      "futureDateRequired": "Due date must be in the future.",
       "owner": "Owner",
-      "lifeEvaluation": "Life Evaluation"
+      "lifeEvaluation": "Life Evaluation",
+      "subPillar": "Sub Life Pillar"
     }
   }
 }

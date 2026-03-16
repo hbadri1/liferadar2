@@ -38,7 +38,7 @@ public class LifeEvaluationCriteria implements Serializable, Criteria {
 
     private LongFilter ownerId;
 
-    private LongFilter subLifePillarItemId;
+    private LongFilter subPillarItemId;
 
     private Boolean distinct;
 
@@ -53,7 +53,7 @@ public class LifeEvaluationCriteria implements Serializable, Criteria {
         this.notes = other.optionalNotes().map(StringFilter::copy).orElse(null);
         this.decisionsId = other.optionalDecisionsId().map(LongFilter::copy).orElse(null);
         this.ownerId = other.optionalOwnerId().map(LongFilter::copy).orElse(null);
-        this.subLifePillarItemId = other.optionalSubLifePillarItemId().map(LongFilter::copy).orElse(null);
+        this.subPillarItemId = other.optionalSubPillarItemId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -214,23 +214,23 @@ public class LifeEvaluationCriteria implements Serializable, Criteria {
         this.ownerId = ownerId;
     }
 
-    public LongFilter getSubLifePillarItemId() {
-        return subLifePillarItemId;
+    public LongFilter getSubPillarItemId() {
+        return subPillarItemId;
     }
 
-    public Optional<LongFilter> optionalSubLifePillarItemId() {
-        return Optional.ofNullable(subLifePillarItemId);
+    public Optional<LongFilter> optionalSubPillarItemId() {
+        return Optional.ofNullable(subPillarItemId);
     }
 
-    public LongFilter subLifePillarItemId() {
-        if (subLifePillarItemId == null) {
-            setSubLifePillarItemId(new LongFilter());
+    public LongFilter subPillarItemId() {
+        if (subPillarItemId == null) {
+            setSubPillarItemId(new LongFilter());
         }
-        return subLifePillarItemId;
+        return subPillarItemId;
     }
 
-    public void setSubLifePillarItemId(LongFilter subLifePillarItemId) {
-        this.subLifePillarItemId = subLifePillarItemId;
+    public void setSubPillarItemId(LongFilter subPillarItemId) {
+        this.subPillarItemId = subPillarItemId;
     }
 
     public Boolean getDistinct() {
@@ -270,7 +270,7 @@ public class LifeEvaluationCriteria implements Serializable, Criteria {
             Objects.equals(notes, that.notes) &&
             Objects.equals(decisionsId, that.decisionsId) &&
             Objects.equals(ownerId, that.ownerId) &&
-            Objects.equals(subLifePillarItemId, that.subLifePillarItemId) &&
+            Objects.equals(subPillarItemId, that.subPillarItemId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
@@ -286,7 +286,7 @@ public class LifeEvaluationCriteria implements Serializable, Criteria {
             notes,
             decisionsId,
             ownerId,
-            subLifePillarItemId,
+            subPillarItemId,
             distinct
         );
     }
@@ -303,7 +303,7 @@ public class LifeEvaluationCriteria implements Serializable, Criteria {
             optionalNotes().map(f -> "notes=" + f + ", ").orElse("") +
             optionalDecisionsId().map(f -> "decisionsId=" + f + ", ").orElse("") +
             optionalOwnerId().map(f -> "ownerId=" + f + ", ").orElse("") +
-            optionalSubLifePillarItemId().map(f -> "subLifePillarItemId=" + f + ", ").orElse("") +
+            optionalSubPillarItemId().map(f -> "subPillarItemId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

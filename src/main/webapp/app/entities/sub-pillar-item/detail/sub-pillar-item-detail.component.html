@@ -1,0 +1,52 @@
+﻿<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (subPillarItem(); as subPillarItemRef) {
+      <div>
+        <h2 data-cy="subPillarItemDetailsHeading">
+          <span jhiTranslate="liferadarApp.subPillarItem.detail.title">Sub Life Pillar Item</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ subPillarItemRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarItem.code">Code</span></dt>
+          <dd>
+            <span>{{ subPillarItemRef.code }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarItem.sortOrder">Sort Order</span></dt>
+          <dd>
+            <span>{{ subPillarItemRef.sortOrder }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarItem.isActive">Is Active</span></dt>
+          <dd>
+            <span>{{ subPillarItemRef.isActive }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarItem.owner">Owner</span></dt>
+          <dd>
+            @if (subPillarItem()!.owner) {
+              <div>
+                <a [routerLink]="['/extended-user', subPillarItem()!.owner?.id, 'view']">{{ subPillarItemRef.owner?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/sub-pillar-item', subPillarItemRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

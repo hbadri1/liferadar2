@@ -54,8 +54,8 @@ public class LifeEvaluation implements Serializable {
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "translations", "owner", "evaluations" }, allowSetters = true)
-    private SubLifePillarItem subLifePillarItem;
+    @JsonIgnoreProperties(value = { "owner", "evaluations" }, allowSetters = true)
+    private SubPillarItem subPillarItem;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -181,16 +181,16 @@ public class LifeEvaluation implements Serializable {
         return this;
     }
 
-    public SubLifePillarItem getSubLifePillarItem() {
-        return this.subLifePillarItem;
+    public SubPillarItem getSubPillarItem() {
+        return this.subPillarItem;
     }
 
-    public void setSubLifePillarItem(SubLifePillarItem subLifePillarItem) {
-        this.subLifePillarItem = subLifePillarItem;
+    public void setSubPillarItem(SubPillarItem subPillarItem) {
+        this.subPillarItem = subPillarItem;
     }
 
-    public LifeEvaluation subLifePillarItem(SubLifePillarItem subLifePillarItem) {
-        this.setSubLifePillarItem(subLifePillarItem);
+    public LifeEvaluation subPillarItem(SubPillarItem subPillarItem) {
+        this.setSubPillarItem(subPillarItem);
         return this;
     }
 

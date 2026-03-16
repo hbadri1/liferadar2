@@ -10,6 +10,34 @@
     <div class="mb-3">
       <label class="form-label" for="field_decision" jhiTranslate="liferadarApp.evaluationDecision.decision">Decision</label>
       <textarea class="form-control" id="field_decision" data-cy="decision" formControlName="decision" rows="4"></textarea>
+      @let decisionRef = editForm.get('decision')!;
+      @if (decisionRef.invalid && (decisionRef.dirty || decisionRef.touched)) {
+        @if (decisionRef.errors?.required) {
+          <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+        }
+      }
+    </div>
+
+    <div class="mb-3">
+      @let dateRef = editForm.get('date')!;
+      <label class="form-label" for="field_due_date" jhiTranslate="liferadarApp.evaluationDecision.date">Due Date</label>
+      <input
+        id="field_due_date"
+        data-cy="dueDate"
+        type="datetime-local"
+        class="form-control"
+        name="date"
+        formControlName="date"
+        [min]="minDateTime"
+      />
+      @if (dateRef.invalid && (dateRef.dirty || dateRef.touched)) {
+        @if (dateRef.errors?.required) {
+          <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+        }
+        @if (dateRef.errors?.futureDate) {
+          <small class="form-text text-danger" jhiTranslate="liferadarApp.evaluationDecision.futureDateRequired">Due date must be in the future.</small>
+        }
+      }
     </div>
 
     <div class="modal-footer">

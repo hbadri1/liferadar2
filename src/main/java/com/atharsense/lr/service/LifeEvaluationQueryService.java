@@ -78,8 +78,8 @@ public class LifeEvaluationQueryService extends QueryService<LifeEvaluation> {
                     root.join(LifeEvaluation_.decisions, JoinType.LEFT).get(EvaluationDecision_.id)
                 ),
                 buildSpecification(criteria.getOwnerId(), root -> root.join(LifeEvaluation_.owner, JoinType.LEFT).get(ExtendedUser_.id)),
-                buildSpecification(criteria.getSubLifePillarItemId(), root ->
-                    root.join(LifeEvaluation_.subLifePillarItem, JoinType.LEFT).get(SubLifePillarItem_.id)
+                buildSpecification(criteria.getSubPillarItemId(), root ->
+                    root.join(LifeEvaluation_.subPillarItem, JoinType.LEFT).get(SubPillarItem_.id)
                 )
             );
         }

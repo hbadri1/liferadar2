@@ -4,6 +4,7 @@ import com.atharsense.lr.domain.*; // for static metamodels
 import com.atharsense.lr.domain.EvaluationDecision;
 import com.atharsense.lr.repository.EvaluationDecisionRepository;
 import com.atharsense.lr.service.criteria.EvaluationDecisionCriteria;
+import org.hibernate.Hibernate;
 import jakarta.persistence.criteria.JoinType;
 import java.util.List;
 import org.slf4j.Logger;
@@ -40,7 +41,9 @@ public class EvaluationDecisionQueryService extends QueryService<EvaluationDecis
     public List<EvaluationDecision> findByCriteria(EvaluationDecisionCriteria criteria) {
         LOG.debug("find by criteria : {}", criteria);
         final Specification<EvaluationDecision> specification = createSpecification(criteria);
-        return evaluationDecisionRepository.findAll(specification);
+        List<EvaluationDecision> decisions = evaluationDecisionRepository.findAll(specification);
+        decisions.forEach(this::initializeDisplayNameRelationships);
+        return decisions;
     }
 
     /**
@@ -77,5 +80,18 @@ public class EvaluationDecisionQueryService extends QueryService<EvaluationDecis
             );
         }
         return specification;
+    }
+
+    private void initializeDisplayNameRelationships(EvaluationDecision evaluationDecision) {
+        if (evaluationDecision.getLifeEvaluation() == null || evaluationDecision.getLifeEvaluation().getSubPillarItem() == null) {
+            return;
+        }
+
+        SubPillarItem subPillarItem = evaluationDecision.getLifeEvaluation().getSubPillarItem();
+        Hibernate.initialize(subPillarItem.getTranslations());
+
+        if (subPillarItem.getSubPillar() != null) {
+            Hibernate.initialize(subPillarItem.getSubPillar().getTranslations());
+        }
     }
 }

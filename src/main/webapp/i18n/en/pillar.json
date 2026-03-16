@@ -1,0 +1,48 @@
+﻿{
+  "liferadarApp": {
+    "pillar": {
+      "home": {
+        "title": "Pillars",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Pillar",
+        "createOrEditLabel": "Create or edit a Pillar",
+        "notFound": "No Pillars found",
+        "createFirst": "Create your first Pillar to get started!",
+        "sectionTitle": "Life Pillars",
+        "addPillar": "Add Pillar",
+        "loading": "Loading pillars...",
+        "loadingSubPillars": "Loading sub-pillars...",
+        "loadingItems": "Loading items...",
+        "noSubPillars": "No sub-pillars yet.",
+        "noItems": "No items yet.",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "addSubPillar": "Add Sub-Pillar",
+        "addItem": "Add Item",
+        "createEvaluation": "Create Evaluation",
+        "suggested": {
+          "button": "Load Suggested Pillars",
+          "title": "Load Suggested Pillars",
+          "message": "This will load the suggested Pillars, Sub-Pillars, items, and translations into your account. Continue?",
+          "confirmButton": "Load"
+        }
+      },
+      "created": "A new Pillar is created with identifier {{ param }}",
+      "updated": "A Pillar is updated with identifier {{ param }}",
+      "deleted": "A Pillar is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Pillar {{ id }}?"
+      },
+      "detail": {
+        "title": "Pillar"
+      },
+      "id": "ID",
+      "code": "Code",
+      "isActive": "Is Active",
+      "translations": "Translations",
+      "owner": "Owner",
+      "noDescription": "No description available",
+      "viewSubPillars": "View Sub-Pillars"
+    }
+  }
+}
