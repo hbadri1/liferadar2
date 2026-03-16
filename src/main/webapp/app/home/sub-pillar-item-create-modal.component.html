@@ -1,0 +1,89 @@
+﻿<div class="modal-header">
+  <h4 class="modal-title" jhiTranslate="liferadarApp.subPillarItem.home.createLabel">Create new Sub Life Pillar Item</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  <jhi-alert-error />
+
+  <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    @let codeRef = editForm.get('code')!;
+    <div class="mb-3">
+      <label class="form-label" for="field_code" jhiTranslate="liferadarApp.subPillarItem.code">Code</label>
+      <input type="text" class="form-control" name="code" id="field_code" data-cy="code" formControlName="code" />
+      @if (codeRef.invalid && (codeRef.dirty || codeRef.touched)) {
+        <div>
+          @if (editForm.get('code')?.errors?.required) {
+            <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+          }
+          @if (editForm.get('code')?.errors?.maxlength) {
+            <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '80' }">
+              This field cannot be longer than 80 characters.
+            </small>
+          }
+        </div>
+      }
+    </div>
+
+
+    <div class="mb-3">
+      <label class="form-label" for="field_subPillar_display" jhiTranslate="liferadarApp.subPillarItem.subPillar">Sub Life Pillar</label>
+      <input
+        id="field_subPillar_display"
+        type="text"
+        class="form-control"
+        [value]="selectedSubPillar?.code || ''"
+        readonly />
+      <small class="form-text text-muted">Parent is fixed from the selected sub-pillar card.</small>
+      @if (!selectedSubPillar) {
+        <div>
+          <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+        </div>
+      }
+    </div>
+
+    <hr class="my-4" />
+    <h5 class="mb-3">Translations</h5>
+
+    <div class="row g-3">
+      @for (trans of translations; track trans.lang) {
+        <div class="col-12 col-md-4">
+          <div class="card border-light h-100">
+            <div class="card-body p-3">
+              <h6 class="fw-semibold mb-3">{{ getLangLabel(trans.lang) }}</h6>
+              <div class="mb-3">
+                <label class="form-label" [for]="'field_name_' + trans.lang">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [id]="'field_name_' + trans.lang"
+                  [(ngModel)]="trans.name"
+                  [ngModelOptions]="{ standalone: true }" />
+              </div>
+              <div class="mb-0">
+                <label class="form-label" [for]="'field_description_' + trans.lang">Description</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  [id]="'field_description_' + trans.lang"
+                  [(ngModel)]="trans.description"
+                  [ngModelOptions]="{ standalone: true }"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+      </button>
+
+      <button type="submit" [disabled]="editForm.invalid || isSaving || !selectedSubPillar" class="btn btn-primary">
+        <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+      </button>
+    </div>
+  </form>
+</div>
+

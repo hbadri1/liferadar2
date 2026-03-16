@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
@@ -32,7 +32,7 @@
             <column name="owner_id" type="bigint">
                 <constraints nullable="false" />
             </column>
-            <column name="sub_life_pillar_item_id" type="bigint">
+            <column name="sub_pillar_item_id" type="bigint">
                 <constraints nullable="false" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -63,7 +63,7 @@
             <column name="score" type="numeric"/>
             <column name="notes" type="string"/>
             <column name="owner_id" type="numeric"/>
-            <column name="sub_life_pillar_item_id" type="numeric"/>
+            <column name="sub_pillar_item_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

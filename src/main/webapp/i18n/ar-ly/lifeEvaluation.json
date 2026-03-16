@@ -1,12 +1,18 @@
-{
+﻿{
   "liferadarApp": {
     "lifeEvaluation": {
       "home": {
-        "title": "Life Evaluations",
+        "title": "تقييمات الحياة",
         "refreshListLabel": "تحديث القائمة",
         "createLabel": "إنشاء Life Evaluation جديد",
         "createOrEditLabel": "إنشاء أو تعديل Life Evaluation",
-        "notFound": "لم يتم العثور على Life Evaluations"
+        "notFound": "لم يتم العثور على Life Evaluations",
+        "loading": "جاري التحميل...",
+        "empty": "لا توجد تقييمات بعد.",
+        "createFromItems": "أنشئ من العناصر!",
+        "takeDecision": "اتخاذ قرار",
+        "deleteEvaluation": "حذف التقييم",
+        "deleteDecision": "حذف القرار"
       },
       "created": "Life Evaluation جديد تم إنشاؤه بالمعرف {{ param }}",
       "updated": "Life Evaluation تم تحديثه بالمعرف {{ param }}",
@@ -17,15 +23,15 @@
       "detail": {
         "title": "Life Evaluation"
       },
-      "id": "ID",
-      "evaluationDate": "Evaluation Date",
-      "reminderEnabled": "Reminder Enabled",
-      "reminderAt": "Reminder At",
-      "score": "Score",
-      "notes": "Notes",
-      "decisions": "Decisions",
-      "owner": "Owner",
-      "subLifePillarItem": "Sub Life Pillar Item"
+      "id": "المعرف",
+      "evaluationDate": "تاريخ التقييم",
+      "reminderEnabled": "تفعيل التذكير",
+      "reminderAt": "تذكير في",
+      "score": "النتيجة",
+      "notes": "الملاحظات",
+      "decisions": "القرارات",
+      "owner": "المالك",
+      "subPillarItem": "عنصر الركيزة الفرعية"
     }
   }
 }

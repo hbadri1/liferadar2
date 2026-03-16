@@ -1,0 +1,48 @@
+﻿{
+  "liferadarApp": {
+    "pillar": {
+      "home": {
+        "title": "Piliers",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Pilier",
+        "createOrEditLabel": "Créer ou éditer un Pilier",
+        "notFound": "Aucun Pilier trouvé",
+        "createFirst": "Créez votre premier Pilier pour commencer!",
+        "sectionTitle": "Piliers de Vie",
+        "addPillar": "Ajouter un Pilier",
+        "loading": "Chargement des piliers...",
+        "loadingSubPillars": "Chargement des sous-piliers...",
+        "loadingItems": "Chargement des éléments...",
+        "noSubPillars": "Aucun sous-pilier pour l'instant.",
+        "noItems": "Aucun élément pour l'instant.",
+        "expand": "Développer",
+        "collapse": "Réduire",
+        "addSubPillar": "Ajouter un sous-pilier",
+        "addItem": "Ajouter un élément",
+        "createEvaluation": "Créer une évaluation",
+        "suggested": {
+          "button": "Charger les Piliers suggérés",
+          "title": "Charger les Piliers suggérés",
+          "message": "Cela chargera les Piliers, Sous-Piliers, éléments et traductions suggérés dans votre compte. Continuer ?",
+          "confirmButton": "Charger"
+        }
+      },
+      "created": "Un nouveau Pilier a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Pilier avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Pilier avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Pilier {{ id }} ?"
+      },
+      "detail": {
+        "title": "Pilier"
+      },
+      "id": "ID",
+      "code": "Code",
+      "isActive": "Est Actif",
+      "translations": "Traductions",
+      "owner": "Propriétaire",
+      "noDescription": "Aucune description disponible",
+      "viewSubPillars": "Voir les Sous-Piliers"
+    }
+  }
+}

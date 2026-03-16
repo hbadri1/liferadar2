@@ -1,4 +1,4 @@
-id;evaluation_date;reminder_enabled;reminder_at;score;notes;owner_id;sub_life_pillar_item_id
+﻿id;evaluation_date;reminder_enabled;reminder_at;score;notes;owner_id;sub_pillar_item_id
 1;2026-02-18;true;2026-02-18T02:17:57;2;which haze;1;1
 2;2026-02-17;false;2026-02-18T07:03:33;6;abandoned festival;2;2
 3;2026-02-18;false;2026-02-18T08:20:20;2;indeed sympathetically during;2;3

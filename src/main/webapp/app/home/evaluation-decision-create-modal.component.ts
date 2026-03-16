@@ -3,6 +3,8 @@ import { HttpResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
+import dayjs from 'dayjs/esm';
+import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import SharedModule from 'app/shared/shared.module';
 import { IEvaluationDecision } from 'app/entities/evaluation-decision/evaluation-decision.model';
 import { EvaluationDecisionService } from 'app/entities/evaluation-decision/service/evaluation-decision.service';
@@ -29,6 +31,10 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
 
   editForm: EvaluationDecisionFormGroup = this.evaluationDecisionFormService.createEvaluationDecisionFormGroup();
 
+  get minDateTime(): string {
+    return dayjs().format(DATE_TIME_FORMAT);
+  }
+
   ngOnInit(): void {
     if (this.lifeEvaluation) {
       this.editForm.patchValue({
@@ -48,8 +54,6 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
       return;
     }
 
-    // Date is backend-managed; do not send a client-side value.
-    (evaluationDecision as any).date = undefined;
 
     this.evaluationDecisionService.create(evaluationDecision).subscribe({
       next: () => this.onSaveSuccess(),

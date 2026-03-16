@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -7,8 +7,8 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { ISubLifePillarItem } from 'app/entities/sub-life-pillar-item/sub-life-pillar-item.model';
-import { SubLifePillarItemService } from 'app/entities/sub-life-pillar-item/service/sub-life-pillar-item.service';
+import { ISubPillarItem } from 'app/entities/sub-pillar-item/sub-pillar-item.model';
+import { SubPillarItemService } from 'app/entities/sub-pillar-item/service/sub-pillar-item.service';
 import { LifeEvaluationService } from '../service/life-evaluation.service';
 import { ILifeEvaluation } from '../life-evaluation.model';
 import { LifeEvaluationFormGroup, LifeEvaluationFormService } from './life-evaluation-form.service';
@@ -21,19 +21,20 @@ import { LifeEvaluationFormGroup, LifeEvaluationFormService } from './life-evalu
 export class LifeEvaluationUpdateComponent implements OnInit {
   isSaving = false;
   lifeEvaluation: ILifeEvaluation | null = null;
+  readonly scoreOptions = [1, 2, 3, 4, 5];
 
-  subLifePillarItemsSharedCollection: ISubLifePillarItem[] = [];
+  subPillarItemsSharedCollection: ISubPillarItem[] = [];
 
   protected lifeEvaluationService = inject(LifeEvaluationService);
   protected lifeEvaluationFormService = inject(LifeEvaluationFormService);
-  protected subLifePillarItemService = inject(SubLifePillarItemService);
+  protected subPillarItemService = inject(SubPillarItemService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: LifeEvaluationFormGroup = this.lifeEvaluationFormService.createLifeEvaluationFormGroup();
 
-  compareSubLifePillarItem = (o1: ISubLifePillarItem | null, o2: ISubLifePillarItem | null): boolean =>
-    this.subLifePillarItemService.compareSubLifePillarItem(o1, o2);
+  compareSubPillarItem = (o1: ISubPillarItem | null, o2: ISubPillarItem | null): boolean =>
+    this.subPillarItemService.compareSubPillarItem(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ lifeEvaluation }) => {
@@ -60,6 +61,15 @@ export class LifeEvaluationUpdateComponent implements OnInit {
     }
   }
 
+  selectScore(score: number): void {
+    this.editForm.controls.score.setValue(score);
+    this.editForm.controls.score.markAsTouched();
+  }
+
+  isScoreSelected(score: number): boolean {
+    return this.editForm.controls.score.value === score;
+  }
+
   protected subscribeToSaveResponse(result: Observable<HttpResponse<ILifeEvaluation>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
@@ -83,24 +93,24 @@ export class LifeEvaluationUpdateComponent implements OnInit {
     this.lifeEvaluation = lifeEvaluation;
     this.lifeEvaluationFormService.resetForm(this.editForm, lifeEvaluation);
 
-    this.subLifePillarItemsSharedCollection = this.subLifePillarItemService.addSubLifePillarItemToCollectionIfMissing<ISubLifePillarItem>(
-      this.subLifePillarItemsSharedCollection,
-      lifeEvaluation.subLifePillarItem,
+    this.subPillarItemsSharedCollection = this.subPillarItemService.addSubPillarItemToCollectionIfMissing<ISubPillarItem>(
+      this.subPillarItemsSharedCollection,
+      lifeEvaluation.subPillarItem,
     );
   }
 
   protected loadRelationshipsOptions(): void {
-    this.subLifePillarItemService
+    this.subPillarItemService
       .query()
-      .pipe(map((res: HttpResponse<ISubLifePillarItem[]>) => res.body ?? []))
+      .pipe(map((res: HttpResponse<ISubPillarItem[]>) => res.body ?? []))
       .pipe(
-        map((subLifePillarItems: ISubLifePillarItem[]) =>
-          this.subLifePillarItemService.addSubLifePillarItemToCollectionIfMissing<ISubLifePillarItem>(
-            subLifePillarItems,
-            this.lifeEvaluation?.subLifePillarItem,
+        map((subPillarItems: ISubPillarItem[]) =>
+          this.subPillarItemService.addSubPillarItemToCollectionIfMissing<ISubPillarItem>(
+            subPillarItems,
+            this.lifeEvaluation?.subPillarItem,
           ),
         ),
       )
-      .subscribe((subLifePillarItems: ISubLifePillarItem[]) => (this.subLifePillarItemsSharedCollection = subLifePillarItems));
+      .subscribe((subPillarItems: ISubPillarItem[]) => (this.subPillarItemsSharedCollection = subPillarItems));
   }
 }

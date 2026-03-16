@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
@@ -27,7 +27,7 @@ type LifeEvaluationFormRawValue = FormValueOf<ILifeEvaluation>;
 
 type NewLifeEvaluationFormRawValue = FormValueOf<NewLifeEvaluation>;
 
-type LifeEvaluationFormDefaults = Pick<NewLifeEvaluation, 'id' | 'reminderEnabled' | 'reminderAt'>;
+type LifeEvaluationFormDefaults = Pick<NewLifeEvaluation, 'id' | 'reminderEnabled' | 'reminderAt' | 'score'>;
 
 type LifeEvaluationFormGroupContent = {
   id: FormControl<LifeEvaluationFormRawValue['id'] | NewLifeEvaluation['id']>;
@@ -36,7 +36,7 @@ type LifeEvaluationFormGroupContent = {
   reminderAt: FormControl<LifeEvaluationFormRawValue['reminderAt']>;
   score: FormControl<LifeEvaluationFormRawValue['score']>;
   notes: FormControl<LifeEvaluationFormRawValue['notes']>;
-  subLifePillarItem: FormControl<LifeEvaluationFormRawValue['subLifePillarItem']>;
+  subPillarItem: FormControl<LifeEvaluationFormRawValue['subPillarItem']>;
 };
 
 export type LifeEvaluationFormGroup = FormGroup<LifeEvaluationFormGroupContent>;
@@ -62,12 +62,12 @@ export class LifeEvaluationFormService {
       reminderEnabled: new FormControl(lifeEvaluationRawValue.reminderEnabled),
       reminderAt: new FormControl(lifeEvaluationRawValue.reminderAt),
       score: new FormControl(lifeEvaluationRawValue.score, {
-        validators: [Validators.required, Validators.min(1), Validators.max(10)],
+        validators: [Validators.required, Validators.min(1), Validators.max(5)],
       }),
       notes: new FormControl(lifeEvaluationRawValue.notes, {
         validators: [Validators.maxLength(800)],
       }),
-      subLifePillarItem: new FormControl(lifeEvaluationRawValue.subLifePillarItem, {
+      subPillarItem: new FormControl(lifeEvaluationRawValue.subPillarItem, {
         validators: [Validators.required],
       }),
     });
@@ -96,6 +96,7 @@ export class LifeEvaluationFormService {
       id: null,
       reminderEnabled: false,
       reminderAt: currentTime,
+      score: 5,
     };
   }
 

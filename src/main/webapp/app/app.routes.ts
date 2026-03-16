@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { Authority } from 'app/config/authority.constants';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { ASC } from 'app/config/navigation.constants';
 import { errorRoute } from './layouts/error/error.route';
 
 const routes: Routes = [
@@ -32,6 +33,17 @@ const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./login/login.component'),
     title: 'login.title',
+  },
+  {
+    path: 'action-items',
+    loadComponent: () =>
+      import('./entities/evaluation-decision/list/evaluation-decision.component').then(m => m.EvaluationDecisionComponent),
+    title: 'global.menu.actionItems',
+    data: {
+      defaultSort: `id,${ASC}`,
+      actionItems: true,
+    },
+    canActivate: [UserRouteAccessService],
   },
   {
     path: '',

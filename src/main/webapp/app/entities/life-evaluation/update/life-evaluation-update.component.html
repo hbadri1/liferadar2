@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-center">
+﻿<div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2
@@ -80,7 +80,20 @@
         @let scoreRef = editForm.get('score')!;
         <div class="mb-3">
           <label class="form-label" for="field_score" jhiTranslate="liferadarApp.lifeEvaluation.score">Score</label>
-          <input type="number" class="form-control" name="score" id="field_score" data-cy="score" formControlName="score" />
+          <div id="field_score" data-cy="score" class="btn-group d-flex" role="group" aria-label="Score">
+            @for (score of scoreOptions; track score) {
+              <button
+                type="button"
+                class="btn"
+                [ngClass]="isScoreSelected(score) ? 'btn-primary' : 'btn-outline-primary'"
+                [attr.aria-pressed]="isScoreSelected(score)"
+                [attr.data-cy]="'score-' + score"
+                (click)="selectScore(score)"
+              >
+                {{ score }}
+              </button>
+            }
+          </div>
           @if (scoreRef.invalid && (scoreRef.dirty || scoreRef.touched)) {
             <div>
               @if (editForm.get('score')?.errors?.required) {
@@ -92,13 +105,10 @@
                 >
               }
               @if (editForm.get('score')?.errors?.max) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.max" [translateValues]="{ max: '10' }"
-                  >This field cannot be more than 10.</small
+                <small class="form-text text-danger" jhiTranslate="entity.validation.max" [translateValues]="{ max: '5' }"
+                  >This field cannot be more than 5.</small
                 >
               }
-              <small class="form-text text-danger" [hidden]="!editForm.get('score')?.errors?.number" jhiTranslate="entity.validation.number"
-                >This field should be a number.</small
-              >
             </div>
           }
         </div>
@@ -118,33 +128,31 @@
           }
         </div>
 
-
         <div class="mb-3">
-          <label class="form-label" for="field_subLifePillarItem" jhiTranslate="liferadarApp.lifeEvaluation.subLifePillarItem"
+          <label class="form-label" for="field_subPillarItem" jhiTranslate="liferadarApp.lifeEvaluation.subPillarItem"
             >Sub Life Pillar Item</label
           >
           <select
             class="form-control"
-            id="field_subLifePillarItem"
-            data-cy="subLifePillarItem"
-            name="subLifePillarItem"
-            formControlName="subLifePillarItem"
-            [compareWith]="compareSubLifePillarItem"
+            id="field_subPillarItem"
+            data-cy="subPillarItem"
+            name="subPillarItem"
+            formControlName="subPillarItem"
+            [compareWith]="compareSubPillarItem"
           >
-            @if (!editForm.get('subLifePillarItem')!.value) {
+            @if (!editForm.get('subPillarItem')!.value) {
               <option [ngValue]="null" selected></option>
             }
-            @for (subLifePillarItemOption of subLifePillarItemsSharedCollection; track $index) {
-              <option [ngValue]="subLifePillarItemOption">{{ subLifePillarItemOption.id }}</option>
+            @for (subPillarItemOption of subPillarItemsSharedCollection; track $index) {
+              <option [ngValue]="subPillarItemOption">{{ subPillarItemOption.id }}</option>
             }
           </select>
         </div>
         @if (
-          editForm.get(['subLifePillarItem'])!.invalid &&
-          (editForm.get(['subLifePillarItem'])!.dirty || editForm.get(['subLifePillarItem'])!.touched)
+          editForm.get(['subPillarItem'])!.invalid && (editForm.get(['subPillarItem'])!.dirty || editForm.get(['subPillarItem'])!.touched)
         ) {
           <div>
-            @if (editForm.get(['subLifePillarItem'])?.errors?.required) {
+            @if (editForm.get(['subPillarItem'])?.errors?.required) {
               <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
             }
           </div>

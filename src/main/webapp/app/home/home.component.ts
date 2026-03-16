@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -9,21 +9,21 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
-import { ILifePillar } from 'app/entities/life-pillar/life-pillar.model';
-import { LifePillarService } from 'app/entities/life-pillar/service/life-pillar.service';
-import { ILifePillarTranslation } from 'app/entities/life-pillar-translation/life-pillar-translation.model';
-import { ISubLifePillar } from 'app/entities/sub-life-pillar/sub-life-pillar.model';
-import { SubLifePillarService } from 'app/entities/sub-life-pillar/service/sub-life-pillar.service';
-import { ISubLifePillarTranslation } from 'app/entities/sub-life-pillar-translation/sub-life-pillar-translation.model';
-import { ISubLifePillarItem } from 'app/entities/sub-life-pillar-item/sub-life-pillar-item.model';
-import { SubLifePillarItemService } from 'app/entities/sub-life-pillar-item/service/sub-life-pillar-item.service';
-import { ISubLifePillarItemTranslation } from 'app/entities/sub-life-pillar-item-translation/sub-life-pillar-item-translation.model';
-import { LifePillarCreateModalComponent } from './life-pillar-create-modal.component';
-import { SubLifePillarCreateModalComponent } from './sub-life-pillar-create-modal.component';
-import { SubLifePillarItemCreateModalComponent } from './sub-life-pillar-item-create-modal.component';
-import { LifePillarEditModalComponent } from './life-pillar-edit-modal.component';
-import { SubLifePillarEditModalComponent } from './sub-life-pillar-edit-modal.component';
-import { SubLifePillarItemEditModalComponent } from './sub-life-pillar-item-edit-modal.component';
+import { IPillar } from 'app/entities/pillar/pillar.model';
+import { PillarService } from 'app/entities/pillar/service/pillar.service';
+import { IPillarTranslation } from 'app/entities/pillar-translation/pillar-translation.model';
+import { ISubPillar } from 'app/entities/sub-pillar/sub-pillar.model';
+import { SubPillarService } from 'app/entities/sub-pillar/service/sub-pillar.service';
+import { ISubPillarTranslation } from 'app/entities/sub-pillar-translation/sub-pillar-translation.model';
+import { ISubPillarItem } from 'app/entities/sub-pillar-item/sub-pillar-item.model';
+import { SubPillarItemService } from 'app/entities/sub-pillar-item/service/sub-pillar-item.service';
+import { ISubPillarItemTranslation } from 'app/entities/sub-pillar-item-translation/sub-pillar-item-translation.model';
+import { PillarCreateModalComponent } from './pillar-create-modal.component';
+import { SubPillarCreateModalComponent } from './sub-pillar-create-modal.component';
+import { SubPillarItemCreateModalComponent } from './sub-pillar-item-create-modal.component';
+import { PillarEditModalComponent } from './pillar-edit-modal.component';
+import { SubPillarEditModalComponent } from './sub-pillar-edit-modal.component';
+import { SubPillarItemEditModalComponent } from './sub-pillar-item-edit-modal.component';
 import { LifeEvaluationCreateModalComponent } from './life-evaluation-create-modal.component';
 import { ILifeEvaluation } from 'app/entities/life-evaluation/life-evaluation.model';
 import { LifeEvaluationService } from 'app/entities/life-evaluation/service/life-evaluation.service';
@@ -40,10 +40,10 @@ import { ConfirmationModalComponent } from './confirmation-modal.component';
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
-  pillars = signal<ILifePillar[]>([]);
-  subPillarsMap = signal<Map<number, ISubLifePillar[]>>(new Map());
+  pillars = signal<IPillar[]>([]);
+  subPillarsMap = signal<Map<number, ISubPillar[]>>(new Map());
   loadingSubPillars = signal<Set<number>>(new Set());
-  subPillarItemsMap = signal<Map<number, ISubLifePillarItem[]>>(new Map());
+  subPillarItemsMap = signal<Map<number, ISubPillarItem[]>>(new Map());
   loadingSubPillarItems = signal<Set<number>>(new Set());
   isLoading = signal<boolean>(false);
   lifeEvaluations = signal<ILifeEvaluation[]>([]);
@@ -54,9 +54,9 @@ export default class HomeComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   private readonly accountService = inject(AccountService);
-  private readonly lifePillarService = inject(LifePillarService);
-  private readonly subLifePillarService = inject(SubLifePillarService);
-  private readonly subLifePillarItemService = inject(SubLifePillarItemService);
+  private readonly pillarService = inject(PillarService);
+  private readonly subPillarService = inject(SubPillarService);
+  private readonly subPillarItemService = inject(SubPillarItemService);
   private readonly lifeEvaluationService = inject(LifeEvaluationService);
   private readonly evaluationDecisionService = inject(EvaluationDecisionService);
   private readonly translateService = inject(TranslateService);
@@ -98,11 +98,11 @@ export default class HomeComponent implements OnInit, OnDestroy {
   loadPillars(): void {
     this.isLoading.set(true);
     console.log('Loading pillars for current user...');
-    this.lifePillarService
+    this.pillarService
       .query({ size: 100, eagerload: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: HttpResponse<ILifePillar[]>) => {
+        next: (res: HttpResponse<IPillar[]>) => {
           console.log('Pillars loaded:', res.body);
           this.pillars.set(res.body ?? []);
           this.isLoading.set(false);
@@ -123,16 +123,16 @@ export default class HomeComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  getTranslation(pillar: ILifePillar): ILifePillarTranslation | null {
+  getTranslation(pillar: IPillar): IPillarTranslation | null {
     if (!pillar.translations || pillar.translations.length === 0) {
       return null;
     }
 
-    const currentLang = this.translateService.currentLang ?? 'en';
+    const currentLang = this.getNormalizedLanguageKey();
 
     // Try to find translation for current language
-    let translation: ILifePillarTranslation | null =
-      pillar.translations.find(t => t.lang?.toLowerCase() === currentLang.toLowerCase()) ?? null;
+    let translation: IPillarTranslation | null =
+      pillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
 
     // Fallback to English if current language not found
     translation ??= pillar.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
@@ -144,7 +144,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   createNewPillar(): void {
-    const modalRef = this.modalService.open(LifePillarCreateModalComponent, {
+    const modalRef = this.modalService.open(PillarCreateModalComponent, {
       size: 'lg',
       backdrop: 'static',
       windowClass: 'compact-entity-modal',
@@ -157,11 +157,11 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadSuggestedPillars(): void {
+    const i18nBase = 'liferadarApp.pillar.home.suggested';
     const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true, backdrop: 'static' });
-    modalRef.componentInstance.title = 'Load Suggested LifePillars';
-    modalRef.componentInstance.message =
-      'This will load the suggested LifePillars, SubLifePillars, items, and translations into your account. Continue?';
-    modalRef.componentInstance.confirmButtonText = 'Load';
+    modalRef.componentInstance.title = this.translateService.instant(`${i18nBase}.title`);
+    modalRef.componentInstance.message = this.translateService.instant(`${i18nBase}.message`);
+    modalRef.componentInstance.confirmButtonText = this.translateService.instant(`${i18nBase}.confirmButton`);
     modalRef.componentInstance.confirmButtonClass = 'btn-info';
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
@@ -170,7 +170,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
       }
 
       this.isLoading.set(true);
-      this.lifePillarService.loadSuggested().pipe(takeUntil(this.destroy$)).subscribe({
+      this.pillarService.loadSuggested().pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
           this.loadPillars();
         },
@@ -183,12 +183,12 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   createSubPillar(pillarId: number): void {
-    const modalRef = this.modalService.open(SubLifePillarCreateModalComponent, {
+    const modalRef = this.modalService.open(SubPillarCreateModalComponent, {
       size: 'lg',
       backdrop: 'static',
       windowClass: 'compact-entity-modal',
     });
-    modalRef.componentInstance.lifePillarId = pillarId;
+    modalRef.componentInstance.pillarId = pillarId;
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'saved') {
         this.viewSubPillars(pillarId);
@@ -197,12 +197,12 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   createSubPillarItem(subPillarId: number): void {
-    const modalRef = this.modalService.open(SubLifePillarItemCreateModalComponent, {
+    const modalRef = this.modalService.open(SubPillarItemCreateModalComponent, {
       size: 'lg',
       backdrop: 'static',
       windowClass: 'compact-entity-modal',
     });
-    modalRef.componentInstance.subLifePillarId = subPillarId;
+    modalRef.componentInstance.subPillarId = subPillarId;
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'saved') {
         this.viewSubPillarItems(subPillarId);
@@ -223,11 +223,11 @@ export default class HomeComponent implements OnInit, OnDestroy {
     loadingItemsSet.add(subPillarId);
     this.loadingSubPillarItems.set(loadingItemsSet);
 
-    this.subLifePillarItemService
-      .query({ 'subLifePillarId.equals': subPillarId, eagerload: true, size: 100 })
+    this.subPillarItemService
+      .query({ 'subPillarId.equals': subPillarId, eagerload: true, size: 100 })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: HttpResponse<ISubLifePillarItem[]>) => {
+        next: (res: HttpResponse<ISubPillarItem[]>) => {
           const items = res.body ?? [];
           currentMap.set(subPillarId, items);
           this.subPillarItemsMap.set(currentMap);
@@ -244,7 +244,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  getSubPillarItems(subPillarId: number): ISubLifePillarItem[] {
+  getSubPillarItems(subPillarId: number): ISubPillarItem[] {
     return this.subPillarItemsMap().get(subPillarId) ?? [];
   }
 
@@ -258,19 +258,19 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   editPillar(pillarId: number): void {
     // Fetch the pillar with translations eagerly loaded
-    this.lifePillarService
+    this.pillarService
       .find(pillarId, { eagerload: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: HttpResponse<ILifePillar>) => {
+        next: (res: HttpResponse<IPillar>) => {
           const pillarWithTranslations = res.body;
           if (pillarWithTranslations) {
-            const modalRef = this.modalService.open(LifePillarEditModalComponent, {
+            const modalRef = this.modalService.open(PillarEditModalComponent, {
               size: 'lg',
               backdrop: 'static',
               windowClass: 'compact-entity-modal',
             });
-            modalRef.componentInstance.lifePillar = pillarWithTranslations;
+            modalRef.componentInstance.pillar = pillarWithTranslations;
             modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
               if (result === 'saved') {
                 this.loadPillars();
@@ -284,28 +284,28 @@ export default class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  editSubPillar(subPillar: ISubLifePillar): void {
+  editSubPillar(subPillar: ISubPillar): void {
     if (!subPillar.id) {
       return;
     }
 
     // Fetch the sub-pillar with translations eagerly loaded
-    this.subLifePillarService
+    this.subPillarService
       .find(subPillar.id, { eagerload: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: HttpResponse<ISubLifePillar>) => {
+        next: (res: HttpResponse<ISubPillar>) => {
           const subPillarWithTranslations = res.body;
           if (subPillarWithTranslations) {
-            const modalRef = this.modalService.open(SubLifePillarEditModalComponent, {
+            const modalRef = this.modalService.open(SubPillarEditModalComponent, {
               size: 'lg',
               backdrop: 'static',
               windowClass: 'compact-entity-modal',
             });
-            modalRef.componentInstance.subLifePillar = subPillarWithTranslations;
+            modalRef.componentInstance.subPillar = subPillarWithTranslations;
             modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-              if (result === 'saved' && subPillarWithTranslations.lifePillar?.id) {
-                this.viewSubPillars(subPillarWithTranslations.lifePillar.id);
+              if (result === 'saved' && subPillarWithTranslations.pillar?.id) {
+                this.viewSubPillars(subPillarWithTranslations.pillar.id);
               }
             });
           }
@@ -316,28 +316,28 @@ export default class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  editSubPillarItem(item: ISubLifePillarItem): void {
+  editSubPillarItem(item: ISubPillarItem): void {
     if (!item.id) {
       return;
     }
 
     // Fetch the item with translations eagerly loaded
-    this.subLifePillarItemService
+    this.subPillarItemService
       .find(item.id, { eagerload: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: HttpResponse<ISubLifePillarItem>) => {
+        next: (res: HttpResponse<ISubPillarItem>) => {
           const itemWithTranslations = res.body;
           if (itemWithTranslations) {
-            const modalRef = this.modalService.open(SubLifePillarItemEditModalComponent, {
+            const modalRef = this.modalService.open(SubPillarItemEditModalComponent, {
               size: 'lg',
               backdrop: 'static',
               windowClass: 'compact-entity-modal',
             });
-            modalRef.componentInstance.subLifePillarItem = itemWithTranslations;
+            modalRef.componentInstance.subPillarItem = itemWithTranslations;
             modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-              if (result === 'saved' && itemWithTranslations.subLifePillar?.id) {
-                this.viewSubPillarItems(itemWithTranslations.subLifePillar.id);
+              if (result === 'saved' && itemWithTranslations.subPillar?.id) {
+                this.viewSubPillarItems(itemWithTranslations.subPillar.id);
               }
             });
           }
@@ -348,21 +348,21 @@ export default class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  createLifeEvaluation(item: ISubLifePillarItem): void {
+  createLifeEvaluation(item: ISubPillarItem): void {
     const modalRef = this.modalService.open(LifeEvaluationCreateModalComponent, {
       size: 'md',
       backdrop: 'static',
       windowClass: 'compact-evaluation-modal',
     });
-    modalRef.componentInstance.subLifePillarItem = item;
+    modalRef.componentInstance.subPillarItem = item;
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'saved' && item.subLifePillar?.id) {
-        this.viewSubPillarItems(item.subLifePillar.id);
+      if (result === 'saved' && item.subPillar?.id) {
+        this.viewSubPillarItems(item.subPillar.id);
       }
     });
   }
 
-  deleteSubPillarItem(item: ISubLifePillarItem): void {
+  deleteSubPillarItem(item: ISubPillarItem): void {
     const itemName = this.getSubPillarItemTranslation(item) || item.code || 'this item';
 
     const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true });
@@ -373,12 +373,12 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.subLifePillarItemService.delete(item.id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.subPillarItemService.delete(item.id).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {
             console.log('Item deleted successfully');
             // Reload items for the parent sub-pillar
-            if (item.subLifePillar?.id) {
-              this.viewSubPillarItems(item.subLifePillar.id);
+            if (item.subPillar?.id) {
+              this.viewSubPillarItems(item.subPillar.id);
             }
           },
           error: (error) => {
@@ -389,7 +389,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  deletePillar(pillar: ILifePillar): void {
+  deletePillar(pillar: IPillar): void {
     const translation = this.getTranslation(pillar);
     const pillarName = translation?.name || pillar.code || 'this pillar';
 
@@ -401,7 +401,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.lifePillarService.delete(pillar.id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.pillarService.delete(pillar.id).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {
             console.log('Pillar deleted successfully');
             this.loadPillars();
@@ -414,7 +414,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteSubPillar(subPillar: ISubLifePillar): void {
+  deleteSubPillar(subPillar: ISubPillar): void {
     const translation = this.getSubPillarTranslation(subPillar);
     const subPillarName = translation?.name || subPillar.code || 'this sub-pillar';
 
@@ -426,12 +426,12 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.subLifePillarService.delete(subPillar.id).pipe(takeUntil(this.destroy$)).subscribe({
+        this.subPillarService.delete(subPillar.id).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {
             console.log('SubPillar deleted successfully');
             // Reload sub-pillars for the parent pillar
-            if (subPillar.lifePillar?.id) {
-              this.viewSubPillars(subPillar.lifePillar.id);
+            if (subPillar.pillar?.id) {
+              this.viewSubPillars(subPillar.pillar.id);
             }
           },
           error: (error) => {
@@ -456,11 +456,11 @@ export default class HomeComponent implements OnInit, OnDestroy {
       loadingPillarsSet.add(pillarId);
       this.loadingSubPillars.set(loadingPillarsSet);
 
-      this.subLifePillarService
-        .query({ 'lifePillarId.equals': pillarId, size: 100 })
+      this.subPillarService
+        .query({ 'pillarId.equals': pillarId, size: 100 })
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: (res: HttpResponse<ISubLifePillar[]>) => {
+          next: (res: HttpResponse<ISubPillar[]>) => {
             const subPillars = res.body ?? [];
             currentMap.set(pillarId, subPillars);
             this.subPillarsMap.set(currentMap);
@@ -478,7 +478,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  getSubPillars(pillarId: number): ISubLifePillar[] {
+  getSubPillars(pillarId: number): ISubPillar[] {
     return this.subPillarsMap().get(pillarId) ?? [];
   }
 
@@ -490,16 +490,16 @@ export default class HomeComponent implements OnInit, OnDestroy {
     return this.subPillarsMap().has(pillarId);
   }
 
-  getSubPillarTranslation(subPillar: ISubLifePillar): ISubLifePillarTranslation | null {
+  getSubPillarTranslation(subPillar: ISubPillar): ISubPillarTranslation | null {
     if (!subPillar.translations || subPillar.translations.length === 0) {
       return null;
     }
 
-    const currentLang = this.translateService.currentLang ?? 'en';
+    const currentLang = this.getNormalizedLanguageKey();
 
     // Try to find translation for current language
-    let translation: ISubLifePillarTranslation | null =
-      subPillar.translations.find(t => t.lang?.toLowerCase() === currentLang.toLowerCase()) ?? null;
+    let translation: ISubPillarTranslation | null =
+      subPillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
 
     // Fallback to English if current language not found
     translation ??= subPillar.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
@@ -510,16 +510,24 @@ export default class HomeComponent implements OnInit, OnDestroy {
     return translation;
   }
 
-  getSubPillarItemTranslation(item: ISubLifePillarItem): string | null {
+  getSubPillarItemTranslation(item: ISubPillarItem): string | null {
+    return this.getSubPillarItemResolvedTranslation(item)?.name ?? null;
+  }
+
+  getSubPillarItemDescription(item: ISubPillarItem): string | null {
+    return this.getSubPillarItemResolvedTranslation(item)?.description ?? null;
+  }
+
+  private getSubPillarItemResolvedTranslation(item: ISubPillarItem): ISubPillarItemTranslation | null {
     if (!item.translations || item.translations.length === 0) {
       return null;
     }
 
-    const currentLang = this.translateService.currentLang ?? 'en';
+    const currentLang = this.getNormalizedLanguageKey();
 
     // Try to find translation for current language
-    let translation: ISubLifePillarItemTranslation | null =
-      item.translations.find(t => t.lang?.toLowerCase() === currentLang.toLowerCase()) ?? null;
+    let translation: ISubPillarItemTranslation | null =
+      item.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
 
     // Fallback to English if current language not found
     translation ??= item.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
@@ -527,7 +535,17 @@ export default class HomeComponent implements OnInit, OnDestroy {
     // Fallback to first available translation
     translation ??= item.translations[0] ?? null;
 
-    return translation?.name ?? null;
+    return translation;
+  }
+
+  private getNormalizedLanguageKey(): string {
+    const lang = (this.translateService.currentLang ?? 'en').toLowerCase();
+    // Map locale variants like ar-ly / fr-ca to their base translation code.
+    return lang.split('-')[0].split('_')[0] || 'en';
+  }
+
+  isArabicLang(): boolean {
+    return this.getNormalizedLanguageKey() === 'ar';
   }
 
   loadLifeEvaluations(): void {
@@ -542,7 +560,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
           const itemIds = [
             ...new Set(
               evaluations
-                .map(evaluation => evaluation.subLifePillarItem?.id)
+                .map(evaluation => evaluation.subPillarItem?.id)
                 .filter((id): id is number => id !== undefined && id !== null),
             ),
           ];
@@ -554,23 +572,23 @@ export default class HomeComponent implements OnInit, OnDestroy {
             return;
           }
 
-          this.subLifePillarItemService
+          this.subPillarItemService
             .query({ 'id.in': itemIds.join(','), eagerload: true, size: itemIds.length })
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-              next: (itemsRes: HttpResponse<ISubLifePillarItem[]>) => {
+              next: (itemsRes: HttpResponse<ISubPillarItem[]>) => {
                 const detailedItems = itemsRes.body ?? [];
                 const itemsById = new Map(detailedItems.map(item => [item.id, item]));
 
                 const enrichedEvaluations = evaluations.map(evaluation => {
-                  const itemId = evaluation.subLifePillarItem?.id;
+                  const itemId = evaluation.subPillarItem?.id;
                   if (!itemId) {
                     return evaluation;
                   }
 
                   return {
                     ...evaluation,
-                    subLifePillarItem: itemsById.get(itemId) ?? evaluation.subLifePillarItem,
+                    subPillarItem: itemsById.get(itemId) ?? evaluation.subPillarItem,
                   };
                 });
 
@@ -651,7 +669,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   getEvaluationItemName(evaluation: ILifeEvaluation): string {
-    const item = evaluation.subLifePillarItem;
+    const item = evaluation.subPillarItem;
     if (!item) {
       return 'N/A';
     }
@@ -663,7 +681,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     const grouped = new Map<string, { itemId: string; itemName: string; evaluations: ILifeEvaluation[] }>();
 
     this.lifeEvaluations().forEach(evaluation => {
-      const key = evaluation.subLifePillarItem?.id ? `${evaluation.subLifePillarItem.id}` : `unknown-${evaluation.id}`;
+      const key = evaluation.subPillarItem?.id ? `${evaluation.subPillarItem.id}` : `unknown-${evaluation.id}`;
       const itemName = this.getEvaluationItemName(evaluation);
 
       if (!grouped.has(key)) {

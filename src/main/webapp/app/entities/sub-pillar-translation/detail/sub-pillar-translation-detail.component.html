@@ -1,0 +1,60 @@
+﻿<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (subPillarTranslation(); as subPillarTranslationRef) {
+      <div>
+        <h2 data-cy="subPillarTranslationDetailsHeading">
+          <span jhiTranslate="liferadarApp.subPillarTranslation.detail.title">Sub Life Pillar Translation</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ subPillarTranslationRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarTranslation.lang">Lang</span></dt>
+          <dd>
+            <span [jhiTranslate]="'liferadarApp.LangCode.' + (subPillarTranslationRef.lang ?? 'null')">{{
+              { null: '', EN: 'EN', AR: 'AR', FR: 'FR' }[subPillarTranslationRef.lang ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarTranslation.name">Name</span></dt>
+          <dd>
+            <span>{{ subPillarTranslationRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarTranslation.description">Description</span></dt>
+          <dd>
+            <span>{{ subPillarTranslationRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="liferadarApp.subPillarTranslation.subPillar">Sub Life Pillar</span></dt>
+          <dd>
+            @if (subPillarTranslation()!.subPillar) {
+              <div>
+                <a [routerLink]="['/sub-pillar', subPillarTranslation()!.subPillar?.id, 'view']">{{
+                  subPillarTranslationRef.subPillar?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button
+          type="button"
+          [routerLink]="['/sub-pillar-translation', subPillarTranslationRef.id, 'edit']"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

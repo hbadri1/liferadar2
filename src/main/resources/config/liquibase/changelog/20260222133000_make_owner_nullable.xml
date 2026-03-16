@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
@@ -7,15 +7,15 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog-ext.xsd">
 
     <changeSet id="20260222133000-1" author="jhipster">
-        <dropNotNullConstraint tableName="life_pillar" columnName="owner_id" columnDataType="bigint"/>
+        <dropNotNullConstraint tableName="pillar" columnName="owner_id" columnDataType="bigint"/>
     </changeSet>
 
     <changeSet id="20260222133000-2" author="jhipster">
-        <dropNotNullConstraint tableName="sub_life_pillar" columnName="owner_id" columnDataType="bigint"/>
+        <dropNotNullConstraint tableName="sub_pillar" columnName="owner_id" columnDataType="bigint"/>
     </changeSet>
 
     <changeSet id="20260222133000-3" author="jhipster">
-        <dropNotNullConstraint tableName="sub_life_pillar_item" columnName="owner_id" columnDataType="bigint"/>
+        <dropNotNullConstraint tableName="sub_pillar_item" columnName="owner_id" columnDataType="bigint"/>
     </changeSet>
 
     <changeSet id="20260222133000-4" author="jhipster">
