@@ -24,6 +24,7 @@
       "account": {
         "main": "Account",
         "settings": "Settings",
+        "configuration": "My Configuration",
         "password": "Password",
         "sessions": "Sessions",
         "login": "Sign in",

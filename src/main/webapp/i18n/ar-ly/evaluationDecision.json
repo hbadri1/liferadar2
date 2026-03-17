@@ -24,7 +24,30 @@
       "futureDateRequired": "يجب أن يكون تاريخ الاستحقاق في المستقبل.",
       "owner": "Owner",
       "lifeEvaluation": "Life Evaluation",
-      "subPillar": "الركيزة الفرعية"
+      "subPillar": "الركيزة الفرعية",
+      "integrations": {
+        "title": "التكاملات",
+        "ticktick": "TickTick",
+        "microsoftTodo": "Microsoft To Do",
+        "todoist": "Todoist",
+        "confirmTitle": "إرسال إلى {{ provider }}",
+        "confirmMessage": "هل تريد إرسال بند العمل \"{{ actionItem }}\" إلى {{ provider }}؟",
+        "confirmButton": "إرسال إلى {{ provider }}",
+        "comingSoonTitle": "{{ provider }}",
+        "comingSoonMessage": "متاح قريبًا.",
+        "comingSoonButton": "حسنًا",
+        "pushSuccess": "تم إرسال عنصر الإجراء إلى تطبيق التكامل.",
+        "pushError": "فشل إرسال عنصر الإجراء إلى تطبيق التكامل.",
+        "ticktickProjectModal": {
+          "title": "إرسال إلى TickTick",
+          "projectLabel": "مشروع TickTick",
+          "taskTitleLabel": "اسم المهمة",
+          "taskDateLabel": "تاريخ المهمة",
+          "confirmButton": "إرسال إلى TickTick",
+          "noProjects": "لم يتم العثور على مشاريع TickTick. سيتم إنشاء مشروع جديد باسم Liferadar عند الإرسال.",
+          "loadProjectsError": "فشل تحميل مشاريع TickTick."
+        }
+      }
     }
   }
 }

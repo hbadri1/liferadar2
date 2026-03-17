@@ -1,0 +1,62 @@
+{
+  "todoapps": {
+    "title": "Ma configuration",
+    "subtitle": "Gérez vos paramètres utilisateur, notamment vos intégrations d'applications de tâches.",
+    "profile": {
+      "title": "Résumé du profil",
+      "username": "Nom d'utilisateur",
+      "email": "E-mail",
+      "language": "Langue"
+    },
+    "integrations": {
+      "title": "Intégrations d'applications de tâches",
+      "description": "Configurez les applications de tâches utilisées depuis votre page Action Items."
+    },
+    "providers": {
+      "ticktick": "TickTick",
+      "microsoft-todo": "Microsoft To Do",
+      "todoist": "Todoist"
+    },
+    "status": {
+      "available": "Disponible",
+      "unavailable": "Indisponible",
+      "configured": "Configuré",
+      "notConfigured": "Non configuré"
+    },
+    "form": {
+      "enabled": "Activer l'intégration",
+      "accessToken": "Jeton d'accès",
+      "accessTokenPlaceholder": "Collez le jeton d'accès du fournisseur",
+      "tokenRetainedHint": "Laissez vide pour conserver le jeton actuellement stocké.",
+      "externalUserId": "ID utilisateur externe",
+      "externalUserIdPlaceholder": "Identifiant de compte externe optionnel",
+      "defaultProjectId": "ID du projet par défaut",
+      "defaultProjectIdPlaceholder": "Identifiant optionnel du projet/de la liste",
+      "microsoftListId": "ID de liste Microsoft To Do"
+    },
+    "actions": {
+      "refresh": "Actualiser",
+      "authorize": "Autoriser",
+      "disconnect": "Déconnecter",
+      "loading": "Chargement...",
+      "create": "Créer la configuration",
+      "update": "Mettre à jour la configuration"
+    },
+    "messages": {
+      "loadError": "Impossible de charger votre configuration d'applications de tâches.",
+      "saveError": "Impossible d'enregistrer votre configuration d'applications de tâches.",
+      "popupBlocked": "La fenêtre popup a été bloquée. Autorisez les popups puis réessayez.",
+      "ticktickAuthorized": "Autorisation TickTick effectuée avec succès.",
+      "ticktickAuthorizeFailed": "Échec de l'autorisation TickTick.",
+      "ticktickDisconnected": "TickTick a été déconnecté avec succès.",
+      "ticktickDisconnectFailed": "Échec de la déconnexion TickTick.",
+      "createSuccess": "Configuration {{ provider }} créée avec succès.",
+      "updateSuccess": "Configuration {{ provider }} mise à jour avec succès."
+    },
+    "validation": {
+      "accessTokenRequired": "Le jeton d'accès est requis lorsque l'intégration est activée.",
+      "defaultProjectIdRequired": "L'ID du projet/de la liste par défaut est requis pour cette intégration."
+    }
+  }
+}
+

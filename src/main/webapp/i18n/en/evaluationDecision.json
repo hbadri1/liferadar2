@@ -24,7 +24,30 @@
       "futureDateRequired": "Due date must be in the future.",
       "owner": "Owner",
       "lifeEvaluation": "Life Evaluation",
-      "subPillar": "Sub Life Pillar"
+      "subPillar": "Sub Life Pillar",
+      "integrations": {
+        "title": "Integrations",
+        "ticktick": "TickTick",
+        "microsoftTodo": "Microsoft To Do",
+        "todoist": "Todoist",
+        "confirmTitle": "Send to {{ provider }}",
+        "confirmMessage": "Do you want to send the action item \"{{ actionItem }}\" to {{ provider }}?",
+        "confirmButton": "Send to {{ provider }}",
+        "comingSoonTitle": "{{ provider }}",
+        "comingSoonMessage": "Coming in future.",
+        "comingSoonButton": "OK",
+        "pushSuccess": "Action item sent to integration app.",
+        "pushError": "Failed to send action item to integration app.",
+        "ticktickProjectModal": {
+          "title": "Send to TickTick",
+          "projectLabel": "TickTick Project",
+          "taskTitleLabel": "Task Name",
+          "taskDateLabel": "Task Date",
+          "confirmButton": "Send to TickTick",
+          "noProjects": "No TickTick projects were found. A new project named Liferadar will be created when you send.",
+          "loadProjectsError": "Failed to load TickTick projects."
+        }
+      }
     }
   }
 }
