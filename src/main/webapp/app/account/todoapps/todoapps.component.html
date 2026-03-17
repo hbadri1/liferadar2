@@ -1,0 +1,157 @@
+<div class="d-flex justify-content-center">
+  <div class="col-lg-10">
+    <h2 jhiTranslate="todoapps.title">My Configuration</h2>
+    <p class="text-muted" jhiTranslate="todoapps.subtitle">Manage your user integrations and todo app settings.</p>
+
+    <jhi-alert-error />
+    <jhi-alert />
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title" jhiTranslate="todoapps.profile.title">Profile Summary</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="small text-muted" jhiTranslate="todoapps.profile.username">Username</div>
+            <div class="fw-semibold">{{ account()?.login || '-' }}</div>
+          </div>
+          <div class="col-md-4">
+            <div class="small text-muted" jhiTranslate="todoapps.profile.email">Email</div>
+            <div class="fw-semibold">{{ account()?.email || '-' }}</div>
+          </div>
+          <div class="col-md-4">
+            <div class="small text-muted" jhiTranslate="todoapps.profile.language">Language</div>
+            <div class="fw-semibold">{{ account()?.langKey || '-' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h4 class="mb-1" jhiTranslate="todoapps.integrations.title">Todo App Integrations</h4>
+        <p class="text-muted mb-0" jhiTranslate="todoapps.integrations.description">
+          Configure the todo applications used from your Action Items page.
+        </p>
+      </div>
+      <button class="btn btn-outline-primary" type="button" (click)="loadConfigs()" [disabled]="isLoading()">
+        <span jhiTranslate="todoapps.actions.refresh">Refresh</span>
+      </button>
+    </div>
+
+    @if (isLoading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden" jhiTranslate="todoapps.actions.loading">Loading...</span>
+        </div>
+      </div>
+    } @else {
+      <div class="row g-4">
+        @for (config of orderedConfigs(); track config.provider) {
+          @let form = getForm(config.provider);
+          <div class="col-12">
+            <div class="card shadow-sm h-100">
+              <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div>
+                  <h5 class="mb-1">{{ getProviderLabel(config.provider) }}</h5>
+                  <div class="small text-muted">{{ config.baseUrl || '-' }}</div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  @if (config.provider === 'ticktick') {
+                    @if (isTickTickConnected(config)) {
+                      <button type="button" class="btn btn-sm btn-outline-danger" [disabled]="!config.available" (click)="disconnectTickTick()">
+                        <span jhiTranslate="todoapps.actions.disconnect">Disconnect</span>
+                      </button>
+                    } @else {
+                      <button type="button" class="btn btn-sm btn-outline-primary" [disabled]="!config.available" (click)="authorizeTickTick()">
+                        <span jhiTranslate="todoapps.actions.authorize">Authorize</span>
+                      </button>
+                    }
+                  }
+                  <span class="badge" [ngClass]="config.available ? 'bg-success' : 'bg-secondary'">
+                    {{ (config.available ? 'todoapps.status.available' : 'todoapps.status.unavailable') | translate }}
+                  </span>
+                  <span class="badge" [ngClass]="config.configured ? 'bg-info' : 'bg-warning text-dark'">
+                    {{ (config.configured ? 'todoapps.status.configured' : 'todoapps.status.notConfigured') | translate }}
+                  </span>
+                </div>
+              </div>
+              <div class="card-body">
+                @if (form) {
+                  <form [formGroup]="form" (ngSubmit)="save(config.provider)">
+                    <div class="form-check form-switch mb-3">
+                      <input class="form-check-input" type="checkbox" [id]="'enabled-' + config.provider" formControlName="enabled" />
+                      <label class="form-check-label" [for]="'enabled-' + config.provider" jhiTranslate="todoapps.form.enabled">
+                        Enable integration
+                      </label>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label" [for]="'token-' + config.provider" jhiTranslate="todoapps.form.accessToken">Access Token</label>
+                      <input
+                        class="form-control"
+                        type="password"
+                        [id]="'token-' + config.provider"
+                        formControlName="accessToken"
+                        placeholder="{{ 'todoapps.form.accessTokenPlaceholder' | translate }}"
+                      />
+                      @if (config.hasAccessToken) {
+                        <div class="form-text" jhiTranslate="todoapps.form.tokenRetainedHint">
+                          Leave blank to keep the current stored token.
+                        </div>
+                      }
+                      @if (form.controls.accessToken.invalid && (form.controls.accessToken.dirty || form.controls.accessToken.touched)) {
+                        <small class="form-text text-danger" jhiTranslate="todoapps.validation.accessTokenRequired">
+                          Access token is required when the integration is enabled.
+                        </small>
+                      }
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label" [for]="'external-user-' + config.provider" jhiTranslate="todoapps.form.externalUserId">
+                          External User ID
+                        </label>
+                        <input
+                          class="form-control"
+                          type="text"
+                          [id]="'external-user-' + config.provider"
+                          formControlName="externalUserId"
+                          placeholder="{{ 'todoapps.form.externalUserIdPlaceholder' | translate }}"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label" [for]="'project-' + config.provider">{{ getProjectIdLabel(config) }}</label>
+                        <input
+                          class="form-control"
+                          type="text"
+                          [id]="'project-' + config.provider"
+                          formControlName="defaultProjectId"
+                          placeholder="{{ 'todoapps.form.defaultProjectIdPlaceholder' | translate }}"
+                        />
+                        @if (form.controls.defaultProjectId.invalid && (form.controls.defaultProjectId.dirty || form.controls.defaultProjectId.touched)) {
+                          <small class="form-text text-danger" jhiTranslate="todoapps.validation.defaultProjectIdRequired">
+                            Default project/list ID is required for this integration.
+                          </small>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-end">
+                      <button type="submit" class="btn btn-primary" [disabled]="isSaving(config.provider) || !config.available">
+                        @if (isSaving(config.provider)) {
+                          <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                        }
+                        <span>{{ (config.configured ? 'todoapps.actions.update' : 'todoapps.actions.create') | translate }}</span>
+                      </button>
+                    </div>
+                  </form>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+

@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <h5 class="modal-title" jhiTranslate="liferadarApp.evaluationDecision.integrations.ticktickProjectModal.title">Send to TickTick</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  @if (projects.length > 0) {
+    <div class="mb-3">
+      <label class="form-label" for="ticktick-project" jhiTranslate="liferadarApp.evaluationDecision.integrations.ticktickProjectModal.projectLabel">
+        TickTick Project
+      </label>
+      <select id="ticktick-project" class="form-select" [(ngModel)]="selectedProjectId">
+        @for (project of projects; track project.id) {
+          <option [value]="project.id">{{ project.name }}</option>
+        }
+      </select>
+    </div>
+  } @else {
+    <div class="alert alert-info" jhiTranslate="liferadarApp.evaluationDecision.integrations.ticktickProjectModal.noProjects">
+      No TickTick projects were found.
+    </div>
+  }
+
+  <div class="mb-3">
+    <label class="form-label" for="ticktick-title" jhiTranslate="liferadarApp.evaluationDecision.integrations.ticktickProjectModal.taskTitleLabel">
+      Task Name
+    </label>
+    <input id="ticktick-title" class="form-control" type="text" [(ngModel)]="title" />
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="cancel()" jhiTranslate="entity.action.cancel">Cancel</button>
+  <button type="button" class="btn btn-primary" [disabled]="!canConfirm()" (click)="confirm()" jhiTranslate="liferadarApp.evaluationDecision.integrations.ticktickProjectModal.confirmButton">
+    Send to TickTick
+  </button>
+</div>
+

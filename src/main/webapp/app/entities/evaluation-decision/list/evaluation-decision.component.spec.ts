@@ -122,6 +122,24 @@ describe('EvaluationDecision Management Component', () => {
     expect(service.query).toHaveBeenLastCalledWith(expect.objectContaining({ sort: ['id,desc'] }));
   });
 
+  describe('pushToIntegration', () => {
+    let ngbModal: NgbModal;
+
+    beforeEach(() => {
+      ngbModal = (comp as any).modalService;
+      jest.spyOn(ngbModal, 'open').mockReturnValue({ componentInstance: {} } as any);
+    });
+
+    it.each(['microsoft-todo', 'todoist'])('should show coming-soon popup for %s and not push integration', provider => {
+      const executeSpy = jest.spyOn<any, any>(comp as any, 'executeIntegrationPush');
+
+      comp.pushToIntegration(sampleWithRequiredData, provider);
+
+      expect(ngbModal.open).toHaveBeenCalled();
+      expect(executeSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('delete', () => {
     let ngbModal: NgbModal;
     let deleteModalMock: any;

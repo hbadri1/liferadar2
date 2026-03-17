@@ -24,6 +24,7 @@
       "account": {
         "main": "الحساب",
         "settings": "الإعدادات",
+        "configuration": "إعداداتي",
         "password": "كلمه السر",
         "sessions": "جلسات",
         "login": "تسجيل الدخول",
