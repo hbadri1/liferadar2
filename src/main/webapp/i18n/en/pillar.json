@@ -20,6 +20,10 @@
         "addSubPillar": "Add Sub-Pillar",
         "addItem": "Add Item",
         "createEvaluation": "Create Evaluation",
+        "scoreMatrix": {
+          "title": "Daily Evaluation Average",
+          "last30Days": "Last 30 days"
+        },
         "suggested": {
           "button": "Load Suggested Pillars",
           "title": "Load Suggested Pillars",

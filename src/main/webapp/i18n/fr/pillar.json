@@ -20,6 +20,10 @@
         "addSubPillar": "Ajouter un sous-pilier",
         "addItem": "Ajouter un élément",
         "createEvaluation": "Créer une évaluation",
+        "scoreMatrix": {
+          "title": "Moyenne quotidienne des évaluations",
+          "last30Days": "30 derniers jours"
+        },
         "suggested": {
           "button": "Charger les Piliers suggérés",
           "title": "Charger les Piliers suggérés",

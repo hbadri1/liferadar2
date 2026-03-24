@@ -20,6 +20,10 @@
         "addSubPillar": "إضافة ركن فرعي",
         "addItem": "إضافة عنصر",
         "createEvaluation": "إنشاء تقييم",
+        "scoreMatrix": {
+          "title": "متوسط التقييم اليومي",
+          "last30Days": "آخر 30 يوم"
+        },
         "suggested": {
           "button": "تحميل الأركان المقترحة",
           "title": "تحميل الأركان المقترحة",

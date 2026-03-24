@@ -103,8 +103,9 @@ export default class HomeComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: HttpResponse<IPillar[]>) => {
-          console.log('Pillars loaded:', res.body);
-          this.pillars.set(res.body ?? []);
+          const deduplicatedPillars = this.deduplicatePillars(res.body ?? []);
+          console.log('Pillars loaded:', deduplicatedPillars);
+          this.pillars.set(deduplicatedPillars);
           this.isLoading.set(false);
         },
         error: (error) => {
@@ -141,6 +142,73 @@ export default class HomeComponent implements OnInit, OnDestroy {
     translation ??= pillar.translations[0] ?? null;
 
     return translation;
+  }
+
+  private deduplicatePillars(pillars: IPillar[]): IPillar[] {
+    const deduplicatedByKey = new Map<string, IPillar>();
+
+    for (const pillar of pillars) {
+      const key = this.getPillarDuplicateKey(pillar);
+      const existing = deduplicatedByKey.get(key);
+
+      if (!existing) {
+        deduplicatedByKey.set(key, pillar);
+        continue;
+      }
+
+      console.warn('Duplicate pillar detected in home page payload, collapsing duplicates for key:', key);
+      deduplicatedByKey.set(key, this.mergeDuplicatePillars(existing, pillar));
+    }
+
+    return Array.from(deduplicatedByKey.values()).sort((left, right) => (left.id ?? 0) - (right.id ?? 0));
+  }
+
+  private getPillarDuplicateKey(pillar: IPillar): string {
+    const normalizedCode = pillar.code?.trim().toLowerCase();
+    const ownerId = pillar.owner?.id;
+
+    if (ownerId !== undefined && normalizedCode) {
+      return `${ownerId}:${normalizedCode}`;
+    }
+
+    return `id:${pillar.id}`;
+  }
+
+  private mergeDuplicatePillars(first: IPillar, second: IPillar): IPillar {
+    const preferred = this.pickPreferredPillar(first, second);
+    const other = preferred === first ? second : first;
+
+    return {
+      ...preferred,
+      translations: this.mergePillarTranslations(preferred.translations ?? [], other.translations ?? []),
+    };
+  }
+
+  private pickPreferredPillar(first: IPillar, second: IPillar): IPillar {
+    const firstTranslationCount = first.translations?.length ?? 0;
+    const secondTranslationCount = second.translations?.length ?? 0;
+
+    if (firstTranslationCount !== secondTranslationCount) {
+      return firstTranslationCount > secondTranslationCount ? first : second;
+    }
+
+    return (first.id ?? Number.MAX_SAFE_INTEGER) <= (second.id ?? Number.MAX_SAFE_INTEGER) ? first : second;
+  }
+
+  private mergePillarTranslations(
+    primaryTranslations: IPillarTranslation[],
+    secondaryTranslations: IPillarTranslation[],
+  ): IPillarTranslation[] {
+    const translationsByLang = new Map<string, IPillarTranslation>();
+
+    for (const translation of [...primaryTranslations, ...secondaryTranslations]) {
+      const langKey = translation.lang?.toLowerCase() ?? `id:${translation.id ?? translationsByLang.size}`;
+      if (!translationsByLang.has(langKey)) {
+        translationsByLang.set(langKey, translation);
+      }
+    }
+
+    return Array.from(translationsByLang.values());
   }
 
   createNewPillar(): void {
@@ -548,6 +616,95 @@ export default class HomeComponent implements OnInit, OnDestroy {
     return this.getNormalizedLanguageKey() === 'ar';
   }
 
+  getEvaluationDailyAverageMatrix(): Array<{ dateKey: string; label: string; average: number | null; count: number }> {
+    const scoreBuckets = new Map<string, { sum: number; count: number }>();
+
+    for (const evaluation of this.lifeEvaluations()) {
+      const score = evaluation.score;
+      const evaluationDate = evaluation.evaluationDate?.toDate();
+
+      if (score === null || score === undefined || !evaluationDate) {
+        continue;
+      }
+
+      const dayKey = this.toRiyadhDateKey(evaluationDate);
+      const bucket = scoreBuckets.get(dayKey) ?? { sum: 0, count: 0 };
+      bucket.sum += score;
+      bucket.count += 1;
+      scoreBuckets.set(dayKey, bucket);
+    }
+
+    return this.getLastThirtyRiyadhDateKeys().map(dayKey => {
+      const bucket = scoreBuckets.get(dayKey);
+      const average = bucket ? Number((bucket.sum / bucket.count).toFixed(1)) : null;
+
+      return {
+        dateKey: dayKey,
+        label: this.formatMatrixDayLabel(dayKey),
+        average,
+        count: bucket?.count ?? 0,
+      };
+    });
+  }
+
+  getEvaluationMatrixCellClass(average: number | null): string {
+    if (average === null) {
+      return 'score-matrix-cell--empty';
+    }
+    if (average < 2) {
+      return 'score-matrix-cell--low';
+    }
+    if (average < 3.5) {
+      return 'score-matrix-cell--mid';
+    }
+    if (average < 4.5) {
+      return 'score-matrix-cell--good';
+    }
+    return 'score-matrix-cell--excellent';
+  }
+
+  private getLastThirtyRiyadhDateKeys(): string[] {
+    const now = new Date();
+    const dayInMilliseconds = 24 * 60 * 60 * 1000;
+    const keys: string[] = [];
+
+    for (let daysAgo = 29; daysAgo >= 0; daysAgo -= 1) {
+      keys.push(this.toRiyadhDateKey(new Date(now.getTime() - daysAgo * dayInMilliseconds)));
+    }
+
+    return keys;
+  }
+
+  private toRiyadhDateKey(date: Date): string {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: this.riyadhTimeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(date);
+
+    const year = parts.find(part => part.type === 'year')?.value ?? '0000';
+    const month = parts.find(part => part.type === 'month')?.value ?? '00';
+    const day = parts.find(part => part.type === 'day')?.value ?? '00';
+
+    return `${year}-${month}-${day}`;
+  }
+
+  private formatMatrixDayLabel(dateKey: string): string {
+    const [year, month, day] = dateKey.split('-').map(value => Number(value));
+    if (!year || !month || !day) {
+      return dateKey;
+    }
+
+    const language = this.translateService.currentLang || 'en';
+    const middayUtc = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    return new Intl.DateTimeFormat(language, {
+      timeZone: this.riyadhTimeZone,
+      day: '2-digit',
+      month: '2-digit',
+    }).format(middayUtc);
+  }
+
   loadLifeEvaluations(): void {
     this.isLoadingEvaluations.set(true);
     console.log('Loading life evaluations for current user...');
@@ -694,14 +851,38 @@ export default class HomeComponent implements OnInit, OnDestroy {
     const groups = Array.from(grouped.values());
 
     groups.forEach(group => {
-      group.evaluations.sort((a, b) => {
-        const aTime = a.evaluationDate?.valueOf() ?? 0;
-        const bTime = b.evaluationDate?.valueOf() ?? 0;
-        return bTime - aTime;
-      });
+      group.evaluations.sort((a, b) => this.compareEvaluationsByScoreAsc(a, b));
     });
 
-    return groups.sort((a, b) => a.itemName.localeCompare(b.itemName));
+    return groups.sort((a, b) => {
+      const scoreComparison = this.getLowestEvaluationScore(a.evaluations) - this.getLowestEvaluationScore(b.evaluations);
+      if (scoreComparison !== 0) {
+        return scoreComparison;
+      }
+
+      return a.itemName.localeCompare(b.itemName);
+    });
+  }
+
+  private compareEvaluationsByScoreAsc(a: ILifeEvaluation, b: ILifeEvaluation): number {
+    const aScore = a.score ?? Number.MAX_SAFE_INTEGER;
+    const bScore = b.score ?? Number.MAX_SAFE_INTEGER;
+
+    if (aScore !== bScore) {
+      return aScore - bScore;
+    }
+
+    const aTime = a.evaluationDate?.valueOf() ?? 0;
+    const bTime = b.evaluationDate?.valueOf() ?? 0;
+    if (aTime !== bTime) {
+      return aTime - bTime;
+    }
+
+    return (a.id ?? 0) - (b.id ?? 0);
+  }
+
+  private getLowestEvaluationScore(evaluations: ILifeEvaluation[]): number {
+    return evaluations.reduce((lowestScore, evaluation) => Math.min(lowestScore, evaluation.score ?? Number.MAX_SAFE_INTEGER), Number.MAX_SAFE_INTEGER);
   }
 
   deleteLifeEvaluation(evaluation: ILifeEvaluation): void {

@@ -324,6 +324,18 @@
               <li>
                 <a
                   class="dropdown-item"
+                  routerLink="/account/configuration"
+                  routerLinkActive="active"
+                  (click)="collapseNavbar()"
+                  data-cy="userConfiguration"
+                >
+                  <fa-icon icon="sliders-h" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.account.configuration">My Configuration</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
                   routerLink="/account/password"
                   routerLinkActive="active"
                   (click)="collapseNavbar()"

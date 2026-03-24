@@ -2,6 +2,7 @@ import { Component, NgZone, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import dayjs from 'dayjs/esm';
 
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
@@ -9,11 +10,14 @@ import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { TranslateService } from '@ngx-translate/core';
+import { AlertService } from 'app/core/util/alert.service';
 import { IEvaluationDecision } from '../evaluation-decision.model';
 import { ISubPillarItemTranslation } from 'app/entities/sub-pillar-item-translation/sub-pillar-item-translation.model';
 import { ISubPillarTranslation } from 'app/entities/sub-pillar-translation/sub-pillar-translation.model';
 import { EntityArrayResponseType, EvaluationDecisionService } from '../service/evaluation-decision.service';
 import { EvaluationDecisionDeleteDialogComponent } from '../delete/evaluation-decision-delete-dialog.component';
+import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
+import { ITickTickProjectModalResult, TickTickProjectModalComponent } from './ticktick-project-modal.component';
 
 @Component({
   selector: 'jhi-evaluation-decision',
@@ -26,6 +30,13 @@ export class EvaluationDecisionComponent implements OnInit {
   isLoading = false;
   isActionItemsPage = false;
   readonly riyadhTimeZone = 'Asia/Riyadh';
+  readonly integrationProviders = [
+    { code: 'ticktick', labelKey: 'liferadarApp.evaluationDecision.integrations.ticktick', style: 'btn-outline-primary' },
+    { code: 'microsoft-todo', labelKey: 'liferadarApp.evaluationDecision.integrations.microsoftTodo', style: 'btn-outline-info' },
+    { code: 'todoist', labelKey: 'liferadarApp.evaluationDecision.integrations.todoist', style: 'btn-outline-secondary' },
+  ];
+
+  private integrationPushingKeys = new Set<string>();
 
   sortState = sortStateSignal({});
 
@@ -34,6 +45,7 @@ export class EvaluationDecisionComponent implements OnInit {
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected readonly translateService = inject(TranslateService);
+  protected readonly alertService = inject(AlertService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
@@ -103,6 +115,164 @@ export class EvaluationDecisionComponent implements OnInit {
     link.download = 'action-items.xls';
     link.click();
     URL.revokeObjectURL(link.href);
+  }
+
+  pushToIntegration(evaluationDecision: IEvaluationDecision, provider: string): void {
+    if (!evaluationDecision.id) {
+      return;
+    }
+
+    if (this.isDueDatePast(evaluationDecision)) {
+      return;
+    }
+
+    if (provider === 'ticktick') {
+      this.openTickTickProjectModal(evaluationDecision);
+      return;
+    }
+
+    if (provider === 'microsoft-todo' || provider === 'todoist') {
+      this.openComingSoonModal(provider);
+      return;
+    }
+
+    const providerLabel = this.translateService.instant(this.getIntegrationProviderLabelKey(provider));
+    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
+    modalRef.componentInstance.title = this.translateService.instant('liferadarApp.evaluationDecision.integrations.confirmTitle', {
+      provider: providerLabel,
+    });
+    modalRef.componentInstance.message = this.translateService.instant('liferadarApp.evaluationDecision.integrations.confirmMessage', {
+      provider: providerLabel,
+      actionItem: evaluationDecision.decision ?? '-',
+    });
+    modalRef.componentInstance.confirmButtonText = this.translateService.instant(
+      'liferadarApp.evaluationDecision.integrations.confirmButton',
+      {
+        provider: providerLabel,
+      },
+    );
+    modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
+    modalRef.componentInstance.confirmButtonClass = 'btn-primary';
+
+    modalRef.closed
+      .pipe(
+        filter(reason => reason === 'confirmed'),
+        tap(() => this.executeIntegrationPush(evaluationDecision, provider)),
+      )
+      .subscribe();
+  }
+
+  private openComingSoonModal(provider: string): void {
+    const providerLabel = this.translateService.instant(this.getIntegrationProviderLabelKey(provider));
+    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
+    modalRef.componentInstance.title = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonTitle', {
+      provider: providerLabel,
+    });
+    modalRef.componentInstance.message = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonMessage');
+    modalRef.componentInstance.confirmButtonText = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonButton');
+    modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
+    modalRef.componentInstance.confirmButtonClass = 'btn-primary';
+  }
+
+  private openTickTickProjectModal(evaluationDecision: IEvaluationDecision): void {
+    if (!evaluationDecision.id) {
+      return;
+    }
+
+    const provider = 'ticktick';
+    const key = `${evaluationDecision.id}:${provider}`;
+    this.integrationPushingKeys.add(key);
+
+    this.evaluationDecisionService.getTickTickProjects().subscribe({
+      next: res => {
+        this.integrationPushingKeys.delete(key);
+        const projects = res.body ?? [];
+
+        const modalRef = this.modalService.open(TickTickProjectModalComponent, { size: 'lg', backdrop: 'static' });
+        modalRef.componentInstance.projects = projects;
+        modalRef.componentInstance.initialTitle = (evaluationDecision.decision ?? '').trim();
+
+        modalRef.closed
+          .pipe(
+            filter((value): value is ITickTickProjectModalResult => typeof value === 'object' && value !== null && 'title' in value),
+            tap(value =>
+              this.executeIntegrationPush(evaluationDecision, provider, {
+                projectId: value.projectId,
+                title: value.title,
+              }),
+            ),
+          )
+          .subscribe();
+      },
+      error: (error: any) => {
+        this.integrationPushingKeys.delete(key);
+        // Display specific error message from backend if available
+        const errorMessage = error?.error?.message || error?.message || 'Failed to load TickTick projects';
+        this.alertService.addAlert({
+          type: 'danger',
+          message: errorMessage,
+        });
+      },
+    });
+  }
+
+  private executeIntegrationPush(
+    evaluationDecision: IEvaluationDecision,
+    provider: string,
+    overrides?: { projectId?: string; title?: string },
+  ): void {
+    if (!evaluationDecision.id) {
+      return;
+    }
+
+    const key = `${evaluationDecision.id}:${provider}`;
+    this.integrationPushingKeys.add(key);
+
+    this.evaluationDecisionService
+      .pushToTodoApp({
+        decisionId: evaluationDecision.id,
+        provider,
+        projectId: overrides?.projectId,
+        title: overrides?.title,
+      })
+      .subscribe({
+      next: res => {
+        this.integrationPushingKeys.delete(key);
+        this.alertService.addAlert({
+          type: 'success',
+          message: res.body?.message ?? this.translateService.instant('liferadarApp.evaluationDecision.integrations.pushSuccess'),
+        });
+      },
+      error: (error: any) => {
+        this.integrationPushingKeys.delete(key);
+        // Display specific error message from backend if available
+        const errorMessage = error?.error?.message || error?.message || this.translateService.instant('liferadarApp.evaluationDecision.integrations.pushError');
+        this.alertService.addAlert({
+          type: 'danger',
+          message: errorMessage,
+        });
+      },
+    });
+  }
+
+  private getIntegrationProviderLabelKey(provider: string): string {
+    return this.integrationProviders.find(item => item.code === provider)?.labelKey ?? 'liferadarApp.evaluationDecision.integrations.title';
+  }
+
+  isIntegrationPushing(evaluationDecision: IEvaluationDecision, provider: string): boolean {
+    if (!evaluationDecision.id) {
+      return false;
+    }
+    return this.integrationPushingKeys.has(`${evaluationDecision.id}:${provider}`);
+  }
+
+  isDueDatePast(evaluationDecision: IEvaluationDecision): boolean {
+    const dueDate = evaluationDecision.date;
+    return !!dueDate && dueDate.isBefore(dayjs());
+  }
+
+  isIntegrationDisabled(evaluationDecision: IEvaluationDecision, provider: string): boolean {
+    return this.isIntegrationPushing(evaluationDecision, provider) || this.isDueDatePast(evaluationDecision);
   }
 
   getLifeEvaluationDisplayName(evaluationDecision: IEvaluationDecision): string {
@@ -216,4 +386,5 @@ export class EvaluationDecisionComponent implements OnInit {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
+
 }

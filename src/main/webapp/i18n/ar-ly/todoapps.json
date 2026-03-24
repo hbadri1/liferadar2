@@ -1,0 +1,62 @@
+{
+  "todoapps": {
+    "title": "إعداداتي",
+    "subtitle": "قم بإدارة إعدادات المستخدم الخاصة بك، وخاصة تكاملات تطبيقات المهام.",
+    "profile": {
+      "title": "ملخص الملف الشخصي",
+      "username": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "language": "اللغة"
+    },
+    "integrations": {
+      "title": "تكاملات تطبيقات المهام",
+      "description": "قم بإعداد تطبيقات المهام المستخدمة من صفحة عناصر الإجراءات الخاصة بك."
+    },
+    "providers": {
+      "ticktick": "TickTick",
+      "microsoft-todo": "Microsoft To Do",
+      "todoist": "Todoist"
+    },
+    "status": {
+      "available": "متاح",
+      "unavailable": "غير متاح",
+      "configured": "مُعد",
+      "notConfigured": "غير مُعد"
+    },
+    "form": {
+      "enabled": "تفعيل التكامل",
+      "accessToken": "رمز الوصول",
+      "accessTokenPlaceholder": "ألصق رمز وصول المزود",
+      "tokenRetainedHint": "اتركه فارغاً للاحتفاظ بالرمز المخزن حالياً.",
+      "externalUserId": "معرّف المستخدم الخارجي",
+      "externalUserIdPlaceholder": "معرّف حساب خارجي اختياري",
+      "defaultProjectId": "معرّف المشروع الافتراضي",
+      "defaultProjectIdPlaceholder": "معرّف المشروع/القائمة الاختياري",
+      "microsoftListId": "معرّف قائمة Microsoft To Do"
+    },
+    "actions": {
+      "refresh": "تحديث",
+      "authorize": "تفويض",
+      "disconnect": "فصل",
+      "loading": "جارٍ التحميل...",
+      "create": "إنشاء الإعداد",
+      "update": "تحديث الإعداد"
+    },
+    "messages": {
+      "loadError": "تعذر تحميل إعدادات تطبيقات المهام الخاصة بك.",
+      "saveError": "تعذر حفظ إعدادات تطبيقات المهام الخاصة بك.",
+      "popupBlocked": "تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة ثم المحاولة مرة أخرى.",
+      "ticktickAuthorized": "اكتمل تفويض TickTick بنجاح.",
+      "ticktickAuthorizeFailed": "فشل تفويض TickTick.",
+      "ticktickDisconnected": "تم فصل TickTick بنجاح.",
+      "ticktickDisconnectFailed": "فشل فصل TickTick.",
+      "createSuccess": "تم إنشاء إعداد {{ provider }} بنجاح.",
+      "updateSuccess": "تم تحديث إعداد {{ provider }} بنجاح."
+    },
+    "validation": {
+      "accessTokenRequired": "رمز الوصول مطلوب عندما يكون التكامل مفعلاً.",
+      "defaultProjectIdRequired": "معرّف المشروع/القائمة الافتراضي مطلوب لهذا التكامل."
+    }
+  }
+}
+

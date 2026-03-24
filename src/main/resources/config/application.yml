@@ -90,6 +90,11 @@ management:
       application: ${spring.application.name}
 
 spring:
+  config:
+    import:
+      - optional:classpath:config/todoapps/ticktick.yml
+      - optional:classpath:config/todoapps/microsoft-todo.yml
+      - optional:classpath:config/todoapps/todoist.yml
   application:
     name: liferadar
   docker:

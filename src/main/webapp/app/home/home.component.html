@@ -12,6 +12,30 @@
         <!-- Left Column: Life Pillars (2/3 width) -->
         <div class="col-lg-8">
 
+          <div class="score-matrix-card mb-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h6 class="mb-0 text-secondary text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em">
+                <fa-icon icon="th" class="me-1"></fa-icon>
+                <span jhiTranslate="liferadarApp.pillar.home.scoreMatrix.title">Daily Evaluation Average</span>
+              </h6>
+              <small class="text-muted" jhiTranslate="liferadarApp.pillar.home.scoreMatrix.last30Days">Last 30 days</small>
+            </div>
+
+            <div class="score-matrix-grid" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">
+              @for (dayAverage of getEvaluationDailyAverageMatrix(); track dayAverage.dateKey) {
+                <div class="score-matrix-cell" [ngClass]="getEvaluationMatrixCellClass(dayAverage.average)"
+                  [title]="dayAverage.count > 0 ? ((dayAverage.average | number:'1.1-1') + ' / 5 (' + dayAverage.count + ')') : '-'">
+                  <span class="score-matrix-date">{{ dayAverage.label }}</span>
+                  @if (dayAverage.average !== null) {
+                    <strong class="score-matrix-value">{{ dayAverage.average | number: '1.1-1' }}</strong>
+                  } @else {
+                    <span class="score-matrix-empty">-</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
           <!-- Toolbar -->
           <div class="d-flex align-items-center justify-content-between mb-3">
             <h6 class="mb-0 text-secondary text-uppercase fw-semibold" style="font-size:0.75rem;letter-spacing:.05em">
@@ -207,7 +231,7 @@
                   <span jhiTranslate="liferadarApp.lifeEvaluation.home.title">Life Evaluations</span>
                 </h5>
               </div>
-              <div class="card-body">
+              <div class="card-body evaluations-panel">
                 <!-- Loading Indicator -->
                 @if (isLoadingEvaluations()) {
                   <div class="text-center my-3">
@@ -220,21 +244,21 @@
 
                 <!-- Evaluations List -->
                 @if (!isLoadingEvaluations() && getGroupedLifeEvaluations().length > 0) {
-                  <div class="list-group list-group-flush">
+                  <div class="list-group list-group-flush evaluations-list">
                     @for (group of getGroupedLifeEvaluations(); track group.itemId) {
-                      <div class="list-group-item px-0 py-2">
-                        <p class="small fw-semibold mb-2">{{ group.itemName }}</p>
+                      <div class="list-group-item px-0 py-1 evaluation-group">
+                        <p class="small fw-semibold mb-1 evaluation-group-title">{{ group.itemName }}</p>
 
                         @for (evaluation of group.evaluations; track evaluation.id) {
-                          <div class="border rounded p-2 mb-2">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                              <small class="text-muted">
+                          <div class="border rounded evaluation-card mb-1">
+                            <div class="d-flex justify-content-between align-items-start evaluation-card-header">
+                              <small class="text-muted evaluation-date-line">
                                 <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
                                 {{ evaluation.evaluationDate?.toDate() | date: 'short': riyadhTimeZone }}
                               </small>
-                              <div class="d-flex gap-1">
+                              <div class="d-flex gap-1 align-items-center flex-shrink-0">
                                 @if (evaluation.score) {
-                                  <span class="badge" [ngClass]="evaluation.score >= 4 ? 'bg-success' : (evaluation.score >= 2 ? 'bg-warning' : 'bg-danger')">
+                                  <span class="badge evaluation-score-badge" [ngClass]="evaluation.score >= 4 ? 'bg-success' : (evaluation.score >= 2 ? 'bg-warning' : 'bg-danger')">
                                     {{ evaluation.score }}/5
                                   </span>
                                 }
@@ -256,17 +280,17 @@
                             </div>
 
                             @if (evaluation.reminderEnabled && evaluation.reminderAt) {
-                              <p class="small text-muted mb-1">
+                              <p class="small text-muted mb-1 evaluation-reminder-line">
                                 <fa-icon icon="clock" class="me-1"></fa-icon>
                                 {{ evaluation.reminderAt.toDate() | date: 'short': riyadhTimeZone }}
                               </p>
                             }
 
                             @if (getEvaluationDecisions(evaluation.id).length > 0) {
-                              <div class="mt-1 pt-1 border-top">
-                                <p class="small fw-semibold mb-1" jhiTranslate="liferadarApp.lifeEvaluation.decisions">Decisions</p>
+                              <div class="mt-1 pt-1 border-top evaluation-decisions-block">
+                                <p class="small fw-semibold mb-1 evaluation-decisions-title" jhiTranslate="liferadarApp.lifeEvaluation.decisions">Decisions</p>
                                 @for (decision of getEvaluationDecisions(evaluation.id); track decision.id) {
-                                  <div class="small text-muted mb-1 d-flex justify-content-between align-items-start"
+                                  <div class="small text-muted mb-1 d-flex justify-content-between align-items-start evaluation-decision-row"
                                     [dir]="isArabicLang() ? 'rtl' : 'ltr'">
                                     <div class="flex-grow-1">
                                       <span>
@@ -289,7 +313,7 @@
                             }
 
                             @if (evaluation.notes) {
-                              <p class="small text-muted mb-0">{{ evaluation.notes | slice: 0:80 }}...</p>
+                              <p class="small text-muted mb-0 evaluation-notes-line">{{ evaluation.notes | slice: 0:80 }}...</p>
                             }
                           </div>
                         }

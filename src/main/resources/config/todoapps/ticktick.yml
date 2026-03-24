@@ -1,0 +1,13 @@
+application:
+  todoapps:
+    providers:
+      ticktick:
+        enabled: true
+        base-url: https://api.ticktick.com
+        authorize-url: https://ticktick.com/oauth/authorize
+        token-path: /oauth/token
+        redirect-uri: ${TICKTICK_REDIRECT_URI:http://localhost:8080/api/todoapps/ticktick/callback}
+        create-task-path: /open/v1/task
+        projects-path: /open/v1/project
+        client-id: qIetW556TstG4lfAlS
+        secret-id: zTo8shRtwqLbgg8iCKfP8WJR48uaXO3Q

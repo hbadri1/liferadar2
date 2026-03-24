@@ -94,6 +94,13 @@
                 <span jhiTranslate="liferadarApp.evaluationDecision.subPillar">Sub Life Pillar</span>
               </div>
             </th>
+            @if (isActionItemsPage) {
+              <th scope="col">
+                <div class="d-flex">
+                  <span jhiTranslate="liferadarApp.evaluationDecision.integrations.title">Integrations</span>
+                </div>
+              </th>
+            }
             <th scope="col"></th>
           </tr>
         </thead>
@@ -140,6 +147,33 @@
                 }
               </td>
               <td>{{ getSubPillarDisplayName(evaluationDecision) }}</td>
+              @if (isActionItemsPage) {
+                <td>
+                  <div class="btn-group btn-group-sm" role="group">
+                    @for (provider of integrationProviders; track provider.code) {
+                      <button
+                        type="button"
+                        class="btn d-inline-flex align-items-center gap-1"
+                        [ngClass]="provider.style"
+                        [disabled]="isIntegrationDisabled(evaluationDecision, provider.code)"
+                        (click)="pushToIntegration(evaluationDecision, provider.code)"
+                      >
+                        @if (provider.code === 'ticktick') {
+                          <img
+                            src="/content/images/ticktick.png"
+                            alt="TickTick"
+                            width="14"
+                            height="14"
+                            class="d-inline-block align-middle bg-transparent p-0 m-0"
+                            style="object-fit: contain"
+                          />
+                        }
+                        <span>{{ provider.labelKey | translate }}</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              }
               <td class="text-end">
                 <div class="btn-group">
 
