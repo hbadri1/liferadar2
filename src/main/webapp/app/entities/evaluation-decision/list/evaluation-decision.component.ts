@@ -2,6 +2,7 @@ import { Component, NgZone, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import dayjs from 'dayjs/esm';
 
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
@@ -118,6 +119,10 @@ export class EvaluationDecisionComponent implements OnInit {
 
   pushToIntegration(evaluationDecision: IEvaluationDecision, provider: string): void {
     if (!evaluationDecision.id) {
+      return;
+    }
+
+    if (this.isDueDatePast(evaluationDecision)) {
       return;
     }
 
@@ -259,6 +264,15 @@ export class EvaluationDecisionComponent implements OnInit {
       return false;
     }
     return this.integrationPushingKeys.has(`${evaluationDecision.id}:${provider}`);
+  }
+
+  isDueDatePast(evaluationDecision: IEvaluationDecision): boolean {
+    const dueDate = evaluationDecision.date;
+    return !!dueDate && dueDate.isBefore(dayjs());
+  }
+
+  isIntegrationDisabled(evaluationDecision: IEvaluationDecision, provider: string): boolean {
+    return this.isIntegrationPushing(evaluationDecision, provider) || this.isDueDatePast(evaluationDecision);
   }
 
   getLifeEvaluationDisplayName(evaluationDecision: IEvaluationDecision): string {

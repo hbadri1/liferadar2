@@ -155,7 +155,7 @@
                         type="button"
                         class="btn d-inline-flex align-items-center gap-1"
                         [ngClass]="provider.style"
-                        [disabled]="isIntegrationPushing(evaluationDecision, provider.code)"
+                        [disabled]="isIntegrationDisabled(evaluationDecision, provider.code)"
                         (click)="pushToIntegration(evaluationDecision, provider.code)"
                       >
                         @if (provider.code === 'ticktick') {

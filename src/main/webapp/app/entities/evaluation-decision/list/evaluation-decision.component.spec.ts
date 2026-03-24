@@ -3,6 +3,7 @@ import { HttpHeaders, HttpResponse, provideHttpClient } from '@angular/common/ht
 import { ActivatedRoute } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import dayjs from 'dayjs/esm';
 
 import { sampleWithRequiredData } from '../evaluation-decision.test-samples';
 import { EvaluationDecisionService } from '../service/evaluation-decision.service';
@@ -137,6 +138,32 @@ describe('EvaluationDecision Management Component', () => {
 
       expect(ngbModal.open).toHaveBeenCalled();
       expect(executeSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not push when due date is in the past', () => {
+      const openTickTickModalSpy = jest.spyOn<any, any>(comp as any, 'openTickTickProjectModal');
+      const overdueDecision = {
+        ...sampleWithRequiredData,
+        date: dayjs().subtract(1, 'day'),
+      };
+
+      comp.pushToIntegration(overdueDecision, 'ticktick');
+
+      expect(openTickTickModalSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('integration disabled state', () => {
+    it('should disable integration when due date is in the past', () => {
+      const overdueDecision = { ...sampleWithRequiredData, date: dayjs().subtract(1, 'minute') };
+
+      expect(comp.isIntegrationDisabled(overdueDecision, 'ticktick')).toBe(true);
+    });
+
+    it('should keep integration enabled when due date is in the future', () => {
+      const upcomingDecision = { ...sampleWithRequiredData, date: dayjs().add(1, 'day') };
+
+      expect(comp.isIntegrationDisabled(upcomingDecision, 'ticktick')).toBe(false);
     });
   });
 
