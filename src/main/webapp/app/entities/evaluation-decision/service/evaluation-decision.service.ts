@@ -24,12 +24,32 @@ export type PartialUpdateRestEvaluationDecision = RestOf<PartialUpdateEvaluation
 export type EntityResponseType = HttpResponse<IEvaluationDecision>;
 export type EntityArrayResponseType = HttpResponse<IEvaluationDecision[]>;
 
+export interface ITodoAppPushRequest {
+  decisionId: number;
+  provider: string;
+  projectId?: string;
+  title?: string;
+  dueAt?: string;
+}
+
+export interface ITodoAppPushResponse {
+  provider: string;
+  externalTaskId: string;
+  message: string;
+}
+
+export interface ITickTickProject {
+  id: string;
+  name: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EvaluationDecisionService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/evaluation-decisions');
+  protected todoAppsUrl = this.applicationConfigService.getEndpointFor('api/todoapps');
 
   create(evaluationDecision: NewEvaluationDecision): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(evaluationDecision);
@@ -71,6 +91,14 @@ export class EvaluationDecisionService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  pushToTodoApp(request: ITodoAppPushRequest): Observable<HttpResponse<ITodoAppPushResponse>> {
+    return this.http.post<ITodoAppPushResponse>(`${this.todoAppsUrl}/push`, request, { observe: 'response' });
+  }
+
+  getTickTickProjects(): Observable<HttpResponse<ITickTickProject[]>> {
+    return this.http.get<ITickTickProject[]>(`${this.todoAppsUrl}/ticktick/projects`, { observe: 'response' });
   }
 
   getEvaluationDecisionIdentifier(evaluationDecision: Pick<IEvaluationDecision, 'id'>): number {

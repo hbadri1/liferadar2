@@ -1,0 +1,8 @@
+application:
+  todoapps:
+    providers:
+      todoist:
+        enabled: true
+        base-url: https://api.todoist.com
+        create-task-path: /rest/v2/tasks
+

@@ -1,0 +1,62 @@
+{
+  "todoapps": {
+    "title": "My Configuration",
+    "subtitle": "Manage your user settings, especially your todo app integrations.",
+    "profile": {
+      "title": "Profile Summary",
+      "username": "Username",
+      "email": "Email",
+      "language": "Language"
+    },
+    "integrations": {
+      "title": "Todo App Integrations",
+      "description": "Configure the todo applications used from your Action Items page."
+    },
+    "providers": {
+      "ticktick": "TickTick",
+      "microsoft-todo": "Microsoft To Do",
+      "todoist": "Todoist"
+    },
+    "status": {
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "configured": "Configured",
+      "notConfigured": "Not configured"
+    },
+    "form": {
+      "enabled": "Enable integration",
+      "accessToken": "Access Token",
+      "accessTokenPlaceholder": "Paste your provider access token",
+      "tokenRetainedHint": "Leave blank to keep the current stored token.",
+      "externalUserId": "External User ID",
+      "externalUserIdPlaceholder": "Optional external account identifier",
+      "defaultProjectId": "Default Project ID",
+      "defaultProjectIdPlaceholder": "Optional project/list identifier",
+      "microsoftListId": "Microsoft To Do List ID"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "authorize": "Authorize",
+      "disconnect": "Disconnect",
+      "loading": "Loading...",
+      "create": "Create configuration",
+      "update": "Update configuration"
+    },
+    "messages": {
+      "loadError": "Unable to load your todo app configuration.",
+      "saveError": "Unable to save your todo app configuration.",
+      "popupBlocked": "Popup was blocked. Please allow popups and try again.",
+      "ticktickAuthorized": "TickTick authorization completed successfully.",
+      "ticktickAuthorizeFailed": "TickTick authorization failed.",
+      "ticktickDisconnected": "TickTick disconnected successfully.",
+      "ticktickDisconnectFailed": "TickTick disconnect failed.",
+      "createSuccess": "{{ provider }} configuration created successfully.",
+      "updateSuccess": "{{ provider }} configuration updated successfully."
+    },
+    "validation": {
+      "accessTokenRequired": "Access token is required when the integration is enabled.",
+      "defaultProjectIdRequired": "Default project/list ID is required for this integration."
+    }
+  }
+}
+

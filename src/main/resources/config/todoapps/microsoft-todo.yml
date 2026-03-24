@@ -1,0 +1,8 @@
+application:
+  todoapps:
+    providers:
+      microsoft-todo:
+        enabled: true
+        base-url: https://graph.microsoft.com
+        create-task-path: /v1.0/me/todo/lists/{listId}/tasks
+
