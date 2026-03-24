@@ -12,4 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PillarRepository extends JpaRepository<Pillar, Long>, JpaSpecificationExecutor<Pillar> {
 	Optional<Pillar> findByOwnerIdAndCode(Long ownerId, String code);
+
+	boolean existsByOwnerIdAndCodeIgnoreCase(Long ownerId, String code);
+
+	boolean existsByOwnerIdAndCodeIgnoreCaseAndIdNot(Long ownerId, String code, Long id);
 }

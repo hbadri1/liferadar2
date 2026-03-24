@@ -16,7 +16,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -105,6 +109,7 @@ public class PillarResource {
                 return extendedUserRepository.save(newExtendedUser);
             });
         pillar.setOwner(extendedUser);
+        validateDuplicateCode(extendedUser.getId(), pillar.getCode(), null);
 
         pillar = pillarService.save(pillar);
         return ResponseEntity.created(new URI("/api/pillars/" + pillar.getId()))
@@ -120,7 +125,6 @@ public class PillarResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated pillar,
      * or with status {@code 400 (Bad Request)} if the pillar is not valid,
      * or with status {@code 500 (Internal Server Error)} if the pillar couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
     public ResponseEntity<Pillar> updatePillar(
@@ -158,6 +162,10 @@ public class PillarResource {
             }
         }
 
+        if (pillar.getOwner() != null) {
+            validateDuplicateCode(pillar.getOwner().getId(), pillar.getCode(), pillar.getId());
+        }
+
         pillar = pillarService.update(pillar);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, pillar.getId().toString()))
@@ -173,7 +181,6 @@ public class PillarResource {
      * or with status {@code 400 (Bad Request)} if the pillar is not valid,
      * or with status {@code 404 (Not Found)} if the pillar is not found,
      * or with status {@code 500 (Internal Server Error)} if the pillar couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Pillar> partialUpdatePillar(
@@ -239,8 +246,9 @@ public class PillarResource {
         }
 
         Page<Pillar> page = pillarQueryService.findByCriteria(criteria, pageable);
+        List<Pillar> deduplicatedContent = deduplicatePillars(page.getContent());
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        return ResponseEntity.ok().headers(headers).body(deduplicatedContent);
     }
 
     private String buildFullName(User user) {
@@ -248,6 +256,86 @@ public class PillarResource {
         String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
         String fullName = (firstName + " " + lastName).trim();
         return fullName.isEmpty() ? user.getLogin() : fullName;
+    }
+
+    private void validateDuplicateCode(Long ownerId, String code, Long currentPillarId) {
+        if (ownerId == null || code == null || code.isBlank()) {
+            return;
+        }
+
+        boolean duplicateExists = currentPillarId == null
+            ? pillarRepository.existsByOwnerIdAndCodeIgnoreCase(ownerId, code)
+            : pillarRepository.existsByOwnerIdAndCodeIgnoreCaseAndIdNot(ownerId, code, currentPillarId);
+
+        if (duplicateExists) {
+            throw new BadRequestAlertException("A pillar with this code already exists", ENTITY_NAME, "codeduplicate");
+        }
+    }
+
+    private List<Pillar> deduplicatePillars(List<Pillar> pillars) {
+        Map<String, Pillar> deduplicatedByKey = new LinkedHashMap<>();
+
+        for (Pillar pillar : pillars) {
+            String key = buildPillarDeduplicationKey(pillar);
+            Pillar existing = deduplicatedByKey.get(key);
+
+            if (existing == null) {
+                deduplicatedByKey.put(key, pillar);
+            } else {
+                deduplicatedByKey.put(key, mergeDuplicatePillars(existing, pillar));
+            }
+        }
+
+        return new ArrayList<>(deduplicatedByKey.values());
+    }
+
+    private String buildPillarDeduplicationKey(Pillar pillar) {
+        Long ownerId = pillar.getOwner() != null ? pillar.getOwner().getId() : null;
+        String code = pillar.getCode() != null ? pillar.getCode().trim().toLowerCase(Locale.ROOT) : null;
+
+        if (ownerId != null && code != null && !code.isBlank()) {
+            return ownerId + ":" + code;
+        }
+
+        return "id:" + pillar.getId();
+    }
+
+    private Pillar mergeDuplicatePillars(Pillar first, Pillar second) {
+        Pillar preferred = choosePreferredPillar(first, second);
+        Pillar other = preferred == first ? second : first;
+
+        Map<String, com.atharsense.lr.domain.PillarTranslation> translationsByLang = new LinkedHashMap<>();
+        preferred.getTranslations().forEach(translation -> translationsByLang.put(buildTranslationKey(translation), translation));
+        other.getTranslations().forEach(translation -> translationsByLang.putIfAbsent(buildTranslationKey(translation), translation));
+
+        preferred.setTranslations(new java.util.LinkedHashSet<>(translationsByLang.values()));
+        return preferred;
+    }
+
+    private Pillar choosePreferredPillar(Pillar first, Pillar second) {
+        int firstTranslationCount = first.getTranslations() != null ? first.getTranslations().size() : 0;
+        int secondTranslationCount = second.getTranslations() != null ? second.getTranslations().size() : 0;
+
+        if (firstTranslationCount != secondTranslationCount) {
+            return firstTranslationCount > secondTranslationCount ? first : second;
+        }
+
+        if (first.getId() == null) {
+            return second;
+        }
+        if (second.getId() == null) {
+            return first;
+        }
+
+        return first.getId() <= second.getId() ? first : second;
+    }
+
+    private String buildTranslationKey(com.atharsense.lr.domain.PillarTranslation translation) {
+        if (translation.getLang() != null) {
+            return translation.getLang().name();
+        }
+
+        return "id:" + translation.getId();
     }
 
     /**

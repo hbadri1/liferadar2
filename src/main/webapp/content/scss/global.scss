@@ -2,17 +2,31 @@
 @import 'bootstrap/scss/functions';
 @import 'bootswatch/dist/journal/variables';
 @import 'bootstrap/scss/variables';
+@import '@fontsource/noto-sans-arabic/300.css';
+@import '@fontsource/noto-sans-arabic/400.css';
+@import '@fontsource/noto-sans-arabic/500.css';
+@import '@fontsource/noto-sans-arabic/700.css';
 
 /* ==============================================================
 Bootstrap tweaks
 ===============================================================*/
 
-body,
+body {
+  font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
 h1,
 h2,
 h3,
 h4 {
   font-weight: 300;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
 }
 
 a:hover {

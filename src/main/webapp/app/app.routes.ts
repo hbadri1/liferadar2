@@ -40,7 +40,7 @@ const routes: Routes = [
       import('./entities/evaluation-decision/list/evaluation-decision.component').then(m => m.EvaluationDecisionComponent),
     title: 'global.menu.actionItems',
     data: {
-      defaultSort: `id,${ASC}`,
+      defaultSort: `date,${ASC}`,
       actionItems: true,
     },
     canActivate: [UserRouteAccessService],
