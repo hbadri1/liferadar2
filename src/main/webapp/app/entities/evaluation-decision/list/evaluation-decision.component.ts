@@ -186,11 +186,14 @@ export class EvaluationDecisionComponent implements OnInit {
     this.evaluationDecisionService.getTickTickProjects().subscribe({
       next: res => {
         this.integrationPushingKeys.delete(key);
-        const projects = res.body ?? [];
+        const projectsResponse = res.body;
+        const projects = projectsResponse?.projects ?? [];
+        const defaultProjectName = (projectsResponse?.defaultProjectName ?? 'Liferadar').trim() || 'Liferadar';
 
         const modalRef = this.modalService.open(TickTickProjectModalComponent, { size: 'lg', backdrop: 'static' });
         modalRef.componentInstance.projects = projects;
         modalRef.componentInstance.initialTitle = (evaluationDecision.decision ?? '').trim();
+        modalRef.componentInstance.defaultProjectName = defaultProjectName;
 
         modalRef.closed
           .pipe(

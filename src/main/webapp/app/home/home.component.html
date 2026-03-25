@@ -225,11 +225,20 @@
         <div class="col-lg-4">
           <div class="sticky-top" style="top: 20px;">
             <div class="card shadow-sm">
-              <div class="card-header bg-success text-white">
-                <h5 class="mb-0">
+              <div class="card-header bg-success text-white d-flex align-items-center justify-content-between gap-2">
+                <h5 class="mb-0 d-flex align-items-center">
                   <fa-icon icon="clipboard-check" class="me-2"></fa-icon>
                   <span jhiTranslate="liferadarApp.lifeEvaluation.home.title">Life Evaluations</span>
                 </h5>
+                <button
+                  class="btn btn-sm btn-outline-light"
+                  type="button"
+                  (click)="loadLifeEvaluations()"
+                  [disabled]="isLoadingEvaluations()"
+                  [title]="'liferadarApp.lifeEvaluation.home.refreshListLabel' | translate">
+                  <fa-icon icon="sync" [animation]="isLoadingEvaluations() ? 'spin' : undefined"></fa-icon>
+                  <span class="ms-1" jhiTranslate="liferadarApp.lifeEvaluation.home.refreshListLabel">Refresh list</span>
+                </button>
               </div>
               <div class="card-body evaluations-panel">
                 <!-- Loading Indicator -->

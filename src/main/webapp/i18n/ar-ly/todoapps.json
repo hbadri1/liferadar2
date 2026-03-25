@@ -32,6 +32,9 @@
       "externalUserIdPlaceholder": "معرّف حساب خارجي اختياري",
       "defaultProjectId": "معرّف المشروع الافتراضي",
       "defaultProjectIdPlaceholder": "معرّف المشروع/القائمة الاختياري",
+      "defaultProjectName": "اسم المشروع الافتراضي",
+      "defaultProjectNamePlaceholder": "مثال: Liferadar",
+      "defaultProjectNameHint": "سيتم اقتراح هذا الاسم في نافذة TickTick واستخدامه إذا لزم إنشاء مشروع جديد.",
       "microsoftListId": "معرّف قائمة Microsoft To Do"
     },
     "actions": {

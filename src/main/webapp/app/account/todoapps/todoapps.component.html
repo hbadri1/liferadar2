@@ -85,55 +85,78 @@
                       </label>
                     </div>
 
-                    <div class="mb-3">
-                      <label class="form-label" [for]="'token-' + config.provider" jhiTranslate="todoapps.form.accessToken">Access Token</label>
-                      <input
-                        class="form-control"
-                        type="password"
-                        [id]="'token-' + config.provider"
-                        formControlName="accessToken"
-                        placeholder="{{ 'todoapps.form.accessTokenPlaceholder' | translate }}"
-                      />
-                      @if (config.hasAccessToken) {
-                        <div class="form-text" jhiTranslate="todoapps.form.tokenRetainedHint">
-                          Leave blank to keep the current stored token.
-                        </div>
-                      }
-                      @if (form.controls.accessToken.invalid && (form.controls.accessToken.dirty || form.controls.accessToken.touched)) {
-                        <small class="form-text text-danger" jhiTranslate="todoapps.validation.accessTokenRequired">
-                          Access token is required when the integration is enabled.
-                        </small>
-                      }
-                    </div>
-
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label" [for]="'external-user-' + config.provider" jhiTranslate="todoapps.form.externalUserId">
-                          External User ID
-                        </label>
+                    @if (showManualCredentialFields(config)) {
+                      <div class="mb-3">
+                        <label class="form-label" [for]="'token-' + config.provider" jhiTranslate="todoapps.form.accessToken">Access Token</label>
                         <input
                           class="form-control"
-                          type="text"
-                          [id]="'external-user-' + config.provider"
-                          formControlName="externalUserId"
-                          placeholder="{{ 'todoapps.form.externalUserIdPlaceholder' | translate }}"
+                          type="password"
+                          [id]="'token-' + config.provider"
+                          formControlName="accessToken"
+                          placeholder="{{ 'todoapps.form.accessTokenPlaceholder' | translate }}"
                         />
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" [for]="'project-' + config.provider">{{ getProjectIdLabel(config) }}</label>
-                        <input
-                          class="form-control"
-                          type="text"
-                          [id]="'project-' + config.provider"
-                          formControlName="defaultProjectId"
-                          placeholder="{{ 'todoapps.form.defaultProjectIdPlaceholder' | translate }}"
-                        />
-                        @if (form.controls.defaultProjectId.invalid && (form.controls.defaultProjectId.dirty || form.controls.defaultProjectId.touched)) {
-                          <small class="form-text text-danger" jhiTranslate="todoapps.validation.defaultProjectIdRequired">
-                            Default project/list ID is required for this integration.
+                        @if (config.hasAccessToken) {
+                          <div class="form-text" jhiTranslate="todoapps.form.tokenRetainedHint">
+                            Leave blank to keep the current stored token.
+                          </div>
+                        }
+                        @if (form.controls.accessToken.invalid && (form.controls.accessToken.dirty || form.controls.accessToken.touched)) {
+                          <small class="form-text text-danger" jhiTranslate="todoapps.validation.accessTokenRequired">
+                            Access token is required when the integration is enabled.
                           </small>
                         }
                       </div>
+                    }
+
+                    <div class="row g-3">
+                      @if (showManualCredentialFields(config)) {
+                        <div class="col-md-6">
+                          <label class="form-label" [for]="'external-user-' + config.provider" jhiTranslate="todoapps.form.externalUserId">
+                            External User ID
+                          </label>
+                          <input
+                            class="form-control"
+                            type="text"
+                            [id]="'external-user-' + config.provider"
+                            formControlName="externalUserId"
+                            placeholder="{{ 'todoapps.form.externalUserIdPlaceholder' | translate }}"
+                          />
+                        </div>
+                      }
+                      @if (showDefaultProjectIdField(config)) {
+                        <div class="col-md-6">
+                          <label class="form-label" [for]="'project-' + config.provider">{{ getProjectIdLabel(config) }}</label>
+                          <input
+                            class="form-control"
+                            type="text"
+                            [id]="'project-' + config.provider"
+                            formControlName="defaultProjectId"
+                            placeholder="{{ 'todoapps.form.defaultProjectIdPlaceholder' | translate }}"
+                          />
+                          @if (form.controls.defaultProjectId.invalid && (form.controls.defaultProjectId.dirty || form.controls.defaultProjectId.touched)) {
+                            <small class="form-text text-danger" jhiTranslate="todoapps.validation.defaultProjectIdRequired">
+                              Default project/list ID is required for this integration.
+                            </small>
+                          }
+                        </div>
+                      }
+                      @if (showDefaultProjectNameField(config)) {
+                        <div class="col-md-12">
+                          <label class="form-label" [for]="'project-name-' + config.provider" jhiTranslate="todoapps.form.defaultProjectName">
+                            Default Project Name
+                          </label>
+                          <input
+                            class="form-control"
+                            type="text"
+                            [id]="'project-name-' + config.provider"
+                            formControlName="defaultProjectName"
+                            placeholder="{{ 'todoapps.form.defaultProjectNamePlaceholder' | translate }}"
+                          />
+                          <div class="form-text" jhiTranslate="todoapps.form.defaultProjectNameHint">
+                            This name will be suggested in the TickTick popup and used if a new project needs to be created.
+                          </div>
+                        </div>
+                      }
                     </div>
 
                     <div class="mt-4 d-flex justify-content-end">

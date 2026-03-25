@@ -14,6 +14,7 @@ type TodoAppFormGroup = FormGroup<{
   accessToken: FormControl<string>;
   externalUserId: FormControl<string>;
   defaultProjectId: FormControl<string>;
+  defaultProjectName: FormControl<string>;
 }>;
 
 @Component({
@@ -98,6 +99,7 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
       accessToken: form.controls.accessToken.getRawValue().trim() || null,
       externalUserId: form.controls.externalUserId.getRawValue().trim() || null,
       defaultProjectId: form.controls.defaultProjectId.getRawValue().trim() || null,
+      defaultProjectName: form.controls.defaultProjectName.getRawValue().trim() || null,
     };
 
     this.todoAppsService.update(provider, payload).subscribe({
@@ -189,6 +191,22 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
     );
   }
 
+  isTickTickProvider(provider: string): boolean {
+    return provider === 'ticktick';
+  }
+
+  showManualCredentialFields(config: ITodoAppUserConfig): boolean {
+    return !this.isTickTickProvider(config.provider);
+  }
+
+  showDefaultProjectIdField(config: ITodoAppUserConfig): boolean {
+    return !this.isTickTickProvider(config.provider);
+  }
+
+  showDefaultProjectNameField(config: ITodoAppUserConfig): boolean {
+    return this.isTickTickProvider(config.provider);
+  }
+
   private buildForms(configs: ITodoAppUserConfig[]): Record<string, TodoAppFormGroup> {
     return configs.reduce<Record<string, TodoAppFormGroup>>((acc, config) => {
       acc[config.provider] = this.createForm(config);
@@ -202,6 +220,7 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
       accessToken: new FormControl('', { nonNullable: true }),
       externalUserId: new FormControl(config.externalUserId ?? '', { nonNullable: true }),
       defaultProjectId: new FormControl(config.defaultProjectId ?? '', { nonNullable: true }),
+      defaultProjectName: new FormControl(config.defaultProjectName ?? '', { nonNullable: true }),
     });
 
     this.syncValidators(form, config);
@@ -212,7 +231,7 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
   private syncValidators(form: TodoAppFormGroup, config: ITodoAppUserConfig): void {
     const isEnabled = form.controls.enabled.getRawValue();
 
-    form.controls.accessToken.setValidators(isEnabled ? [Validators.required] : []);
+    form.controls.accessToken.setValidators(isEnabled && !this.isTickTickProvider(config.provider) ? [Validators.required] : []);
     form.controls.accessToken.updateValueAndValidity({ emitEvent: false });
 
     form.controls.defaultProjectId.setValidators(isEnabled && config.requiresDefaultProjectId ? [Validators.required] : []);

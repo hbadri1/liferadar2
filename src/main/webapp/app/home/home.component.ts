@@ -851,38 +851,31 @@ export default class HomeComponent implements OnInit, OnDestroy {
     const groups = Array.from(grouped.values());
 
     groups.forEach(group => {
-      group.evaluations.sort((a, b) => this.compareEvaluationsByScoreAsc(a, b));
+      group.evaluations.sort((a, b) => this.compareEvaluationsByDateDesc(a, b));
     });
 
     return groups.sort((a, b) => {
-      const scoreComparison = this.getLowestEvaluationScore(a.evaluations) - this.getLowestEvaluationScore(b.evaluations);
-      if (scoreComparison !== 0) {
-        return scoreComparison;
+      const latestEvaluationComparison = this.getLatestEvaluationTime(b.evaluations) - this.getLatestEvaluationTime(a.evaluations);
+      if (latestEvaluationComparison !== 0) {
+        return latestEvaluationComparison;
       }
 
       return a.itemName.localeCompare(b.itemName);
     });
   }
 
-  private compareEvaluationsByScoreAsc(a: ILifeEvaluation, b: ILifeEvaluation): number {
-    const aScore = a.score ?? Number.MAX_SAFE_INTEGER;
-    const bScore = b.score ?? Number.MAX_SAFE_INTEGER;
-
-    if (aScore !== bScore) {
-      return aScore - bScore;
-    }
-
+  private compareEvaluationsByDateDesc(a: ILifeEvaluation, b: ILifeEvaluation): number {
     const aTime = a.evaluationDate?.valueOf() ?? 0;
     const bTime = b.evaluationDate?.valueOf() ?? 0;
     if (aTime !== bTime) {
-      return aTime - bTime;
+      return bTime - aTime;
     }
 
-    return (a.id ?? 0) - (b.id ?? 0);
+    return (b.id ?? 0) - (a.id ?? 0);
   }
 
-  private getLowestEvaluationScore(evaluations: ILifeEvaluation[]): number {
-    return evaluations.reduce((lowestScore, evaluation) => Math.min(lowestScore, evaluation.score ?? Number.MAX_SAFE_INTEGER), Number.MAX_SAFE_INTEGER);
+  private getLatestEvaluationTime(evaluations: ILifeEvaluation[]): number {
+    return evaluations.reduce((latestTime, evaluation) => Math.max(latestTime, evaluation.evaluationDate?.valueOf() ?? 0), 0);
   }
 
   deleteLifeEvaluation(evaluation: ILifeEvaluation): void {

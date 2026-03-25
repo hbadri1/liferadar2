@@ -32,6 +32,9 @@
       "externalUserIdPlaceholder": "Optional external account identifier",
       "defaultProjectId": "Default Project ID",
       "defaultProjectIdPlaceholder": "Optional project/list identifier",
+      "defaultProjectName": "Default Project Name",
+      "defaultProjectNamePlaceholder": "For example: Liferadar",
+      "defaultProjectNameHint": "This name will be suggested in the TickTick popup and used if a new project needs to be created.",
       "microsoftListId": "Microsoft To Do List ID"
     },
     "actions": {

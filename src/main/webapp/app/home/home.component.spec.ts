@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import dayjs from 'dayjs/esm';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
@@ -147,6 +148,34 @@ describe('Home Component', () => {
 
       expect(comp.getSubPillarItemTranslation(item)).toBe('التغذية');
       expect(comp.getSubPillarItemDescription(item)).toBe('وصف عربي');
+    });
+  });
+
+  describe('life evaluations ordering', () => {
+    it('should sort evaluations newest first within each item group and sort groups by newest evaluation date desc', () => {
+      comp.lifeEvaluations.set([
+        {
+          id: 11,
+          evaluationDate: dayjs('2026-03-18'),
+          subPillarItem: { id: 2, code: 'ITEM-B', translations: [{ lang: 'EN', name: 'Item B' }] } as any,
+        } as any,
+        {
+          id: 12,
+          evaluationDate: dayjs('2026-03-20'),
+          subPillarItem: { id: 1, code: 'ITEM-A', translations: [{ lang: 'EN', name: 'Item A' }] } as any,
+        } as any,
+        {
+          id: 13,
+          evaluationDate: dayjs('2026-03-22'),
+          subPillarItem: { id: 2, code: 'ITEM-B', translations: [{ lang: 'EN', name: 'Item B' }] } as any,
+        } as any,
+      ]);
+
+      const groupedEvaluations = comp.getGroupedLifeEvaluations();
+
+      expect(groupedEvaluations.map(group => group.itemName)).toEqual(['Item B', 'Item A']);
+      expect(groupedEvaluations[0].evaluations.map(evaluation => evaluation.id)).toEqual([13, 11]);
+      expect(groupedEvaluations[1].evaluations.map(evaluation => evaluation.id)).toEqual([12]);
     });
   });
 
