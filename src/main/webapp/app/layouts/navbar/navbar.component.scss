@@ -42,6 +42,19 @@ Navbar
   }
 }
 
+/* In RTL, keep menu group on the left side of the navbar. */
+:host-context([dir='rtl']) .navbar {
+  ul.navbar-nav.ms-auto {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+
+  ul.navbar-nav .nav-item {
+    margin-left: 0;
+    margin-right: 0.5em;
+  }
+}
+
 /* ==========================================================================
 Logo styles
 ========================================================================== */
