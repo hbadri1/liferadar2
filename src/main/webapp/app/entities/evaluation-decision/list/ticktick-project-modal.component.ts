@@ -19,6 +19,7 @@ export interface ITickTickProjectModalResult {
 export class TickTickProjectModalComponent implements OnInit, OnChanges {
   @Input() projects: ITickTickProject[] = [];
   @Input() initialTitle = '';
+  @Input() defaultProjectName = 'Liferadar';
 
   selectedProjectId = '';
   title = '';
@@ -62,6 +63,14 @@ export class TickTickProjectModalComponent implements OnInit, OnChanges {
   private ensureProjectSelection(): void {
     if (this.projects.length === 0) {
       this.selectedProjectId = '';
+      return;
+    }
+
+    const normalizedDefaultProjectName = this.defaultProjectName.trim().toLowerCase();
+    const matchingDefaultProject = this.projects.find(project => project.name?.trim().toLowerCase() === normalizedDefaultProjectName);
+
+    if (matchingDefaultProject) {
+      this.selectedProjectId = matchingDefaultProject.id;
       return;
     }
 
