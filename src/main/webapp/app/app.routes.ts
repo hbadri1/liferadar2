@@ -42,6 +42,16 @@ const routes: Routes = [
     data: {
       defaultSort: `date,${ASC}`,
       actionItems: true,
+      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'family',
+    loadComponent: () => import('./family/family.component'),
+    title: 'family.title',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN, Authority.CHILD],
     },
     canActivate: [UserRouteAccessService],
   },

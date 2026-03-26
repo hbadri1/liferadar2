@@ -1,0 +1,53 @@
+{
+  "family": {
+    "title": "Ma Famille",
+    "subtitle": "Gérez les comptes enfants liés à votre profil",
+    "addChild": "Ajouter un enfant",
+    "cancelAdd": "Annuler",
+    "tabs": {
+      "management": "Gestion de la famille",
+      "objectives": "Objectifs des enfants",
+      "childObjectives": "Objectifs de {{name}}"
+    },
+    "objectives": {
+      "emptyTitle": "Objectifs des enfants",
+      "emptyDesc": "Les objectifs des enfants apparaîtront bientôt ici.",
+      "noKids": "Aucun enfant disponible pour le moment.",
+      "currentKid": "Onglet actuel pour :"
+    },
+    "loading": "Chargement des membres de la famille…",
+    "childAdded": "Compte enfant créé avec succès.",
+    "childViewInfo": "Vous visualisez les membres de votre famille. Contactez votre parent pour effectuer des modifications.",
+    "removeChild": "Supprimer le compte enfant",
+    "badge": {
+      "child": "Enfant",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "role": {
+      "familyAdmin": "Admin Famille",
+      "child": "Enfant"
+    },
+    "empty": {
+      "title": "Aucun compte enfant pour l'instant",
+      "desc": "Cliquez sur \"Ajouter un enfant\" pour créer un compte pour un membre de la famille."
+    },
+    "form": {
+      "login": "Nom d'utilisateur",
+      "loginRequired": "Le nom d'utilisateur est requis",
+      "password": "Mot de passe",
+      "passwordRequired": "Mot de passe requis (4 caractères minimum)",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Email (optionnel)",
+      "emailInvalid": "Format d'email invalide",
+      "save": "Créer le compte",
+      "cancel": "Annuler"
+    },
+    "error": {
+      "save": "Échec de la création du compte enfant. Veuillez réessayer.",
+      "delete": "Échec de la suppression du compte enfant."
+    }
+  }
+}
+

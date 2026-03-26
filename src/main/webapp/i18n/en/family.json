@@ -1,0 +1,53 @@
+{
+  "family": {
+    "title": "My Family",
+    "subtitle": "Manage child accounts linked to your profile",
+    "addChild": "Add Child",
+    "cancelAdd": "Cancel",
+    "tabs": {
+      "management": "Family Management",
+      "objectives": "Kids Objectives",
+      "childObjectives": "{{name}} Objectives"
+    },
+    "objectives": {
+      "emptyTitle": "Kids Objectives",
+      "emptyDesc": "Kids objectives will appear here soon.",
+      "noKids": "No kids available yet.",
+      "currentKid": "Current tab for:"
+    },
+    "loading": "Loading family members…",
+    "childAdded": "Child account created successfully.",
+    "childViewInfo": "You are viewing your family members. Contact your parent to make changes.",
+    "removeChild": "Remove child account",
+    "badge": {
+      "child": "Child",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "role": {
+      "familyAdmin": "Family Admin",
+      "child": "Child"
+    },
+    "empty": {
+      "title": "No child accounts yet",
+      "desc": "Click \"Add Child\" to create an account for a family member."
+    },
+    "form": {
+      "login": "Username",
+      "loginRequired": "Username is required",
+      "password": "Password",
+      "passwordRequired": "Password is required (min 4 characters)",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email (optional)",
+      "emailInvalid": "Invalid email format",
+      "save": "Create Account",
+      "cancel": "Cancel"
+    },
+    "error": {
+      "save": "Failed to create child account. Please try again.",
+      "delete": "Failed to remove child account."
+    }
+  }
+}
+

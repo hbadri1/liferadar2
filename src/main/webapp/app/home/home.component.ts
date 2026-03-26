@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -40,6 +40,10 @@ import { ConfirmationModalComponent } from './confirmation-modal.component';
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
+  isChildOnly = computed(() => {
+    const authorities: string[] = this.account()?.authorities ?? [];
+    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_FAMILY_ADMIN') && !authorities.includes('ROLE_ADMIN');
+  });
   pillars = signal<IPillar[]>([]);
   subPillarsMap = signal<Map<number, ISubPillar[]>>(new Map());
   loadingSubPillars = signal<Set<number>>(new Set());
@@ -72,9 +76,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
         console.log('Account loaded:', account);
         this.account.set(account);
         if (account) {
-          console.log('Loading pillars for authenticated user');
-          this.loadPillars();
-          this.loadLifeEvaluations();
+          this.loadDashboardDataForCurrentUser();
         } else {
           console.log('No account found - user not authenticated');
         }
@@ -89,10 +91,24 @@ export default class HomeComponent implements OnInit, OnDestroy {
         this.subPillarsMap.set(new Map());
         this.subPillarItemsMap.set(new Map());
         this.evaluationDecisionsMap.set(new Map());
-        // Reload all data with current language
-        this.loadPillars();
-        this.loadLifeEvaluations();
+        this.loadDashboardDataForCurrentUser();
       });
+  }
+
+  private loadDashboardDataForCurrentUser(): void {
+    if (!this.account()) {
+      return;
+    }
+
+    if (this.isChildOnly()) {
+      this.pillars.set([]);
+      this.lifeEvaluations.set([]);
+      return;
+    }
+
+    console.log('Loading pillars for authenticated user');
+    this.loadPillars();
+    this.loadLifeEvaluations();
   }
 
   loadPillars(): void {
@@ -708,8 +724,14 @@ export default class HomeComponent implements OnInit, OnDestroy {
   loadLifeEvaluations(): void {
     this.isLoadingEvaluations.set(true);
     console.log('Loading life evaluations for current user...');
+    const last30DaysStart = this.getLast30DaysStartDate();
+
     this.lifeEvaluationService
-      .query({ size: 100 })
+      .query({
+        size: 100,
+        sort: ['evaluationDate,desc', 'id,desc'],
+        'evaluationDate.greaterThanOrEqual': last30DaysStart,
+      })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: HttpResponse<ILifeEvaluation[]>) => {
@@ -766,6 +788,17 @@ export default class HomeComponent implements OnInit, OnDestroy {
           this.isLoadingEvaluations.set(false);
         },
       });
+  }
+
+  private getLast30DaysStartDate(): string {
+    const now = new Date();
+    const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    startDate.setDate(startDate.getDate() - 29);
+
+    const year = startDate.getFullYear();
+    const month = `${startDate.getMonth() + 1}`.padStart(2, '0');
+    const day = `${startDate.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private loadEvaluationDecisionsForEvaluations(evaluations: ILifeEvaluation[]): void {

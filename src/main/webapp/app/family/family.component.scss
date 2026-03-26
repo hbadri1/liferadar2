@@ -1,0 +1,100 @@
+.family-page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.family-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* ── Add child card ─────────────────────────────────────────── */
+.add-child-card {
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+}
+
+.add-child-card-header {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.add-child-card-body {
+  padding: 1.25rem;
+  background: #f8fafc;
+}
+
+/* ── Child cards ────────────────────────────────────────────── */
+.child-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.child-card-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.child-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.child-name {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.child-login,
+.child-email {
+  font-size: 0.8rem;
+  margin-top: 0.1rem;
+}
+
+.child-card-delete {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+}
+
+/* ── Empty state ────────────────────────────────────────────── */
+.family-empty {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 3rem 1rem;
+  color: #94a3b8;
+}
+
+/* ── RTL support ────────────────────────────────────────────── */
+:host-context([dir='rtl']) .child-card-delete {
+  right: auto;
+  left: 0.6rem;
+}
+

@@ -24,6 +24,7 @@ describe('Home Component', () => {
   let mockAccountService: AccountService;
   let mockRouter: Router;
   let mockPillarService: PillarService;
+  let mockLifeEvaluationService: LifeEvaluationService;
   let mockModalService: NgbModal;
   let mockTranslateService: TranslateService;
   const account: Account = {
@@ -63,6 +64,7 @@ describe('Home Component', () => {
     comp = fixture.componentInstance;
     mockAccountService = TestBed.inject(AccountService);
     mockPillarService = TestBed.inject(PillarService);
+    mockLifeEvaluationService = TestBed.inject(LifeEvaluationService);
     mockModalService = TestBed.inject(NgbModal);
     mockTranslateService = TestBed.inject(TranslateService);
     mockAccountService.identity = jest.fn(() => of(null));
@@ -95,6 +97,34 @@ describe('Home Component', () => {
 
       // THEN
       expect(comp.account()).toBeNull();
+    });
+
+    it('should not load pillars or evaluations for child-only account', () => {
+      const authenticationState = new Subject<Account | null>();
+      mockAccountService.getAuthenticationState = jest.fn(() => authenticationState.asObservable());
+      const loadPillarsSpy = jest.spyOn(comp, 'loadPillars');
+      const loadEvaluationsSpy = jest.spyOn(comp, 'loadLifeEvaluations');
+
+      comp.ngOnInit();
+      authenticationState.next({ ...account, authorities: ['ROLE_CHILD'] });
+
+      expect(comp.isChildOnly()).toBe(true);
+      expect(loadPillarsSpy).not.toHaveBeenCalled();
+      expect(loadEvaluationsSpy).not.toHaveBeenCalled();
+    });
+
+    it('should load pillars and evaluations for non-child account', () => {
+      const authenticationState = new Subject<Account | null>();
+      mockAccountService.getAuthenticationState = jest.fn(() => authenticationState.asObservable());
+      const loadPillarsSpy = jest.spyOn(comp, 'loadPillars').mockImplementation(() => undefined);
+      const loadEvaluationsSpy = jest.spyOn(comp, 'loadLifeEvaluations').mockImplementation(() => undefined);
+
+      comp.ngOnInit();
+      authenticationState.next({ ...account, authorities: ['ROLE_USER'] });
+
+      expect(comp.isChildOnly()).toBe(false);
+      expect(loadPillarsSpy).toHaveBeenCalled();
+      expect(loadEvaluationsSpy).toHaveBeenCalled();
     });
   });
 
@@ -176,6 +206,22 @@ describe('Home Component', () => {
       expect(groupedEvaluations.map(group => group.itemName)).toEqual(['Item B', 'Item A']);
       expect(groupedEvaluations[0].evaluations.map(evaluation => evaluation.id)).toEqual([13, 11]);
       expect(groupedEvaluations[1].evaluations.map(evaluation => evaluation.id)).toEqual([12]);
+    });
+  });
+
+  describe('loadLifeEvaluations', () => {
+    it('should request only recent evaluations (last 30 days) with newest-first sorting', () => {
+      const querySpy = jest.spyOn(mockLifeEvaluationService, 'query');
+
+      comp.loadLifeEvaluations();
+
+      const queryParams = querySpy.mock.calls[0]?.[0] as Record<string, unknown>;
+      expect(queryParams).toBeDefined();
+      expect(queryParams.sort).toEqual(['evaluationDate,desc', 'id,desc']);
+
+      const requestedDate = queryParams['evaluationDate.greaterThanOrEqual'];
+      expect(typeof requestedDate).toBe('string');
+      expect(requestedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
   });
 
