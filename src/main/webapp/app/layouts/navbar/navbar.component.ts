@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -27,6 +27,10 @@ export default class NavbarComponent implements OnInit {
   openAPIEnabled?: boolean;
   version = '';
   account = inject(AccountService).trackCurrentAccount();
+  isChildOnly = computed(() => {
+    const authorities: string[] = this.account()?.authorities ?? [];
+    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_FAMILY_ADMIN') && !authorities.includes('ROLE_ADMIN');
+  });
   entitiesNavbarItems: NavbarItem[] = [];
 
   private readonly loginService = inject(LoginService);

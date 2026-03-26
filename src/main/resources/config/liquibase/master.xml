@@ -52,5 +52,7 @@
     <include file="config/liquibase/changelog/20260324100000_cleanup_duplicate_pillars.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260325110000_add_default_project_name_to_todo_app_user_config.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260325153000_ensure_default_project_name_column.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260325200000_add_role_child.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260325210000_add_role_family_admin.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

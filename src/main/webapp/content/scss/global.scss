@@ -236,4 +236,342 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   padding: 0.7rem 1rem;
 }
 
+/* Home landing page styles moved from component SCSS to avoid anyComponentStyle budget overflow */
+jhi-home {
+  .tree-container {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .tree-level-0 > .tree-row {
+    background: linear-gradient(90deg, #eef2ff, #f8f9fa);
+    border-left: 3px solid #4f46e5;
+    border-radius: 4px;
+    padding: 0.3rem 0.5rem;
+    margin-bottom: 2px;
+  }
+
+  .tree-level-1 > .tree-row {
+    background: #f6fdf7;
+    border-left: 2px solid #22c55e;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 2px;
+  }
+
+  .tree-row {
+    transition: background-color 0.15s;
+
+    &:hover {
+      filter: brightness(0.97);
+    }
+  }
+
+  .tree-leaf {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+  }
+
+  .tree-children {
+    border-left: 1px dashed #ced4da;
+    margin-left: 1.1rem;
+    padding: 2px 0 2px 0.6rem;
+  }
+
+  .tree-expand-btn {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    background: #fff;
+    color: #6c757d;
+    flex-shrink: 0;
+    font-size: 0.6rem;
+
+    &.expanded {
+      background: #e9ecef;
+      border-color: #adb5bd;
+      color: #495057;
+    }
+
+    &:hover {
+      background: #e9ecef;
+    }
+  }
+
+  .tree-label {
+    font-size: 0.875rem;
+    min-width: 0;
+  }
+
+  .tree-name {
+    font-weight: 700;
+    color: #000;
+    font-size: 0.875rem;
+
+    &--item {
+      font-size: 0.82rem;
+    }
+  }
+
+  .tree-desc {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    flex-shrink: 1;
+  }
+
+  .tree-text-pair {
+    min-width: 0;
+    flex-wrap: nowrap;
+  }
+
+  .tree-leaf-bullet {
+    width: 20px;
+    text-align: center;
+    font-size: 1rem;
+  }
+
+  .tree-empty {
+    padding: 0.2rem 0.4rem;
+    font-style: italic;
+    color: #adb5bd;
+  }
+
+  .tree-actions {
+    flex-shrink: 0;
+  }
+
+  .landing-wrapper {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 60px);
+    gap: 0;
+    background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 60%, #f0fdf4 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .landing-hero {
+    flex: 1 1 55%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #1e293b 0%, #334155 100%);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+  }
+
+  .landing-hero-img {
+    max-width: 90%;
+    max-height: 65vh;
+    object-fit: contain;
+    border-radius: 10px;
+    filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.35));
+    position: relative;
+    z-index: 1;
+  }
+
+  .landing-tagline {
+    margin-top: 1.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+
+    p {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.75);
+      margin: 0;
+    }
+  }
+
+  .landing-auth {
+    flex: 0 0 380px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    background: #fff;
+    border-left: 1px solid #e2e8f0;
+  }
+
+  .landing-brand-name {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+
+    .brand-life {
+      color: #4f46e5;
+    }
+
+    .brand-radar {
+      color: #0ea5e9;
+    }
+  }
+
+  .landing-brand-sub {
+    color: #64748b;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .landing-features {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .feature-pill {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+
+  .auth-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .auth-card-header {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    color: #fff;
+    padding: 0.7rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .auth-card-header--register {
+    background: linear-gradient(90deg, #16a34a, #22c55e);
+  }
+
+  .auth-card-body {
+    padding: 1rem;
+  }
+
+  .auth-card-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.85rem;
+  }
+
+  .auth-card--register {
+    border-color: #bbf7d0;
+  }
+
+  .btn-auth {
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
+  }
+
+  .landing-footer-note {
+    font-size: 0.8rem;
+    color: #94a3b8;
+  }
+}
+
+@media (max-width: 900px) {
+  jhi-home {
+    .landing-wrapper {
+      flex-direction: column;
+      min-height: auto;
+    }
+
+    .landing-hero {
+      flex: none;
+      min-height: 260px;
+      padding: 1.5rem;
+    }
+
+    .landing-hero-img {
+      max-height: 220px;
+    }
+
+    .landing-auth {
+      flex: none;
+      padding: 1.5rem 1rem;
+      border-left: none;
+      border-top: 1px solid #e2e8f0;
+    }
+  }
+}
+
+[dir='rtl'] jhi-home {
+  .text-end {
+    text-align: left !important;
+  }
+
+  .tree-level-0 > .tree-row {
+    border-left: none;
+    border-right: 3px solid #4f46e5;
+  }
+
+  .tree-level-1 > .tree-row {
+    border-left: none;
+    border-right: 2px solid #22c55e;
+  }
+
+  .tree-children {
+    border-left: none;
+    border-right: 1px dashed #ced4da;
+    margin-left: 0;
+    margin-right: 1.1rem;
+    padding-left: 0;
+    padding-right: 0.6rem;
+  }
+
+  .landing-wrapper {
+    flex-direction: row-reverse;
+  }
+
+  .landing-auth {
+    border-left: none;
+    border-right: 1px solid #e2e8f0;
+  }
+}
+
+@media (max-width: 900px) {
+  [dir='rtl'] jhi-home .landing-auth {
+    border-right: none;
+  }
+}
+
 /* jhipster-needle-scss-add-main JHipster will add new css style */

@@ -33,7 +33,7 @@ spring:
       enabled: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/liferadar
+    url: jdbc:postgresql://liferadar.c54u8c6u8l8z.eu-central-1.rds.amazonaws.com:5432/postgres
     username: liferadar
     password:
     hikari:
@@ -95,7 +95,7 @@ jhipster:
         # - In the Consul configserver
         # - In a separate `application-prod.yml` file, in the same folder as your executable JAR file
         # - In the `JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET` environment variable
-        base64-secret: OTYzYmMxOTFlMGExZGM2ODU2Yjk5Mjk4YjZlNjViY2JhOGVmYzRlOTM4ZGRjMjhkNjA4OTk2MDlkY2Y2ODU5MTI3OTUxNTg0NzI5MDZkZDk1MDE5OWE5ZjA4ODI0ZWU2YjQ2ZmQ3MDgzM2ZjZGIzMWQ4NWQzZmQzM2JjNTdlOGU=
+        base64-secret: Wh/vckyHymZFXT1ZnSEYOo0oSp6+ZOKF/2/+hfeg3EJBXRCNs7JW9+b4whE+EGGHis1/lvX/8He2dPiNsv8FEg==
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000

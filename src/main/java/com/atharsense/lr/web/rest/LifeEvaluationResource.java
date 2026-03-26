@@ -27,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -212,6 +213,8 @@ public class LifeEvaluationResource {
     ) {
         LOG.debug("REST request to get LifeEvaluations by criteria: {}", criteria);
 
+        applyCurrentUserOwnerFilter(criteria);
+
         Page<LifeEvaluation> page = lifeEvaluationQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -226,7 +229,35 @@ public class LifeEvaluationResource {
     @GetMapping("/count")
     public ResponseEntity<Long> countLifeEvaluations(LifeEvaluationCriteria criteria) {
         LOG.debug("REST request to count LifeEvaluations by criteria: {}", criteria);
+
+        applyCurrentUserOwnerFilter(criteria);
+
         return ResponseEntity.ok().body(lifeEvaluationQueryService.countByCriteria(criteria));
+    }
+
+    private void applyCurrentUserOwnerFilter(LifeEvaluationCriteria criteria) {
+        if (criteria.getOwnerId() != null) {
+            return;
+        }
+
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("User not authenticated", ENTITY_NAME, "notauthenticated"));
+
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
+
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+            .orElseGet(() -> {
+                ExtendedUser newExtendedUser = new ExtendedUser();
+                newExtendedUser.setUser(currentUser);
+                newExtendedUser.setFullName(buildFullName(currentUser));
+                newExtendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(newExtendedUser);
+            });
+
+        LongFilter ownerFilter = new LongFilter();
+        ownerFilter.setEquals(extendedUser.getId());
+        criteria.setOwnerId(ownerFilter);
     }
 
     /**
