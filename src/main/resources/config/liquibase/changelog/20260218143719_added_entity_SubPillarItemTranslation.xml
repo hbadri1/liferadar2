@@ -11,7 +11,7 @@
     -->
     <changeSet id="20260218143719-1" author="jhipster">
         <createTable tableName="sub_pillar_item_translation">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="lang" type="varchar(255)">
@@ -28,6 +28,27 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+    </changeSet>
+
+    <changeSet id="20260218143719-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="sub_pillar_item_id"
+                                 baseTableName="sub_pillar_item_translation"
+                                 constraintName="fk_sub_pillar_item_translation__sub_pillar_item_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sub_pillar_item"
+                                 />
+    </changeSet>
+
+    <changeSet id="20260218143719-3" author="jhipster">
+        <dropForeignKeyConstraint baseTableName="sub_pillar_item_translation"
+                                  constraintName="fk_sub_pillar_item_translation__sub_pillar_item_id"/>
+        <addForeignKeyConstraint baseColumnNames="sub_pillar_item_id"
+                                 baseTableName="sub_pillar_item_translation"
+                                 constraintName="fk_sub_pillar_item_translation__sub_pillar_item_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sub_pillar_item"
+                                 onDelete="CASCADE"
+                                 />
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -53,5 +74,10 @@
             <column name="sub_pillar_item_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
+    </changeSet>
+
+    <changeSet id="20260218143719-2-data-identity-reset" author="jhipster" context="faker">
+        <sql dbms="h2">ALTER TABLE sub_pillar_item_translation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM sub_pillar_item_translation)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('sub_pillar_item_translation', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM sub_pillar_item_translation), 1), false)</sql>
     </changeSet>
 </databaseChangeLog>

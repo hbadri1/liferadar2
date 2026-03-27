@@ -11,7 +11,7 @@
     -->
     <changeSet id="20260218143714-1" author="jhipster">
         <createTable tableName="pillar" remarks="Core business aggregates (per-user schema)">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="code" type="varchar(50)">
@@ -21,10 +21,19 @@
                 <constraints nullable="false" />
             </column>
             <column name="owner_id" type="bigint">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+    </changeSet>
+
+    <changeSet id="20260218143714-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="owner_id"
+                                 baseTableName="pillar"
+                                 constraintName="fk_pillar__owner_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="extended_user"
+                                 />
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -49,5 +58,10 @@
             <column name="owner_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
+    </changeSet>
+
+    <changeSet id="20260218143714-2-data-identity-reset" author="jhipster" context="faker">
+        <sql dbms="h2">ALTER TABLE pillar ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM pillar)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('pillar', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM pillar), 1), false)</sql>
     </changeSet>
 </databaseChangeLog>
