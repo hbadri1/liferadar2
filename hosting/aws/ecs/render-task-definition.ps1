@@ -54,7 +54,7 @@ $template = Set-JsonStringToken -Content $template -Token '__LOG_GROUP_NAME__' -
 $template = Set-JsonStringToken -Content $template -Token '__AWS_REGION__' -Value (Get-RequiredConfigValue -Config $config -Name 'AWS_REGION')
 $template = Set-JsonStringToken -Content $template -Token '__LOG_STREAM_PREFIX__' -Value (Get-ConfigValue -Config $config -Name 'LOG_STREAM_PREFIX' -DefaultValue 'ecs')
 
-Set-Content -LiteralPath $OutFile -Value $template -Encoding UTF8
+[System.IO.File]::WriteAllText($OutFile, $template, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "Rendered task definition: $OutFile"
 $OutFile
 
