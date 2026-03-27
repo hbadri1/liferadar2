@@ -11,7 +11,7 @@
     -->
     <changeSet id="20260218143722-1" author="jhipster">
         <createTable tableName="trip_plan">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="title" type="varchar(160)">
@@ -31,6 +31,15 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+    </changeSet>
+
+    <changeSet id="20260218143722-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="owner_id"
+                                 baseTableName="trip_plan"
+                                 constraintName="fk_trip_plan__owner_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="extended_user"
+                                 />
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -57,5 +66,10 @@
             <column name="owner_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
+    </changeSet>
+
+    <changeSet id="20260218143722-2-data-identity-reset" author="jhipster" context="faker">
+        <sql dbms="h2">ALTER TABLE trip_plan ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM trip_plan)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('trip_plan', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM trip_plan), 1), false)</sql>
     </changeSet>
 </databaseChangeLog>

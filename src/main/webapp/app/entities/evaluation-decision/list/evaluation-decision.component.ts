@@ -207,14 +207,9 @@ export class EvaluationDecisionComponent implements OnInit {
           )
           .subscribe();
       },
-      error: (error: any) => {
+      error: () => {
         this.integrationPushingKeys.delete(key);
-        // Display specific error message from backend if available
-        const errorMessage = error?.error?.message || error?.message || 'Failed to load TickTick projects';
-        this.alertService.addAlert({
-          type: 'danger',
-          message: errorMessage,
-        });
+        // The global ErrorHandlerInterceptor broadcasts the HTTP error, which AlertErrorComponent handles.
       },
     });
   }
@@ -246,14 +241,9 @@ export class EvaluationDecisionComponent implements OnInit {
           message: res.body?.message ?? this.translateService.instant('liferadarApp.evaluationDecision.integrations.pushSuccess'),
         });
       },
-      error: (error: any) => {
+      error: () => {
         this.integrationPushingKeys.delete(key);
-        // Display specific error message from backend if available
-        const errorMessage = error?.error?.message || error?.message || this.translateService.instant('liferadarApp.evaluationDecision.integrations.pushError');
-        this.alertService.addAlert({
-          type: 'danger',
-          message: errorMessage,
-        });
+        // The global ErrorHandlerInterceptor broadcasts the HTTP error, which AlertErrorComponent handles.
       },
     });
   }
@@ -357,6 +347,15 @@ export class EvaluationDecisionComponent implements OnInit {
     return translation?.name ?? null;
   }
 
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   private findBestLanguageMatch<T>(items: T[], getLang: (item: T) => string | undefined | null): T | null {
     const current = (this.translateService.currentLang ?? 'en').toLowerCase();
     const candidates = new Set<string>([
@@ -379,15 +378,6 @@ export class EvaluationDecisionComponent implements OnInit {
     }
 
     return null;
-  }
-
-  private escapeHtml(value: string): string {
-    return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
   }
 
 }

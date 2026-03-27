@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, fakeAsync, inject, tick } from '@angular/core/testing';
 import { HttpHeaders, HttpResponse, provideHttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
-import { Subject, of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import dayjs from 'dayjs/esm';
 
 import { sampleWithRequiredData } from '../evaluation-decision.test-samples';
 import { EvaluationDecisionService } from '../service/evaluation-decision.service';
+import { AlertService } from 'app/core/util/alert.service';
 
 import { EvaluationDecisionComponent } from './evaluation-decision.component';
-import SpyInstance = jest.SpyInstance;
+type SpyInstance<T = unknown> = jest.SpyInstance<T>;
 
 describe('EvaluationDecision Management Component', () => {
   let comp: EvaluationDecisionComponent;
@@ -125,10 +126,12 @@ describe('EvaluationDecision Management Component', () => {
 
   describe('pushToIntegration', () => {
     let ngbModal: NgbModal;
+    let alertService: AlertService;
 
     beforeEach(() => {
       ngbModal = (comp as any).modalService;
       jest.spyOn(ngbModal, 'open').mockReturnValue({ componentInstance: {} } as any);
+      alertService = TestBed.inject(AlertService);
     });
 
     it.each(['microsoft-todo', 'todoist'])('should show coming-soon popup for %s and not push integration', provider => {
@@ -150,6 +153,43 @@ describe('EvaluationDecision Management Component', () => {
       comp.pushToIntegration(overdueDecision, 'ticktick');
 
       expect(openTickTickModalSpy).not.toHaveBeenCalled();
+    });
+
+    it('should show integration error translation key when projects loading fails', () => {
+      const alertSpy = jest.spyOn(alertService, 'addAlert');
+      jest.spyOn(service, 'getTickTickProjects').mockReturnValue(
+        throwError(() => ({ error: { message: 'error.integrationerror', title: 'TickTick is not connected to your account.' } })),
+      );
+
+      comp.pushToIntegration(sampleWithRequiredData, 'ticktick');
+
+      expect(alertSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'danger',
+          translationKey: 'error.integrationerror',
+        }),
+      );
+    });
+
+    it('should use integration error translation key when push fails before provider authorization', () => {
+      const alertSpy = jest.spyOn(alertService, 'addAlert');
+      jest.spyOn(service, 'pushToTodoApp').mockReturnValue(
+        throwError(() => ({
+          error: {
+            message: 'error.integrationerror',
+            detail: 'This provider (ticktick) is not connected to your account. Please authorize the provider first.',
+          },
+        })),
+      );
+
+      (comp as any).executeIntegrationPush(sampleWithRequiredData, 'ticktick');
+
+      expect(alertSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'danger',
+          translationKey: 'error.integrationerror',
+        }),
+      );
     });
   });
 

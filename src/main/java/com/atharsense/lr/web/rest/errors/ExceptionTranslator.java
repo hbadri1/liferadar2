@@ -203,6 +203,12 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     private String getCustomizedErrorDetails(Throwable err) {
+        // BadRequestAlertException already carries a structured message key in its properties.
+        // Its getMessage() returns the internal ProblemDetailWithCause toString which is not
+        // suitable to expose as a detail field to the client.
+        if (err instanceof BadRequestAlertException) {
+            return null;
+        }
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
             if (err instanceof HttpMessageConversionException) return "Unable to convert http message";
