@@ -5,6 +5,7 @@ import com.atharsense.lr.integrations.todoapps.TodoAppPushResult;
 import com.atharsense.lr.service.TodoAppIntegrationService;
 import com.atharsense.lr.service.TodoAppIntegrationService.TickTickAuthorizationView;
 import com.atharsense.lr.service.TodoAppIntegrationService.TickTickProjectView;
+import com.atharsense.lr.service.TodoAppIntegrationService.TickTickProjectsView;
 import com.atharsense.lr.service.TodoAppIntegrationService.TodoAppConfigView;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -49,7 +50,8 @@ public class TodoAppIntegrationResource {
             request.enabled(),
             request.accessToken(),
             request.externalUserId(),
-            request.defaultProjectId()
+            request.defaultProjectId(),
+            request.defaultProjectName()
         ));
         return ResponseEntity.ok(updated);
     }
@@ -72,14 +74,15 @@ public class TodoAppIntegrationResource {
     }
 
     @GetMapping("/ticktick/projects")
-    public ResponseEntity<List<TickTickProjectVM>> getTickTickProjects() {
+    public ResponseEntity<TickTickProjectsResponse> getTickTickProjects() {
         try {
-            List<TickTickProjectVM> projects = todoAppIntegrationService
-                .getTickTickProjectsForCurrentUser()
-                .stream()
-                .map(TickTickProjectVM::from)
-                .toList();
-            return ResponseEntity.ok(projects);
+            TickTickProjectsView view = todoAppIntegrationService.getTickTickProjectsForCurrentUser();
+            return ResponseEntity.ok(
+                new TickTickProjectsResponse(
+                    view.defaultProjectName(),
+                    view.projects().stream().map(TickTickProjectVM::from).toList()
+                )
+            );
         } catch (IllegalArgumentException ex) {
             throw new BadRequestAlertException(ex.getMessage(), ENTITY_NAME, "integrationerror");
         }
@@ -125,13 +128,15 @@ public class TodoAppIntegrationResource {
 
     public record TodoAppPushRequest(@NotNull Long decisionId, @NotBlank String provider, String projectId, String title, Instant dueAt) {}
 
-    public record TodoAppConfigUpdateRequest(Boolean enabled, String accessToken, String externalUserId, String defaultProjectId) {}
+    public record TodoAppConfigUpdateRequest(Boolean enabled, String accessToken, String externalUserId, String defaultProjectId, String defaultProjectName) {}
 
     public record TodoAppPushResponse(String provider, String externalTaskId, String message) {}
 
     public record TickTickAuthorizeUrlResponse(String authorizeUrl) {}
 
     public record TickTickActionResponse(Boolean success, String message) {}
+
+    public record TickTickProjectsResponse(String defaultProjectName, List<TickTickProjectVM> projects) {}
 
     public record TickTickProjectVM(String id, String name) {
         public static TickTickProjectVM from(TickTickProjectView project) {
@@ -147,6 +152,7 @@ public class TodoAppIntegrationResource {
         Boolean hasAccessToken,
         String externalUserId,
         String defaultProjectId,
+        String defaultProjectName,
         String baseUrl,
         Boolean requiresDefaultProjectId
     ) {
@@ -159,6 +165,7 @@ public class TodoAppIntegrationResource {
                 config.hasAccessToken(),
                 config.externalUserId(),
                 config.defaultProjectId(),
+                config.defaultProjectName(),
                 config.baseUrl(),
                 config.requiresDefaultProjectId()
             );

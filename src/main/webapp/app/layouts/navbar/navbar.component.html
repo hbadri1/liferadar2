@@ -29,7 +29,9 @@
         </li>
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         @if (account() !== null) {
-          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <!-- Action Items: FAMILY_ADMIN, USER, ADMIN only — hidden from ROLE_CHILD -->
+          <li *jhiHasAnyAuthority="['ROLE_FAMILY_ADMIN', 'ROLE_USER', 'ROLE_ADMIN']"
+              class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <a class="nav-link" routerLink="/action-items" (click)="collapseNavbar()" data-cy="actionItems">
               <span>
                 <fa-icon icon="tasks"></fa-icon>
@@ -38,7 +40,18 @@
             </a>
           </li>
 
+          <!-- Family: visible to ALL authenticated users including CHILD -->
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/family" (click)="collapseNavbar()" data-cy="family">
+              <span>
+                <fa-icon icon="users"></fa-icon>
+                <span jhiTranslate="global.menu.family">Family</span>
+              </span>
+            </a>
+          </li>
+
           <li
+            *jhiHasAnyAuthority="['ROLE_FAMILY_ADMIN', 'ROLE_USER', 'ROLE_ADMIN']"
             ngbDropdown
             class="nav-item dropdown pointer"
             display="dynamic"
@@ -309,42 +322,44 @@
           </a>
           <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
             @if (accountRef !== null) {
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/account/settings"
-                  routerLinkActive="active"
-                  (click)="collapseNavbar()"
-                  data-cy="settings"
-                >
-                  <fa-icon icon="wrench" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.settings">Settings</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/account/configuration"
-                  routerLinkActive="active"
-                  (click)="collapseNavbar()"
-                  data-cy="userConfiguration"
-                >
-                  <fa-icon icon="sliders-h" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.configuration">My Configuration</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/account/password"
-                  routerLinkActive="active"
-                  (click)="collapseNavbar()"
-                  data-cy="passwordItem"
-                >
-                  <fa-icon icon="lock" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.password">Password</span>
-                </a>
-              </li>
+              @if (!isChildOnly()) {
+                <li>
+                  <a
+                    class="dropdown-item"
+                    routerLink="/account/settings"
+                    routerLinkActive="active"
+                    (click)="collapseNavbar()"
+                    data-cy="settings"
+                  >
+                    <fa-icon icon="wrench" [fixedWidth]="true"></fa-icon>
+                    <span jhiTranslate="global.menu.account.settings">Settings</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    routerLink="/account/configuration"
+                    routerLinkActive="active"
+                    (click)="collapseNavbar()"
+                    data-cy="userConfiguration"
+                  >
+                    <fa-icon icon="sliders-h" [fixedWidth]="true"></fa-icon>
+                    <span jhiTranslate="global.menu.account.configuration">My Configuration</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    routerLink="/account/password"
+                    routerLinkActive="active"
+                    (click)="collapseNavbar()"
+                    data-cy="passwordItem"
+                  >
+                    <fa-icon icon="lock" [fixedWidth]="true"></fa-icon>
+                    <span jhiTranslate="global.menu.account.password">Password</span>
+                  </a>
+                </li>
+              }
               <li>
                 <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">
                   <fa-icon icon="sign-out-alt" [fixedWidth]="true"></fa-icon>

@@ -8,6 +8,38 @@
         <p class="lead" jhiTranslate="home.subtitle">Your Life Pillars & Evaluations</p>
       </div>
 
+      @if (isChildOnly()) {
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="mb-2" jhiTranslate="home.child.title">You are doing great!</h3>
+            <p class="text-muted mb-4" jhiTranslate="home.child.subtitle">Here are some encouraging messages for your day.</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <div class="alert alert-success h-100 mb-0" jhiTranslate="home.child.message1">Every small step you take today matters.</div>
+              </div>
+              <div class="col-md-4">
+                <div class="alert alert-primary h-100 mb-0" jhiTranslate="home.child.message2">Your effort is stronger than any challenge.</div>
+              </div>
+              <div class="col-md-4">
+                <div class="alert alert-warning h-100 mb-0" jhiTranslate="home.child.message3">Keep going, you are building something amazing.</div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+              <blockquote class="blockquote mb-0">
+                <p class="mb-0" jhiTranslate="home.child.quote1">"Believe you can, and you are halfway there."</p>
+              </blockquote>
+              <blockquote class="blockquote mb-0">
+                <p class="mb-0" jhiTranslate="home.child.quote2">"Success is the sum of small efforts, repeated day in and day out."</p>
+              </blockquote>
+              <blockquote class="blockquote mb-0">
+                <p class="mb-0" jhiTranslate="home.child.quote3">"You are braver than you believe, and stronger than you seem."</p>
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      } @else {
       <div class="row">
         <!-- Left Column: Life Pillars (2/3 width) -->
         <div class="col-lg-8">
@@ -225,11 +257,20 @@
         <div class="col-lg-4">
           <div class="sticky-top" style="top: 20px;">
             <div class="card shadow-sm">
-              <div class="card-header bg-success text-white">
-                <h5 class="mb-0">
+              <div class="card-header bg-success text-white d-flex align-items-center justify-content-between gap-2">
+                <h5 class="mb-0 d-flex align-items-center">
                   <fa-icon icon="clipboard-check" class="me-2"></fa-icon>
                   <span jhiTranslate="liferadarApp.lifeEvaluation.home.title">Life Evaluations</span>
                 </h5>
+                <button
+                  class="btn btn-sm btn-outline-light"
+                  type="button"
+                  (click)="loadLifeEvaluations()"
+                  [disabled]="isLoadingEvaluations()"
+                  [title]="'liferadarApp.lifeEvaluation.home.refreshListLabel' | translate">
+                  <fa-icon icon="sync" [animation]="isLoadingEvaluations() ? 'spin' : undefined"></fa-icon>
+                  <span class="ms-1" jhiTranslate="liferadarApp.lifeEvaluation.home.refreshListLabel">Refresh list</span>
+                </button>
               </div>
               <div class="card-body evaluations-panel">
                 <!-- Loading Indicator -->
@@ -338,27 +379,94 @@
           </div>
         </div>
       </div>
+      }
     } @else {
-      <!-- Not Logged In -->
-      <div class="row">
-        <div class="col-md-3">
-          <span class="hipster img-fluid rounded"></span>
+      <!-- ═══════════════════════════════════════════════════════════
+           LANDING PAGE — unauthenticated users
+           ═══════════════════════════════════════════════════════════ -->
+      <div class="landing-wrapper">
+
+        <!-- Left: hero image -->
+        <div class="landing-hero">
+          <img
+            src="/content/images/homeliferadar.png"
+            alt="LifeRadar"
+            class="landing-hero-img"
+          />
+          <div class="landing-tagline">
+            <p jhiTranslate="home.landing.tagline">Track. Evaluate. Grow.</p>
+          </div>
         </div>
 
-        <div class="col-md-9">
-          <h1 class="display-4"><span jhiTranslate="home.title">Welcome to LifeRadar!</span></h1>
-          <p class="lead" jhiTranslate="home.subtitle">Track and evaluate your life pillars</p>
+        <!-- Right: auth panel -->
+        <div class="landing-auth">
 
-          <div class="alert alert-warning">
-            <span jhiTranslate="global.messages.info.authenticated.prefix">If you want to </span>
-            <a class="alert-link" (click)="login()" jhiTranslate="global.messages.info.authenticated.link">sign in</a>
-            <span jhiTranslate="global.messages.info.authenticated.suffix">, please use your credentials.</span>
+          <!-- Brand block -->
+          <div class="landing-brand mb-4">
+            <h1 class="landing-brand-name">
+              <span class="brand-life">Life</span><span class="brand-radar">Radar</span>
+            </h1>
+            <p class="landing-brand-sub" jhiTranslate="home.landing.subtitle">
+              Your personal life balance compass
+            </p>
           </div>
 
-          <div class="alert alert-info">
-            <span jhiTranslate="global.messages.info.register.noaccount">You don't have an account yet?</span>&nbsp;
-            <a class="alert-link" routerLink="/account/register" jhiTranslate="global.messages.info.register.link">Register a new account</a>
+          <!-- Feature pills -->
+          <div class="landing-features mb-4">
+            <span class="feature-pill">
+              <fa-icon icon="chart-bar" class="me-1"></fa-icon>
+              <span jhiTranslate="home.landing.feature.evaluate">Evaluate</span>
+            </span>
+            <span class="feature-pill">
+              <fa-icon icon="list" class="me-1"></fa-icon>
+              <span jhiTranslate="home.landing.feature.pillars">Life Pillars</span>
+            </span>
+            <span class="feature-pill">
+              <fa-icon icon="check-circle" class="me-1"></fa-icon>
+              <span jhiTranslate="home.landing.feature.decisions">Decisions</span>
+            </span>
           </div>
+
+          <!-- Sign In card -->
+          <div class="auth-card mb-3">
+            <div class="auth-card-header">
+              <fa-icon icon="sign-in-alt" class="me-2"></fa-icon>
+              <span jhiTranslate="home.landing.signin.title">Already have an account?</span>
+            </div>
+            <div class="auth-card-body">
+              <p class="auth-card-desc" jhiTranslate="home.landing.signin.desc">
+                Sign in to access your personalised dashboard.
+              </p>
+              <button class="btn btn-primary btn-auth w-100" (click)="login()">
+                <fa-icon icon="sign-in-alt" class="me-2"></fa-icon>
+                <span jhiTranslate="global.messages.info.authenticated.link">Sign in</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Register card -->
+          <div class="auth-card auth-card--register">
+            <div class="auth-card-header auth-card-header--register">
+              <fa-icon icon="user-plus" class="me-2"></fa-icon>
+              <span jhiTranslate="home.landing.register.title">New here?</span>
+            </div>
+            <div class="auth-card-body">
+              <p class="auth-card-desc" jhiTranslate="home.landing.register.desc">
+                Create a free account and start tracking your life today.
+              </p>
+              <a class="btn btn-success btn-auth w-100" routerLink="/account/register">
+                <fa-icon icon="user-plus" class="me-2"></fa-icon>
+                <span jhiTranslate="global.messages.info.register.link">Register</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Footer note -->
+          <p class="landing-footer-note text-muted mt-4 text-center small">
+            <fa-icon icon="shield-alt" class="me-1"></fa-icon>
+            <span jhiTranslate="home.landing.privacy">Your data stays private and secure.</span>
+          </p>
+
         </div>
       </div>
     }

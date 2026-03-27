@@ -42,6 +42,10 @@ public class TodoAppUserConfig implements Serializable {
     @Column(name = "default_project_id", length = 255)
     private String defaultProjectId;
 
+    @Size(max = 255)
+    @Column(name = "default_project_name", length = 255)
+    private String defaultProjectName;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
     @JoinColumn(name = "user_id", nullable = false)
@@ -94,6 +98,14 @@ public class TodoAppUserConfig implements Serializable {
 
     public void setDefaultProjectId(String defaultProjectId) {
         this.defaultProjectId = defaultProjectId;
+    }
+
+    public String getDefaultProjectName() {
+        return defaultProjectName;
+    }
+
+    public void setDefaultProjectName(String defaultProjectName) {
+        this.defaultProjectName = defaultProjectName;
     }
 
     public User getUser() {

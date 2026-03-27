@@ -2,6 +2,16 @@
   "home": {
     "title": "Welcome to LifeRadar",
     "subtitle": "Your Life Pillars",
+    "child": {
+      "title": "You are doing great!",
+      "subtitle": "Here are some encouraging messages for your day.",
+      "message1": "Every small step you take today matters.",
+      "message2": "Your effort is stronger than any challenge.",
+      "message3": "Keep going, you are building something amazing.",
+      "quote1": "\"Believe you can, and you are halfway there.\"",
+      "quote2": "\"Success is the sum of small efforts, repeated day in and day out.\"",
+      "quote3": "\"You are braver than you believe, and stronger than you seem.\""
+    },
     "logged": {
       "message": "You are logged in as user \"{{username}}\"."
     },
@@ -14,6 +24,24 @@
       "follow": "follow @jhipster on Twitter"
     },
     "like": "If you like JHipster, don't forget to give us a star on",
-    "github": "GitHub"
+    "github": "GitHub",
+    "landing": {
+      "tagline": "Track. Evaluate. Grow.",
+      "subtitle": "Your personal life balance compass",
+      "feature": {
+        "evaluate": "Evaluate",
+        "pillars": "Life Pillars",
+        "decisions": "Decisions"
+      },
+      "signin": {
+        "title": "Already have an account?",
+        "desc": "Sign in to access your personalised dashboard."
+      },
+      "register": {
+        "title": "New here?",
+        "desc": "Create a free account and start tracking your life today."
+      },
+      "privacy": "Your data stays private and secure."
+    }
   }
 }

@@ -162,7 +162,7 @@ public class TodoAppIntegrationService {
     }
 
     @Transactional(readOnly = true)
-    public List<TickTickProjectView> getTickTickProjectsForCurrentUser() {
+    public TickTickProjectsView getTickTickProjectsForCurrentUser() {
         User user = getCurrentUser();
         TodoAppUserConfig userConfig = todoAppUserConfigRepository
             .findOneByUserIdAndProvider(user.getId(), TodoAppProvider.TICKTICK)
@@ -188,11 +188,13 @@ public class TodoAppIntegrationService {
             );
         }
 
-        return tickTickTodoAppClient
-            .listProjectsOrListsOrCreateDefault(userConfig, providerConfig)
+        List<TickTickProjectView> projects = tickTickTodoAppClient
+            .listProjectsOrLists(userConfig, providerConfig)
             .stream()
             .map(project -> new TickTickProjectView(project.id(), project.name()))
             .toList();
+
+        return new TickTickProjectsView(resolveTickTickDefaultProjectName(userConfig), projects);
     }
 
     @Transactional(readOnly = true)
@@ -206,7 +208,8 @@ public class TodoAppIntegrationService {
         Boolean enabled,
         String accessToken,
         String externalUserId,
-        String defaultProjectId
+        String defaultProjectId,
+        String defaultProjectName
     ) {
         User user = getCurrentUser();
         TodoAppUserConfig config = todoAppUserConfigRepository
@@ -225,8 +228,14 @@ public class TodoAppIntegrationService {
         if (normalizedAccessToken != null || config.getAccessToken() == null) {
             config.setAccessToken(normalizedAccessToken);
         }
-        config.setExternalUserId(normalize(externalUserId));
-        config.setDefaultProjectId(normalize(defaultProjectId));
+        String normalizedExternalUserId = normalize(externalUserId);
+        if (provider != TodoAppProvider.TICKTICK || normalizedExternalUserId != null || config.getExternalUserId() == null) {
+            config.setExternalUserId(normalizedExternalUserId);
+        }
+        if (provider != TodoAppProvider.TICKTICK) {
+            config.setDefaultProjectId(normalize(defaultProjectId));
+        }
+        config.setDefaultProjectName(normalize(defaultProjectName));
 
         validateConfig(config);
 
@@ -285,14 +294,26 @@ public class TodoAppIntegrationService {
             try {
                 List<TickTickTodoAppClient.TickTickProject> availableProjects = tickTickTodoAppClient.listProjectsOrListsOrCreateDefault(userConfig, providerConfig);
                 if (!availableProjects.isEmpty()) {
-                    resolvedProjectId = availableProjects.get(0).id();
+                    String defaultProjectName = resolveTickTickDefaultProjectName(userConfig);
+                    resolvedProjectId = availableProjects
+                        .stream()
+                        .filter(project -> project.name() != null && project.name().trim().equalsIgnoreCase(defaultProjectName))
+                        .map(TickTickTodoAppClient.TickTickProject::id)
+                        .findFirst()
+                        .orElse(availableProjects.get(0).id());
                 }
             } catch (Exception ex) {
                 log.warn("Failed to get TickTick projects for default selection: {}", ex.getMessage());
                 // Try the old fallback as last resort
                 List<TickTickTodoAppClient.TickTickProject> availableProjects = tickTickTodoAppClient.listProjectsOrLists(userConfig, providerConfig);
                 if (!availableProjects.isEmpty()) {
-                    resolvedProjectId = availableProjects.get(0).id();
+                    String defaultProjectName = resolveTickTickDefaultProjectName(userConfig);
+                    resolvedProjectId = availableProjects
+                        .stream()
+                        .filter(project -> project.name() != null && project.name().trim().equalsIgnoreCase(defaultProjectName))
+                        .map(TickTickTodoAppClient.TickTickProject::id)
+                        .findFirst()
+                        .orElse(availableProjects.get(0).id());
                 }
             }
         }
@@ -350,6 +371,7 @@ public class TodoAppIntegrationService {
             config != null && StringUtils.hasText(config.getAccessToken()),
             config != null ? config.getExternalUserId() : null,
             config != null ? config.getDefaultProjectId() : null,
+            config != null ? config.getDefaultProjectName() : null,
             providerConfig != null ? providerConfig.getBaseUrl() : null,
             requiresDefaultProjectId(provider)
         );
@@ -360,7 +382,7 @@ public class TodoAppIntegrationService {
             return;
         }
 
-        if (!StringUtils.hasText(config.getAccessToken())) {
+        if (config.getProvider() != TodoAppProvider.TICKTICK && !StringUtils.hasText(config.getAccessToken())) {
             throw new IllegalArgumentException("Access token is required when integration is enabled");
         }
 
@@ -388,6 +410,13 @@ public class TodoAppIntegrationService {
         return StringUtils.hasText(value) ? value.trim() : null;
     }
 
+    private String resolveTickTickDefaultProjectName(TodoAppUserConfig config) {
+        if (config != null && StringUtils.hasText(config.getDefaultProjectName())) {
+            return config.getDefaultProjectName().trim();
+        }
+        return "Liferadar";
+    }
+
     public record TodoAppConfigView(
         TodoAppProvider provider,
         Boolean available,
@@ -396,6 +425,7 @@ public class TodoAppIntegrationService {
         Boolean hasAccessToken,
         String externalUserId,
         String defaultProjectId,
+        String defaultProjectName,
         String baseUrl,
         Boolean requiresDefaultProjectId
     ) {}
@@ -403,6 +433,8 @@ public class TodoAppIntegrationService {
     public record TickTickAuthorizationView(String authorizeUrl, String state) {}
 
     public record TickTickAuthorizationResult(String provider, Boolean success) {}
+
+    public record TickTickProjectsView(String defaultProjectName, List<TickTickProjectView> projects) {}
 
     public record TickTickProjectView(String id, String name) {}
 }

@@ -44,7 +44,8 @@
           "taskTitleLabel": "اسم المهمة",
           "taskDateLabel": "تاريخ المهمة",
           "confirmButton": "إرسال إلى TickTick",
-          "noProjects": "لم يتم العثور على مشاريع TickTick. سيتم إنشاء مشروع جديد باسم Liferadar عند الإرسال.",
+          "noProjects": "لم يتم العثور على مشاريع TickTick. سيتم إنشاء مشروع جديد باسم {{ name }} عند الإرسال.",
+          "defaultProjectNameHint": "اسم المشروع الافتراضي: {{ name }}. سيتم تحديد المشروع المطابق تلقائيًا عند توفره.",
           "loadProjectsError": "فشل تحميل مشاريع TickTick."
         }
       }

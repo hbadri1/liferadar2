@@ -44,7 +44,8 @@
           "taskTitleLabel": "Task Name",
           "taskDateLabel": "Task Date",
           "confirmButton": "Send to TickTick",
-          "noProjects": "No TickTick projects were found. A new project named Liferadar will be created when you send.",
+          "noProjects": "No TickTick projects were found. A new project named {{ name }} will be created when you send.",
+          "defaultProjectNameHint": "Default project name: {{ name }}. A matching project is preselected when available.",
           "loadProjectsError": "Failed to load TickTick projects."
         }
       }

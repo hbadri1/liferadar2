@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class SuggestedPillarImportService {
     private static final Logger LOG = LoggerFactory.getLogger(SuggestedPillarImportService.class);
 
     private static final String ENTITY_NAME = "pillar";
-    private static final Path SUGGESTED_PILLARS_FILE = Paths.get("external", "basic-pillarsv1.0.json");
+    private static final Path SUGGESTED_PILLARS_FILE = Path.of("external", "basic-pillarsv1.0.json");
     private static final List<String> SUPPORTED_LANG_KEYS = List.of("en", "ar", "fr");
     private static final Map<String, LangCode> LANG_CODE_BY_KEY = Map.of(
         "en",

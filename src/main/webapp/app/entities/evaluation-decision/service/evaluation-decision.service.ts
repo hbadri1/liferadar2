@@ -43,6 +43,11 @@ export interface ITickTickProject {
   name: string;
 }
 
+export interface ITickTickProjectsResponse {
+  defaultProjectName?: string | null;
+  projects: ITickTickProject[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class EvaluationDecisionService {
   protected readonly http = inject(HttpClient);
@@ -97,8 +102,8 @@ export class EvaluationDecisionService {
     return this.http.post<ITodoAppPushResponse>(`${this.todoAppsUrl}/push`, request, { observe: 'response' });
   }
 
-  getTickTickProjects(): Observable<HttpResponse<ITickTickProject[]>> {
-    return this.http.get<ITickTickProject[]>(`${this.todoAppsUrl}/ticktick/projects`, { observe: 'response' });
+  getTickTickProjects(): Observable<HttpResponse<ITickTickProjectsResponse>> {
+    return this.http.get<ITickTickProjectsResponse>(`${this.todoAppsUrl}/ticktick/projects`, { observe: 'response' });
   }
 
   getEvaluationDecisionIdentifier(evaluationDecision: Pick<IEvaluationDecision, 'id'>): number {

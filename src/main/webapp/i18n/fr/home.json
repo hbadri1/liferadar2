@@ -2,6 +2,16 @@
   "home": {
     "title": "Bienvenue sur LifeRadar",
     "subtitle": "Vos Piliers de Vie",
+    "child": {
+      "title": "Tu te débrouilles très bien !",
+      "subtitle": "Voici quelques messages encourageants pour ta journée.",
+      "message1": "Chaque petit pas que tu fais aujourd'hui compte.",
+      "message2": "Ton effort est plus fort que n'importe quel défi.",
+      "message3": "Continue, tu construis quelque chose d'incroyable.",
+      "quote1": "\"Crois en toi, et tu as déjà fait la moitié du chemin.\"",
+      "quote2": "\"Le succès est la somme de petits efforts répétés jour après jour.\"",
+      "quote3": "\"Tu es plus courageux(se) que tu ne le crois, et plus fort(e) que tu ne le parais.\""
+    },
     "logged": {
       "message": "Vous êtes connecté en tant que \"{{username}}\"."
     },
@@ -14,6 +24,24 @@
       "follow": "Suivez @jhipster sur Twitter"
     },
     "like": "Si vous aimez JHipster, donnez nous une étoile sur",
-    "github": "GitHub "
+    "github": "GitHub ",
+    "landing": {
+      "tagline": "Suivez. Évaluez. Progressez.",
+      "subtitle": "Votre boussole personnelle d'équilibre de vie",
+      "feature": {
+        "evaluate": "Évaluer",
+        "pillars": "Piliers de Vie",
+        "decisions": "Décisions"
+      },
+      "signin": {
+        "title": "Vous avez déjà un compte ?",
+        "desc": "Connectez-vous pour accéder à votre tableau de bord personnalisé."
+      },
+      "register": {
+        "title": "Nouveau ici ?",
+        "desc": "Créez un compte gratuit et commencez à suivre votre vie dès aujourd'hui."
+      },
+      "privacy": "Vos données restent privées et sécurisées."
+    }
   }
 }
