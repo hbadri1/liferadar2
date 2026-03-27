@@ -125,7 +125,8 @@ public class UserService {
         // no activation key needed for auto-activated users
         newUser.setActivationKey(null);
         Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        // Self-registered users receive ROLE_FAMILY_ADMIN
+        authorityRepository.findById(AuthoritiesConstants.FAMILY_ADMIN).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
         ensureExtendedUser(newUser, userDTO);

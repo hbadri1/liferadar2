@@ -14,10 +14,13 @@
           <option [value]="project.id">{{ project.name }}</option>
         }
       </select>
+      <div class="form-text">
+        {{ 'liferadarApp.evaluationDecision.integrations.ticktickProjectModal.defaultProjectNameHint' | translate: { name: defaultProjectName } }}
+      </div>
     </div>
   } @else {
-    <div class="alert alert-info" jhiTranslate="liferadarApp.evaluationDecision.integrations.ticktickProjectModal.noProjects">
-      No TickTick projects were found.
+    <div class="alert alert-info">
+      {{ 'liferadarApp.evaluationDecision.integrations.ticktickProjectModal.noProjects' | translate: { name: defaultProjectName } }}
     </div>
   }
 

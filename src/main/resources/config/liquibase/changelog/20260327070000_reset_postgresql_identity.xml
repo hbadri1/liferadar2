@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog-ext.xsd">
+
+    <!--
+        Align PostgreSQL identity/serial sequences with current max(id) values.
+        This prevents duplicate key errors after seed/manual inserts with explicit IDs.
+    -->
+    <changeSet id="20260327070000-1" author="jhipster">
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('jhi_user', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM jhi_user), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('extended_user', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM extended_user), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('pillar', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM pillar), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('pillar_translation', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM pillar_translation), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('sub_pillar', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM sub_pillar), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('sub_pillar_translation', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM sub_pillar_translation), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('sub_pillar_item', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM sub_pillar_item), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('sub_pillar_item_translation', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM sub_pillar_item_translation), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('life_evaluation', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM life_evaluation), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('evaluation_decision', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM evaluation_decision), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('trip_plan', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM trip_plan), 1), false)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('trip_plan_step', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM trip_plan_step), 1), false)</sql>
+    </changeSet>
+</databaseChangeLog>
+

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 public class TickTickTodoAppClient implements TodoAppClient {
 
     private static final Logger log = LoggerFactory.getLogger(TickTickTodoAppClient.class);
+    private static final String FALLBACK_DEFAULT_PROJECT_NAME = "Liferadar";
     private static final DateTimeFormatter TICKTICK_DUE_DATE_FORMATTER = DateTimeFormatter
         .ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
         .withZone(ZoneOffset.UTC);
@@ -200,7 +201,7 @@ public class TickTickTodoAppClient implements TodoAppClient {
      * 3-Tier fallback strategy:
      * Tier 1: Try to fetch projects
      * Tier 2: Try to fetch lists (if no projects)
-     * Tier 3: Create a default "Liferadar" project (if no projects/lists)
+     * Tier 3: Create a configured default project (if no projects/lists)
      *
      * This method ensures that the project picker modal always has something to display.
      *
@@ -208,6 +209,7 @@ public class TickTickTodoAppClient implements TodoAppClient {
      * @throws IllegalArgumentException only if all three tiers fail
      */
     public List<TickTickProject> listProjectsOrListsOrCreateDefault(TodoAppUserConfig userConfig, ApplicationProperties.Provider providerConfig) {
+        String defaultProjectName = resolveDefaultProjectName(userConfig);
         // Tier 1: Try to get projects
         try {
             List<TickTickProject> projects = listProjects(userConfig, providerConfig);
@@ -234,10 +236,10 @@ public class TickTickTodoAppClient implements TodoAppClient {
         // Tier 3: Create a default project
         try {
             log.debug("Tier 2 returned no lists, trying Tier 3 (Create Default)...");
-            String projectId = createDefaultProject(userConfig, providerConfig);
+            String projectId = createDefaultProject(userConfig, providerConfig, defaultProjectName);
             if (StringUtils.hasText(projectId)) {
-                log.info("Tier 3 succeeded: Successfully created default Liferadar project");
-                return List.of(new TickTickProject(projectId, "Liferadar"));
+                log.info("Tier 3 succeeded: Successfully created default TickTick project {}", defaultProjectName);
+                return List.of(new TickTickProject(projectId, defaultProjectName));
             }
         } catch (Exception ex) {
             log.debug("Tier 3 (Create Default) failed: {}", ex.getMessage());
@@ -291,13 +293,13 @@ public class TickTickTodoAppClient implements TodoAppClient {
         return List.of();
     }
 
-    public String createDefaultProject(TodoAppUserConfig userConfig, ApplicationProperties.Provider providerConfig) {
+    public String createDefaultProject(TodoAppUserConfig userConfig, ApplicationProperties.Provider providerConfig, String defaultProjectName) {
         if (!StringUtils.hasText(userConfig.getAccessToken())) {
             throw new IllegalArgumentException("TickTick access token is missing. Please re-authorize your TickTick connection.");
         }
 
         try {
-            // Try to create a default project called "Liferadar"
+            String resolvedProjectName = StringUtils.hasText(defaultProjectName) ? defaultProjectName.trim() : FALLBACK_DEFAULT_PROJECT_NAME;
             String[] projectCreationEndpoints = {
                 "/open/v1/project",
                 "/open/v1/projects",
@@ -308,8 +310,8 @@ public class TickTickTodoAppClient implements TodoAppClient {
                 try {
                     String fullEndpoint = buildEndpoint(providerConfig.getBaseUrl(), endpoint);
                     Map<String, Object> payload = new HashMap<>();
-                    payload.put("name", "Liferadar");
-                    payload.put("title", "Liferadar");
+                    payload.put("name", resolvedProjectName);
+                    payload.put("title", resolvedProjectName);
 
                     HttpRequest request = HttpRequest.newBuilder(URI.create(fullEndpoint))
                         .header("Authorization", "Bearer " + userConfig.getAccessToken())
@@ -327,7 +329,7 @@ public class TickTickTodoAppClient implements TodoAppClient {
                             projectId = textOrNull(json.get("data"), "id");
                         }
                         if (StringUtils.hasText(projectId)) {
-                            log.info("Created default Liferadar project with ID: {}", projectId);
+                            log.info("Created default TickTick project {} with ID: {}", resolvedProjectName, projectId);
                             return projectId;
                         }
                     }
@@ -340,6 +342,13 @@ public class TickTickTodoAppClient implements TodoAppClient {
         }
 
         return null;
+    }
+
+    private String resolveDefaultProjectName(TodoAppUserConfig userConfig) {
+        if (userConfig != null && StringUtils.hasText(userConfig.getDefaultProjectName())) {
+            return userConfig.getDefaultProjectName().trim();
+        }
+        return FALLBACK_DEFAULT_PROJECT_NAME;
     }
 
     private String buildEndpoint(String baseUrl, String path) {

@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -40,6 +40,10 @@ import { ConfirmationModalComponent } from './confirmation-modal.component';
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
+  isChildOnly = computed(() => {
+    const authorities: string[] = this.account()?.authorities ?? [];
+    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_FAMILY_ADMIN') && !authorities.includes('ROLE_ADMIN');
+  });
   pillars = signal<IPillar[]>([]);
   subPillarsMap = signal<Map<number, ISubPillar[]>>(new Map());
   loadingSubPillars = signal<Set<number>>(new Set());
@@ -72,9 +76,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
         console.log('Account loaded:', account);
         this.account.set(account);
         if (account) {
-          console.log('Loading pillars for authenticated user');
-          this.loadPillars();
-          this.loadLifeEvaluations();
+          this.loadDashboardDataForCurrentUser();
         } else {
           console.log('No account found - user not authenticated');
         }
@@ -89,10 +91,24 @@ export default class HomeComponent implements OnInit, OnDestroy {
         this.subPillarsMap.set(new Map());
         this.subPillarItemsMap.set(new Map());
         this.evaluationDecisionsMap.set(new Map());
-        // Reload all data with current language
-        this.loadPillars();
-        this.loadLifeEvaluations();
+        this.loadDashboardDataForCurrentUser();
       });
+  }
+
+  private loadDashboardDataForCurrentUser(): void {
+    if (!this.account()) {
+      return;
+    }
+
+    if (this.isChildOnly()) {
+      this.pillars.set([]);
+      this.lifeEvaluations.set([]);
+      return;
+    }
+
+    console.log('Loading pillars for authenticated user');
+    this.loadPillars();
+    this.loadLifeEvaluations();
   }
 
   loadPillars(): void {
@@ -708,8 +724,14 @@ export default class HomeComponent implements OnInit, OnDestroy {
   loadLifeEvaluations(): void {
     this.isLoadingEvaluations.set(true);
     console.log('Loading life evaluations for current user...');
+    const last30DaysStart = this.getLast30DaysStartDate();
+
     this.lifeEvaluationService
-      .query({ size: 100 })
+      .query({
+        size: 100,
+        sort: ['evaluationDate,desc', 'id,desc'],
+        'evaluationDate.greaterThanOrEqual': last30DaysStart,
+      })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: HttpResponse<ILifeEvaluation[]>) => {
@@ -766,6 +788,17 @@ export default class HomeComponent implements OnInit, OnDestroy {
           this.isLoadingEvaluations.set(false);
         },
       });
+  }
+
+  private getLast30DaysStartDate(): string {
+    const now = new Date();
+    const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    startDate.setDate(startDate.getDate() - 29);
+
+    const year = startDate.getFullYear();
+    const month = `${startDate.getMonth() + 1}`.padStart(2, '0');
+    const day = `${startDate.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private loadEvaluationDecisionsForEvaluations(evaluations: ILifeEvaluation[]): void {
@@ -851,38 +884,31 @@ export default class HomeComponent implements OnInit, OnDestroy {
     const groups = Array.from(grouped.values());
 
     groups.forEach(group => {
-      group.evaluations.sort((a, b) => this.compareEvaluationsByScoreAsc(a, b));
+      group.evaluations.sort((a, b) => this.compareEvaluationsByDateDesc(a, b));
     });
 
     return groups.sort((a, b) => {
-      const scoreComparison = this.getLowestEvaluationScore(a.evaluations) - this.getLowestEvaluationScore(b.evaluations);
-      if (scoreComparison !== 0) {
-        return scoreComparison;
+      const latestEvaluationComparison = this.getLatestEvaluationTime(b.evaluations) - this.getLatestEvaluationTime(a.evaluations);
+      if (latestEvaluationComparison !== 0) {
+        return latestEvaluationComparison;
       }
 
       return a.itemName.localeCompare(b.itemName);
     });
   }
 
-  private compareEvaluationsByScoreAsc(a: ILifeEvaluation, b: ILifeEvaluation): number {
-    const aScore = a.score ?? Number.MAX_SAFE_INTEGER;
-    const bScore = b.score ?? Number.MAX_SAFE_INTEGER;
-
-    if (aScore !== bScore) {
-      return aScore - bScore;
-    }
-
+  private compareEvaluationsByDateDesc(a: ILifeEvaluation, b: ILifeEvaluation): number {
     const aTime = a.evaluationDate?.valueOf() ?? 0;
     const bTime = b.evaluationDate?.valueOf() ?? 0;
     if (aTime !== bTime) {
-      return aTime - bTime;
+      return bTime - aTime;
     }
 
-    return (a.id ?? 0) - (b.id ?? 0);
+    return (b.id ?? 0) - (a.id ?? 0);
   }
 
-  private getLowestEvaluationScore(evaluations: ILifeEvaluation[]): number {
-    return evaluations.reduce((lowestScore, evaluation) => Math.min(lowestScore, evaluation.score ?? Number.MAX_SAFE_INTEGER), Number.MAX_SAFE_INTEGER);
+  private getLatestEvaluationTime(evaluations: ILifeEvaluation[]): number {
+    return evaluations.reduce((latestTime, evaluation) => Math.max(latestTime, evaluation.evaluationDate?.valueOf() ?? 0), 0);
   }
 
   deleteLifeEvaluation(evaluation: ILifeEvaluation): void {

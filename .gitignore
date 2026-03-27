@@ -124,6 +124,12 @@ Desktop.ini
 *.log*
 
 ######################
+# Hosting secrets
+######################
+/hosting/aws/ecs/.env
+/hosting/aws/ecs/task-definition.rendered.json
+
+######################
 # Others
 ######################
 *.class

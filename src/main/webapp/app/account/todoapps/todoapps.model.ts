@@ -6,6 +6,7 @@ export interface ITodoAppUserConfig {
   hasAccessToken: boolean;
   externalUserId: string | null;
   defaultProjectId: string | null;
+  defaultProjectName: string | null;
   baseUrl: string | null;
   requiresDefaultProjectId: boolean;
 }
@@ -15,6 +16,7 @@ export interface ITodoAppConfigUpdate {
   accessToken: string | null;
   externalUserId: string | null;
   defaultProjectId: string | null;
+  defaultProjectName: string | null;
 }
 
 export interface ITickTickAuthorizeUrlResponse {

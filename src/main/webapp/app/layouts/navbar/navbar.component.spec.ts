@@ -93,4 +93,16 @@ describe('Navbar Component', () => {
     // THEN
     expect(comp.account()).toBeNull();
   });
+
+  it('should mark account as child-only for ROLE_CHILD without admin roles', () => {
+    accountService.authenticate({ ...account, authorities: ['ROLE_CHILD'] });
+
+    expect(comp.isChildOnly()).toBe(true);
+  });
+
+  it('should not mark account as child-only when family admin role is present', () => {
+    accountService.authenticate({ ...account, authorities: ['ROLE_CHILD', 'ROLE_FAMILY_ADMIN'] });
+
+    expect(comp.isChildOnly()).toBe(false);
+  });
 });

@@ -44,7 +44,8 @@
           "taskTitleLabel": "Nom de la tâche",
           "taskDateLabel": "Date de la tâche",
           "confirmButton": "Envoyer vers TickTick",
-          "noProjects": "Aucun projet TickTick trouvé. Un nouveau projet nomme Liferadar sera cree lors de l'envoi.",
+          "noProjects": "Aucun projet TickTick trouvé. Un nouveau projet nommé {{ name }} sera créé lors de l'envoi.",
+          "defaultProjectNameHint": "Nom du projet par défaut : {{ name }}. Un projet correspondant est présélectionné lorsqu'il existe.",
           "loadProjectsError": "Impossible de charger les projets TickTick."
         }
       }

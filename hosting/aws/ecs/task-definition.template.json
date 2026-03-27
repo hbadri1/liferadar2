@@ -1,0 +1,43 @@
+{
+  "family": "__ECS_TASK_FAMILY__",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "__ECS_CPU__",
+  "memory": "__ECS_MEMORY__",
+  "executionRoleArn": "__ECS_EXECUTION_ROLE_ARN__",
+  "taskRoleArn": "__ECS_TASK_ROLE_ARN__",
+  "containerDefinitions": [
+    {
+      "name": "__APP_NAME__",
+      "image": "__IMAGE_URI__",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": __CONTAINER_PORT__,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "SPRING_PROFILES_ACTIVE", "value": "__SPRING_PROFILES_ACTIVE__" },
+        { "name": "SERVER_PORT", "value": "__CONTAINER_PORT__" },
+        { "name": "SPRING_DATASOURCE_URL", "value": "__DB_URL__" },
+        { "name": "SPRING_LIQUIBASE_URL", "value": "__DB_URL__" },
+        { "name": "SPRING_DATASOURCE_USERNAME", "value": "__DB_USERNAME__" },
+        { "name": "SPRING_DATASOURCE_PASSWORD", "value": "__DB_PASSWORD__" },
+        { "name": "SPRING_LIQUIBASE_USER", "value": "__DB_USERNAME__" },
+        { "name": "SPRING_LIQUIBASE_PASSWORD", "value": "__DB_PASSWORD__" },
+        { "name": "JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET", "value": "__JWT_BASE64_SECRET__" },
+        { "name": "JHIPSTER_SLEEP", "value": "__JHIPSTER_SLEEP__" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "__LOG_GROUP_NAME__",
+          "awslogs-region": "__AWS_REGION__",
+          "awslogs-stream-prefix": "__LOG_STREAM_PREFIX__"
+        }
+      }
+    }
+  ]
+}
+
