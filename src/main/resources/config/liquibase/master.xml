@@ -47,6 +47,7 @@
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <include file="config/liquibase/changelog/20260222130000_add_autoincrement_ids.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222131000_reset_h2_identity.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260327070000_reset_postgresql_identity.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222132000_add_cascade_deletes.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260222133000_make_owner_nullable.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260324100000_cleanup_duplicate_pillars.xml" relativeToChangelogFile="false"/>

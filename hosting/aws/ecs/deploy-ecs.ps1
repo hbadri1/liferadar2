@@ -33,8 +33,10 @@ if (-not $clusterJson.clusters -or $clusterJson.clusters[0].status -eq 'INACTIVE
 if (-not (Invoke-AwsProbe logs describe-log-groups --log-group-name-prefix $logGroup --region $region)) {
     throw 'Unable to query CloudWatch log groups.'
 }
-$logGroupExists = (aws logs describe-log-groups --log-group-name-prefix $logGroup --region $region `
-    --query "logGroups[?logGroupName=='$logGroup'].logGroupName" --output text).Trim()
+$logGroupExistsRaw = aws logs describe-log-groups --log-group-name-prefix $logGroup --region $region `
+    --query "logGroups[?logGroupName=='$logGroup'].logGroupName" --output text
+$logGroupExists = "{0}" -f $logGroupExistsRaw
+$logGroupExists = $logGroupExists.Trim()
 if (-not $logGroupExists) {
     Write-Host "Creating CloudWatch log group $logGroup..."
     aws logs create-log-group --log-group-name $logGroup --region $region | Out-Null
