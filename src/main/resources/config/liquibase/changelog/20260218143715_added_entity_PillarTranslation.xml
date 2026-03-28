@@ -11,7 +11,7 @@
     -->
     <changeSet id="20260218143715-1" author="jhipster">
         <createTable tableName="pillar_translation">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="lang" type="varchar(255)">
@@ -28,6 +28,27 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+    </changeSet>
+
+    <changeSet id="20260218143715-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="pillar_id"
+                                 baseTableName="pillar_translation"
+                                 constraintName="fk_pillar_translation__pillar_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="pillar"
+                                 />
+    </changeSet>
+
+    <changeSet id="20260218143715-3" author="jhipster">
+        <dropForeignKeyConstraint baseTableName="pillar_translation"
+                                  constraintName="fk_pillar_translation__pillar_id"/>
+        <addForeignKeyConstraint baseColumnNames="pillar_id"
+                                 baseTableName="pillar_translation"
+                                 constraintName="fk_pillar_translation__pillar_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="pillar"
+                                 onDelete="CASCADE"
+                                 />
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -53,5 +74,10 @@
             <column name="pillar_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
+    </changeSet>
+
+    <changeSet id="20260218143715-2-data-identity-reset" author="jhipster" context="faker">
+        <sql dbms="h2">ALTER TABLE pillar_translation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM pillar_translation)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('pillar_translation', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM pillar_translation), 1), false)</sql>
     </changeSet>
 </databaseChangeLog>

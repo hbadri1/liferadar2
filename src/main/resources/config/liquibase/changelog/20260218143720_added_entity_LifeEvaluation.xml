@@ -11,7 +11,7 @@
     -->
     <changeSet id="20260218143720-1" author="jhipster">
         <createTable tableName="life_evaluation">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="evaluation_date" type="date">
@@ -30,7 +30,7 @@
                 <constraints nullable="true" />
             </column>
             <column name="owner_id" type="bigint">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             <column name="sub_pillar_item_id" type="bigint">
                 <constraints nullable="false" />
@@ -38,6 +38,34 @@
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="life_evaluation" columnName="reminder_at" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <changeSet id="20260218143720-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="owner_id"
+                                 baseTableName="life_evaluation"
+                                 constraintName="fk_life_evaluation__owner_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="extended_user"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="sub_pillar_item_id"
+                                 baseTableName="life_evaluation"
+                                 constraintName="fk_life_evaluation__sub_pillar_item_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sub_pillar_item"
+                                 />
+    </changeSet>
+
+    <changeSet id="20260218143720-3" author="jhipster">
+        <dropForeignKeyConstraint baseTableName="life_evaluation"
+                                  constraintName="fk_life_evaluation__sub_pillar_item_id"/>
+        <addForeignKeyConstraint baseColumnNames="sub_pillar_item_id"
+                                 baseTableName="life_evaluation"
+                                 constraintName="fk_life_evaluation__sub_pillar_item_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sub_pillar_item"
+                                 onDelete="CASCADE"
+                                 />
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -66,5 +94,10 @@
             <column name="sub_pillar_item_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
+    </changeSet>
+
+    <changeSet id="20260218143720-2-data-identity-reset" author="jhipster" context="faker">
+        <sql dbms="h2">ALTER TABLE life_evaluation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM life_evaluation)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('life_evaluation', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM life_evaluation), 1), false)</sql>
     </changeSet>
 </databaseChangeLog>

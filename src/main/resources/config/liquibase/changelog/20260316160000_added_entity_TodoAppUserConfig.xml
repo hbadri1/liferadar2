@@ -26,10 +26,30 @@
             <column name="default_project_id" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
+            <column name="default_project_name" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
             <column name="user_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="20260316160000-2" author="copilot">
+        <addUniqueConstraint
+            tableName="todo_app_user_config"
+            columnNames="user_id, provider"
+            constraintName="ux_todo_app_user_config_user_provider"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="todo_app_user_config"
+            baseColumnNames="user_id"
+            constraintName="fk_todo_app_user_config__user_id"
+            referencedTableName="jhi_user"
+            referencedColumnNames="id"
+            onDelete="CASCADE"
+        />
     </changeSet>
 </databaseChangeLog>
 

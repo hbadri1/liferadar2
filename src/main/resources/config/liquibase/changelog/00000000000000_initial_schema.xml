@@ -16,7 +16,7 @@
     -->
     <changeSet id="00000000000001" author="jhipster">
         <createTable tableName="jhi_user">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="login" type="varchar(50)">
@@ -117,5 +117,10 @@
             <column name="offset_time" type="time"/>
             <column name="local_date" type="date"/>
         </createTable>
+    </changeSet>
+
+    <changeSet author="jhipster" id="00000000000003-user-identity-reset">
+        <sql dbms="h2">ALTER TABLE jhi_user ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM jhi_user)</sql>
+        <sql dbms="postgresql">SELECT setval(pg_get_serial_sequence('jhi_user', 'id'), GREATEST((SELECT COALESCE(MAX(id), 0) + 1 FROM jhi_user), 1), false)</sql>
     </changeSet>
 </databaseChangeLog>
