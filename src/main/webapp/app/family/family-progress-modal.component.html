@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <h4 class="modal-title" jhiTranslate="family.objectives.progress.modalTitle">Add progress</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  <jhi-alert-error></jhi-alert-error>
+
+  <div class="mb-3 p-3 border rounded bg-light">
+    <h6 class="mb-1">{{ itemDefinition.name }}</h6>
+    @if (itemDefinition.description) {
+      <p class="text-muted small mb-1">{{ itemDefinition.description }}</p>
+    }
+    <small class="text-muted">{{ 'family.objectives.progress.unitLabel' | translate:{ unit: getUnitLabel(itemDefinition.unit) } }}</small>
+  </div>
+
+  <form [formGroup]="editForm" (ngSubmit)="save()" novalidate>
+    <div class="mb-3">
+      <label class="form-label" for="family-progress-value" jhiTranslate="family.objectives.progress.value">Value</label>
+      <input id="family-progress-value" type="number" step="0.01" min="0" class="form-control" formControlName="value" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="family-progress-notes" jhiTranslate="family.objectives.progress.notes">Notes</label>
+      <textarea id="family-progress-notes" class="form-control" rows="3" formControlName="notes"></textarea>
+    </div>
+
+    <div class="modal-footer px-0 pb-0">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="isSaving()">
+        @if (isSaving()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+        } @else {
+          <fa-icon icon="save"></fa-icon>
+        }
+        &nbsp;<span jhiTranslate="family.objectives.progress.save">Save progress</span>
+      </button>
+    </div>
+  </form>
+</div>
+

@@ -11,9 +11,85 @@
     },
     "objectives": {
       "emptyTitle": "Kids Objectives",
-      "emptyDesc": "Kids objectives will appear here soon.",
+      "emptyDesc": "No objectives yet for this scope.",
       "noKids": "No kids available yet.",
-      "currentKid": "Current tab for:"
+      "currentKid": "Current tab for:",
+      "managementTitle": "Objectives configuration",
+      "managementDesc": "Create an objective and assign it to one or more kids.",
+      "add": "Add objective",
+      "created": "Objective created successfully.",
+      "deactivated": "Objective deactivated successfully.",
+      "deleted": "Objective deleted successfully.",
+      "loading": "Loading objectives…",
+      "noKidsForAssignment": "Add at least one child before creating objectives.",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "deactivate": "Deactivate",
+        "delete": "Delete"
+      },
+      "modal": {
+        "title": "Add objective"
+      },
+      "form": {
+        "name": "Objective name",
+        "description": "Description",
+        "kids": "Assign to kids",
+        "kidsRequired": "Select at least one kid.",
+        "save": "Save objective",
+        "items": "Objective items",
+        "itemsRequired": "Add at least one item definition.",
+        "addItem": "Add item",
+        "itemCardTitle": "Item {{index}}",
+        "itemName": "Item name",
+        "itemDescription": "Item description",
+        "unit": "Unit"
+      },
+      "progress": {
+        "add": "Add progress",
+        "save": "Save progress",
+        "value": "Value",
+        "notes": "Notes",
+        "empty": "No progress yet.",
+        "historyTitle": "Progress history",
+        "created": "Progress added successfully.",
+        "latest": "Latest progress",
+        "modalTitle": "Add progress",
+        "unitLabel": "Unit: {{unit}}"
+      },
+      "errors": {
+        "deactivate": "Failed to deactivate objective.",
+        "delete": "Failed to delete objective."
+      },
+      "confirm": {
+        "deactivate": {
+          "title": "Deactivate Objective",
+          "message": "Are you sure you want to deactivate \"{{objective}}\"?",
+          "confirmButton": "Deactivate"
+        },
+        "delete": {
+          "title": "Delete Objective",
+          "message": "Are you sure you want to delete \"{{objective}}\"? This action cannot be undone.",
+          "confirmButton": "Delete"
+        }
+      },
+      "export": {
+        "all": "Export all kids progress",
+        "currentKid": "Export progress",
+        "noData": "No progress data available to export.",
+        "columns": {
+          "kidName": "Kid",
+          "objectiveName": "Objective",
+          "objectiveStatus": "Status",
+          "itemName": "Item",
+          "unit": "Unit",
+          "progressValue": "Progress value",
+          "progressDate": "Progress date",
+          "notes": "Notes"
+        }
+      }
     },
     "loading": "Loading family members…",
     "childAdded": "Child account created successfully.",
