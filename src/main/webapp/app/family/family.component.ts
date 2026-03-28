@@ -1,18 +1,21 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
-
-export interface ChildUser {
-  id: number;
-  login: string;
-  firstName: string | null;
-  lastName: string | null;
-  email: string | null;
-  activated: boolean;
-}
-
+import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
+import { FamilyObjectiveModalComponent } from './family-objective-modal.component';
+import { FamilyProgressModalComponent } from './family-progress-modal.component';
+import {
+  ChildUser,
+  FamilyObjective,
+  FamilyObjectiveGroup,
+  FamilyObjectiveItemDefinition,
+  FamilyObjectiveProgress,
+  ObjectiveUnit,
+} from './family.models';
 
 @Component({
   selector: 'jhi-family',
@@ -22,7 +25,9 @@ export interface ChildUser {
 })
 export default class FamilyComponent implements OnInit {
   children = signal<ChildUser[]>([]);
+  objectives = signal<FamilyObjective[]>([]);
   isLoading = signal(false);
+  isLoadingObjectives = signal(false);
   isSaving = signal(false);
   errorMsg = signal<string | null>(null);
   successMsg = signal<string | null>(null);
@@ -83,6 +88,34 @@ export default class FamilyComponent implements OnInit {
     this.objectiveChildren().find(child => this.getChildTabId(child.login) === this.activeTab()) ?? null,
   );
 
+  objectiveGroups = computed<FamilyObjectiveGroup[]>(() => {
+    const childNameByLogin = new Map(this.children().map(child => [child.login, this.getChildDisplayName(child)]));
+    const grouped = new Map<string, FamilyObjectiveGroup>();
+
+    for (const objective of this.objectives()) {
+      const kidLogin = objective.kidLogin;
+      if (!kidLogin) {
+        continue;
+      }
+
+      const existingGroup = grouped.get(kidLogin);
+      if (existingGroup) {
+        existingGroup.objectives.push(objective);
+        continue;
+      }
+
+      grouped.set(kidLogin, {
+        kidLogin,
+        kidName: childNameByLogin.get(kidLogin) ?? objective.kidName ?? kidLogin,
+        objectives: [objective],
+      });
+    }
+
+    return Array.from(grouped.values())
+      .map(group => ({ ...group, objectives: this.sortObjectives(group.objectives) }))
+      .sort((left, right) => left.kidName.localeCompare(right.kidName));
+  });
+
   addForm = inject(FormBuilder).group({
     login: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50),
       Validators.pattern(/^[a-zA-Z0-9!$&*+=?^_`{|}~.-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$|^[_.@A-Za-z0-9-]+$/)]],
@@ -93,10 +126,13 @@ export default class FamilyComponent implements OnInit {
   });
 
   private readonly http = inject(HttpClient);
+  private readonly modalService = inject(NgbModal);
+  private readonly translateService = inject(TranslateService);
 
   ngOnInit(): void {
     this.ensureActiveTabSelection();
     this.loadChildren();
+    this.loadObjectives();
   }
 
   selectTab(tabId: string): void {
@@ -133,6 +169,20 @@ export default class FamilyComponent implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
+      },
+    });
+  }
+
+  loadObjectives(): void {
+    this.isLoadingObjectives.set(true);
+    this.http.get<FamilyObjective[]>('/api/family/objectives').subscribe({
+      next: objectives => {
+        this.objectives.set(this.sortObjectives(objectives ?? []));
+        this.isLoadingObjectives.set(false);
+      },
+      error: err => {
+        this.isLoadingObjectives.set(false);
+        this.errorMsg.set(err?.error?.detail ?? err?.error?.title ?? 'Unable to load objectives');
       },
     });
   }
@@ -178,11 +228,270 @@ export default class FamilyComponent implements OnInit {
       next: () => {
         this.children.update(list => list.filter(c => c.login !== login));
         this.ensureActiveTabSelection();
+        this.loadObjectives();
       },
       error: err => {
         this.errorMsg.set(err?.error?.detail ?? 'family.error.delete');
       },
     });
+  }
+
+  openObjectiveModal(): void {
+    if (this.children().length === 0) {
+      return;
+    }
+
+    const modalRef = this.modalService.open(FamilyObjectiveModalComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.children = this.children();
+    modalRef.closed.subscribe(result => {
+      if (result === 'saved') {
+        this.successMsg.set('family.objectives.created');
+        this.loadObjectives();
+      }
+    });
+  }
+
+  deactivateObjective(objective: FamilyObjective): void {
+    if (!objective.id || !objective.active) {
+      return;
+    }
+
+    this.openObjectiveConfirmationModal('deactivate', objective).then(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.http.patch(`/api/family/objectives/${objective.id}/deactivate`, {}).subscribe({
+        next: () => {
+          this.successMsg.set('family.objectives.deactivated');
+          this.loadObjectives();
+        },
+        error: err => {
+          this.errorMsg.set(err?.error?.detail ?? 'family.objectives.errors.deactivate');
+        },
+      });
+    });
+  }
+
+  deleteObjective(objective: FamilyObjective): void {
+    if (!objective.id) {
+      return;
+    }
+
+    this.openObjectiveConfirmationModal('delete', objective).then(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.http.delete(`/api/family/objectives/${objective.id}`).subscribe({
+        next: () => {
+          this.successMsg.set('family.objectives.deleted');
+          this.loadObjectives();
+        },
+        error: err => {
+          this.errorMsg.set(err?.error?.detail ?? 'family.objectives.errors.delete');
+        },
+      });
+    });
+  }
+
+  openProgressModal(itemDefinition: FamilyObjectiveItemDefinition): void {
+    const modalRef = this.modalService.open(FamilyProgressModalComponent, { size: 'md', backdrop: 'static' });
+    modalRef.componentInstance.itemDefinition = itemDefinition;
+    modalRef.closed.subscribe(result => {
+      if (result) {
+        this.successMsg.set('family.objectives.progress.created');
+        this.loadObjectives();
+      }
+    });
+  }
+
+  getObjectivesForChild(login: string): FamilyObjective[] {
+    return this.sortObjectives(this.objectives().filter(objective => objective.kidLogin === login));
+  }
+
+  hasObjectivesForChild(login: string): boolean {
+    return this.getObjectivesForChild(login).length > 0;
+  }
+
+  hasProgressHistory(itemDefinition: FamilyObjectiveItemDefinition): boolean {
+    return (itemDefinition.progressHistory?.length ?? 0) > 0;
+  }
+
+  getLatestProgress(itemDefinition: FamilyObjectiveItemDefinition): FamilyObjectiveProgress | null {
+    return itemDefinition.progressHistory?.[0] ?? null;
+  }
+
+  getObjectiveUnitLabel(unit: ObjectiveUnit): string {
+    switch (unit) {
+      case ObjectiveUnit.REPS:
+        return 'Reps';
+      case ObjectiveUnit.SECONDS:
+        return 'Seconds';
+      default:
+        return 'Number';
+    }
+  }
+
+  exportKidProgress(kidLogin: string): void {
+    const kid = this.objectiveChildren().find(child => child.login === kidLogin);
+    if (!kid) {
+      return;
+    }
+
+    const rows = this.buildKidProgressExportRows([kidLogin]);
+    this.exportProgressRowsToExcel(rows, `kid-progress-${kidLogin}`);
+  }
+
+  exportAllKidsProgress(): void {
+    const kidLogins = this.objectiveChildren().map(child => child.login);
+    const rows = this.buildKidProgressExportRows(kidLogins);
+    this.exportProgressRowsToExcel(rows, 'kids-progress');
+  }
+
+  private buildKidProgressExportRows(kidLogins: string[]): Array<Record<string, string>> {
+    const kidLookup = new Map(this.objectiveChildren().map(child => [child.login, this.getChildDisplayName(child)]));
+    const rows: Array<Record<string, string>> = [];
+
+    for (const kidLogin of kidLogins) {
+      const kidName = kidLookup.get(kidLogin) ?? kidLogin;
+      const objectives = this.getObjectivesForChild(kidLogin);
+
+      for (const objective of objectives) {
+        for (const itemDefinition of objective.itemDefinitions) {
+          const progressHistory = itemDefinition.progressHistory ?? [];
+
+          if (progressHistory.length === 0) {
+            rows.push({
+              kidName,
+              objectiveName: objective.name,
+              objectiveStatus: this.translateService.instant(
+                objective.active ? 'family.objectives.status.active' : 'family.objectives.status.inactive',
+              ),
+              itemName: itemDefinition.name,
+              unit: this.getObjectiveUnitLabel(itemDefinition.unit),
+              progressValue: '-',
+              progressDate: '-',
+              notes: this.translateService.instant('family.objectives.progress.empty'),
+            });
+            continue;
+          }
+
+          for (const progress of progressHistory) {
+            rows.push({
+              kidName,
+              objectiveName: objective.name,
+              objectiveStatus: this.translateService.instant(
+                objective.active ? 'family.objectives.status.active' : 'family.objectives.status.inactive',
+              ),
+              itemName: itemDefinition.name,
+              unit: this.getObjectiveUnitLabel(itemDefinition.unit),
+              progressValue: `${progress.value ?? '-'}`,
+              progressDate: progress.createdAt ? this.formatExportDate(progress.createdAt) : '-',
+              notes: progress.notes?.trim() ? progress.notes : '-',
+            });
+          }
+        }
+      }
+    }
+
+    return rows;
+  }
+
+  private exportProgressRowsToExcel(rows: Array<Record<string, string>>, filePrefix: string): void {
+    if (rows.length === 0) {
+      this.errorMsg.set('family.objectives.export.noData');
+      return;
+    }
+
+    const headers = {
+      kidName: this.translateService.instant('family.objectives.export.columns.kidName'),
+      objectiveName: this.translateService.instant('family.objectives.export.columns.objectiveName'),
+      objectiveStatus: this.translateService.instant('family.objectives.export.columns.objectiveStatus'),
+      itemName: this.translateService.instant('family.objectives.export.columns.itemName'),
+      unit: this.translateService.instant('family.objectives.export.columns.unit'),
+      progressValue: this.translateService.instant('family.objectives.export.columns.progressValue'),
+      progressDate: this.translateService.instant('family.objectives.export.columns.progressDate'),
+      notes: this.translateService.instant('family.objectives.export.columns.notes'),
+    };
+
+    const keys = Object.keys(headers) as Array<keyof typeof headers>;
+    const htmlTable = [
+      '<table>',
+      '<thead><tr>',
+      ...keys.map(key => `<th>${this.escapeHtml(headers[key])}</th>`),
+      '</tr></thead>',
+      '<tbody>',
+      ...rows.map(
+        row =>
+          `<tr>${keys
+            .map(key => `<td>${this.escapeHtml(row[key] ?? '-')}</td>`)
+            .join('')}</tr>`,
+      ),
+      '</tbody>',
+      '</table>',
+    ].join('');
+
+    const blob = new Blob([`\ufeff${htmlTable}`], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const now = new Date();
+    const suffix = `${now.getFullYear()}-${`${now.getMonth() + 1}`.padStart(2, '0')}-${`${now.getDate()}`.padStart(2, '0')}`;
+    link.download = `${filePrefix}-${suffix}.xls`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  private formatExportDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+    const locale = this.translateService.currentLang || 'en';
+    return new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(date);
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  private sortObjectives(objectives: FamilyObjective[]): FamilyObjective[] {
+    return [...objectives].sort((left, right) => {
+      const leftTime = Date.parse(left.createdAt ?? '') || 0;
+      const rightTime = Date.parse(right.createdAt ?? '') || 0;
+      if (leftTime !== rightTime) {
+        return rightTime - leftTime;
+      }
+
+      return right.id - left.id;
+    });
+  }
+
+  private openObjectiveConfirmationModal(action: 'deactivate' | 'delete', objective: FamilyObjective): Promise<boolean> {
+    const objectiveName = objective.name || '-';
+    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
+
+    modalRef.componentInstance.title = this.translateService.instant(`family.objectives.confirm.${action}.title`);
+    modalRef.componentInstance.message = this.translateService.instant(`family.objectives.confirm.${action}.message`, { objective: objectiveName });
+    modalRef.componentInstance.confirmButtonText = this.translateService.instant(`family.objectives.confirm.${action}.confirmButton`);
+    modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
+    modalRef.componentInstance.confirmButtonClass = action === 'delete' ? 'btn-danger' : 'btn-warning';
+
+    return modalRef.result
+      .then(result => result === 'confirmed')
+      .catch(() => false);
   }
 
   private ensureActiveTabSelection(): void {

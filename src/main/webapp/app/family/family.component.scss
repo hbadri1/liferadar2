@@ -84,6 +84,64 @@
   right: 0.6rem;
 }
 
+.objective-section {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+}
+
+.objective-group-card {
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.08);
+}
+
+.objective-group-header {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.objective-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.objective-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.objective-items-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.objective-item-card {
+  border: 1px solid #dbeafe;
+  background: #f8fbff;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.objective-progress-history {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 0.75rem;
+}
+
+.objective-progress-entry {
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+}
+
 /* ── Empty state ────────────────────────────────────────────── */
 .family-empty {
   border: 2px dashed #e2e8f0;

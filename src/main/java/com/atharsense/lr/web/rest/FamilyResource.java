@@ -4,8 +4,12 @@ import com.atharsense.lr.domain.User;
 import com.atharsense.lr.repository.UserRepository;
 import com.atharsense.lr.security.AuthoritiesConstants;
 import com.atharsense.lr.security.SecurityUtils;
+import com.atharsense.lr.service.FamilyObjectiveService;
 import com.atharsense.lr.service.UserService;
+import com.atharsense.lr.service.dto.CreateFamilyObjectiveRequest;
+import com.atharsense.lr.service.dto.CreateObjectiveProgressRequest;
 import com.atharsense.lr.service.dto.AdminUserDTO;
+import com.atharsense.lr.service.dto.FamilyObjectiveDTO;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -29,10 +33,12 @@ public class FamilyResource {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final FamilyObjectiveService familyObjectiveService;
 
-    public FamilyResource(UserRepository userRepository, UserService userService) {
+    public FamilyResource(UserRepository userRepository, UserService userService, FamilyObjectiveService familyObjectiveService) {
         this.userRepository = userRepository;
         this.userService = userService;
+        this.familyObjectiveService = familyObjectiveService;
     }
 
     /**
@@ -65,6 +71,56 @@ public class FamilyResource {
 
         LOG.debug("Found {} children for user {}", children.size(), currentLogin);
         return ResponseEntity.ok(children);
+    }
+
+    /**
+     * GET /api/family/objectives — list objectives for the current family scope.
+     */
+    @GetMapping("/objectives")
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
+    public ResponseEntity<List<FamilyObjectiveDTO>> getFamilyObjectives() {
+        return ResponseEntity.ok(familyObjectiveService.findObjectivesForCurrentScope());
+    }
+
+    /**
+     * POST /api/family/objectives — create one objective per selected child.
+     */
+    @PostMapping("/objectives")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<List<FamilyObjectiveDTO>> createFamilyObjectives(@Valid @RequestBody CreateFamilyObjectiveRequest request) {
+        return ResponseEntity.ok(familyObjectiveService.createObjectives(request));
+    }
+
+    /**
+     * PATCH /api/family/objectives/{objectiveId}/deactivate — deactivate an objective.
+     */
+    @PatchMapping("/objectives/{objectiveId}/deactivate")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<FamilyObjectiveDTO> deactivateFamilyObjective(@PathVariable Long objectiveId) {
+        return ResponseEntity.ok(familyObjectiveService.deactivateObjective(objectiveId));
+    }
+
+    /**
+     * DELETE /api/family/objectives/{objectiveId} — delete an objective.
+     */
+    @DeleteMapping("/objectives/{objectiveId}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<Void> deleteFamilyObjective(@PathVariable Long objectiveId) {
+        familyObjectiveService.deleteObjective(objectiveId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * POST /api/family/objective-items/{itemDefinitionId}/progress — add a progress entry for an objective item.
+     */
+    @PostMapping("/objective-items/{itemDefinitionId}/progress")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
+    public ResponseEntity<FamilyObjectiveDTO> addObjectiveProgress(
+        @PathVariable Long itemDefinitionId,
+        @Valid @RequestBody CreateObjectiveProgressRequest request
+    ) {
+        return ResponseEntity.ok(familyObjectiveService.addProgress(itemDefinitionId, request));
     }
 
     /**

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        ">
+
+    <!--
+        Added the entity KidObjectiveItemDefinition.
+    -->
+    <changeSet id="20260328110001-1" author="copilot">
+        <createTable tableName="kid_objective_item_definition">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="objective_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="unit" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20260328110001-2" author="copilot">
+        <addForeignKeyConstraint baseColumnNames="objective_id"
+                                 baseTableName="kid_objective_item_definition"
+                                 constraintName="fk_kid_objective_item_definition__objective_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="kid_objective"
+                                 onDelete="CASCADE"/>
+
+        <createIndex tableName="kid_objective_item_definition" indexName="idx_kid_objective_item_definition__objective_id">
+            <column name="objective_id"/>
+        </createIndex>
+
+        <sql>ALTER TABLE kid_objective_item_definition ADD CONSTRAINT ck_kid_objective_item_definition__unit CHECK (unit IN ('REPS', 'NUMBER', 'SECONDS'))</sql>
+    </changeSet>
+</databaseChangeLog>
+

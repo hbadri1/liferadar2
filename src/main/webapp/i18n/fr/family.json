@@ -11,9 +11,85 @@
     },
     "objectives": {
       "emptyTitle": "Objectifs des enfants",
-      "emptyDesc": "Les objectifs des enfants apparaîtront bientôt ici.",
+      "emptyDesc": "Aucun objectif pour ce contexte pour le moment.",
       "noKids": "Aucun enfant disponible pour le moment.",
-      "currentKid": "Onglet actuel pour :"
+      "currentKid": "Onglet actuel pour :",
+      "managementTitle": "Configuration des objectifs",
+      "managementDesc": "Créez un objectif et assignez-le à un ou plusieurs enfants.",
+      "add": "Ajouter un objectif",
+      "created": "Objectif créé avec succès.",
+      "deactivated": "Objectif désactivé avec succès.",
+      "deleted": "Objectif supprimé avec succès.",
+      "loading": "Chargement des objectifs…",
+      "noKidsForAssignment": "Ajoutez au moins un enfant avant de créer des objectifs.",
+      "status": {
+        "active": "Actif",
+        "inactive": "Inactif"
+      },
+      "actions": {
+        "deactivate": "Désactiver",
+        "delete": "Supprimer"
+      },
+      "modal": {
+        "title": "Ajouter un objectif"
+      },
+      "form": {
+        "name": "Nom de l'objectif",
+        "description": "Description",
+        "kids": "Assigner aux enfants",
+        "kidsRequired": "Sélectionnez au moins un enfant.",
+        "save": "Enregistrer l'objectif",
+        "items": "Éléments de l'objectif",
+        "itemsRequired": "Ajoutez au moins une définition d'élément.",
+        "addItem": "Ajouter un élément",
+        "itemCardTitle": "Élément {{index}}",
+        "itemName": "Nom de l'élément",
+        "itemDescription": "Description de l'élément",
+        "unit": "Unité"
+      },
+      "progress": {
+        "add": "Ajouter un progrès",
+        "save": "Enregistrer le progrès",
+        "value": "Valeur",
+        "notes": "Notes",
+        "empty": "Aucun progrès pour le moment.",
+        "historyTitle": "Historique des progrès",
+        "created": "Progrès ajouté avec succès.",
+        "latest": "Dernier progrès",
+        "modalTitle": "Ajouter un progrès",
+        "unitLabel": "Unité : {{unit}}"
+      },
+      "errors": {
+        "deactivate": "Échec de la désactivation de l'objectif.",
+        "delete": "Échec de la suppression de l'objectif."
+      },
+      "confirm": {
+        "deactivate": {
+          "title": "Désactiver l'objectif",
+          "message": "Voulez-vous vraiment désactiver \"{{objective}}\" ?",
+          "confirmButton": "Désactiver"
+        },
+        "delete": {
+          "title": "Supprimer l'objectif",
+          "message": "Voulez-vous vraiment supprimer \"{{objective}}\" ? Cette action est irréversible.",
+          "confirmButton": "Supprimer"
+        }
+      },
+      "export": {
+        "all": "Exporter le progrès de tous les enfants",
+        "currentKid": "Exporter le progrès",
+        "noData": "Aucune donnée de progrès à exporter.",
+        "columns": {
+          "kidName": "Enfant",
+          "objectiveName": "Objectif",
+          "objectiveStatus": "Statut",
+          "itemName": "Élément",
+          "unit": "Unité",
+          "progressValue": "Valeur du progrès",
+          "progressDate": "Date du progrès",
+          "notes": "Notes"
+        }
+      }
     },
     "loading": "Chargement des membres de la famille…",
     "childAdded": "Compte enfant créé avec succès.",
