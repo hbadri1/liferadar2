@@ -11,9 +11,85 @@
     },
     "objectives": {
       "emptyTitle": "أهداف الأطفال",
-      "emptyDesc": "ستظهر أهداف الأطفال هنا قريبًا.",
+      "emptyDesc": "لا توجد أهداف بعد لهذا النطاق.",
       "noKids": "لا يوجد أطفال متاحون حاليًا.",
-      "currentKid": "التبويب الحالي لـ:"
+      "currentKid": "التبويب الحالي لـ:",
+      "managementTitle": "إعداد الأهداف",
+      "managementDesc": "أنشئ هدفًا وخصصه لطفل واحد أو أكثر.",
+      "add": "إضافة هدف",
+      "created": "تم إنشاء الهدف بنجاح.",
+      "deactivated": "تم تعطيل الهدف بنجاح.",
+      "deleted": "تم حذف الهدف بنجاح.",
+      "loading": "جارٍ تحميل الأهداف…",
+      "noKidsForAssignment": "أضف طفلًا واحدًا على الأقل قبل إنشاء الأهداف.",
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "actions": {
+        "deactivate": "تعطيل",
+        "delete": "حذف"
+      },
+      "modal": {
+        "title": "إضافة هدف"
+      },
+      "form": {
+        "name": "اسم الهدف",
+        "description": "الوصف",
+        "kids": "تخصيص للأطفال",
+        "kidsRequired": "اختر طفلًا واحدًا على الأقل.",
+        "save": "حفظ الهدف",
+        "items": "عناصر الهدف",
+        "itemsRequired": "أضف تعريف عنصر واحد على الأقل.",
+        "addItem": "إضافة عنصر",
+        "itemCardTitle": "العنصر {{index}}",
+        "itemName": "اسم العنصر",
+        "itemDescription": "وصف العنصر",
+        "unit": "الوحدة"
+      },
+      "progress": {
+        "add": "إضافة تقدم",
+        "save": "حفظ التقدم",
+        "value": "القيمة",
+        "notes": "ملاحظات",
+        "empty": "لا يوجد تقدم بعد.",
+        "historyTitle": "سجل التقدم",
+        "created": "تمت إضافة التقدم بنجاح.",
+        "latest": "آخر تقدم",
+        "modalTitle": "إضافة تقدم",
+        "unitLabel": "الوحدة: {{unit}}"
+      },
+      "errors": {
+        "deactivate": "فشل تعطيل الهدف.",
+        "delete": "فشل حذف الهدف."
+      },
+      "confirm": {
+        "deactivate": {
+          "title": "تعطيل الهدف",
+          "message": "هل أنت متأكد من تعطيل \"{{objective}}\"؟",
+          "confirmButton": "تعطيل"
+        },
+        "delete": {
+          "title": "حذف الهدف",
+          "message": "هل أنت متأكد من حذف \"{{objective}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+          "confirmButton": "حذف"
+        }
+      },
+      "export": {
+        "all": "تصدير تقدم جميع الأطفال",
+        "currentKid": "تصدير التقدم",
+        "noData": "لا توجد بيانات تقدم للتصدير.",
+        "columns": {
+          "kidName": "الطفل",
+          "objectiveName": "الهدف",
+          "objectiveStatus": "الحالة",
+          "itemName": "العنصر",
+          "unit": "الوحدة",
+          "progressValue": "قيمة التقدم",
+          "progressDate": "تاريخ التقدم",
+          "notes": "ملاحظات"
+        }
+      }
     },
     "loading": "جارٍ تحميل أفراد العائلة…",
     "childAdded": "تم إنشاء حساب الطفل بنجاح.",

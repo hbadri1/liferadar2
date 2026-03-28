@@ -20,6 +20,9 @@
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260218143713_added_entity_ExtendedUser.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/kids_objectives/20260328110000_added_entity_KidObjective.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/kids_objectives/20260328110001_added_entity_KidObjectiveItemDefinition.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/kids_objectives/20260328110002_added_entity_KidObjectiveProgress.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260218143714_added_entity_Pillar.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260218143715_added_entity_PillarTranslation.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260218143716_added_entity_SubPillar.xml" relativeToChangelogFile="false"/>

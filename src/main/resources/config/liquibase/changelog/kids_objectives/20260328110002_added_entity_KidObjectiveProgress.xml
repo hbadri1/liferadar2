@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        ">
+
+    <!--
+        Added the entity KidObjectiveProgress.
+    -->
+    <changeSet id="20260328110002-1" author="copilot">
+        <createTable tableName="kid_objective_progress">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="item_definition_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="${datetimeType}" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_value" type="decimal(21,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notes" type="varchar(1000)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <dropDefaultValue tableName="kid_objective_progress" columnName="created_at" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <changeSet id="20260328110002-2" author="copilot">
+        <addForeignKeyConstraint baseColumnNames="item_definition_id"
+                                 baseTableName="kid_objective_progress"
+                                 constraintName="fk_kid_objective_progress__item_definition_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="kid_objective_item_definition"
+                                 onDelete="CASCADE"/>
+
+        <createIndex tableName="kid_objective_progress" indexName="idx_kid_objective_progress__item_definition_id">
+            <column name="item_definition_id"/>
+        </createIndex>
+
+        <createIndex tableName="kid_objective_progress" indexName="idx_kid_objective_progress__created_at">
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
