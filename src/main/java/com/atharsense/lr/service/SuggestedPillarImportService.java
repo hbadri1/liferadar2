@@ -105,10 +105,11 @@ public class SuggestedPillarImportService {
     }
 
     private Pillar upsertPillar(ExtendedUser owner, PillarSeed seed, ImportCounts counts) {
-        Pillar pillar = pillarRepository.findByOwnerIdAndCode(owner.getId(), seed.code()).orElseGet(Pillar::new);
+        String code = normalizeCode(seed.code());
+        Pillar pillar = pillarRepository.findByOwnerIdAndCodeIgnoreCase(owner.getId(), code).orElseGet(Pillar::new);
         boolean isNew = pillar.getId() == null;
 
-        pillar.setCode(seed.code());
+        pillar.setCode(code);
         pillar.setIsActive(Boolean.TRUE);
         pillar.setOwner(owner);
         mergePillarTranslations(pillar, seed.name(), seed.description(), counts);
@@ -121,10 +122,11 @@ public class SuggestedPillarImportService {
     }
 
     private SubPillar upsertSubPillar(ExtendedUser owner, Pillar pillar, SubPillarSeed seed, ImportCounts counts) {
-        SubPillar subPillar = subPillarRepository.findByOwnerIdAndCode(owner.getId(), seed.code()).orElseGet(SubPillar::new);
+        String code = normalizeCode(seed.code());
+        SubPillar subPillar = subPillarRepository.findByOwnerIdAndCodeIgnoreCase(owner.getId(), code).orElseGet(SubPillar::new);
         boolean isNew = subPillar.getId() == null;
 
-        subPillar.setCode(seed.code());
+        subPillar.setCode(code);
         subPillar.setIsActive(Boolean.TRUE);
         subPillar.setOwner(owner);
         subPillar.setPillar(pillar);
@@ -143,10 +145,11 @@ public class SuggestedPillarImportService {
         SubPillarItemSeed seed,
         ImportCounts counts
     ) {
-        SubPillarItem item = subPillarItemRepository.findByOwnerIdAndCode(owner.getId(), seed.code()).orElseGet(SubPillarItem::new);
+        String code = normalizeCode(seed.code());
+        SubPillarItem item = subPillarItemRepository.findByOwnerIdAndCodeIgnoreCase(owner.getId(), code).orElseGet(SubPillarItem::new);
         boolean isNew = item.getId() == null;
 
-        item.setCode(seed.code());
+        item.setCode(code);
         item.setSortOrder(1);
         item.setIsActive(Boolean.TRUE);
         item.setOwner(owner);
@@ -299,6 +302,14 @@ public class SuggestedPillarImportService {
     private String normalize(String value) {
         String trimmed = value != null ? value.trim() : null;
         return StringUtils.hasText(trimmed) ? trimmed : null;
+    }
+
+    private String normalizeCode(String code) {
+        String normalized = normalize(code);
+        if (!StringUtils.hasText(normalized)) {
+            throw new BadRequestAlertException("Missing code in suggested pillars payload", ENTITY_NAME, "missingcode");
+        }
+        return normalized;
     }
 
     private <T> List<T> safeList(List<T> values) {

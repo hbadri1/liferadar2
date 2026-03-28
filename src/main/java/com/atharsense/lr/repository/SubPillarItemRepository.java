@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubPillarItemRepository extends JpaRepository<SubPillarItem, Long>, JpaSpecificationExecutor<SubPillarItem> {
 	Optional<SubPillarItem> findByOwnerIdAndCode(Long ownerId, String code);
+
+	Optional<SubPillarItem> findByOwnerIdAndCodeIgnoreCase(Long ownerId, String code);
 }

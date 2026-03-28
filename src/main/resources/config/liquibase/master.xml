@@ -32,28 +32,6 @@
     <include file="config/liquibase/changelog/20260218143723_added_entity_TripPlanStep.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260316160000_added_entity_TodoAppUserConfig.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
-    <include file="config/liquibase/changelog/20260218143713_added_entity_constraints_ExtendedUser.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143714_added_entity_constraints_Pillar.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143715_added_entity_constraints_PillarTranslation.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143716_added_entity_constraints_SubPillar.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143717_added_entity_constraints_SubPillarTranslation.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143718_added_entity_constraints_SubPillarItem.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143719_added_entity_constraints_SubPillarItemTranslation.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143720_added_entity_constraints_LifeEvaluation.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143721_added_entity_constraints_EvaluationDecision.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143722_added_entity_constraints_TripPlan.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260218143723_added_entity_constraints_TripPlanStep.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260316160001_added_entity_constraints_TodoAppUserConfig.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
-    <include file="config/liquibase/changelog/20260222130000_add_autoincrement_ids.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260222131000_reset_h2_identity.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260327070000_reset_postgresql_identity.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260222132000_add_cascade_deletes.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260222133000_make_owner_nullable.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260324100000_cleanup_duplicate_pillars.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260325110000_add_default_project_name_to_todo_app_user_config.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260325153000_ensure_default_project_name_column.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260325200000_add_role_child.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20260325210000_add_role_family_admin.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

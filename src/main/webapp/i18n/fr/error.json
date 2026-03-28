@@ -9,6 +9,7 @@
       "500": "Erreur interne du serveur."
     },
     "concurrencyFailure": "Un autre utilisateur a modifié ces données en même temps que vous. Vos changements n'ont pas été sauvegardés.",
-    "validation": "Erreur de validation côté serveur."
+    "validation": "Erreur de validation côté serveur.",
+    "integrationerror": "TickTick n'est pas encore intégré. Rendez-vous sur votre <a href=\"/account/configuration\">page de configuration</a> pour le connecter."
   }
 }
