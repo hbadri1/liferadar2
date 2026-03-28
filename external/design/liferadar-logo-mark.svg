@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Liferadar logo mark</title>
+  <desc id="desc">An icon-only radar mark for Liferadar using the brand palette.</desc>
+  <rect width="512" height="512" rx="96" fill="#142033"/>
+
+  <circle cx="256" cy="256" r="150" stroke="white" stroke-opacity="0.12" stroke-width="10"/>
+  <circle cx="256" cy="256" r="104" stroke="#1FB7A6" stroke-width="10"/>
+  <circle cx="256" cy="256" r="48" stroke="white" stroke-opacity="0.18" stroke-width="8"/>
+
+  <path d="M256 256 L256 122 A134 134 0 0 1 368 176 Z" fill="#1FB7A6" opacity="0.22"/>
+  <path d="M256 256 L372 172" stroke="#1FB7A6" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="18" fill="white"/>
+  <circle cx="372" cy="172" r="22" fill="#FF6B5E"/>
+
+  <path d="M140 352 C178 329 214 319 257 319 C304 319 342 332 381 356" stroke="#FF6B5E" stroke-width="14" stroke-linecap="round"/>
+</svg>
+

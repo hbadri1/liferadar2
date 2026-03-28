@@ -4,3 +4,29 @@
  * https://github.com/twbs/bootstrap/blob/v5.1.3/scss/_variables.scss can be overwritten here
  * Make sure not to add !default to values here
  */
+
+$lr-primary: #1fb7a6;
+$lr-accent: #ff6b5e;
+$lr-neutral: #142033;
+$lr-surface: #f7f9fc;
+$lr-surface-alt: #eef4f8;
+
+$primary: $lr-primary;
+$secondary: $lr-neutral;
+$success: $lr-primary;
+$info: $lr-primary;
+$warning: $lr-accent;
+$danger: $lr-accent;
+$dark: $lr-neutral;
+$body-bg: $lr-surface;
+$body-color: $lr-neutral;
+$link-color: $lr-primary;
+$link-hover-color: $lr-accent;
+$component-active-bg: $lr-primary;
+$dropdown-link-active-bg: $lr-primary;
+$input-focus-border-color: rgba($lr-primary, 0.45);
+$input-btn-focus-color: rgba($lr-primary, 0.2);
+$navbar-dark-color: rgba(255, 255, 255, 0.88);
+$navbar-dark-hover-color: #fff;
+$navbar-dark-active-color: #fff;
+

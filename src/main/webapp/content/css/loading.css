@@ -1,3 +1,13 @@
+ :root {
+  --lr-primary: #1fb7a6;
+  --lr-primary-rgb: 31, 183, 166;
+  --lr-accent: #ff6b5e;
+  --lr-accent-rgb: 255, 107, 94;
+  --lr-neutral: #142033;
+  --lr-neutral-rgb: 20, 32, 51;
+  --lr-surface: #f7f9fc;
+}
+
 @keyframes lds-pacman-1 {
   0% {
     -webkit-transform: rotate(0deg);
@@ -93,6 +103,16 @@
   align-items: center;
   justify-content: center;
   top: 10em;
+  color: var(--lr-neutral);
+}
+.app-loading::before {
+  content: '';
+  width: 84px;
+  height: 84px;
+  margin-bottom: 1.25rem;
+  background: url('/content/images/liferadar-logo-mark.svg') no-repeat center center;
+  background-size: contain;
+  filter: drop-shadow(0 14px 28px rgba(var(--lr-neutral-rgb), 0.14));
 }
 .app-loading p {
   display: block;
@@ -117,7 +137,7 @@
   width: 120px;
   height: 60px;
   border-radius: 120px 120px 0 0;
-  background: #bbcedd;
+  background: var(--lr-primary);
   -webkit-animation: lds-pacman-1 1s linear infinite;
   animation: lds-pacman-1 1s linear infinite;
   -webkit-transform-origin: 60px 60px;
@@ -129,12 +149,13 @@
 }
 .app-loading .lds-pacman > div:nth-child(1) div {
   position: absolute;
-  top: 97px;
-  left: -8px;
-  width: 24px;
-  height: 10px;
-  background-image: url('/content/images/logo-jhipster.png');
-  background-size: contain;
+  top: 93px;
+  left: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--lr-accent);
+  box-shadow: 0 0 0 4px rgba(var(--lr-accent-rgb), 0.16);
   -webkit-animation: lds-pacman-3 1s linear infinite;
   animation: lds-pacman-3 1.5s linear infinite;
 }
