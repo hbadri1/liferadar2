@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        ">
+
+    <!--
+        Added the entity KidObjective.
+    -->
+    <changeSet id="20260328110000-1" author="copilot">
+        <createTable tableName="kid_objective">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="kid_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="${datetimeType}" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <dropDefaultValue tableName="kid_objective" columnName="created_at" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <changeSet id="20260328110000-2" author="copilot">
+        <addForeignKeyConstraint baseColumnNames="kid_id"
+                                 baseTableName="kid_objective"
+                                 constraintName="fk_kid_objective__kid_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="extended_user"/>
+
+        <createIndex tableName="kid_objective" indexName="idx_kid_objective__kid_id">
+            <column name="kid_id"/>
+        </createIndex>
+
+        <createIndex tableName="kid_objective" indexName="idx_kid_objective__active_created_at">
+            <column name="is_active"/>
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
+
