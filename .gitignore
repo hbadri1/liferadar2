@@ -128,6 +128,7 @@ Desktop.ini
 ######################
 /hosting/aws/ecs/.env
 /hosting/aws/ecs/task-definition.rendered.json
+/.env.dev.local
 
 ######################
 # Others

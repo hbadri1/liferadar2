@@ -48,6 +48,7 @@ $template = Set-JsonStringToken -Content $template -Token '__SPRING_PROFILES_ACT
 $template = Set-JsonStringToken -Content $template -Token '__DB_URL__' -Value (Get-RequiredConfigValue -Config $config -Name 'DB_URL')
 $template = Set-JsonStringToken -Content $template -Token '__DB_USERNAME__' -Value (Get-RequiredConfigValue -Config $config -Name 'DB_USERNAME')
 $template = Set-JsonStringToken -Content $template -Token '__DB_PASSWORD__' -Value (Get-RequiredConfigValue -Config $config -Name 'DB_PASSWORD')
+$template = Set-JsonStringToken -Content $template -Token '__SPRING_MAIL_PASSWORD__' -Value (Get-RequiredConfigValue -Config $config -Name 'SPRING_MAIL_PASSWORD')
 $template = Set-JsonStringToken -Content $template -Token '__JWT_BASE64_SECRET__' -Value (Get-RequiredConfigValue -Config $config -Name 'JWT_BASE64_SECRET')
 $template = Set-JsonStringToken -Content $template -Token '__JHIPSTER_SLEEP__' -Value (Get-ConfigValue -Config $config -Name 'JHIPSTER_SLEEP' -DefaultValue '0')
 $template = Set-JsonStringToken -Content $template -Token '__LOG_GROUP_NAME__' -Value (Get-ConfigValue -Config $config -Name 'LOG_GROUP_NAME' -DefaultValue '/ecs/liferadar')

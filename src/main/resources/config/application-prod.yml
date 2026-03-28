@@ -48,10 +48,18 @@ spring:
     password: ${SPRING_LIQUIBASE_PASSWORD:${spring.datasource.password}}
     contexts: prod
   mail:
-    host: localhost
-    port: 25
-    username:
-    password:
+    host: smtp.hostinger.com
+    port: 465
+    protocol: smtp
+    username: info@atharsense.com
+    password: ${SPRING_MAIL_PASSWORD:${MAIL_PASSWORD}}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.starttls.enable: false
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
   thymeleaf:
     cache: true
 
