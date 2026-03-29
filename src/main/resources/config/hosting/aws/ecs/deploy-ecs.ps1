@@ -1,12 +1,14 @@
 [CmdletBinding()]
 param(
-    [string]$ConfigFile = ''
+    [string]$ConfigFile = '',
+    [string]$AppConfigFile = ''
 )
 
 $ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Definition }
 if (-not $ConfigFile) { $ConfigFile = Join-Path $ScriptDir '.env' }
 
 . (Join-Path $ScriptDir 'common.ps1')
+if (-not $AppConfigFile) { $AppConfigFile = Get-DefaultAppConfigFile }
 
 Ensure-Command -Name 'aws'
 $config = Import-DeploymentConfig -ConfigFile $ConfigFile
@@ -18,7 +20,7 @@ $assignPublicIp = Get-ConfigValue -Config $config -Name 'ECS_ASSIGN_PUBLIC_IP' -
 $subnets = ConvertTo-QuotedList -Value (Get-RequiredConfigValue -Config $config -Name 'ECS_SUBNET_IDS')
 $securityGroups = ConvertTo-QuotedList -Value (Get-RequiredConfigValue -Config $config -Name 'ECS_SECURITY_GROUP_IDS')
 $logGroup = Get-ConfigValue -Config $config -Name 'LOG_GROUP_NAME' -DefaultValue '/ecs/liferadar'
-$taskDefinitionFile = & (Join-Path $ScriptDir 'render-task-definition.ps1') -ConfigFile $ConfigFile
+$taskDefinitionFile = & (Join-Path $ScriptDir 'render-task-definition.ps1') -ConfigFile $ConfigFile -AppConfigFile $AppConfigFile
 
 # --- ECS cluster ---
 $clusterJson = aws ecs describe-clusters --clusters $cluster --region $region --output json | ConvertFrom-Json
