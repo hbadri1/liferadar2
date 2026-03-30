@@ -1,0 +1,49 @@
+#!/bin/bash
+set -euo pipefail
+
+LOG_FILE="/var/log/liferadar-startup.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo "==== Starting Lightsail bootstrap ===="
+
+APP_DIR="/opt/liferadar"
+APP_USER="ec2-user"
+
+# ----------------------------
+# System update
+# ----------------------------
+dnf update -y
+
+# Useful tools
+dnf install -y \
+  docker \
+  git \
+  curl \
+  wget \
+  unzip \
+  tar \
+  htop
+
+# ----------------------------
+# Docker setup
+# ----------------------------
+systemctl enable docker
+systemctl start docker
+
+usermod -aG docker "$APP_USER" || true
+
+mkdir -p /usr/local/lib/docker/cli-plugins
+
+DOCKER_COMPOSE_VERSION="v2.27.0"
+curl -SL "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64" \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+
+chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+docker --version
+docker compose version
+
+# ----------------------------
+# App directory
+# ----------------------------
+mkdir -p "$APP_DIR"

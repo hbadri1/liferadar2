@@ -5,11 +5,13 @@ import com.atharsense.lr.repository.TripPlanRepository;
 import com.atharsense.lr.service.TripPlanQueryService;
 import com.atharsense.lr.service.TripPlanService;
 import com.atharsense.lr.service.criteria.TripPlanCriteria;
+import com.atharsense.lr.service.dto.CreateTripPlanRequest;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -34,16 +37,13 @@ import tech.jhipster.web.util.ResponseUtil;
 public class TripPlanResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(TripPlanResource.class);
-
     private static final String ENTITY_NAME = "tripPlan";
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
     private final TripPlanService tripPlanService;
-
     private final TripPlanRepository tripPlanRepository;
-
     private final TripPlanQueryService tripPlanQueryService;
 
     public TripPlanResource(
@@ -56,19 +56,34 @@ public class TripPlanResource {
         this.tripPlanQueryService = tripPlanQueryService;
     }
 
+    /** GET /api/trip-plans/my – returns trips owned by the current user. */
+    @GetMapping("/my")
+    public ResponseEntity<List<TripPlan>> getMyTripPlans() {
+        LOG.debug("REST request to get TripPlans for current user");
+        return ResponseEntity.ok(tripPlanService.findByCurrentUser());
+    }
+
     /**
      * {@code POST  /trip-plans} : Create a new tripPlan.
      *
-     * @param tripPlan the tripPlan to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new tripPlan, or with status {@code 400 (Bad Request)} if the tripPlan has already an ID.
+     * @param request the create payload for tripPlan.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new tripPlan.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<TripPlan> createTripPlan(@Valid @RequestBody TripPlan tripPlan) throws URISyntaxException {
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    public ResponseEntity<TripPlan> createTripPlan(@Valid @RequestBody CreateTripPlanRequest request) throws URISyntaxException {
+        // Validate trip dates
+        validateTripDates(request.startDate(), request.endDate());
+
+        TripPlan tripPlan = new TripPlan();
+        tripPlan.setTitle(request.title());
+        tripPlan.setDescription(request.description());
+        tripPlan.setStartDate(request.startDate());
+        tripPlan.setEndDate(request.endDate());
+        tripPlan.setIsActive(request.isActive());
+
         LOG.debug("REST request to save TripPlan : {}", tripPlan);
-        if (tripPlan.getId() != null) {
-            throw new BadRequestAlertException("A new tripPlan cannot already have an ID", ENTITY_NAME, "idexists");
-        }
         tripPlan = tripPlanService.save(tripPlan);
         return ResponseEntity.created(new URI("/api/trip-plans/" + tripPlan.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, tripPlan.getId().toString()))
@@ -86,6 +101,7 @@ public class TripPlanResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
     public ResponseEntity<TripPlan> updateTripPlan(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody TripPlan tripPlan
@@ -101,6 +117,9 @@ public class TripPlanResource {
         if (!tripPlanRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
+
+        // Validate trip dates
+        validateTripDates(tripPlan.getStartDate(), tripPlan.getEndDate());
 
         tripPlan = tripPlanService.update(tripPlan);
         return ResponseEntity.ok()
@@ -120,6 +139,7 @@ public class TripPlanResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
     public ResponseEntity<TripPlan> partialUpdateTripPlan(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody TripPlan tripPlan
@@ -195,11 +215,37 @@ public class TripPlanResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTripPlan(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete TripPlan : {}", id);
         tripPlanService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * Validates trip dates:
+     * 1. Both dates must not be in the past (must be today or future)
+     * 2. Start date must be before end date
+     *
+     * @param startDate the trip start date
+     * @param endDate the trip end date
+     * @throws BadRequestAlertException if validation fails
+     */
+    private void validateTripDates(LocalDate startDate, LocalDate endDate) {
+        LocalDate today = LocalDate.now();
+
+        if (startDate.isBefore(today)) {
+            throw new BadRequestAlertException("trips.errors.startDateInPast", ENTITY_NAME, "startDateInPast");
+        }
+
+        if (endDate.isBefore(today)) {
+            throw new BadRequestAlertException("trips.errors.endDateInPast", ENTITY_NAME, "endDateInPast");
+        }
+
+        if (startDate.isAfter(endDate)) {
+            throw new BadRequestAlertException("trips.errors.startDateAfterEndDate", ENTITY_NAME, "startDateAfterEndDate");
+        }
     }
 }

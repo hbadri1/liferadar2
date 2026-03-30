@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Add is_active to trip_plan -->
+    <changeSet id="20260329100000-1" author="dev">
+        <addColumn tableName="trip_plan">
+            <column name="is_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <!-- Add location fields to trip_plan_step -->
+    <changeSet id="20260329100000-2" author="dev">
+        <addColumn tableName="trip_plan_step">
+            <column name="location_name" type="varchar(255)"/>
+            <column name="latitude" type="decimal(10,7)"/>
+            <column name="longitude" type="decimal(10,7)"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- Add cascade delete: deleting a trip_plan removes its steps -->
+    <changeSet id="20260329100000-3" author="dev">
+        <dropForeignKeyConstraint baseTableName="trip_plan_step" constraintName="fk_trip_plan_step__trip_plan_id"/>
+        <addForeignKeyConstraint
+            baseTableName="trip_plan_step"
+            baseColumnNames="trip_plan_id"
+            constraintName="fk_trip_plan_step__trip_plan_id"
+            referencedTableName="trip_plan"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
+

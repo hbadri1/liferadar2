@@ -1,0 +1,55 @@
+<div class="modal-header bg-primary text-white">
+  <h5 class="modal-title">
+    <fa-icon icon="suitcase" class="me-2"></fa-icon>
+    {{ isEdit ? ('trips.editTrip' | translate) : ('trips.newTrip' | translate) }}
+  </h5>
+  <button type="button" class="btn-close btn-close-white" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  @if (errorMsg()) {
+    <div class="alert alert-danger">{{ errorMsg()! | translate }}</div>
+  }
+  <form [formGroup]="editForm">
+    <div class="mb-3">
+      <label class="form-label fw-bold" for="title">{{ 'trips.fields.title' | translate }} *</label>
+      <input id="title" type="text" class="form-control" formControlName="title"
+             placeholder="{{ 'trips.fields.titlePlaceholder' | translate }}" />
+      @if (editForm.get('title')?.invalid && editForm.get('title')?.touched) {
+        <div class="text-danger small">{{ 'trips.validation.titleRequired' | translate }}</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold" for="description">{{ 'trips.fields.description' | translate }}</label>
+      <textarea id="description" class="form-control" rows="3" formControlName="description"
+                placeholder="{{ 'trips.fields.descriptionPlaceholder' | translate }}"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold" for="startDate">{{ 'trips.fields.startDate' | translate }} *</label>
+        <input id="startDate" type="date" class="form-control" formControlName="startDate" />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold" for="endDate">{{ 'trips.fields.endDate' | translate }} *</label>
+        <input id="endDate" type="date" class="form-control" formControlName="endDate" />
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    <fa-icon icon="times"></fa-icon> {{ 'entity.action.cancel' | translate }}
+  </button>
+  <button type="button" class="btn btn-primary" [disabled]="isSaving() || editForm.invalid" (click)="save()">
+    @if (isSaving()) {
+      <span class="spinner-border spinner-border-sm me-1"></span>
+    } @else {
+      <fa-icon icon="save"></fa-icon>
+    }
+    {{ 'entity.action.save' | translate }}
+  </button>
+</div>
+

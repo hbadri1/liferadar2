@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  if command -v sudo >/dev/null 2>&1; then
+    exec sudo -E bash "$0" "$@"
+  fi
+  echo "This script must run as root (or with sudo)."
+  exit 1
+fi
+
+LOG_FILE="/var/log/liferadar-setup-docker.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+APP_USER="ec2-user"
+
+retry() {
+  local attempts="$1"
+  shift
+  local n=1
+  until "$@"; do
+	if [ "$n" -ge "$attempts" ]; then
+	  return 1
+	fi
+	n=$((n + 1))
+	sleep 3
+  done
+}
+
+install_docker() {
+  if command -v docker >/dev/null 2>&1; then
+	echo "Docker already installed."
+	return 0
+  fi
+
+  if command -v dnf >/dev/null 2>&1; then
+	retry 3 dnf makecache -y
+  retry 3 dnf install -y docker git
+    # docker-compose-plugin is not available on some Amazon Linux repos.
+    dnf install -y docker-compose-plugin >/dev/null 2>&1 || true
+  elif command -v yum >/dev/null 2>&1; then
+	retry 3 yum makecache
+  retry 3 yum install -y docker git
+  elif command -v apt-get >/dev/null 2>&1; then
+	export DEBIAN_FRONTEND=noninteractive
+	retry 3 apt-get update -y
+  retry 3 apt-get install -y docker.io git
+    apt-get install -y docker-compose-plugin >/dev/null 2>&1 || true
+  else
+	echo "Unsupported distribution: no dnf/yum/apt-get found."
+	return 1
+  fi
+}
+
+install_compose_plugin_fallback() {
+  if docker compose version >/dev/null 2>&1; then
+	return 0
+  fi
+
+  echo "Installing Docker Compose plugin fallback..."
+  mkdir -p /usr/local/lib/docker/cli-plugins
+  curl -fsSL "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64" \
+	-o /usr/local/lib/docker/cli-plugins/docker-compose
+  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+}
+
+ensure_docker_group_access() {
+  if ! getent group docker >/dev/null 2>&1; then
+    groupadd docker
+  fi
+
+  if id "$APP_USER" >/dev/null 2>&1; then
+    if ! id -nG "$APP_USER" | tr ' ' '\n' | grep -qx docker; then
+      usermod -aG docker "$APP_USER" || gpasswd -a "$APP_USER" docker
+    fi
+    echo "User groups for $APP_USER: $(id -nG "$APP_USER")"
+    echo "Note: user must re-login (or run 'newgrp docker') for group change to apply."
+  fi
+}
+
+echo "==== Installing Docker runtime ===="
+install_docker
+
+echo "==== Enabling and starting Docker ===="
+systemctl enable docker
+systemctl start docker
+
+echo "==== Waiting for Docker daemon ===="
+retry 10 docker info >/dev/null
+
+echo "==== Configuring docker group access ===="
+ensure_docker_group_access
+
+install_compose_plugin_fallback
+
+echo "==== Installed versions ===="
+docker --version
+docker compose version
+
+echo "==== Setup complete ===="
+

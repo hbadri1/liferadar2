@@ -50,6 +50,16 @@
             </a>
           </li>
 
+          <!-- Trips: visible to ALL authenticated users -->
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/trips" (click)="collapseNavbar()" data-cy="trips">
+              <span>
+                <fa-icon icon="plane"></fa-icon>
+                <span jhiTranslate="global.menu.trips">Trips</span>
+              </span>
+            </a>
+          </li>
+
           <li
             *jhiHasAnyAuthority="['ROLE_FAMILY_ADMIN', 'ROLE_USER', 'ROLE_ADMIN']"
             ngbDropdown

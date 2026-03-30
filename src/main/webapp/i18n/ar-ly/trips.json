@@ -1,0 +1,56 @@
+{
+  "trips": {
+    "title": "إدارة الرحلات",
+    "subtitle": "خطط ورحلاتك وتابعها",
+    "myTrips": "رحلاتي",
+    "newTrip": "رحلة جديدة",
+    "editTrip": "تعديل الرحلة",
+    "deleteTrip": "حذف الرحلة",
+    "confirmDeleteTrip": "هل أنت متأكد من حذف هذه الرحلة؟ سيتم حذف جميع المحطات أيضاً.",
+    "noTrips": "لا توجد رحلات بعد. ابدأ بالتخطيط لأول مغامرة لك!",
+    "selectTripHint": "اختر رحلة لعرض خط سيرها",
+    "selectTripHintSub": "ستظهر هنا تفاصيل الرحلة والجدول الزمني",
+    "addStep": "إضافة محطة",
+    "newStep": "محطة جديدة",
+    "editStep": "تعديل المحطة",
+    "deleteStep": "حذف المحطة",
+    "confirmDeleteStep": "هل أنت متأكد من حذف هذه المحطة؟",
+    "noSteps": "لم تُضف أي محطات بعد.",
+    "addFirstStop": "أضف أول محطة",
+    "stop": "محطة",
+    "journeyEnd": "نهاية الرحلة",
+    "currentDate": "اليوم",
+    "fields": {
+      "title": "عنوان الرحلة",
+      "titlePlaceholder": "مثال: أوروبا صيف 2026",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف موجز للرحلة...",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "stepName": "اسم المحطة",
+      "stepNamePlaceholder": "مثال: زيارة برج إيفل",
+      "location": "الموقع",
+      "locationPlaceholder": "مثال: باريس، فرنسا",
+      "notes": "ملاحظات",
+      "notesPlaceholder": "أي ملاحظات إضافية...",
+      "latitude": "خط العرض",
+      "longitude": "خط الطول"
+    },
+    "validation": {
+      "titleRequired": "عنوان الرحلة مطلوب.",
+      "stepNameRequired": "اسم المحطة مطلوب."
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل الرحلات. الرجاء المحاولة مرة أخرى.",
+      "saveFailed": "فشل الحفظ. تحقق من البيانات المدخلة وحاول مجدداً.",
+      "startDateInPast": "لا يمكن أن يكون تاريخ البداية في الماضي. يرجى اختيار اليوم أو تاريخ مستقبلي.",
+      "endDateInPast": "لا يمكن أن يكون تاريخ النهاية في الماضي. يرجى اختيار اليوم أو تاريخ مستقبلي.",
+      "startDateAfterEndDate": "يجب أن يكون تاريخ البداية قبل أو مساوياً لتاريخ النهاية.",
+      "stepStartDateBeforeTripStart": "لا يمكن أن يكون تاريخ بداية المحطة قبل تاريخ بداية الرحلة.",
+      "stepEndDateAfterTripEnd": "لا يمكن أن يكون تاريخ نهاية المحطة بعد تاريخ نهاية الرحلة.",
+      "stepStartDateAfterEndDate": "يجب أن يكون تاريخ بداية المحطة قبل أو مساوياً لتاريخ النهاية.",
+      "stepDatesOverlap": "هذه المحطة تتداخل مع محطة أخرى موجودة. يرجى اختيار نطاق تاريخ مختلف."
+    }
+  }
+}
+

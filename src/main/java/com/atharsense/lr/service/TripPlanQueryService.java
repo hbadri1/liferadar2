@@ -1,10 +1,12 @@
 package com.atharsense.lr.service;
 
-import com.atharsense.lr.domain.*; // for static metamodels
+import com.atharsense.lr.domain.ExtendedUser;
 import com.atharsense.lr.domain.TripPlan;
 import com.atharsense.lr.repository.TripPlanRepository;
 import com.atharsense.lr.service.criteria.TripPlanCriteria;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Join;
+import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -16,9 +18,6 @@ import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link TripPlan} entities in the database.
- * The main input is a {@link TripPlanCriteria} which gets converted to {@link Specification},
- * in a way that all the filters must apply.
- * It returns a {@link Page} of {@link TripPlan} which fulfills the criteria.
  */
 @Service
 @Transactional(readOnly = true)
@@ -41,8 +40,7 @@ public class TripPlanQueryService extends QueryService<TripPlan> {
     @Transactional(readOnly = true)
     public Page<TripPlan> findByCriteria(TripPlanCriteria criteria, Pageable page) {
         LOG.debug("find by criteria : {}, page: {}", criteria, page);
-        final Specification<TripPlan> specification = createSpecification(criteria);
-        return tripPlanRepository.findAll(specification, page);
+        return tripPlanRepository.findAll(createSpecification(criteria), page);
     }
 
     /**
@@ -53,8 +51,7 @@ public class TripPlanQueryService extends QueryService<TripPlan> {
     @Transactional(readOnly = true)
     public long countByCriteria(TripPlanCriteria criteria) {
         LOG.debug("count by criteria : {}", criteria);
-        final Specification<TripPlan> specification = createSpecification(criteria);
-        return tripPlanRepository.count(specification);
+        return tripPlanRepository.count(createSpecification(criteria));
     }
 
     /**
@@ -63,19 +60,60 @@ public class TripPlanQueryService extends QueryService<TripPlan> {
      * @return the matching {@link Specification} of the entity.
      */
     protected Specification<TripPlan> createSpecification(TripPlanCriteria criteria) {
-        Specification<TripPlan> specification = Specification.where(null);
-        if (criteria != null) {
-            // This has to be called first, because the distinct method returns null
-            specification = Specification.allOf(
-                Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : null,
-                buildRangeSpecification(criteria.getId(), TripPlan_.id),
-                buildStringSpecification(criteria.getTitle(), TripPlan_.title),
-                buildStringSpecification(criteria.getDescription(), TripPlan_.description),
-                buildRangeSpecification(criteria.getStartDate(), TripPlan_.startDate),
-                buildRangeSpecification(criteria.getEndDate(), TripPlan_.endDate),
-                buildSpecification(criteria.getOwnerId(), root -> root.join(TripPlan_.owner, JoinType.LEFT).get(ExtendedUser_.id))
-            );
+        Specification<TripPlan> spec = Specification.where(null);
+        if (criteria == null) return spec;
+
+        if (criteria.getId() != null) {
+            spec = spec.and((root, query, cb) -> {
+                var filter = criteria.getId();
+                if (filter.getEquals() != null) return cb.equal(root.get("id"), filter.getEquals());
+                if (filter.getGreaterThan() != null) return cb.greaterThan(root.get("id"), filter.getGreaterThan());
+                if (filter.getLessThan() != null) return cb.lessThan(root.get("id"), filter.getLessThan());
+                return null;
+            });
         }
-        return specification;
+        if (criteria.getTitle() != null) {
+            spec = spec.and((root, query, cb) -> {
+                var filter = criteria.getTitle();
+                if (filter.getEquals() != null) return cb.equal(root.get("title"), filter.getEquals());
+                if (filter.getContains() != null) return cb.like(cb.lower(root.get("title")), "%" + filter.getContains().toLowerCase() + "%");
+                return null;
+            });
+        }
+        if (criteria.getDescription() != null) {
+            spec = spec.and((root, query, cb) -> {
+                var filter = criteria.getDescription();
+                if (filter.getEquals() != null) return cb.equal(root.get("description"), filter.getEquals());
+                if (filter.getContains() != null) return cb.like(cb.lower(root.get("description")), "%" + filter.getContains().toLowerCase() + "%");
+                return null;
+            });
+        }
+        if (criteria.getStartDate() != null) {
+            spec = spec.and((root, query, cb) -> {
+                var filter = criteria.getStartDate();
+                if (filter.getEquals() != null) return cb.equal(root.<LocalDate>get("startDate"), filter.getEquals());
+                if (filter.getGreaterThanOrEqual() != null) return cb.greaterThanOrEqualTo(root.get("startDate"), filter.getGreaterThanOrEqual());
+                if (filter.getLessThanOrEqual() != null) return cb.lessThanOrEqualTo(root.get("startDate"), filter.getLessThanOrEqual());
+                return null;
+            });
+        }
+        if (criteria.getEndDate() != null) {
+            spec = spec.and((root, query, cb) -> {
+                var filter = criteria.getEndDate();
+                if (filter.getEquals() != null) return cb.equal(root.<LocalDate>get("endDate"), filter.getEquals());
+                if (filter.getGreaterThanOrEqual() != null) return cb.greaterThanOrEqualTo(root.get("endDate"), filter.getGreaterThanOrEqual());
+                if (filter.getLessThanOrEqual() != null) return cb.lessThanOrEqualTo(root.get("endDate"), filter.getLessThanOrEqual());
+                return null;
+            });
+        }
+        if (criteria.getOwnerId() != null) {
+            spec = spec.and((root, query, cb) -> {
+                Join<TripPlan, ExtendedUser> ownerJoin = root.join("owner", JoinType.LEFT);
+                var filter = criteria.getOwnerId();
+                if (filter.getEquals() != null) return cb.equal(ownerJoin.get("id"), filter.getEquals());
+                return null;
+            });
+        }
+        return spec;
     }
 }
