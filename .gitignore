@@ -128,6 +128,8 @@ Desktop.ini
 ######################
 # ECS hosting config (AWS credentials, ECS infra settings)
 /src/main/resources/config/hosting/aws/ecs/.env
+# Lightsail hosting config
+/src/main/resources/config/hosting/aws/lightsail/.env
 # Rendered task definition (contains substituted secrets – never commit)
 /src/main/resources/config/hosting/aws/ecs/task-definition.rendered.json
 # Dev local secrets
