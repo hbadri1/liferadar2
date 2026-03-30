@@ -17,6 +17,27 @@ import {
   ObjectiveUnit,
 } from './family.models';
 
+interface ProgressCalendarCell {
+  key: string;
+  progress: FamilyObjectiveProgress | null;
+}
+
+interface ObjectiveCalendarDay {
+  key: string;
+  date: Date;
+  dayNumber: number;
+  weekdayLabel: string;
+  monthLabel: string;
+  title: string;
+  isToday: boolean;
+}
+
+interface ObjectiveCalendarRow {
+  itemDefinition: FamilyObjectiveItemDefinition;
+  cells: ProgressCalendarCell[];
+  latestProgress: FamilyObjectiveProgress | null;
+}
+
 @Component({
   selector: 'jhi-family',
   templateUrl: './family.component.html',
@@ -24,6 +45,8 @@ import {
   imports: [SharedModule, ReactiveFormsModule],
 })
 export default class FamilyComponent implements OnInit {
+  readonly objectiveHistoryDays = 10;
+
   children = signal<ChildUser[]>([]);
   objectives = signal<FamilyObjective[]>([]);
   isLoading = signal(false);
@@ -318,6 +341,72 @@ export default class FamilyComponent implements OnInit {
     return (itemDefinition.progressHistory?.length ?? 0) > 0;
   }
 
+  getObjectiveCalendarDays(): ObjectiveCalendarDay[] {
+    const today = this.startOfDay(new Date());
+    const start = new Date(today);
+    start.setDate(today.getDate() - (this.objectiveHistoryDays - 1));
+
+    const locale = this.translateService.currentLang || 'en';
+    const weekdayFormatter = new Intl.DateTimeFormat(locale, { weekday: 'short' });
+    const monthFormatter = new Intl.DateTimeFormat(locale, { month: 'short' });
+    const titleFormatter = new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short',
+    });
+
+    return Array.from({ length: this.objectiveHistoryDays }, (_, offset) => {
+      const date = new Date(start);
+      date.setDate(start.getDate() + offset);
+      const key = this.toDateKey(date);
+      return {
+        key,
+        date,
+        dayNumber: date.getDate(),
+        weekdayLabel: weekdayFormatter.format(date),
+        monthLabel: monthFormatter.format(date),
+        title: titleFormatter.format(date),
+        isToday: key === this.toDateKey(today),
+      };
+    });
+  }
+
+  getObjectiveCalendarRows(objective: FamilyObjective): ObjectiveCalendarRow[] {
+    const days = this.getObjectiveCalendarDays();
+    return objective.itemDefinitions.map(itemDefinition => {
+      const latestProgressByDay = this.getLatestProgressByDay(itemDefinition, days[0]?.date ?? new Date(), days[days.length - 1]?.date ?? new Date());
+      return {
+        itemDefinition,
+        latestProgress: this.getLatestProgress(itemDefinition),
+        cells: days.map(day => ({
+          key: `${itemDefinition.id}-${day.key}`,
+          progress: latestProgressByDay.get(day.key) ?? null,
+        })),
+      };
+    });
+  }
+
+  getObjectiveCalendarCellTitle(
+    itemDefinition: FamilyObjectiveItemDefinition,
+    day: ObjectiveCalendarDay,
+    progress: FamilyObjectiveProgress | null,
+  ): string {
+    if (!progress) {
+      return `${day.title} • ${this.translateService.instant('family.objectives.progress.noEntryDay')}`;
+    }
+
+    const valueLabel = `${progress.value} ${this.getObjectiveUnitLabel(itemDefinition.unit)}`;
+    const notesLabel = progress.notes?.trim() ? ` • ${progress.notes}` : '';
+    return `${day.title} • ${valueLabel}${notesLabel}`;
+  }
+
+  hasObjectiveProgressInHistoryWindow(objective: FamilyObjective): boolean {
+    return objective.itemDefinitions.some(itemDefinition =>
+      (itemDefinition.progressHistory ?? []).some(progress => this.isWithinHistoryWindow(progress.createdAt)),
+    );
+  }
+
   getLatestProgress(itemDefinition: FamilyObjectiveItemDefinition): FamilyObjectiveProgress | null {
     return itemDefinition.progressHistory?.[0] ?? null;
   }
@@ -520,6 +609,72 @@ export default class FamilyComponent implements OnInit {
     if (children.length > 0) {
       this.activeTab.set(this.getChildTabId(children[0].login));
     }
+  }
+
+  private parseDate(value: string | null | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private startOfDay(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  private toDateKey(date: Date): string {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private getLatestProgressByDay(
+    itemDefinition: FamilyObjectiveItemDefinition,
+    startDate: Date,
+    endDate: Date,
+  ): Map<string, FamilyObjectiveProgress> {
+    const latestProgressByDay = new Map<string, FamilyObjectiveProgress>();
+
+    for (const progress of itemDefinition.progressHistory ?? []) {
+      const progressDate = this.parseDate(progress.createdAt);
+      if (!progressDate) {
+        continue;
+      }
+
+      const normalized = this.startOfDay(progressDate);
+      if (normalized < startDate || normalized > endDate) {
+        continue;
+      }
+
+      const key = this.toDateKey(normalized);
+      const current = latestProgressByDay.get(key);
+      if (!current) {
+        latestProgressByDay.set(key, progress);
+        continue;
+      }
+
+      const currentDate = this.parseDate(current.createdAt);
+      if (!currentDate || progressDate > currentDate) {
+        latestProgressByDay.set(key, progress);
+      }
+    }
+
+    return latestProgressByDay;
+  }
+
+  private isWithinHistoryWindow(value: string | null | undefined): boolean {
+    const parsed = this.parseDate(value);
+    if (!parsed) {
+      return false;
+    }
+
+    const today = this.startOfDay(new Date());
+    const start = new Date(today);
+    start.setDate(today.getDate() - (this.objectiveHistoryDays - 1));
+    const normalized = this.startOfDay(parsed);
+    return normalized >= start && normalized <= today;
   }
 }
 

@@ -21,6 +21,10 @@ logging:
     com.atharsense.lr: DEBUG
 
 spring:
+  config:
+    import:
+      - optional:file:./src/main/resources/config/.env/.env.local[.properties]
+      - optional:file:./config/.env/.env.local[.properties]
   devtools:
     restart:
       enabled: true
@@ -55,7 +59,7 @@ spring:
     port: 465
     protocol: smtp
     username: info@atharsense.com
-    password: HB@Ho20065
+    password: ${SPRING_MAIL_PASSWORD:${MAIL_PASSWORD}}
     properties:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true

@@ -56,6 +56,15 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    path: 'trips',
+    loadComponent: () => import('./trips/trips.component'),
+    title: 'trips.title',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN, Authority.CHILD],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: '',
     loadChildren: () => import(`./entities/entity.routes`),
   },
