@@ -130,6 +130,8 @@ Desktop.ini
 /src/main/resources/config/hosting/aws/ecs/.env
 # Lightsail hosting config
 /src/main/resources/config/hosting/aws/lightsail/.env
+# Lightsail SSH private keys
+/src/main/resources/config/hosting/aws/lightsail/*.pem
 # Rendered task definition (contains substituted secrets – never commit)
 /src/main/resources/config/hosting/aws/ecs/task-definition.rendered.json
 # Dev local secrets
