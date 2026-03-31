@@ -11,9 +11,9 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -209,12 +209,9 @@ public class TripPlanStepResource {
             throw new BadRequestAlertException("Step must be associated with a trip", ENTITY_NAME, "stepMissingTrip");
         }
 
-        Optional<TripPlan> tripOpt = tripPlanRepository.findById(step.getTripPlan().getId());
-        if (tripOpt.isEmpty()) {
-            throw new BadRequestAlertException("Associated trip not found", ENTITY_NAME, "tripNotFound");
-        }
-
-        TripPlan trip = tripOpt.get();
+        TripPlan trip = tripPlanRepository
+            .findById(step.getTripPlan().getId())
+            .orElseThrow(() -> new BadRequestAlertException("Associated trip not found", ENTITY_NAME, "tripNotFound"));
         LocalDate tripStart = trip.getStartDate();
         LocalDate tripEnd = trip.getEndDate();
         LocalDate stepStart = step.getStartDate();

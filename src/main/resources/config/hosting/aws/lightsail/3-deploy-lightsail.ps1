@@ -67,6 +67,9 @@ Invoke-NativeChecked -Description "Upload .env" -Command {
 Invoke-NativeChecked -Description "Upload nginx template" -Command {
     scp @sshOptions -i $SshKeyPath -P $SshPort $nginxTemplateFile "$User@$ServerHost`:$RemoteDir/nginx/default.conf.template"
 }
+Invoke-NativeChecked -Description "Normalize remote text file line endings" -Command {
+    ssh @sshOptions -i $SshKeyPath -p $SshPort "$User@$ServerHost" "sed -i 's/\r$//' $RemoteDir/.env $RemoteDir/docker-compose.yml $RemoteDir/nginx/default.conf.template"
+}
 
 Write-Host "[3/5] Ensuring Docker is installed on remote host"
 $ensureDockerCmd = "if ! command -v docker >/dev/null 2>&1; then " +
@@ -81,9 +84,18 @@ Invoke-NativeChecked -Description "Ensure Docker is installed remotely" -Command
 Write-Host "[4/6] Authenticating Docker to ECR (if APP_IMAGE uses ECR)"
 $ecrLoginCmdTemplate = @'
 cd __REMOTE_DIR__
+sed -i 's/\r$//' ./.env
 set -a
 . ./.env
 set +a
+
+# Guard against accidental CRLF values after sourcing .env
+AWS_REGION="${AWS_REGION%$'\r'}"
+AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID%$'\r'}"
+APP_IMAGE="${APP_IMAGE%$'\r'}"
+AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID%$'\r'}"
+AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY%$'\r'}"
+AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN%$'\r'}"
 
 if echo "$APP_IMAGE" | grep -q "\.dkr\.ecr\."; then
   if ! command -v aws >/dev/null 2>&1; then
@@ -118,7 +130,7 @@ else
   echo "APP_IMAGE is not ECR; skipping ECR login."
 fi
 '@
-$ecrLoginCmd = $ecrLoginCmdTemplate.Replace('__REMOTE_DIR__', $RemoteDir)
+$ecrLoginCmd = $ecrLoginCmdTemplate.Replace('__REMOTE_DIR__', $RemoteDir).Replace("`r", '')
 Invoke-NativeChecked -Description "Authenticate Docker to ECR" -Command {
     ssh @sshOptions -i $SshKeyPath -p $SshPort "$User@$ServerHost" $ecrLoginCmd
 }
@@ -135,7 +147,7 @@ if [ -z "$NGINX_ID" ] || [ "$(docker inspect -f '{{.State.Running}}' $NGINX_ID 2
 fi
 docker compose --env-file .env up -d
 '@
-$remoteCmd = $remoteCmdTemplate.Replace('__REMOTE_DIR__', $RemoteDir)
+$remoteCmd = $remoteCmdTemplate.Replace('__REMOTE_DIR__', $RemoteDir).Replace("`r", '')
 Invoke-NativeChecked -Description "Start docker compose services" -Command {
     ssh @sshOptions -i $SshKeyPath -p $SshPort "$User@$ServerHost" $remoteCmd
 }
