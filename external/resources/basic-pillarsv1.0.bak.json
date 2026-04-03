@@ -9,16 +9,70 @@
       },
       "description": {
         "en": "Self development and wellbeing",
-        "ar": "تطوير الذات ",
+        "ar": "تطوير الذات",
         "fr": "Développement personnel et bien-être"
       },
       "subPillars": [
         {
+          "code": "P-F",
+          "name": {
+            "en": "Fun",
+            "ar": "المتعة",
+            "fr": "Plaisir"
+          },
+          "description": {
+            "en": "Things bringing joy and satisfaction",
+            "ar": "أشياء تجلب الفرح والرضا",
+            "fr": "Choses apportant joie et satisfaction"
+          },
+          "items": [
+            {
+              "code": "P-F-BLI",
+              "name": {
+                "en": "Bucket List Items",
+                "ar": "عناصر قائمة الأمنيات",
+                "fr": "Éléments de la liste de rêves"
+              },
+              "description": {
+                "en": "Personal dreams and life goals",
+                "ar": "الأحلام الشخصية وأهداف الحياة",
+                "fr": "Rêves personnels et objectifs de vie"
+              }
+            },
+            {
+              "code": "P-F-FA",
+              "name": {
+                "en": "Fun Activities",
+                "ar": "الأنشطة الممتعة",
+                "fr": "Activités ludiques"
+              },
+              "description": {
+                "en": "Entertainment and joyful experiences",
+                "ar": "الترفيه والتجارب المبهجة",
+                "fr": "Divertissement et expériences joyeuses"
+              }
+            },
+            {
+              "code": "P-F-FR",
+              "name": {
+                "en": "Friendships",
+                "ar": "الصداقات",
+                "fr": "Amitiés"
+              },
+              "description": {
+                "en": "Maintaining meaningful friendships",
+                "ar": "الحفاظ على صداقات ذات معنى",
+                "fr": "Maintenir des amitiés significatives"
+              }
+            }
+          ]
+        },
+        {
           "code": "P-H",
           "name": {
             "en": "Health",
-            "ar": "الصحة",
-            "fr": "Santé"
+            "ar": "الصحة الشخصية",
+            "fr": "Santé Personnelle"
           },
           "description": {
             "en": "Physical wellbeing and body care",
@@ -31,12 +85,25 @@
               "name": {
                 "en": "Nutrition",
                 "ar": "التغذية",
-                "fr": "Nutrition"
+                "fr": "Nutrition personelle"
               },
               "description": {
                 "en": "Healthy diet and nutrient intake",
                 "ar": "نظام غذائي صحي وتناول المغذيات",
                 "fr": "Alimentation saine et apport nutritif"
+              }
+            },
+            {
+              "code": "P-H-PC",
+              "name": {
+                "en": "Physical Checkups",
+                "ar": "الفحوصات الجسدية",
+                "fr": "Bilans physiques"
+              },
+              "description": {
+                "en": "Routine medical monitoring and health screenings",
+                "ar": "متابعة طبية دورية وفحوصات صحية",
+                "fr": "Suivi médical régulier et dépistages"
               }
             },
             {
@@ -64,87 +131,72 @@
                 "ar": "تمارين منتظمة وتدريب القوة",
                 "fr": "Exercice régulier et musculation"
               }
-            },
-            {
-              "code": "P-H-PC",
-              "name": {
-                "en": "Physical Checkups",
-                "ar": "الفحوصات الجسدية",
-                "fr": "Bilans physiques"
-              },
-              "description": {
-                "en": "Routine medical monitoring and health screenings",
-                "ar": "متابعة طبية دورية وفحوصات صحية",
-                "fr": "Suivi médical régulier et dépistages"
-              }
             }
           ]
         },
         {
-          "code": "P-PMH",
+          "code": "P-LN",
           "name": {
-            "en": "Psychology & Mental Health",
-            "ar": "علم النفس والصحة النفسية",
-            "fr": "Psychologie et santé mentale"
+            "en": "Lifestyle and Needs",
+            "ar": "نمط الحياة والاحتياجات",
+            "fr": "Style de vie et besoins"
           },
           "description": {
-            "en": "Mental stability and emotional wellbeing",
-            "ar": "الاستقرار النفسي والرفاهية العاطفية",
-            "fr": "Stabilité mentale et bien-être émotionnel"
+            "en": "Personal comfort and living standards",
+            "ar": "الراحة الشخصية ومستوى المعيشة",
+            "fr": "Confort personnel et niveau de vie"
           },
           "items": [
             {
-              "code": "P-PMH-SM",
+              "code": "P-LN-C",
               "name": {
-                "en": "Stress Management",
-                "ar": "إدارة التوتر",
-                "fr": "Gestion du stress"
+                "en": "Clothing",
+                "ar": "الملابس",
+                "fr": "Vêtements"
               },
               "description": {
-                "en": "Handling pressure and daily stress",
-                "ar": "التعامل مع الضغط والتوتر اليومي",
-                "fr": "Gérer la pression et le stress quotidien"
+                "en": "Personal appearance and wardrobe care",
+                "ar": "المظهر الشخصي والعناية بالملابس",
+                "fr": "Apparence personnelle et soin de la garde-robe"
               }
             },
             {
-              "code": "P-PMH-ER",
+              "code": "P-LN-GA",
               "name": {
-                "en": "Emotional Resilience",
-                "ar": "المرونة العاطفية",
-                "fr": "Résilience émotionnelle"
+                "en": "Gadgets and Appliances",
+                "ar": "الأجهزة والأدوات",
+                "fr": "Appareils et gadgets"
               },
               "description": {
-                "en": "Ability to recover emotionally",
-                "ar": "القدرة على التعافي عاطفياً",
-                "fr": "Capacité à se rétablir émotionnellement"
+                "en": "Useful devices improving daily life",
+                "ar": "أجهزة مفيدة تحسن الحياة اليومية",
+                "fr": "Appareils utiles améliorant la vie quotidienne"
               }
-            }
-          ]
-        },
-        {
-          "code": "P-RO",
-          "name": {
-            "en": "Routine Optimization",
-            "ar": "تحسين الروتين",
-            "fr": "Optimisation de la routine"
-          },
-          "description": {
-            "en": "Improving habits and daily routines",
-            "ar": "تحسين العادات والروتين اليومي",
-            "fr": "Amélioration des habitudes et routines quotidiennes"
-          },
-          "items": [
+            },
             {
-              "code": "P-RO-RD",
+              "code": "P-LN-HE",
               "name": {
-                "en": "Reducing Drains (Social Media, People)",
-                "ar": "تقليل المستنزفات (وسائل التواصل، الأشخاص)",
-                "fr": "Réduire les drains (réseaux sociaux, personnes)"
+                "en": "Home Environment",
+                "ar": "بيئة المنزل",
+                "fr": "Environnement domestique"
               },
               "description": {
-                "en": "Removing distractions and energy drains",
-                "ar": "إزالة المشتتات ومصادر استنزاف الطاقة",
-                "fr": "Éliminer les distractions et pertes d’énergie"
+                "en": "Comfortable and organized living space",
+                "ar": "مساحة معيشة مريحة ومنظمة",
+                "fr": "Espace de vie confortable et organisé"
+              }
+            },
+            {
+              "code": "P-LN-TU",
+              "name": {
+                "en": "Tech Upgrades",
+                "ar": "تحديثات التقنية",
+                "fr": "Mises à niveau technologiques"
+              },
+              "description": {
+                "en": "Updating useful personal technology",
+                "ar": "تحديث التقنيات الشخصية المفيدة",
+                "fr": "Mise à jour des technologies personnelles utiles"
               }
             }
           ]
@@ -191,122 +243,70 @@
           ]
         },
         {
-          "code": "P-LN",
+          "code": "P-PMH",
           "name": {
-            "en": "Lifestyle and Needs",
-            "ar": "نمط الحياة والاحتياجات",
-            "fr": "Style de vie et besoins"
+            "en": "Psychology & Mental Health",
+            "ar": "علم النفس والصحة النفسية",
+            "fr": "Psychologie et santé mentale"
           },
           "description": {
-            "en": "Personal comfort and living standards",
-            "ar": "الراحة الشخصية ومستوى المعيشة",
-            "fr": "Confort personnel et niveau de vie"
+            "en": "Mental stability and emotional wellbeing",
+            "ar": "الاستقرار النفسي والرفاهية العاطفية",
+            "fr": "Stabilité mentale et bien-être émotionnel"
           },
           "items": [
             {
-              "code": "P-LN-C",
+              "code": "P-PMH-ER",
               "name": {
-                "en": "Clothing",
-                "ar": "الملابس",
-                "fr": "Vêtements"
+                "en": "Emotional Resilience",
+                "ar": "المرونة العاطفية",
+                "fr": "Résilience émotionnelle"
               },
               "description": {
-                "en": "Personal appearance and wardrobe care",
-                "ar": "المظهر الشخصي والعناية بالملابس",
-                "fr": "Apparence personnelle et soin de la garde-robe"
+                "en": "Ability to recover emotionally",
+                "ar": "القدرة على التعافي عاطفياً",
+                "fr": "Capacité à se rétablir émotionnellement"
               }
             },
             {
-              "code": "P-LN-TU",
+              "code": "P-PMH-SM",
               "name": {
-                "en": "Tech Upgrades",
-                "ar": "تحديثات التقنية",
-                "fr": "Mises à niveau technologiques"
+                "en": "Stress Management",
+                "ar": "إدارة التوتر",
+                "fr": "Gestion du stress"
               },
               "description": {
-                "en": "Updating useful personal technology",
-                "ar": "تحديث التقنيات الشخصية المفيدة",
-                "fr": "Mise à jour des technologies personnelles utiles"
-              }
-            },
-            {
-              "code": "P-LN-HE",
-              "name": {
-                "en": "Home Environment",
-                "ar": "بيئة المنزل",
-                "fr": "Environnement domestique"
-              },
-              "description": {
-                "en": "Comfortable and organized living space",
-                "ar": "مساحة معيشة مريحة ومنظمة",
-                "fr": "Espace de vie confortable et organisé"
-              }
-            },
-            {
-              "code": "P-LN-GA",
-              "name": {
-                "en": "Gadgets and Appliances",
-                "ar": "الأجهزة والأدوات",
-                "fr": "Appareils et gadgets"
-              },
-              "description": {
-                "en": "Useful devices improving daily life",
-                "ar": "أجهزة مفيدة تحسن الحياة اليومية",
-                "fr": "Appareils utiles améliorant la vie quotidienne"
+                "en": "Handling pressure and daily stress",
+                "ar": "التعامل مع الضغط والتوتر اليومي",
+                "fr": "Gérer la pression et le stress quotidien"
               }
             }
           ]
         },
         {
-          "code": "P-F",
+          "code": "P-RO",
           "name": {
-            "en": "Fun",
-            "ar": "المتعة",
-            "fr": "Plaisir"
+            "en": "Routine Optimization",
+            "ar": "تحسين الروتين",
+            "fr": "Optimisation de la routine"
           },
           "description": {
-            "en": "Things bringing joy and satisfaction",
-            "ar": "أشياء تجلب الفرح والرضا",
-            "fr": "Choses apportant joie et satisfaction"
+            "en": "Improving habits and daily routines",
+            "ar": "تحسين العادات والروتين اليومي",
+            "fr": "Amélioration des habitudes et routines quotidiennes"
           },
           "items": [
             {
-              "code": "P-F-FA",
+              "code": "P-RO-RD",
               "name": {
-                "en": "Fun Activities",
-                "ar": "الأنشطة الممتعة",
-                "fr": "Activités ludiques"
+                "en": "Reducing Drains (Social Media, People)",
+                "ar": "تقليل المستنزفات (وسائل التواصل، الأشخاص)",
+                "fr": "Réduire les drains (réseaux sociaux, personnes)"
               },
               "description": {
-                "en": "Entertainment and joyful experiences",
-                "ar": "الترفيه والتجارب المبهجة",
-                "fr": "Divertissement et expériences joyeuses"
-              }
-            },
-            {
-              "code": "P-F-FR",
-              "name": {
-                "en": "Friendships",
-                "ar": "الصداقات",
-                "fr": "Amitiés"
-              },
-              "description": {
-                "en": "Maintaining meaningful friendships",
-                "ar": "الحفاظ على صداقات ذات معنى",
-                "fr": "Maintenir des amitiés significatives"
-              }
-            },
-            {
-              "code": "P-F-BLI",
-              "name": {
-                "en": "Bucket List Items",
-                "ar": "عناصر قائمة الأمنيات",
-                "fr": "Éléments de la liste de rêves"
-              },
-              "description": {
-                "en": "Personal dreams and life goals",
-                "ar": "الأحلام الشخصية وأهداف الحياة",
-                "fr": "Rêves personnels et objectifs de vie"
+                "en": "Removing distractions and energy drains",
+                "ar": "إزالة المشتتات ومصادر استنزاف الطاقة",
+                "fr": "Éliminer les distractions et pertes d’énergie"
               }
             }
           ]
@@ -327,153 +327,6 @@
       },
       "subPillars": [
         {
-          "code": "F-S",
-          "name": {
-            "en": "Spouse",
-            "ar": "الزوج أو الزوجة",
-            "fr": "Conjoint"
-          },
-          "description": {
-            "en": "Marriage relationship and partnership",
-            "ar": "العلاقة الزوجية والشراكة",
-            "fr": "Relation conjugale et partenariat"
-          },
-          "items": [
-            {
-              "code": "F-S-EC",
-              "name": {
-                "en": "Emotional Connection",
-                "ar": "الارتباط العاطفي",
-                "fr": "Connexion émotionnelle"
-              },
-              "description": {
-                "en": "Emotional closeness with spouse",
-                "ar": "القرب العاطفي مع الشريك",
-                "fr": "Proximité émotionnelle avec le conjoint"
-              }
-            },
-            {
-              "code": "F-S-C",
-              "name": {
-                "en": "Communication",
-                "ar": "التواصل",
-                "fr": "Communication"
-              },
-              "description": {
-                "en": "Healthy and respectful discussions",
-                "ar": "نقاشات صحية ومحترمة",
-                "fr": "Discussions saines et respectueuses"
-              }
-            },
-            {
-              "code": "F-S-SG",
-              "name": {
-                "en": "Shared Goals",
-                "ar": "الأهداف المشتركة",
-                "fr": "Objectifs communs"
-              },
-              "description": {
-                "en": "Common future vision alignment",
-                "ar": "التوافق حول رؤية مستقبلية مشتركة",
-                "fr": "Alignement sur une vision future commune"
-              }
-            },
-            {
-              "code": "F-S-QT",
-              "name": {
-                "en": "Quality Time",
-                "ar": "وقت ذو جودة",
-                "fr": "Temps de qualité"
-              },
-              "description": {
-                "en": "Spending meaningful time together",
-                "ar": "قضاء وقت ذي معنى معاً",
-                "fr": "Passer du temps significatif ensemble"
-              }
-            }
-          ]
-        },
-        {
-          "code": "F-K",
-          "name": {
-            "en": "Kids",
-            "ar": "الأطفال",
-            "fr": "Enfants"
-          },
-          "description": {
-            "en": "Children wellbeing and development",
-            "ar": "رفاهية الأطفال ونموهم",
-            "fr": "Bien-être et développement des enfants"
-          },
-          "items": [
-            {
-              "code": "F-K-HC",
-              "name": {
-                "en": "Health Checkups",
-                "ar": "الفحوصات الصحية",
-                "fr": "Bilans de santé"
-              },
-              "description": {
-                "en": "Regular medical monitoring children",
-                "ar": "متابعة طبية منتظمة للأطفال",
-                "fr": "Suivi médical régulier des enfants"
-              }
-            },
-            {
-              "code": "F-K-S",
-              "name": {
-                "en": "Sports",
-                "ar": "الرياضة",
-                "fr": "Sports"
-              },
-              "description": {
-                "en": "Encouraging physical activity children",
-                "ar": "تشجيع النشاط البدني للأطفال",
-                "fr": "Encourager l’activité physique des enfants"
-              }
-            },
-            {
-              "code": "F-K-LS",
-              "name": {
-                "en": "Learning Skills",
-                "ar": "مهارات التعلم",
-                "fr": "Compétences d’apprentissage"
-              },
-              "description": {
-                "en": "Building knowledge and life skills",
-                "ar": "بناء المعرفة ومهارات الحياة",
-                "fr": "Développer les connaissances et compétences de vie"
-              }
-            },
-            {
-              "code": "F-K-SC",
-              "name": {
-                "en": "School",
-                "ar": "المدرسة",
-                "fr": "École"
-              },
-              "description": {
-                "en": "Academic progress and education",
-                "ar": "التقدم الأكاديمي والتعليم",
-                "fr": "Progrès scolaire et éducation"
-              }
-            },
-            {
-              "code": "F-K-EN",
-              "name": {
-                "en": "Emotional Needs",
-                "ar": "الاحتياجات العاطفية",
-                "fr": "Besoins émotionnels"
-              },
-              "description": {
-                "en": "Supporting children emotional wellbeing",
-                "ar": "دعم الرفاهية العاطفية للأطفال",
-                "fr": "Soutenir le bien-être émotionnel des enfants"
-              }
-            }
-          ]
-        },
-        {
           "code": "F-BN",
           "name": {
             "en": "Basic Needs",
@@ -486,19 +339,6 @@
             "fr": "Stabilité du foyer et besoins essentiels"
           },
           "items": [
-            {
-              "code": "F-BN-H",
-              "name": {
-                "en": "House",
-                "ar": "المنزل",
-                "fr": "Maison"
-              },
-              "description": {
-                "en": "Living space and housing stability",
-                "ar": "مساحة المعيشة واستقرار السكن",
-                "fr": "Espace de vie et stabilité du logement"
-              }
-            },
             {
               "code": "F-BN-C",
               "name": {
@@ -513,19 +353,6 @@
               }
             },
             {
-              "code": "F-BN-M",
-              "name": {
-                "en": "Maintenance",
-                "ar": "الصيانة",
-                "fr": "Entretien"
-              },
-              "description": {
-                "en": "Repairing and maintaining household items",
-                "ar": "إصلاح وصيانة مقتنيات المنزل",
-                "fr": "Réparer et entretenir les éléments du foyer"
-              }
-            },
-            {
               "code": "F-BN-FU",
               "name": {
                 "en": "Furniture",
@@ -536,6 +363,32 @@
                 "en": "Comfortable and functional home furniture",
                 "ar": "أثاث منزلي مريح وعملي",
                 "fr": "Mobilier domestique confortable et fonctionnel"
+              }
+            },
+            {
+              "code": "F-BN-H",
+              "name": {
+                "en": "House",
+                "ar": "المنزل",
+                "fr": "Maison"
+              },
+              "description": {
+                "en": "Living space and housing stability",
+                "ar": "مساحة المعيشة واستقرار السكن",
+                "fr": "Espace de vie et stabilité du logement"
+              }
+            },
+            {
+              "code": "F-BN-M",
+              "name": {
+                "en": "Maintenance",
+                "ar": "الصيانة",
+                "fr": "Entretien"
+              },
+              "description": {
+                "en": "Repairing and maintaining household items",
+                "ar": "إصلاح وصيانة مقتنيات المنزل",
+                "fr": "Réparer et entretenir les éléments du foyer"
               }
             }
           ]
@@ -595,6 +448,19 @@
           },
           "items": [
             {
+              "code": "F-EF-IL",
+              "name": {
+                "en": "In-Laws",
+                "ar": "أهل الزوج أو الزوجة",
+                "fr": "Beaux-parents"
+              },
+              "description": {
+                "en": "Healthy relationship with spouse family",
+                "ar": "علاقة صحية مع عائلة الشريك",
+                "fr": "Relation saine avec la famille du conjoint"
+              }
+            },
+            {
               "code": "F-EF-PN",
               "name": {
                 "en": "Parents Needs",
@@ -619,19 +485,6 @@
                 "ar": "الحفاظ على علاقات جيدة مع الإخوة",
                 "fr": "Maintenir de bonnes relations fraternelles"
               }
-            },
-            {
-              "code": "F-EF-IL",
-              "name": {
-                "en": "In-Laws",
-                "ar": "أهل الزوج أو الزوجة",
-                "fr": "Beaux-parents"
-              },
-              "description": {
-                "en": "Healthy relationship with spouse family",
-                "ar": "علاقة صحية مع عائلة الشريك",
-                "fr": "Relation saine avec la famille du conjoint"
-              }
             }
           ]
         },
@@ -649,19 +502,6 @@
           },
           "items": [
             {
-              "code": "F-FA-EF",
-              "name": {
-                "en": "Emergency Fund",
-                "ar": "صندوق الطوارئ",
-                "fr": "Fonds d’urgence"
-              },
-              "description": {
-                "en": "Financial safety buffer family",
-                "ar": "احتياطي مالي آمن للعائلة",
-                "fr": "Réserve financière de sécurité familiale"
-              }
-            },
-            {
               "code": "F-FA-BEP",
               "name": {
                 "en": "Big Expenses Planning (Travel)",
@@ -675,6 +515,19 @@
               }
             },
             {
+              "code": "F-FA-EF",
+              "name": {
+                "en": "Emergency Fund",
+                "ar": "صندوق الطوارئ",
+                "fr": "Fonds d’urgence"
+              },
+              "description": {
+                "en": "Financial safety buffer family",
+                "ar": "احتياطي مالي آمن للعائلة",
+                "fr": "Réserve financière de sécurité familiale"
+              }
+            },
+            {
               "code": "F-FA-QT",
               "name": {
                 "en": "Quality Time",
@@ -685,6 +538,166 @@
                 "en": "Shared experiences strengthening family",
                 "ar": "تجارب مشتركة تقوي الروابط العائلية",
                 "fr": "Expériences partagées renforçant la famille"
+              }
+            }
+          ]
+        },
+        {
+          "code": "F-K",
+          "name": {
+            "en": "Kids",
+            "ar": "الأطفال",
+            "fr": "Enfants"
+          },
+          "description": {
+            "en": "Children wellbeing and development",
+            "ar": "رفاهية الأطفال ونموهم",
+            "fr": "Bien-être et développement des enfants"
+          },
+          "items": [
+            {
+              "code": "F-K-E",
+              "name": {
+                "en": "Entertainment",
+                "ar": "الترفيه",
+                "fr": "Amusement"
+              },
+              "description": {
+                "en": "Entertainment parks, toys",
+                "ar": "الألعاب و الحدائق",
+                "fr": "Jeux et jardins"
+              }
+            },
+            {
+              "code": "F-K-EN",
+              "name": {
+                "en": "Emotional Needs",
+                "ar": "الاحتياجات العاطفية",
+                "fr": "Besoins émotionnels"
+              },
+              "description": {
+                "en": "Supporting children emotional wellbeing",
+                "ar": "دعم الرفاهية العاطفية للأطفال",
+                "fr": "Soutenir le bien-être émotionnel des enfants"
+              }
+            },
+            {
+              "code": "F-K-HC",
+              "name": {
+                "en": "Health Checkups",
+                "ar": "الفحوصات الصحية",
+                "fr": "Bilans de santé"
+              },
+              "description": {
+                "en": "Regular medical monitoring children",
+                "ar": "متابعة طبية منتظمة للأطفال",
+                "fr": "Suivi médical régulier des enfants"
+              }
+            },
+            {
+              "code": "F-K-LS",
+              "name": {
+                "en": "Learning Skills",
+                "ar": "مهارات التعلم",
+                "fr": "Compétences d’apprentissage"
+              },
+              "description": {
+                "en": "Building knowledge and life skills",
+                "ar": "بناء المعرفة ومهارات الحياة",
+                "fr": "Développer les connaissances et compétences de vie"
+              }
+            },
+            {
+              "code": "F-K-S",
+              "name": {
+                "en": "Sports",
+                "ar": "الرياضة",
+                "fr": "Sports"
+              },
+              "description": {
+                "en": "Encouraging physical activity children",
+                "ar": "تشجيع النشاط البدني للأطفال",
+                "fr": "Encourager l’activité physique des enfants"
+              }
+            },
+            {
+              "code": "F-K-SC",
+              "name": {
+                "en": "School",
+                "ar": "المدرسة",
+                "fr": "École"
+              },
+              "description": {
+                "en": "Academic progress and education",
+                "ar": "التقدم الأكاديمي والتعليم",
+                "fr": "Progrès scolaire et éducation"
+              }
+            }
+          ]
+        },
+        {
+          "code": "F-S",
+          "name": {
+            "en": "Spouse",
+            "ar": "الزوج أو الزوجة",
+            "fr": "Conjoint"
+          },
+          "description": {
+            "en": "Marriage relationship and partnership",
+            "ar": "العلاقة الزوجية والشراكة",
+            "fr": "Relation conjugale et partenariat"
+          },
+          "items": [
+            {
+              "code": "F-S-C",
+              "name": {
+                "en": "Communication",
+                "ar": "التواصل",
+                "fr": "Communication"
+              },
+              "description": {
+                "en": "Healthy and respectful discussions",
+                "ar": "نقاشات صحية ومحترمة",
+                "fr": "Discussions saines et respectueuses"
+              }
+            },
+            {
+              "code": "F-S-EC",
+              "name": {
+                "en": "Emotional Connection",
+                "ar": "الارتباط العاطفي",
+                "fr": "Connexion émotionnelle"
+              },
+              "description": {
+                "en": "Emotional closeness with spouse",
+                "ar": "القرب العاطفي مع الشريك",
+                "fr": "Proximité émotionnelle avec le conjoint"
+              }
+            },
+            {
+              "code": "F-S-QT",
+              "name": {
+                "en": "Quality Time",
+                "ar": "وقت ذو جودة",
+                "fr": "Temps de qualité"
+              },
+              "description": {
+                "en": "Spending meaningful time together",
+                "ar": "قضاء وقت ذي معنى معاً",
+                "fr": "Passer du temps significatif ensemble"
+              }
+            },
+            {
+              "code": "F-S-SG",
+              "name": {
+                "en": "Shared Goals",
+                "ar": "الأهداف المشتركة",
+                "fr": "Objectifs communs"
+              },
+              "description": {
+                "en": "Common future vision alignment",
+                "ar": "التوافق حول رؤية مستقبلية مشتركة",
+                "fr": "Alignement sur une vision future commune"
               }
             }
           ]
@@ -705,6 +718,60 @@
       },
       "subPillars": [
         {
+          "code": "W-CD",
+          "name": {
+            "en": "Career Development",
+            "ar": "التطور المهني",
+            "fr": "Développement de carrière"
+          },
+          "description": {
+            "en": "Advancing long term career",
+            "ar": "تطوير المسار المهني على المدى الطويل",
+            "fr": "Faire progresser la carrière à long terme"
+          },
+          "items": [
+            {
+              "code": "W-CD-CC",
+              "name": {
+                "en": "Certifications & Courses",
+                "ar": "الشهادات والدورات",
+                "fr": "Certifications et formations"
+              },
+              "description": {
+                "en": "Improving credibility through certification",
+                "ar": "تعزيز المصداقية من خلال الشهادات",
+                "fr": "Renforcer la crédibilité par la certification"
+              }
+            },
+            {
+              "code": "W-CD-CP",
+              "name": {
+                "en": "Career Planning",
+                "ar": "التخطيط المهني",
+                "fr": "Planification de carrière"
+              },
+              "description": {
+                "en": "Strategic long term career planning",
+                "ar": "تخطيط استراتيجي طويل الأمد للمسار المهني",
+                "fr": "Planification stratégique de carrière à long terme"
+              }
+            },
+            {
+              "code": "W-CD-N",
+              "name": {
+                "en": "Networking",
+                "ar": "بناء العلاقات المهنية",
+                "fr": "Réseautage"
+              },
+              "description": {
+                "en": "Building professional relationships network",
+                "ar": "بناء شبكة علاقات مهنية",
+                "fr": "Construire un réseau de relations professionnelles"
+              }
+            }
+          ]
+        },
+        {
           "code": "W-CJ",
           "name": {
             "en": "Current Job",
@@ -718,16 +785,16 @@
           },
           "items": [
             {
-              "code": "W-CJ-JS",
+              "code": "W-CJ-AV",
               "name": {
-                "en": "Job Satisfaction",
-                "ar": "الرضا الوظيفي",
-                "fr": "Satisfaction au travail"
+                "en": "Alignment with Vision",
+                "ar": "التوافق مع الرؤية",
+                "fr": "Alignement avec la vision"
               },
               "description": {
-                "en": "Feeling fulfilled at work",
-                "ar": "الشعور بالرضا في العمل",
-                "fr": "Se sentir épanoui au travail"
+                "en": "Career aligned with life vision",
+                "ar": "مسار مهني متوافق مع رؤية الحياة",
+                "fr": "Carrière alignée avec la vision de vie"
               }
             },
             {
@@ -744,16 +811,16 @@
               }
             },
             {
-              "code": "W-CJ-AV",
+              "code": "W-CJ-JS",
               "name": {
-                "en": "Alignment with Vision",
-                "ar": "التوافق مع الرؤية",
-                "fr": "Alignement avec la vision"
+                "en": "Job Satisfaction",
+                "ar": "الرضا الوظيفي",
+                "fr": "Satisfaction au travail"
               },
               "description": {
-                "en": "Career aligned with life vision",
-                "ar": "مسار مهني متوافق مع رؤية الحياة",
-                "fr": "Carrière alignée avec la vision de vie"
+                "en": "Feeling fulfilled at work",
+                "ar": "الشعور بالرضا في العمل",
+                "fr": "Se sentir épanoui au travail"
               }
             }
           ]
@@ -800,55 +867,29 @@
           ]
         },
         {
-          "code": "W-CD",
+          "code": "W-S",
           "name": {
-            "en": "Career Development",
-            "ar": "التطور المهني",
-            "fr": "Développement de carrière"
+            "en": "Side projects",
+            "ar": "المشاريع الجانبية",
+            "fr": "Les projets a cote"
           },
           "description": {
-            "en": "Advancing long term career",
-            "ar": "تطوير المسار المهني على المدى الطويل",
-            "fr": "Faire progresser la carrière à long terme"
+            "en": "side projects",
+            "ar": "المشاريع الجانبية",
+            "fr": "les projets a cote"
           },
           "items": [
             {
-              "code": "W-CD-N",
+              "code": "W-S-H",
               "name": {
-                "en": "Networking",
-                "ar": "بناء العلاقات المهنية",
-                "fr": "Réseautage"
+                "en": "Side projects",
+                "ar": "المشاريع الجانبية",
+                "fr": "Les projets a cote"
               },
               "description": {
-                "en": "Building professional relationships network",
-                "ar": "بناء شبكة علاقات مهنية",
-                "fr": "Construire un réseau de relations professionnelles"
-              }
-            },
-            {
-              "code": "W-CD-CC",
-              "name": {
-                "en": "Certifications & Courses",
-                "ar": "الشهادات والدورات",
-                "fr": "Certifications et formations"
-              },
-              "description": {
-                "en": "Improving credibility through certification",
-                "ar": "تعزيز المصداقية من خلال الشهادات",
-                "fr": "Renforcer la crédibilité par la certification"
-              }
-            },
-            {
-              "code": "W-CD-CP",
-              "name": {
-                "en": "Career Planning",
-                "ar": "التخطيط المهني",
-                "fr": "Planification de carrière"
-              },
-              "description": {
-                "en": "Strategic long term career planning",
-                "ar": "تخطيط استراتيجي طويل الأمد للمسار المهني",
-                "fr": "Planification stratégique de carrière à long terme"
+                "en": "Side projects",
+                "ar": "المشاريع الجانبية",
+                "fr": "Les project a cote"
               }
             }
           ]
@@ -867,19 +908,6 @@
           },
           "items": [
             {
-              "code": "W-WLB-TM",
-              "name": {
-                "en": "Time Management",
-                "ar": "إدارة الوقت",
-                "fr": "Gestion du temps"
-              },
-              "description": {
-                "en": "Efficient use of daily time",
-                "ar": "استخدام الوقت اليومي بكفاءة",
-                "fr": "Utilisation efficace du temps quotidien"
-              }
-            },
-            {
               "code": "W-WLB-BM",
               "name": {
                 "en": "Boundary Management",
@@ -890,6 +918,19 @@
                 "en": "Separating work and personal life",
                 "ar": "الفصل بين العمل والحياة الشخصية",
                 "fr": "Séparer le travail et la vie personnelle"
+              }
+            },
+            {
+              "code": "W-WLB-TM",
+              "name": {
+                "en": "Time Management",
+                "ar": "إدارة الوقت",
+                "fr": "Gestion du temps"
+              },
+              "description": {
+                "en": "Efficient use of daily time",
+                "ar": "استخدام الوقت اليومي بكفاءة",
+                "fr": "Utilisation efficace du temps quotidien"
               }
             },
             {
@@ -923,60 +964,6 @@
       },
       "subPillars": [
         {
-          "code": "R-DP",
-          "name": {
-            "en": "Daily Practice",
-            "ar": "الممارسة اليومية",
-            "fr": "Pratique quotidienne"
-          },
-          "description": {
-            "en": "Regular acts of worship",
-            "ar": "أعمال عبادة منتظمة",
-            "fr": "Actes réguliers d’adoration"
-          },
-          "items": [
-            {
-              "code": "R-DP-P",
-              "name": {
-                "en": "Prayers",
-                "ar": "الصلاة",
-                "fr": "Prières"
-              },
-              "description": {
-                "en": "Daily obligatory prayer practice",
-                "ar": "ممارسة الصلاة اليومية المفروضة",
-                "fr": "Pratique quotidienne des prières obligatoires"
-              }
-            },
-            {
-              "code": "R-DP-QR",
-              "name": {
-                "en": "Quran Reading",
-                "ar": "قراءة القرآن",
-                "fr": "Lecture du Coran"
-              },
-              "description": {
-                "en": "Regular recitation of Quran",
-                "ar": "تلاوة القرآن بانتظام",
-                "fr": "Récitation régulière du Coran"
-              }
-            },
-            {
-              "code": "R-DP-A",
-              "name": {
-                "en": "Azkar",
-                "ar": "الأذكار",
-                "fr": "Invocations"
-              },
-              "description": {
-                "en": "Daily remembrance and supplications",
-                "ar": "الأذكار والأدعية اليومية",
-                "fr": "Rappels et invocations quotidiennes"
-              }
-            }
-          ]
-        },
-        {
           "code": "R-CI",
           "name": {
             "en": "Community Involvement",
@@ -1005,6 +992,60 @@
           ]
         },
         {
+          "code": "R-DP",
+          "name": {
+            "en": "Daily Practice",
+            "ar": "الممارسة اليومية",
+            "fr": "Pratique quotidienne"
+          },
+          "description": {
+            "en": "Regular acts of worship",
+            "ar": "أعمال عبادة منتظمة",
+            "fr": "Actes réguliers d’adoration"
+          },
+          "items": [
+            {
+              "code": "R-DP-A",
+              "name": {
+                "en": "Azkar",
+                "ar": "الأذكار",
+                "fr": "Invocations"
+              },
+              "description": {
+                "en": "Daily remembrance and supplications",
+                "ar": "الأذكار والأدعية اليومية",
+                "fr": "Rappels et invocations quotidiennes"
+              }
+            },
+            {
+              "code": "R-DP-P",
+              "name": {
+                "en": "Prayers",
+                "ar": "الصلاة",
+                "fr": "Prières"
+              },
+              "description": {
+                "en": "Daily obligatory prayer practice",
+                "ar": "ممارسة الصلاة اليومية المفروضة",
+                "fr": "Pratique quotidienne des prières obligatoires"
+              }
+            },
+            {
+              "code": "R-DP-QR",
+              "name": {
+                "en": "Quran Reading",
+                "ar": "قراءة القرآن",
+                "fr": "Lecture du Coran"
+              },
+              "description": {
+                "en": "Regular recitation of Quran",
+                "ar": "تلاوة القرآن بانتظام",
+                "fr": "Récitation régulière du Coran"
+              }
+            }
+          ]
+        },
+        {
           "code": "R-MG",
           "name": {
             "en": "Major Goals",
@@ -1018,19 +1059,6 @@
           },
           "items": [
             {
-              "code": "R-MG-MS",
-              "name": {
-                "en": "Memorizing Surahs",
-                "ar": "حفظ السور",
-                "fr": "Mémorisation des sourates"
-              },
-              "description": {
-                "en": "Memorizing chapters of Quran",
-                "ar": "حفظ سور من القرآن",
-                "fr": "Mémoriser des chapitres du Coran"
-              }
-            },
-            {
               "code": "R-MG-IS",
               "name": {
                 "en": "Islamic Studies",
@@ -1041,6 +1069,32 @@
                 "en": "Learning deeper Islamic knowledge",
                 "ar": "تعلم معرفة إسلامية أعمق",
                 "fr": "Approfondir les connaissances islamiques"
+              }
+            },
+            {
+              "code": "R-MG-L",
+              "name": {
+                "en": "Religious Lessons",
+                "ar": "الدروس الشرعية",
+                "fr": " Lessons religieuses"
+              },
+              "description": {
+                "en": "Learning lessons",
+                "ar": "الدروس الدوري",
+                "fr": "Les lessons regulieres"
+              }
+            },
+            {
+              "code": "R-MG-MS",
+              "name": {
+                "en": "Memorizing Surahs",
+                "ar": "حفظ السور",
+                "fr": "Mémorisation des sourates"
+              },
+              "description": {
+                "en": "Memorizing chapters of Quran",
+                "ar": "حفظ سور من القرآن",
+                "fr": "Mémoriser des chapitres du Coran"
               }
             }
           ]
