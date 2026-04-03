@@ -5,6 +5,8 @@
     "child": {
       "title": "Tu te débrouilles très bien !",
       "subtitle": "Voici quelques messages encourageants pour ta journée.",
+      "imageAlt": "Une scène joyeuse avec des visages souriants qui t'encouragent.",
+      "imageCaption": "Ton équipe de supporters fête tes réussites !",
       "message1": "Chaque petit pas que tu fais aujourd'hui compte.",
       "message2": "Ton effort est plus fort que n'importe quel défi.",
       "message3": "Continue, tu construis quelque chose d'incroyable.",

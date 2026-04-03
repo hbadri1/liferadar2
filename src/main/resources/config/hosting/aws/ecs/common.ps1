@@ -108,6 +108,46 @@ function Import-DeploymentConfig {
     return $config
 }
 
+function Merge-DeploymentConfig {
+    param(
+        [Parameter(Mandatory = $true)][hashtable]$BaseConfig,
+        [Parameter(Mandatory = $true)][hashtable]$OverrideConfig
+    )
+
+    $merged = @{}
+    foreach ($key in $BaseConfig.Keys) {
+        $merged[$key] = $BaseConfig[$key]
+    }
+
+    foreach ($key in $OverrideConfig.Keys) {
+        $merged[$key] = $OverrideConfig[$key]
+    }
+
+    return $merged
+}
+
+function Import-CombinedDeploymentConfig {
+    param(
+        [Parameter(Mandatory = $true)][string]$HostingConfigFile,
+        [string]$AppConfigFile = ''
+    )
+
+    $hostingConfig = Import-DeploymentConfig -ConfigFile $HostingConfigFile
+    if (-not $AppConfigFile) {
+        return $hostingConfig
+    }
+
+    if (-not (Test-Path -LiteralPath $AppConfigFile)) {
+        Write-Warning "App config file not found: ${AppConfigFile}"
+        Write-Warning "Copy src/main/resources/config/.env/.env.prod.example to .env.prod and fill in real values."
+        Write-Warning "Continuing with hosting config only – task definition env vars may be incomplete."
+        return $hostingConfig
+    }
+
+    $appConfig = Import-DeploymentConfig -ConfigFile $AppConfigFile
+    return Merge-DeploymentConfig -BaseConfig $hostingConfig -OverrideConfig $appConfig
+}
+
 function Get-ConfigValue {
     param(
         [Parameter(Mandatory = $true)][hashtable]$Config,
@@ -137,9 +177,15 @@ function Get-RequiredConfigValue {
 }
 
 function Get-ProjectRoot {
-    # common.ps1 lives at <root>/hosting/aws/ecs/common.ps1 → go up 3 levels
+    # common.ps1 lives at src/main/resources/config/hosting/aws/ecs/ → go up 7 levels
+    #   ecs → aws → hosting → config → resources → main → src → <project-root>
     $commonDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.ScriptName }
-    return (Resolve-Path (Join-Path $commonDir '..\..\..')).Path
+    return (Resolve-Path (Join-Path $commonDir '..\..\..\..\..\..\..')).Path
+}
+
+function Get-DefaultAppConfigFile {
+    $projectRoot = Get-ProjectRoot
+    return (Join-Path $projectRoot 'src\main\resources\config\.env\.env.prod')
 }
 
 function Get-MavenWrapperPath {

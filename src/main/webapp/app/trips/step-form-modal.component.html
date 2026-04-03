@@ -1,0 +1,77 @@
+<div class="modal-header bg-info text-white">
+  <h5 class="modal-title">
+    <fa-icon icon="map-marker-alt" class="me-2"></fa-icon>
+    {{ isEdit ? ('trips.editStep' | translate) : ('trips.newStep' | translate) }}
+  </h5>
+  <button type="button" class="btn-close btn-close-white" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  @if (errorMsg()) {
+    <div class="alert alert-danger">{{ errorMsg()! | translate }}</div>
+  }
+  <form [formGroup]="editForm">
+    <div class="mb-3">
+      <label class="form-label fw-bold" for="actionName">{{ 'trips.fields.stepName' | translate }} *</label>
+      <input id="actionName" type="text" class="form-control" formControlName="actionName"
+             placeholder="{{ 'trips.fields.stepNamePlaceholder' | translate }}" />
+      @if (editForm.get('actionName')?.invalid && editForm.get('actionName')?.touched) {
+        <div class="text-danger small">{{ 'trips.validation.stepNameRequired' | translate }}</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold" for="locationName">
+        <fa-icon icon="map-marker-alt" class="me-1 text-danger"></fa-icon>
+        {{ 'trips.fields.location' | translate }}
+      </label>
+      <input id="locationName" type="text" class="form-control" formControlName="locationName"
+             placeholder="{{ 'trips.fields.locationPlaceholder' | translate }}" />
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold" for="stepStartDate">{{ 'trips.fields.startDate' | translate }} *</label>
+        <input id="stepStartDate" type="date" class="form-control" formControlName="startDate" />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold" for="stepEndDate">{{ 'trips.fields.endDate' | translate }} *</label>
+        <input id="stepEndDate" type="date" class="form-control" formControlName="endDate" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold" for="latitude">{{ 'trips.fields.latitude' | translate }}</label>
+        <input id="latitude" type="number" step="0.0000001" class="form-control" formControlName="latitude"
+               placeholder="e.g. 24.7136" />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold" for="longitude">{{ 'trips.fields.longitude' | translate }}</label>
+        <input id="longitude" type="number" step="0.0000001" class="form-control" formControlName="longitude"
+               placeholder="e.g. 46.6753" />
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold" for="notes">{{ 'trips.fields.notes' | translate }}</label>
+      <textarea id="notes" class="form-control" rows="3" formControlName="notes"
+                placeholder="{{ 'trips.fields.notesPlaceholder' | translate }}"></textarea>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    <fa-icon icon="times"></fa-icon> {{ 'entity.action.cancel' | translate }}
+  </button>
+  <button type="button" class="btn btn-info text-white" [disabled]="isSaving() || editForm.invalid" (click)="save()">
+    @if (isSaving()) {
+      <span class="spinner-border spinner-border-sm me-1"></span>
+    } @else {
+      <fa-icon icon="save"></fa-icon>
+    }
+    {{ 'entity.action.save' | translate }}
+  </button>
+</div>
+

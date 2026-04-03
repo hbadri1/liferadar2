@@ -8,6 +8,9 @@ export interface ITripPlanStep {
   actionName?: string | null;
   sequence?: number | null;
   notes?: string | null;
+  locationName?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   tripPlan?: ITripPlan | null;
 }
 

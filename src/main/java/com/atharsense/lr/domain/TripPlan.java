@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A TripPlan.
@@ -37,6 +39,13 @@ public class TripPlan implements Serializable {
     @NotNull
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
+
+    @OneToMany(mappedBy = "tripPlan", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "tripPlan" }, allowSetters = true)
+    private Set<TripPlanStep> steps = new HashSet<>();
 
     @ManyToOne(optional = false)
     @NotNull
@@ -110,6 +119,27 @@ public class TripPlan implements Serializable {
         this.endDate = endDate;
     }
 
+    public Boolean getIsActive() {
+        return this.isActive;
+    }
+
+    public TripPlan isActive(Boolean isActive) {
+        this.setIsActive(isActive);
+        return this;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Set<TripPlanStep> getSteps() {
+        return this.steps;
+    }
+
+    public void setSteps(Set<TripPlanStep> steps) {
+        this.steps = steps;
+    }
+
     public ExtendedUser getOwner() {
         return this.owner;
     }
@@ -138,7 +168,6 @@ public class TripPlan implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
@@ -151,6 +180,7 @@ public class TripPlan implements Serializable {
             ", description='" + getDescription() + "'" +
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
+            ", isActive=" + getIsActive() +
             "}";
     }
 }

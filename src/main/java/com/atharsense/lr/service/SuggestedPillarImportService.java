@@ -41,7 +41,7 @@ public class SuggestedPillarImportService {
     private static final Logger LOG = LoggerFactory.getLogger(SuggestedPillarImportService.class);
 
     private static final String ENTITY_NAME = "pillar";
-    private static final Path SUGGESTED_PILLARS_FILE = Path.of("external", "basic-pillarsv1.0.json");
+    private static final Path SUGGESTED_PILLARS_FILE = Path.of("external", "resources", "basic-pillarsv1.0.json");
     private static final List<String> SUPPORTED_LANG_KEYS = List.of("en", "ar", "fr");
     private static final Map<String, LangCode> LANG_CODE_BY_KEY = Map.of(
         "en",
@@ -263,7 +263,7 @@ public class SuggestedPillarImportService {
             return Files.newInputStream(SUGGESTED_PILLARS_FILE);
         }
 
-        InputStream classpathStream = getClass().getClassLoader().getResourceAsStream("external/basic-pillarsv1.0.json");
+        InputStream classpathStream = getClass().getClassLoader().getResourceAsStream("external/resources/basic-pillarsv1.0.json");
         if (classpathStream != null) {
             return classpathStream;
         }

@@ -1,0 +1,39 @@
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$HostIp = "63.180.243.80"
+$User = "ec2-user"
+$SshPort = 22
+$RemoteDir = "/opt/liferadar"
+
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$sshKeyPath = Join-Path $scriptDir "liferadar-lightsail01.pem"
+$composeFile = Join-Path $scriptDir "docker-compose.yml"
+$envFile = Join-Path $scriptDir ".env"
+$nginxDir = Join-Path $scriptDir "nginx"
+
+if (-not (Test-Path -LiteralPath $sshKeyPath)) {
+	throw "SSH key not found: $sshKeyPath"
+}
+if (-not (Test-Path -LiteralPath $composeFile)) {
+	throw "Missing file: $composeFile"
+}
+if (-not (Test-Path -LiteralPath $envFile)) {
+	throw "Missing file: $envFile"
+}
+if (-not (Test-Path -LiteralPath $nginxDir)) {
+	throw "Missing directory: $nginxDir"
+}
+
+Write-Host "[1/3] Ensuring remote directories exist: $RemoteDir"
+ssh -i $sshKeyPath -p $SshPort "$User@$HostIp" "mkdir -p $RemoteDir/nginx"
+
+Write-Host "[2/3] Uploading docker-compose.yml and .env"
+scp -i $sshKeyPath -P $SshPort $composeFile "$User@$HostIp`:$RemoteDir/docker-compose.yml"
+scp -i $sshKeyPath -P $SshPort $envFile "$User@$HostIp`:$RemoteDir/.env"
+
+Write-Host "[3/3] Uploading nginx files"
+scp -r -i $sshKeyPath -P $SshPort $nginxDir "$User@$HostIp`:$RemoteDir/"
+
+Write-Host "Push completed to $User@${HostIp}:$RemoteDir"
+

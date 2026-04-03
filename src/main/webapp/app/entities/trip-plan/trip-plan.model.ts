@@ -7,6 +7,7 @@ export interface ITripPlan {
   description?: string | null;
   startDate?: dayjs.Dayjs | null;
   endDate?: dayjs.Dayjs | null;
+  isActive?: boolean | null;
   owner?: IExtendedUser | null;
 }
 
