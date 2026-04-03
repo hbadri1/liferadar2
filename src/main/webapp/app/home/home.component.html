@@ -1,16 +1,25 @@
 ﻿<div class="row h-100">
   <div class="col-12">
     @if (account() !== null) {
-      <div class="mb-4">
-        <h1 class="display-4">
-          <span jhiTranslate="home.title">Welcome</span>, {{ account()?.firstName || account()?.login }}!
-        </h1>
-        <p class="lead" jhiTranslate="home.subtitle">Your Life Pillars & Evaluations</p>
-      </div>
+      @if (!isChildOnly()) {
+        <div class="home-header mb-4">
+          <p class="lead home-subtitle mb-0" jhiTranslate="home.subtitle">Your Life Pillars</p>
+        </div>
+      }
 
       @if (isChildOnly()) {
         <div class="card border-0 shadow-sm mb-4">
           <div class="card-body p-4 p-md-5">
+            <div class="child-hero mb-4">
+              <div class="child-hero-illustration" role="img" [attr.aria-label]="'home.child.imageAlt' | translate">
+                @for (face of childCelebrationFaces; track face) {
+                  <img [src]="face" alt="" aria-hidden="true" class="child-hero-face" />
+                }
+                <span class="child-hero-badge" aria-hidden="true">🎉</span>
+              </div>
+              <p class="child-hero-caption text-muted mb-0" jhiTranslate="home.child.imageCaption">Your cheer squad is celebrating you!</p>
+            </div>
+
             <h3 class="mb-2" jhiTranslate="home.child.title">You are doing great!</h3>
             <p class="text-muted mb-4" jhiTranslate="home.child.subtitle">Here are some encouraging messages for your day.</p>
 

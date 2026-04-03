@@ -2,7 +2,7 @@
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,6 +27,19 @@ describe('Home Component', () => {
   let mockLifeEvaluationService: LifeEvaluationService;
   let mockModalService: NgbModal;
   let mockTranslateService: TranslateService;
+  const translations: Record<string, string> = {
+    'home.subtitle': 'Your Life Pillars',
+    'home.child.title': 'You are doing great!',
+    'home.child.subtitle': 'Here are some encouraging messages for your day.',
+    'home.child.imageAlt': 'A happy celebration with smiling faces cheering you on.',
+    'home.child.imageCaption': 'Your cheer squad is celebrating you!',
+    'home.child.message1': 'Every small step you take today matters.',
+    'home.child.message2': 'Your effort is stronger than any challenge.',
+    'home.child.message3': 'Keep going, you are building something amazing.',
+    'home.child.quote1': '"Believe you can, and you are halfway there."',
+    'home.child.quote2': '"Success is the sum of small efforts, repeated day in and day out."',
+    'home.child.quote3': '"You are braver than you believe, and stronger than you seem."',
+  };
   const account: Account = {
     activated: true,
     authorities: [],
@@ -40,11 +53,18 @@ describe('Home Component', () => {
 
   beforeEach(waitForAsync(() => {
     const modalServiceMock = { open: jest.fn() };
-    const translateServiceMock = { currentLang: 'en', onLangChange: of({}), instant: jest.fn((key: string) => key) };
+    const translateServiceMock = {
+      currentLang: 'en',
+      onLangChange: of({}),
+      onTranslationChange: of({}),
+      instant: jest.fn((key: string) => translations[key] ?? key),
+      get: jest.fn((key: string) => of(translations[key] ?? key)),
+    };
 
     TestBed.configureTestingModule({
       imports: [HomeComponent],
       providers: [
+        provideRouter([]),
         AccountService,
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: TranslateService, useValue: translateServiceMock },
@@ -55,7 +75,25 @@ describe('Home Component', () => {
         { provide: EvaluationDecisionService, useValue: { query: jest.fn(() => of(new HttpResponse({ body: [] }))) } },
       ],
     })
-      .overrideTemplate(HomeComponent, '')
+      .overrideTemplate(
+        HomeComponent,
+        `
+          @if (account() !== null) {
+            @if (!isChildOnly()) {
+              <p class="home-subtitle">Your Life Pillars</p>
+            }
+
+            @if (isChildOnly()) {
+              <div class="child-hero-illustration" role="img" aria-label="Child celebration illustration">
+                @for (face of childCelebrationFaces; track face) {
+                  <img [src]="face" alt="" aria-hidden="true" class="child-hero-face" />
+                }
+              </div>
+              <p class="child-hero-caption">Your cheer squad is celebrating you!</p>
+            }
+          }
+        `,
+      )
       .compileComponents();
   }));
 
@@ -181,6 +219,32 @@ describe('Home Component', () => {
     });
   });
 
+  describe('template rendering', () => {
+    it('should remove the welcome heading and keep the pillars subtitle for non-child users', () => {
+      mockAccountService.getAuthenticationState = jest.fn(() => of({ ...account, firstName: 'Alex', authorities: ['ROLE_USER'] }));
+
+      fixture.detectChanges();
+
+      const element: HTMLElement = fixture.nativeElement;
+      expect(element.textContent).not.toContain('Welcome');
+      expect(element.textContent).toContain('Your Life Pillars');
+      expect(element.querySelector('.child-hero-illustration')).toBeNull();
+    });
+
+    it('should hide the pillars subtitle and show the kid celebration illustration for child-only users', () => {
+      mockAccountService.getAuthenticationState = jest.fn(() => of({ ...account, firstName: 'Milo', authorities: ['ROLE_CHILD'] }));
+
+      fixture.detectChanges();
+
+      const element: HTMLElement = fixture.nativeElement;
+      expect(element.textContent).not.toContain('Welcome');
+      expect(element.textContent).not.toContain('Your Life Pillars');
+      expect(element.querySelector('.child-hero-illustration')).not.toBeNull();
+      expect(element.querySelectorAll('.child-hero-face')).toHaveLength(comp.childCelebrationFaces.length);
+      expect(element.textContent).toContain('Your cheer squad is celebrating you!');
+    });
+  });
+
   describe('life evaluations ordering', () => {
     it('should sort evaluations newest first within each item group and sort groups by newest evaluation date desc', () => {
       comp.lifeEvaluations.set([
@@ -233,7 +297,7 @@ describe('Home Component', () => {
         closed: of('confirmed'),
       } as any;
 
-      jest.spyOn(mockModalService, 'open').mockReturnValue(modalRef);
+      const openSpy = jest.spyOn((comp as any).modalService, 'open').mockReturnValue(modalRef);
       jest.spyOn(mockPillarService, 'loadSuggested').mockReturnValue(
         of(
           new HttpResponse({
@@ -250,7 +314,7 @@ describe('Home Component', () => {
 
       comp.loadSuggestedPillars();
 
-      expect(mockModalService.open).toHaveBeenCalled();
+      expect(openSpy).toHaveBeenCalled();
       expect(mockPillarService.loadSuggested).toHaveBeenCalled();
       expect(loadPillarsSpy).toHaveBeenCalled();
     });

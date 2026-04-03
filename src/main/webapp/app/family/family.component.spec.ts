@@ -5,16 +5,17 @@ import { HttpClient } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 
 import { AccountService } from 'app/core/auth/account.service';
 
 import FamilyComponent from './family.component';
 
 describe('FamilyComponent', () => {
-  let comp;
-  let mockAccountService;
-  let currentAccount;
-  let mockModalService;
+  let comp: FamilyComponent;
+  let mockAccountService: AccountService;
+  let currentAccount: any;
+  let mockModalService: any;
 
   beforeEach(waitForAsync(() => {
     mockModalService = {
@@ -37,6 +38,13 @@ describe('FamilyComponent', () => {
         {
           provide: NgbModal,
           useValue: mockModalService,
+        },
+        {
+          provide: TranslateService,
+          useValue: {
+            currentLang: 'en',
+            instant: jest.fn((key: string) => key),
+          },
         },
       ],
     })
@@ -89,6 +97,30 @@ describe('FamilyComponent', () => {
     expect(adminComp.activeTab()).toBe('management');
   });
 
+  it('uses the encouraging subtitle for child-only users', () => {
+    expect(comp.isChild()).toBe(true);
+    expect(comp.headerSubtitleKey()).toBe('family.childSubtitle');
+  });
+
+  it('keeps the management subtitle for family admins', () => {
+    currentAccount.set({
+      activated: true,
+      authorities: ['ROLE_FAMILY_ADMIN'],
+      email: '',
+      firstName: null,
+      langKey: 'en',
+      lastName: null,
+      login: 'parent',
+      imageUrl: null,
+    });
+
+    const fixture = TestBed.createComponent(FamilyComponent);
+    const adminComp = fixture.componentInstance;
+
+    expect(adminComp.isChild()).toBe(false);
+    expect(adminComp.headerSubtitleKey()).toBe('family.subtitle');
+  });
+
   it('prevents non family admin from switching to management tab', () => {
     comp.ngOnInit();
     comp.selectTab('management');
@@ -121,12 +153,13 @@ describe('FamilyComponent', () => {
   });
 
   it('shows only current child in objectives tabs for child users', () => {
+    comp.ngOnInit();
     comp.children.set([
       { id: 1, login: 'kid', firstName: 'Kid', lastName: 'One', email: null, activated: true },
       { id: 2, login: 'kid2', firstName: 'Kid', lastName: 'Two', email: null, activated: true },
     ]);
 
-    expect(comp.objectiveChildren().map(child => child.login)).toEqual(['kid']);
+    expect(comp.objectiveChildren().map((child: any) => child.login)).toEqual(['kid']);
     expect(comp.activeObjectiveChild()?.login).toBe('kid');
   });
 
@@ -192,8 +225,8 @@ describe('FamilyComponent', () => {
 
     comp.objectives.set(objectives);
 
-    expect(comp.getObjectivesForChild('kid').map(objective => objective.id)).toEqual([3, 1]);
-    expect(comp.getObjectivesForChild('kid2').map(objective => objective.id)).toEqual([2]);
+    expect(comp.getObjectivesForChild('kid').map((objective: any) => objective.id)).toEqual([3, 1]);
+    expect(comp.getObjectivesForChild('kid2').map((objective: any) => objective.id)).toEqual([2]);
   });
 
   it('groups objectives by child for management view', () => {
