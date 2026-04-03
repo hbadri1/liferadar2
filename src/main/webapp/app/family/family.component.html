@@ -7,7 +7,13 @@
         <fa-icon icon="users" class="me-2 text-primary"></fa-icon>
         <span jhiTranslate="family.title">My Family</span>
       </h2>
-      <p class="text-muted mb-0 small" jhiTranslate="family.subtitle">Manage child accounts linked to your profile</p>
+      <p class="text-muted mb-0 small family-subtitle" [jhiTranslate]="headerSubtitleKey()">
+        @if (isChild()) {
+          👨‍👩‍👧‍👦✨ Together, we grow with love, courage, and smiles every day! 🌈💛
+        } @else {
+          Manage child accounts linked to your profile
+        }
+      </p>
     </div>
     @if (canManageFamily() && activeTab() === 'management') {
       <button class="btn btn-success" (click)="toggleAddForm()">
@@ -304,6 +310,51 @@
                             </div>
                           }
                         </div>
+
+                        @let objectiveCalendarDays = getObjectiveCalendarDays();
+                        <div class="objective-progress-matrix mt-3">
+                          <div class="objective-progress-matrix-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                            <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastDays' | translate: { count: objectiveHistoryDays } }}</p>
+                            @if (!hasObjectiveProgressInHistoryWindow(objective)) {
+                              <small class="text-muted">{{ 'family.objectives.progress.noEntryLastDays' | translate: { count: objectiveHistoryDays } }}</small>
+                            }
+                          </div>
+
+                          <div class="objective-progress-matrix-scroll mt-2">
+                            <div class="objective-progress-matrix-grid">
+                              <div class="objective-progress-matrix-corner" jhiTranslate="family.objectives.progress.itemColumn">Item</div>
+                              @for (day of objectiveCalendarDays; track day.key) {
+                                <div class="objective-progress-day-header" [class.is-today]="day.isToday" [attr.title]="day.title">
+                                  <span class="weekday">{{ day.weekdayLabel }}</span>
+                                  <span class="day-number">{{ day.dayNumber }}</span>
+                                  <span class="month-label">{{ day.monthLabel }}</span>
+                                </div>
+                              }
+
+                              @for (row of getObjectiveCalendarRows(objective); track row.itemDefinition.id) {
+                                <div class="objective-progress-item-label">
+                                  <strong>{{ row.itemDefinition.name }}</strong>
+                                  <span class="badge bg-light text-dark mt-1">{{ getObjectiveUnitLabel(row.itemDefinition.unit) }}</span>
+                                </div>
+                                @for (cell of row.cells; track cell.key; let cellIndex = $index) {
+                                  @let day = objectiveCalendarDays[cellIndex];
+                                  <div
+                                    class="objective-progress-day-cell"
+                                    [class.has-progress]="!!cell.progress"
+                                    [class.is-today]="day.isToday"
+                                    [attr.title]="getObjectiveCalendarCellTitle(row.itemDefinition, day, cell.progress)"
+                                  >
+                                    @if (cell.progress) {
+                                      <span class="cell-value">{{ cell.progress.value }}</span>
+                                    } @else {
+                                      <span class="cell-empty">—</span>
+                                    }
+                                  </div>
+                                }
+                              }
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     }
                   </div>
@@ -386,29 +437,53 @@
                         }
                       </div>
 
-                      @if (!hasProgressHistory(itemDefinition)) {
-                        <p class="text-muted small mb-0" jhiTranslate="family.objectives.progress.empty">No progress yet.</p>
-                      } @else {
-                        <div class="objective-progress-history mt-2">
-                          <p class="small fw-semibold mb-2" jhiTranslate="family.objectives.progress.historyTitle">Progress history</p>
-                          @for (progress of itemDefinition.progressHistory; track progress.id) {
-                            <div class="objective-progress-entry">
-                              <div class="d-flex justify-content-between gap-2 flex-wrap">
-                                <span>
-                                  <strong>{{ progress.value }}</strong>
-                                  <span class="text-muted ms-1">{{ getObjectiveUnitLabel(itemDefinition.unit) }}</span>
-                                </span>
-                                <small class="text-muted">{{ progress.createdAt | date: 'medium' }}</small>
-                              </div>
-                              @if (progress.notes) {
-                                <div class="text-muted small mt-1">{{ progress.notes }}</div>
-                              }
-                            </div>
-                          }
-                        </div>
-                      }
                     </div>
                   }
+                </div>
+
+                @let objectiveCalendarDays = getObjectiveCalendarDays();
+                <div class="objective-progress-matrix mt-3">
+                  <div class="objective-progress-matrix-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                    <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastDays' | translate: { count: objectiveHistoryDays } }}</p>
+                    @if (!hasObjectiveProgressInHistoryWindow(objective)) {
+                      <small class="text-muted">{{ 'family.objectives.progress.noEntryLastDays' | translate: { count: objectiveHistoryDays } }}</small>
+                    }
+                  </div>
+
+                  <div class="objective-progress-matrix-scroll mt-2">
+                    <div class="objective-progress-matrix-grid">
+                      <div class="objective-progress-matrix-corner" jhiTranslate="family.objectives.progress.itemColumn">Item</div>
+                      @for (day of objectiveCalendarDays; track day.key) {
+                        <div class="objective-progress-day-header" [class.is-today]="day.isToday" [attr.title]="day.title">
+                          <span class="weekday">{{ day.weekdayLabel }}</span>
+                          <span class="day-number">{{ day.dayNumber }}</span>
+                          <span class="month-label">{{ day.monthLabel }}</span>
+                        </div>
+                      }
+
+                      @for (row of getObjectiveCalendarRows(objective); track row.itemDefinition.id) {
+                        <div class="objective-progress-item-label">
+                          <strong>{{ row.itemDefinition.name }}</strong>
+                          <span class="badge bg-light text-dark mt-1">{{ getObjectiveUnitLabel(row.itemDefinition.unit) }}</span>
+                        </div>
+                        @for (cell of row.cells; track cell.key; let cellIndex = $index) {
+                          @let day = objectiveCalendarDays[cellIndex];
+                          <div
+                            class="objective-progress-day-cell"
+                            [class.has-progress]="!!cell.progress"
+                            [class.is-today]="day.isToday"
+                            [attr.title]="getObjectiveCalendarCellTitle(row.itemDefinition, day, cell.progress)"
+                          >
+                            @if (cell.progress) {
+                              <span class="cell-value">{{ cell.progress.value }}</span>
+                            } @else {
+                              <span class="cell-empty">—</span>
+                            }
+                          </div>
+                        }
+                      }
+                    </div>
+                  </div>
                 </div>
               </div>
             }

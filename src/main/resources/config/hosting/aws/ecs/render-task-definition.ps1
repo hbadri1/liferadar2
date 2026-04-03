@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$ConfigFile = '',
+    [string]$AppConfigFile = '',
     [string]$TemplateFile = '',
     [string]$OutFile = ''
 )
@@ -12,7 +13,9 @@ if (-not $OutFile)     { $OutFile      = Join-Path $ScriptDir 'task-definition.r
 
 . (Join-Path $ScriptDir 'common.ps1')
 
-$config = Import-DeploymentConfig -ConfigFile $ConfigFile
+if (-not $AppConfigFile) { $AppConfigFile = Get-DefaultAppConfigFile }
+
+$config = Import-CombinedDeploymentConfig -HostingConfigFile $ConfigFile -AppConfigFile $AppConfigFile
 $imageUri = Get-ImageUri -Config $config
 $template = Get-Content -LiteralPath $TemplateFile -Raw
 

@@ -1,0 +1,219 @@
+<div class="trips-page container-fluid py-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="mb-0">
+        <fa-icon icon="plane" class="me-2 text-primary"></fa-icon>
+        <span jhiTranslate="trips.title">Trips Management</span>
+      </h2>
+      <p class="text-muted mb-0" jhiTranslate="trips.subtitle">Plan and track your journeys</p>
+    </div>
+    @if (canEdit()) {
+      <button class="btn btn-primary btn-lg" (click)="openCreateTrip()">
+        <fa-icon icon="plus"></fa-icon>
+        <span class="ms-1" jhiTranslate="trips.newTrip">New Trip</span>
+      </button>
+    }
+  </div>
+
+  @if (errorMsg()) {
+    <div class="alert alert-danger">{{ errorMsg()! | translate }}</div>
+  }
+
+  <div class="row g-4">
+    <!-- LEFT: Trip List -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+          <h5 class="mb-0">
+            <fa-icon icon="suitcase" class="me-2 text-primary"></fa-icon>
+            <span jhiTranslate="trips.myTrips">My Trips</span>
+          </h5>
+          <button class="btn btn-sm btn-outline-primary" (click)="loadTrips()" title="Refresh">
+            <fa-icon icon="sync"></fa-icon>
+          </button>
+        </div>
+        <div class="card-body p-0">
+          @if (isLoadingTrips()) {
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary"></div>
+            </div>
+          } @else if (trips().length === 0) {
+            <div class="text-center py-5 text-muted">
+              <fa-icon icon="globe" class="fa-3x mb-3 d-block"></fa-icon>
+              <p jhiTranslate="trips.noTrips">No trips yet. Start planning your first adventure!</p>
+            </div>
+          } @else {
+            <div class="trip-list">
+              @for (trip of trips(); track trip.id) {
+                <div class="trip-card" [class.active]="selectedTrip()?.id === trip.id"
+                     (click)="selectTrip(trip)">
+                  <div class="trip-card-body">
+                    <div class="d-flex align-items-start justify-content-between">
+                      <div class="flex-grow-1 min-w-0">
+                        <h6 class="trip-title mb-1">{{ trip.title }}</h6>
+                        @if (trip.description) {
+                          <p class="trip-desc text-muted small mb-1 text-truncate">{{ trip.description }}</p>
+                        }
+                        <div class="trip-dates small text-muted">
+                          <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
+                          {{ formatDate(trip.startDate) }} → {{ formatDate(trip.endDate) }}
+                          <span class="badge bg-light text-dark ms-1">{{ tripDuration(trip) }}d</span>
+                        </div>
+                      </div>
+                      @if (canEdit()) {
+                        <div class="trip-actions ms-2 d-flex gap-1" (click)="$event.stopPropagation()">
+                          <button class="btn btn-sm btn-outline-primary p-1" title="Edit"
+                                  (click)="openEditTrip(trip, $event)">
+                            <fa-icon icon="pencil-alt"></fa-icon>
+                          </button>
+                          <button class="btn btn-sm btn-outline-danger p-1" title="Delete"
+                                  (click)="openDeleteTrip(trip, $event)">
+                            <fa-icon icon="trash"></fa-icon>
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Trip Timeline -->
+    <div class="col-lg-8">
+      @if (!selectedTrip()) {
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center text-muted py-5">
+            <fa-icon icon="road" class="fa-4x mb-3 text-primary opacity-25"></fa-icon>
+            <h5 jhiTranslate="trips.selectTripHint">Select a trip to view its itinerary</h5>
+            <p jhiTranslate="trips.selectTripHintSub">Your journey details and timeline will appear here</p>
+          </div>
+        </div>
+      } @else {
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-bottom py-3">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <h5 class="mb-1">
+                  <fa-icon icon="plane" class="me-2 text-primary"></fa-icon>
+                  {{ selectedTrip()!.title }}
+                </h5>
+                <div class="text-muted small">
+                  <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
+                  {{ formatDate(selectedTrip()!.startDate) }} — {{ formatDate(selectedTrip()!.endDate) }}
+                  <span class="badge bg-primary ms-2">{{ tripDuration(selectedTrip()!) }} days</span>
+                </div>
+                @if (selectedTrip()!.description) {
+                  <p class="mb-0 mt-1 text-muted small">{{ selectedTrip()!.description }}</p>
+                }
+              </div>
+              @if (canEdit()) {
+                <button class="btn btn-success" (click)="openAddStep()">
+                  <fa-icon icon="plus"></fa-icon>
+                  <span class="ms-1" jhiTranslate="trips.addStep">Add Stop</span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="card-body">
+            @if (isLoadingSteps()) {
+              <div class="text-center py-5">
+                <div class="spinner-border text-primary"></div>
+              </div>
+            } @else if (steps().length === 0) {
+              <div class="text-center py-5 text-muted">
+                <fa-icon icon="map-marker-alt" class="fa-3x mb-3 d-block opacity-50"></fa-icon>
+                <p jhiTranslate="trips.noSteps">No stops added yet.</p>
+                @if (canEdit()) {
+                  <button class="btn btn-outline-primary" (click)="openAddStep()">
+                    <fa-icon icon="plus"></fa-icon>
+                    <span jhiTranslate="trips.addFirstStop">Add your first stop</span>
+                  </button>
+                }
+              </div>
+            } @else {
+              <!-- TIMELINE -->
+              <div class="trip-timeline">
+                @for (entry of timelineEntries(); track entry.kind === 'step' ? entry.step.id ?? $index : 'today'; let i = $index; let isLast = $last) {
+                  <div class="timeline-item" [class.timeline-left]="i % 2 === 0" [class.timeline-right]="i % 2 !== 0" [class.timeline-today]="entry.kind === 'today'">
+                    <div class="timeline-dot" [class.timeline-today-dot]="entry.kind === 'today'">
+                      @if (entry.kind === 'today') {
+                        <span class="dot-number">T</span>
+                      } @else {
+                        <span class="dot-number">{{ entry.step.sequence }}</span>
+                      }
+                    </div>
+                    <div class="timeline-content">
+                      @if (entry.kind === 'today') {
+                        <div class="step-card today-card">
+                          <div class="step-card-header">
+                            <div class="step-sequence-badge bg-info">{{ formatDate(getCurrentDate()) }}</div>
+                          </div>
+                          <h6 class="step-title">{{ 'trips.currentDate' | translate }}</h6>
+                        </div>
+                      } @else {
+                        <div class="step-card">
+                          <div class="step-card-header">
+                            <div class="step-sequence-badge">{{ 'trips.stop' | translate }} {{ entry.step.sequence }}</div>
+                            @if (canEdit()) {
+                              <div class="step-card-actions">
+                                <button class="btn btn-xs btn-outline-primary" (click)="openEditStep(entry.step)" title="Edit step">
+                                  <fa-icon icon="pencil-alt"></fa-icon>
+                                </button>
+                                <button class="btn btn-xs btn-outline-danger" (click)="openDeleteStep(entry.step)" title="Delete step">
+                                  <fa-icon icon="trash"></fa-icon>
+                                </button>
+                              </div>
+                            }
+                          </div>
+                          <h6 class="step-title">{{ entry.step.actionName }}</h6>
+                          @if (entry.step.locationName) {
+                            <div class="step-location">
+                              <fa-icon icon="map-marker-alt" class="me-1 text-danger"></fa-icon>
+                              {{ entry.step.locationName }}
+                            </div>
+                          }
+                          <div class="step-dates">
+                            <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
+                            {{ formatDate(entry.step.startDate) }}
+                            @if (entry.step.endDate && formatDate(entry.step.endDate) !== formatDate(entry.step.startDate)) {
+                              <span> → {{ formatDate(entry.step.endDate) }}</span>
+                            }
+                          </div>
+                          @if (entry.step.notes) {
+                            <p class="step-notes">{{ entry.step.notes }}</p>
+                          }
+                          @if (entry.step.latitude && entry.step.longitude) {
+                            <div class="step-coords small text-muted">
+                              <fa-icon icon="globe" class="me-1"></fa-icon>
+                              {{ entry.step.latitude | number:'1.4-4' }}, {{ entry.step.longitude | number:'1.4-4' }}
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                    @if (!isLast) {
+                      <div class="timeline-connector"></div>
+                    }
+                  </div>
+                }
+                <!-- Finish flag -->
+                <div class="timeline-finish">
+                  <fa-icon icon="flag" class="text-success"></fa-icon>
+                  <span class="ms-1 text-success fw-bold" jhiTranslate="trips.journeyEnd">Journey End</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+

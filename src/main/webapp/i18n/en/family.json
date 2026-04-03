@@ -2,6 +2,7 @@
   "family": {
     "title": "My Family",
     "subtitle": "Manage child accounts linked to your profile",
+    "childSubtitle": "👨‍👩‍👧‍👦✨ Together, we grow with love, courage, and smiles every day! 🌈💛",
     "addChild": "Add Child",
     "cancelAdd": "Cancel",
     "tabs": {
@@ -54,6 +55,12 @@
         "notes": "Notes",
         "empty": "No progress yet.",
         "historyTitle": "Progress history",
+        "lastDays": "Last {{count}} days",
+        "last30Days": "Last 30 days",
+        "itemColumn": "Item",
+        "noEntryLastDays": "No entries in the last {{count}} days.",
+        "noEntryLast30Days": "No entries in the last 30 days.",
+        "noEntryDay": "No entry",
         "created": "Progress added successfully.",
         "latest": "Latest progress",
         "modalTitle": "Add progress",

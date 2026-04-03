@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
+import { Authority } from 'app/config/authority.constants';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { IPillar } from 'app/entities/pillar/pillar.model';
@@ -40,9 +41,16 @@ import { ConfirmationModalComponent } from './confirmation-modal.component';
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
+  readonly childCelebrationFaces = [
+    '/content/images/jhipster_family_member_0.svg',
+    '/content/images/jhipster_family_member_1.svg',
+    '/content/images/jhipster_family_member_2.svg',
+  ];
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_FAMILY_ADMIN') && !authorities.includes('ROLE_ADMIN');
+    return (
+      authorities.includes(Authority.CHILD) && !authorities.includes(Authority.FAMILY_ADMIN) && !authorities.includes(Authority.ADMIN)
+    );
   });
   pillars = signal<IPillar[]>([]);
   subPillarsMap = signal<Map<number, ISubPillar[]>>(new Map());

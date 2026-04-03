@@ -5,6 +5,8 @@
     "child": {
       "title": "You are doing great!",
       "subtitle": "Here are some encouraging messages for your day.",
+      "imageAlt": "A happy celebration with smiling faces cheering you on.",
+      "imageCaption": "Your cheer squad is celebrating you!",
       "message1": "Every small step you take today matters.",
       "message2": "Your effort is stronger than any challenge.",
       "message3": "Keep going, you are building something amazing.",

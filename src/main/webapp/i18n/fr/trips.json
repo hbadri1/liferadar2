@@ -1,0 +1,56 @@
+{
+  "trips": {
+    "title": "Gestion des Voyages",
+    "subtitle": "Planifiez et suivez vos voyages",
+    "myTrips": "Mes Voyages",
+    "newTrip": "Nouveau Voyage",
+    "editTrip": "Modifier le Voyage",
+    "deleteTrip": "Supprimer le Voyage",
+    "confirmDeleteTrip": "Êtes-vous sûr de vouloir supprimer ce voyage ? Toutes les étapes seront également supprimées.",
+    "noTrips": "Aucun voyage pour l'instant. Commencez à planifier votre première aventure !",
+    "selectTripHint": "Sélectionnez un voyage pour voir son itinéraire",
+    "selectTripHintSub": "Les détails du voyage et la chronologie apparaîtront ici",
+    "addStep": "Ajouter une Étape",
+    "newStep": "Nouvelle Étape",
+    "editStep": "Modifier l'Étape",
+    "deleteStep": "Supprimer l'Étape",
+    "confirmDeleteStep": "Êtes-vous sûr de vouloir supprimer cette étape ?",
+    "noSteps": "Aucune étape ajoutée.",
+    "addFirstStop": "Ajouter la première étape",
+    "stop": "Étape",
+    "journeyEnd": "Fin du Voyage",
+    "currentDate": "Aujourd'hui",
+    "fields": {
+      "title": "Titre du Voyage",
+      "titlePlaceholder": "ex. Europe été 2026",
+      "description": "Description",
+      "descriptionPlaceholder": "Une brève description du voyage...",
+      "startDate": "Date de Début",
+      "endDate": "Date de Fin",
+      "stepName": "Nom de l'Étape",
+      "stepNamePlaceholder": "ex. Visite du Louvre",
+      "location": "Lieu",
+      "locationPlaceholder": "ex. Paris, France",
+      "notes": "Notes",
+      "notesPlaceholder": "Notes supplémentaires...",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "validation": {
+      "titleRequired": "Le titre du voyage est obligatoire.",
+      "stepNameRequired": "Le nom de l'étape est obligatoire."
+    },
+    "errors": {
+      "loadFailed": "Échec du chargement des voyages. Veuillez réessayer.",
+      "saveFailed": "Échec de l'enregistrement. Vérifiez vos données et réessayez.",
+      "startDateInPast": "La date de début ne peut pas être dans le passé. Veuillez sélectionner aujourd'hui ou une date future.",
+      "endDateInPast": "La date de fin ne peut pas être dans le passé. Veuillez sélectionner aujourd'hui ou une date future.",
+      "startDateAfterEndDate": "La date de début doit être antérieure ou égale à la date de fin.",
+      "stepStartDateBeforeTripStart": "La date de début de l'étape ne peut pas être antérieure à la date de début du voyage.",
+      "stepEndDateAfterTripEnd": "La date de fin de l'étape ne peut pas être postérieure à la date de fin du voyage.",
+      "stepStartDateAfterEndDate": "La date de début de l'étape doit être antérieure ou égale à la date de fin.",
+      "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Veuillez choisir une plage de dates différente."
+    }
+  }
+}
+

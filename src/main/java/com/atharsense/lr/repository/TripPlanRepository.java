@@ -1,6 +1,7 @@
 package com.atharsense.lr.repository;
 
 import com.atharsense.lr.domain.TripPlan;
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface TripPlanRepository extends JpaRepository<TripPlan, Long>, JpaSpecificationExecutor<TripPlan> {}
+public interface TripPlanRepository extends JpaRepository<TripPlan, Long>, JpaSpecificationExecutor<TripPlan> {
+    List<TripPlan> findByOwnerUserLoginOrderByStartDateAsc(String login);
+    List<TripPlan> findByOwnerIdOrderByStartDateAsc(Long ownerId);
+}
