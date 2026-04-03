@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$HostIp = "63.180.243.80"
+$HostIp = "3.126.92.141"
 $User = "ec2-user"
 $SshPort = 22
 $RemoteDir = "/opt/liferadar"
