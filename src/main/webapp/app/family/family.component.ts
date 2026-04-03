@@ -75,6 +75,8 @@ export default class FamilyComponent implements OnInit {
     return authorities.includes('ROLE_FAMILY_ADMIN');
   });
 
+  headerSubtitleKey = computed(() => (this.isChild() ? 'family.childSubtitle' : 'family.subtitle'));
+
   objectiveChildren = computed(() => {
     const children = this.children();
     if (this.canManageFamily()) {

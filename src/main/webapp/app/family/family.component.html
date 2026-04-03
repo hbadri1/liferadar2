@@ -7,7 +7,13 @@
         <fa-icon icon="users" class="me-2 text-primary"></fa-icon>
         <span jhiTranslate="family.title">My Family</span>
       </h2>
-      <p class="text-muted mb-0 small" jhiTranslate="family.subtitle">Manage child accounts linked to your profile</p>
+      <p class="text-muted mb-0 small family-subtitle" [jhiTranslate]="headerSubtitleKey()">
+        @if (isChild()) {
+          👨‍👩‍👧‍👦✨ Together, we grow with love, courage, and smiles every day! 🌈💛
+        } @else {
+          Manage child accounts linked to your profile
+        }
+      </p>
     </div>
     @if (canManageFamily() && activeTab() === 'management') {
       <button class="btn btn-success" (click)="toggleAddForm()">
