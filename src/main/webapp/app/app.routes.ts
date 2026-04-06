@@ -35,6 +35,11 @@ const routes: Routes = [
     title: 'login.title',
   },
   {
+    path: 'about',
+    loadComponent: () => import('./about/about.component'),
+    title: 'about.title',
+  },
+  {
     path: 'action-items',
     loadComponent: () =>
       import('./entities/evaluation-decision/list/evaluation-decision.component').then(m => m.EvaluationDecisionComponent),

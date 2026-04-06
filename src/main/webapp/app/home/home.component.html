@@ -49,6 +49,78 @@
           </div>
         </div>
       } @else {
+
+      <!-- LifeRadar Welcome Description — shown to FamilyAdmin users until dismissed -->
+      @if (isFamilyAdmin() && showWelcomeDescription()) {
+        <div class="welcome-card mb-4" role="region" [attr.aria-label]="'home.welcome.title' | translate">
+          <div class="welcome-card-inner">
+            <div class="welcome-card-header d-flex align-items-start justify-content-between gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <img src="/content/images/liferadar-logo-primary.svg" alt="LifeRadar" class="welcome-logo" aria-hidden="true" />
+                <div>
+                  <h5 class="welcome-title mb-0" jhiTranslate="home.welcome.title">Getting started with LifeRadar</h5>
+                  <p class="welcome-intro mb-0 text-muted" jhiTranslate="home.welcome.intro">
+                    LifeRadar helps you organise, evaluate, and improve every dimension of your life — all in one place.
+                  </p>
+                </div>
+              </div>
+              <button
+                class="btn btn-sm btn-close ms-2 flex-shrink-0"
+                (click)="dismissWelcomeDescription()"
+                [attr.aria-label]="'home.welcome.dismiss' | translate"
+                type="button">
+              </button>
+            </div>
+
+            <div class="welcome-features mt-3">
+              <!-- Pillars -->
+              <div class="welcome-feature">
+                <span class="welcome-feature-icon" aria-hidden="true">🏛️</span>
+                <div>
+                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.pillars.title">Life Pillars</p>
+                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.pillars.desc">
+                    Structure your life into meaningful pillars and sub-pillars — from health and career to family and growth.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Evaluations -->
+              <div class="welcome-feature">
+                <span class="welcome-feature-icon" aria-hidden="true">📊</span>
+                <div>
+                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.evaluations.title">Evaluations</p>
+                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.evaluations.desc">
+                    Periodically score each life area to gain clear insight into where you stand and where to focus.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Decisions -->
+              <div class="welcome-feature">
+                <span class="welcome-feature-icon" aria-hidden="true">✅</span>
+                <div>
+                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.decisions.title">Decisions</p>
+                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.decisions.desc">
+                    Convert your evaluation insights into concrete, actionable decisions that drive real, lasting change.
+                  </p>
+                </div>
+              </div>
+
+              <!-- TickTick -->
+              <div class="welcome-feature">
+                <span class="welcome-feature-icon" aria-hidden="true">🔗</span>
+                <div>
+                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.ticktick.title">TickTick Integration</p>
+                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.ticktick.desc">
+                    Push your decisions and action items straight to TickTick so nothing falls through the cracks.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
       <div class="row">
         <!-- Left Column: Life Pillars (2/3 width) -->
         <div class="col-lg-8">
@@ -480,5 +552,17 @@
         </div>
       </div>
     }
+
+    <!-- ─── Feedback banner — always visible ─────────────────────────── -->
+    <div class="feedback-banner mt-4 mb-2">
+      <span class="feedback-banner-text" jhiTranslate="home.contact.bannerText">
+        Got feedback or questions?
+      </span>
+      <button type="button" class="btn btn-outline-primary btn-sm feedback-banner-btn" (click)="openContactModal()">
+        <fa-icon icon="comment-dots" class="me-1"></fa-icon>
+        <span jhiTranslate="home.contact.bannerButton">We want to hear from you</span>
+      </button>
+    </div>
+
   </div>
 </div>

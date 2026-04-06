@@ -1,0 +1,85 @@
+{
+  "about": {
+    "title": "About Liferadar",
+    "hero": {
+      "title": "Know Your Life at a Glance",
+      "subtitle": "Liferadar is your personal life-management radar — helping you track, evaluate, and improve every important dimension of your life.",
+      "ctaDashboard": "Go to Dashboard",
+      "ctaRegister": "Create Free Account"
+    },
+    "what": {
+      "title": "What is Liferadar?",
+      "lead": "Life is multidimensional. Work, health, relationships, faith, finances — each area deserves conscious attention.",
+      "body1": "Liferadar gives you a structured, visual framework to define the pillars that matter most to you, score them regularly, and turn your reflections into concrete decisions.",
+      "body2": "Whether you're an individual striving for balance or a family admin coordinating growth across your household, Liferadar adapts to your needs."
+    },
+    "features": {
+      "title": "Key Features",
+      "subtitle": "Everything you need to live intentionally.",
+      "pillars": {
+        "title": "Life Pillars",
+        "desc": "Define the domains that shape your life — career, health, family, spirituality, and more — and organise them into pillars, sub-pillars, and items."
+      },
+      "evaluations": {
+        "title": "Life Evaluations",
+        "desc": "Score any item on a 1–5 scale, add notes, and set reminders. Your 30-day history is visualised in a compact daily-average matrix."
+      },
+      "actionItems": {
+        "title": "Action Items",
+        "desc": "Every evaluation can spawn concrete action items (decisions). Track their status and due dates in a dedicated Action Items view."
+      },
+      "family": {
+        "title": "Family Mode",
+        "desc": "A Family Admin can manage multiple members under one account. Each member has their own private pillars while the admin keeps the overview."
+      },
+      "trips": {
+        "title": "Trip Planner",
+        "desc": "Plan family or personal trips with step-by-step itineraries. Keep travel memories and plans all in one place."
+      },
+      "multilingual": {
+        "title": "Multilingual",
+        "desc": "Full support for English, Arabic, and French — including right-to-left layouts for Arabic — so you reflect in the language closest to your heart."
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Four simple steps to a more intentional life.",
+      "define": {
+        "title": "Define Your Pillars",
+        "desc": "Start by identifying the life areas that matter most to you. Add sub-pillars and items to be as granular as you need."
+      },
+      "evaluate": {
+        "title": "Evaluate Regularly",
+        "desc": "Periodically score each item, add notes, and log how you feel. Consistency is the key to meaningful insights."
+      },
+      "decide": {
+        "title": "Create Decisions",
+        "desc": "For any evaluation that needs follow-up, create an action item with a description and due date and track it to completion."
+      },
+      "grow": {
+        "title": "Review & Grow",
+        "desc": "Your 30-day score matrix shows trends at a glance. Use them to celebrate progress and spot areas that need more attention."
+      }
+    },
+    "audience": {
+      "title": "Who Is Liferadar For?",
+      "individuals": {
+        "title": "Individuals",
+        "desc": "Track your personal growth across career, health, spirituality, hobbies, and more."
+      },
+      "families": {
+        "title": "Families",
+        "desc": "A family admin can monitor the progress of all members and keep everyone on track together."
+      },
+      "teams": {
+        "title": "Global Users",
+        "desc": "Full multilingual support — English, Arabic, and French — so you can reflect in the language closest to your heart."
+      }
+    },
+    "brand": {
+      "madeby": "Made with ❤️ by",
+      "tagline": "We build purposeful digital products that help people live and work better."
+    }
+  }
+}
+

@@ -27,6 +27,27 @@
     },
     "like": "If you like JHipster, don't forget to give us a star on",
     "github": "GitHub",
+    "welcome": {
+      "title": "Getting started with LifeRadar",
+      "intro": "LifeRadar helps you organise, evaluate, and improve every dimension of your life — all in one place.",
+      "dismiss": "Got it, dismiss",
+      "pillars": {
+        "title": "Life Pillars",
+        "desc": "Structure your life into meaningful pillars and sub-pillars — from health and career to family and personal growth."
+      },
+      "evaluations": {
+        "title": "Evaluations",
+        "desc": "Periodically score each life area to gain clear insight into where you stand and where to focus your energy."
+      },
+      "decisions": {
+        "title": "Decisions",
+        "desc": "Convert your evaluation insights into concrete, actionable decisions that drive real and lasting change."
+      },
+      "ticktick": {
+        "title": "TickTick Integration",
+        "desc": "Push your decisions and action items straight to TickTick so nothing falls through the cracks."
+      }
+    },
     "landing": {
       "tagline": "Track. Evaluate. Grow.",
       "subtitle": "Your personal life balance compass",
@@ -44,6 +65,30 @@
         "desc": "Create a free account and start tracking your life today."
       },
       "privacy": "Your data stays private and secure."
+    },
+    "contact": {
+      "bannerText": "Got feedback or questions?",
+      "bannerButton": "We want to hear from you",
+      "modal": {
+        "title": "We want to hear from you",
+        "intro": "Have a question, a suggestion, or just want to say hello? Drop us a message and we will be in touch.",
+        "name": "Your name",
+        "namePlaceholder": "e.g. Jane Smith",
+        "nameRequired": "Please enter your name.",
+        "email": "Email",
+        "emailPlaceholder": "your@email.com",
+        "emailInvalid": "Please enter a valid email address.",
+        "optional": "(optional)",
+        "message": "Message",
+        "messagePlaceholder": "Tell us what's on your mind…",
+        "messageRequired": "Please enter a message (at least 10 characters).",
+        "send": "Send message",
+        "sending": "Sending…",
+        "close": "Close",
+        "successTitle": "Message sent!",
+        "successDesc": "Thank you for reaching out. We will get back to you soon.",
+        "error": "Something went wrong. Please try again later."
+      }
     }
   }
 }

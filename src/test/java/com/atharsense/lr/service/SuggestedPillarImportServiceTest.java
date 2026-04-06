@@ -17,6 +17,10 @@ import com.atharsense.lr.repository.SubPillarItemRepository;
 import com.atharsense.lr.repository.SubPillarRepository;
 import com.atharsense.lr.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +29,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +37,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class SuggestedPillarImportServiceTest {
+
+    @TempDir
+    Path tempDir;
 
     @Mock
     private UserRepository userRepository;
@@ -144,6 +152,27 @@ class SuggestedPillarImportServiceTest {
         assertThat(itemsByCode.get("P-H-N").getTranslations()).hasSize(3);
         assertThat(itemsByCode.get("P-H-N").getSubPillar()).isSameAs(subPillarsByCode.get("P-H"));
         assertThat(subPillarsByCode.get("P-H").getPillar()).isSameAs(pillarsByCode.get("P"));
+    }
+
+    @Test
+    void shouldLoadSuggestedPillarsFromClasspathWhenFilesystemFileIsMissing() throws Exception {
+        assertThat(getClass().getClassLoader().getResource("files/basic-pillarsv1.0.json")).isNotNull();
+
+        String previousUserDir = System.getProperty("user.dir");
+        System.setProperty("user.dir", tempDir.toString());
+
+        try {
+            Method openPayloadStream = SuggestedPillarImportService.class.getDeclaredMethod("openPayloadStream");
+            openPayloadStream.setAccessible(true);
+
+            try (InputStream inputStream = (InputStream) openPayloadStream.invoke(suggestedPillarImportService)) {
+                String payload = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                assertThat(payload).contains("\"pillars\"");
+                assertThat(payload).contains("\"code\": \"P\"");
+            }
+        } finally {
+            System.setProperty("user.dir", previousUserDir);
+        }
     }
 }
 

@@ -1,0 +1,85 @@
+{
+  "about": {
+    "title": "À propos de Liferadar",
+    "hero": {
+      "title": "Visualisez votre vie d'un seul coup d'œil",
+      "subtitle": "Liferadar est votre radar personnel de gestion de vie — il vous aide à suivre, évaluer et améliorer chaque dimension importante de votre quotidien.",
+      "ctaDashboard": "Accéder au tableau de bord",
+      "ctaRegister": "Créer un compte gratuit"
+    },
+    "what": {
+      "title": "Qu'est-ce que Liferadar ?",
+      "lead": "La vie est multidimensionnelle. Travail, santé, relations, spiritualité, finances — chaque domaine mérite une attention consciente.",
+      "body1": "Liferadar vous offre un cadre structuré et visuel pour définir les piliers qui comptent le plus pour vous, les évaluer régulièrement et transformer vos réflexions en décisions concrètes.",
+      "body2": "Que vous soyez un individu en quête d'équilibre ou un administrateur familial coordonnant la croissance de votre foyer, Liferadar s'adapte à vos besoins."
+    },
+    "features": {
+      "title": "Fonctionnalités clés",
+      "subtitle": "Tout ce qu'il vous faut pour vivre avec intention.",
+      "pillars": {
+        "title": "Piliers de vie",
+        "desc": "Définissez les domaines qui façonnent votre vie — carrière, santé, famille, spiritualité et plus — et organisez-les en piliers, sous-piliers et éléments."
+      },
+      "evaluations": {
+        "title": "Évaluations de vie",
+        "desc": "Notez chaque élément de 1 à 5, ajoutez des notes et des rappels. Votre historique de 30 jours est visualisé dans une matrice de moyennes quotidiennes."
+      },
+      "actionItems": {
+        "title": "Actions à réaliser",
+        "desc": "Chaque évaluation peut générer des actions concrètes (décisions). Suivez leur statut et leurs échéances dans une vue dédiée."
+      },
+      "family": {
+        "title": "Mode famille",
+        "desc": "Un administrateur familial peut gérer plusieurs membres sous un seul compte. Chaque membre conserve ses propres piliers privés."
+      },
+      "trips": {
+        "title": "Planificateur de voyages",
+        "desc": "Planifiez des voyages familiaux ou personnels avec des itinéraires étape par étape. Conservez souvenirs et projets de voyage au même endroit."
+      },
+      "multilingual": {
+        "title": "Multilingue",
+        "desc": "Support complet de l'anglais, de l'arabe et du français — y compris les mises en page droite-à-gauche — pour que vous puissiez réfléchir dans la langue la plus proche de votre cœur."
+      }
+    },
+    "howItWorks": {
+      "title": "Comment ça marche ?",
+      "subtitle": "Quatre étapes simples vers une vie plus intentionnelle.",
+      "define": {
+        "title": "Définissez vos piliers",
+        "desc": "Commencez par identifier les domaines de vie qui vous importent le plus. Ajoutez des sous-piliers et des éléments selon le niveau de détail souhaité."
+      },
+      "evaluate": {
+        "title": "Évaluez régulièrement",
+        "desc": "Notez périodiquement chaque élément, ajoutez des notes et consignez vos ressentis. La régularité est la clé d'insights significatifs."
+      },
+      "decide": {
+        "title": "Créez des décisions",
+        "desc": "Pour toute évaluation nécessitant un suivi, créez une action avec description et date d'échéance, puis suivez-la jusqu'à l'accomplissement."
+      },
+      "grow": {
+        "title": "Analysez et progressez",
+        "desc": "Votre matrice de scores sur 30 jours révèle les tendances en un coup d'œil. Utilisez-les pour célébrer vos progrès et repérer les domaines à améliorer."
+      }
+    },
+    "audience": {
+      "title": "Pour qui est Liferadar ?",
+      "individuals": {
+        "title": "Particuliers",
+        "desc": "Suivez votre croissance personnelle : carrière, santé, spiritualité, loisirs et plus encore."
+      },
+      "families": {
+        "title": "Familles",
+        "desc": "Un administrateur familial peut suivre la progression de tous les membres et maintenir tout le monde sur la bonne voie."
+      },
+      "teams": {
+        "title": "Utilisateurs mondiaux",
+        "desc": "Support complet en anglais, arabe et français pour que vous puissiez réfléchir dans la langue la plus proche de votre cœur."
+      }
+    },
+    "brand": {
+      "madeby": "Fait avec ❤️ par",
+      "tagline": "Nous créons des produits numériques porteurs de sens qui aident les gens à vivre et travailler mieux."
+    }
+  }
+}
+

@@ -46,7 +46,7 @@ pushd "$PROJECT_ROOT" >/dev/null
   "-Djib.to.image=$IMAGE_URI" \
   -Djib.to.auth.username=AWS \
   "-Djib.to.auth.password=$(aws ecr get-login-password --region "$AWS_REGION")" \
-  package jib:build
+  clean package jib:build
 popd >/dev/null
 
 echo "[4/4] Done"

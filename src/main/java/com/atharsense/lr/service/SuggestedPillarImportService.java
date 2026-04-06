@@ -41,7 +41,8 @@ public class SuggestedPillarImportService {
     private static final Logger LOG = LoggerFactory.getLogger(SuggestedPillarImportService.class);
 
     private static final String ENTITY_NAME = "pillar";
-    private static final Path SUGGESTED_PILLARS_FILE = Path.of("external", "resources", "basic-pillarsv1.0.json");
+    private static final String SUGGESTED_PILLARS_CLASSPATH = "files/basic-pillarsv1.0.json";
+    private static final Path SUGGESTED_PILLARS_FILE = Path.of("files", "basic-pillarsv1.0.json");
     private static final List<String> SUPPORTED_LANG_KEYS = List.of("en", "ar", "fr");
     private static final Map<String, LangCode> LANG_CODE_BY_KEY = Map.of(
         "en",
@@ -259,21 +260,21 @@ public class SuggestedPillarImportService {
     }
 
     private InputStream openPayloadStream() throws IOException {
+        InputStream classpathStream = getClass().getClassLoader().getResourceAsStream(SUGGESTED_PILLARS_CLASSPATH);
+        if (classpathStream != null) {
+            return classpathStream;
+        }
+
         if (Files.exists(SUGGESTED_PILLARS_FILE)) {
             return Files.newInputStream(SUGGESTED_PILLARS_FILE);
         }
 
-        InputStream classpathStream = getClass().getClassLoader().getResourceAsStream("external/resources/basic-pillarsv1.0.json");
-        if (classpathStream != null) {
-            return classpathStream;
-        }
-
-        classpathStream = getClass().getClassLoader().getResourceAsStream("basic-pillarsv1.0.json");
-        if (classpathStream != null) {
-            return classpathStream;
-        }
-
-        throw new IOException("Suggested pillars file not found at " + SUGGESTED_PILLARS_FILE.toAbsolutePath());
+        throw new IOException(
+            "Suggested pillars file not found at classpath resource '" +
+            SUGGESTED_PILLARS_CLASSPATH +
+            "' or filesystem path " +
+            SUGGESTED_PILLARS_FILE.toAbsolutePath()
+        );
     }
 
     private ExtendedUser getOrCreateCurrentExtendedUser() {
