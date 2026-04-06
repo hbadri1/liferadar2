@@ -304,8 +304,8 @@ describe('Home Component', () => {
             body: {
               pillarsCreated: 4,
               subPillarsCreated: 19,
-              subPillarItemsCreated: 54,
-              translationsCreated: 231,
+                subPillarItemsCreated: 56,
+                translationsCreated: 237,
             },
           }),
         ),

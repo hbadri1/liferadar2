@@ -94,11 +94,11 @@ class SuggestedPillarImportServiceTest {
         AtomicLong subPillarSequence = new AtomicLong(500);
         AtomicLong itemSequence = new AtomicLong(1000);
 
-        when(pillarRepository.findByOwnerIdAndCode(eq(owner.getId()), anyString()))
+        when(pillarRepository.findByOwnerIdAndCodeIgnoreCase(eq(owner.getId()), anyString()))
             .thenAnswer(invocation -> Optional.ofNullable(pillarsByCode.get(invocation.getArgument(1, String.class))));
-        when(subPillarRepository.findByOwnerIdAndCode(eq(owner.getId()), anyString()))
+        when(subPillarRepository.findByOwnerIdAndCodeIgnoreCase(eq(owner.getId()), anyString()))
             .thenAnswer(invocation -> Optional.ofNullable(subPillarsByCode.get(invocation.getArgument(1, String.class))));
-        when(subPillarItemRepository.findByOwnerIdAndCode(eq(owner.getId()), anyString()))
+        when(subPillarItemRepository.findByOwnerIdAndCodeIgnoreCase(eq(owner.getId()), anyString()))
             .thenAnswer(invocation -> Optional.ofNullable(itemsByCode.get(invocation.getArgument(1, String.class))));
 
         when(pillarRepository.save(any(Pillar.class))).thenAnswer(invocation -> {
@@ -131,8 +131,8 @@ class SuggestedPillarImportServiceTest {
 
         assertThat(firstImport.pillarsCreated()).isEqualTo(4);
         assertThat(firstImport.subPillarsCreated()).isEqualTo(19);
-        assertThat(firstImport.subPillarItemsCreated()).isEqualTo(54);
-        assertThat(firstImport.translationsCreated()).isEqualTo(231);
+        assertThat(firstImport.subPillarItemsCreated()).isEqualTo(56);
+        assertThat(firstImport.translationsCreated()).isEqualTo(237);
 
         assertThat(secondImport.pillarsCreated()).isZero();
         assertThat(secondImport.subPillarsCreated()).isZero();

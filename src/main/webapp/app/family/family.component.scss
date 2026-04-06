@@ -141,16 +141,22 @@
   padding-top: 0.9rem;
 }
 
+.objective-progress-matrix-mobile {
+  display: none;
+}
+
 .objective-progress-matrix-scroll {
   overflow-x: auto;
   padding-bottom: 0.25rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .objective-progress-matrix-grid {
   display: grid;
-  grid-template-columns: minmax(140px, 180px) repeat(10, minmax(42px, 1fr));
+  grid-template-columns: minmax(140px, 180px) repeat(7, minmax(42px, 1fr));
   gap: 0.25rem;
-  min-width: 620px;
+  min-width: 470px;
 }
 
 .objective-progress-matrix-corner,
@@ -167,6 +173,7 @@
   left: 0;
   z-index: 2;
   background: #fff;
+  box-shadow: 3px 0 0 rgba(255, 255, 255, 0.95);
 }
 
 .objective-progress-matrix-corner {
@@ -262,6 +269,85 @@
   }
 }
 
+.objective-progress-scroll-hint {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.objective-progress-mobile-item-card {
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #f8fbff;
+  padding: 0.65rem;
+}
+
+.objective-progress-mobile-item-header {
+  strong {
+    font-size: 0.82rem;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .badge {
+    font-size: 0.68rem;
+  }
+}
+
+.objective-progress-mobile-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+
+.objective-progress-mobile-day-cell {
+  min-height: 3rem;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.1rem;
+  padding: 0.2rem 0.12rem;
+
+  .weekday {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .day-number {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.1;
+  }
+
+  .cell-value {
+    font-size: 0.62rem;
+  }
+
+  .cell-empty {
+    font-size: 0.72rem;
+  }
+
+  &.has-progress {
+    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+    border-color: #60a5fa;
+  }
+
+  &.is-today {
+    border-color: #2563eb;
+    box-shadow: inset 0 0 0 1px #2563eb;
+  }
+}
+
 .cell-value {
   font-size: 0.72rem;
   font-weight: 700;
@@ -273,6 +359,79 @@
 .cell-empty {
   font-size: 0.8rem;
   color: #94a3b8;
+}
+
+.objective-progress-trends {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 0.9rem;
+}
+
+.objective-trend-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.objective-trend-card {
+  border: 1px solid #dbeafe;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.objective-trend-chart-wrapper {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.objective-trend-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 2.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  text-align: right;
+}
+
+.objective-trend-chart {
+  width: 100%;
+  height: 9rem;
+  overflow: visible;
+}
+
+.objective-trend-axis-line {
+  stroke: #cbd5e1;
+  stroke-width: 1;
+}
+
+.objective-trend-area {
+  fill: rgba(59, 130, 246, 0.12);
+}
+
+.objective-trend-line {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.objective-trend-point {
+  fill: #1d4ed8;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+.objective-trend-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .objective-progress-calendar-header {
@@ -375,35 +534,41 @@
 }
 
 @media (max-width: 767.98px) {
-  .objective-progress-matrix-grid {
-    grid-template-columns: minmax(120px, 150px) repeat(10, minmax(36px, 1fr));
-    min-width: 500px;
-  }
+  .family-header {
+    flex-direction: column;
+    align-items: flex-start !important;
 
-  .objective-progress-matrix-corner,
-  .objective-progress-item-label,
-  .objective-progress-day-header,
-  .objective-progress-day-cell {
-    min-height: 2.8rem;
-  }
-
-  .objective-progress-item-label {
-    padding: 0.35rem 0.45rem;
-  }
-
-  .objective-progress-day-header {
-    .weekday,
-    .month-label {
-      font-size: 0.52rem;
-    }
-
-    .day-number {
-      font-size: 0.74rem;
+    .btn {
+      width: 100%;
     }
   }
 
-  .cell-value {
-    font-size: 0.64rem;
+  .objective-section {
+    .objective-section-actions {
+      width: 100%;
+      flex-wrap: wrap;
+
+      .btn {
+        flex: 1 1 100%;
+      }
+    }
+  }
+
+  .objective-group-header .btn {
+    width: 100%;
+  }
+
+  .objective-progress-matrix-desktop {
+    display: none;
+  }
+
+  .objective-progress-matrix-mobile {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .objective-progress-scroll-hint {
+    display: none;
   }
 
   .progress-calendar-cell {
@@ -421,6 +586,20 @@
 
   .progress-calendar-weekdays span {
     font-size: 0.65rem;
+  }
+
+  .objective-trend-chart-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .objective-trend-scale {
+    flex-direction: row;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .objective-trend-chart {
+    height: 7.5rem;
   }
 }
 
