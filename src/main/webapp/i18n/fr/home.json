@@ -27,6 +27,27 @@
     },
     "like": "Si vous aimez JHipster, donnez nous une étoile sur",
     "github": "GitHub ",
+    "welcome": {
+      "title": "Bienvenue sur LifeRadar",
+      "intro": "LifeRadar vous aide à organiser, évaluer et améliorer chaque dimension de votre vie — le tout en un seul endroit.",
+      "dismiss": "Compris, fermer",
+      "pillars": {
+        "title": "Piliers de Vie",
+        "desc": "Structurez votre vie en piliers et sous-piliers significatifs — de la santé et la carrière à la famille et la croissance personnelle."
+      },
+      "evaluations": {
+        "title": "Évaluations",
+        "desc": "Notez périodiquement chaque aspect de votre vie pour savoir où vous en êtes et où concentrer votre énergie."
+      },
+      "decisions": {
+        "title": "Décisions",
+        "desc": "Transformez vos insights d'évaluation en décisions concrètes et actionnables qui génèrent un changement réel et durable."
+      },
+      "ticktick": {
+        "title": "Intégration TickTick",
+        "desc": "Envoyez vos décisions et vos actions directement vers TickTick pour ne rien laisser de côté."
+      }
+    },
     "landing": {
       "tagline": "Suivez. Évaluez. Progressez.",
       "subtitle": "Votre boussole personnelle d'équilibre de vie",
@@ -44,6 +65,30 @@
         "desc": "Créez un compte gratuit et commencez à suivre votre vie dès aujourd'hui."
       },
       "privacy": "Vos données restent privées et sécurisées."
+    },
+    "contact": {
+      "bannerText": "Des commentaires ou des questions ?",
+      "bannerButton": "Nous voulons vous entendre",
+      "modal": {
+        "title": "Nous voulons vous entendre",
+        "intro": "Vous avez une question, une suggestion ou juste envie de dire bonjour ? Envoyez-nous un message et nous vous répondrons.",
+        "name": "Votre nom",
+        "namePlaceholder": "ex. Jean Dupont",
+        "nameRequired": "Veuillez entrer votre nom.",
+        "email": "Email",
+        "emailPlaceholder": "votre@email.com",
+        "emailInvalid": "Veuillez entrer une adresse email valide.",
+        "optional": "(facultatif)",
+        "message": "Message",
+        "messagePlaceholder": "Dites-nous ce que vous avez en tête…",
+        "messageRequired": "Veuillez entrer un message (au moins 10 caractères).",
+        "send": "Envoyer le message",
+        "sending": "Envoi en cours…",
+        "close": "Fermer",
+        "successTitle": "Message envoyé !",
+        "successDesc": "Merci de nous avoir contactés. Nous vous répondrons bientôt.",
+        "error": "Une erreur s'est produite. Veuillez réessayer plus tard."
+      }
     }
   }
 }

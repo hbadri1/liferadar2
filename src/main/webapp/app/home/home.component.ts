@@ -32,6 +32,7 @@ import { IEvaluationDecision } from 'app/entities/evaluation-decision/evaluation
 import { EvaluationDecisionService } from 'app/entities/evaluation-decision/service/evaluation-decision.service';
 import { EvaluationDecisionCreateModalComponent } from './evaluation-decision-create-modal.component';
 import { ConfirmationModalComponent } from './confirmation-modal.component';
+import { ContactModalComponent } from './contact-modal.component';
 
 @Component({
   selector: 'jhi-home',
@@ -52,6 +53,22 @@ export default class HomeComponent implements OnInit, OnDestroy {
       authorities.includes(Authority.CHILD) && !authorities.includes(Authority.FAMILY_ADMIN) && !authorities.includes(Authority.ADMIN)
     );
   });
+  isFamilyAdmin = computed(() => {
+    const authorities: string[] = this.account()?.authorities ?? [];
+    return authorities.includes(Authority.FAMILY_ADMIN);
+  });
+
+  private readonly WELCOME_DISMISSED_KEY = 'liferadar_welcome_dismissed';
+  showWelcomeDescription = signal<boolean>(
+    typeof localStorage !== 'undefined' ? localStorage.getItem('liferadar_welcome_dismissed') !== 'true' : false,
+  );
+
+  dismissWelcomeDescription(): void {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(this.WELCOME_DISMISSED_KEY, 'true');
+    }
+    this.showWelcomeDescription.set(false);
+  }
   pillars = signal<IPillar[]>([]);
   subPillarsMap = signal<Map<number, ISubPillar[]>>(new Map());
   loadingSubPillars = signal<Set<number>>(new Set());
@@ -977,6 +994,14 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   login(): void {
     this.router.navigate(['/login']);
+  }
+
+  openContactModal(): void {
+    this.modalService.open(ContactModalComponent, {
+      size: 'md',
+      centered: true,
+      backdrop: 'static',
+    });
   }
 
   ngOnDestroy(): void {
