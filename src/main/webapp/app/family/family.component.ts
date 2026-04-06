@@ -38,6 +38,27 @@ interface ObjectiveCalendarRow {
   latestProgress: FamilyObjectiveProgress | null;
 }
 
+interface ObjectiveTrendPoint {
+  key: string;
+  date: Date;
+  label: string;
+  value: number;
+  x: number;
+  y: number;
+}
+
+interface ObjectiveTrendSeries {
+  itemDefinition: FamilyObjectiveItemDefinition;
+  latestProgress: FamilyObjectiveProgress | null;
+  points: ObjectiveTrendPoint[];
+  path: string;
+  areaPath: string;
+  minValue: number;
+  maxValue: number;
+  startLabel: string;
+  endLabel: string;
+}
+
 @Component({
   selector: 'jhi-family',
   templateUrl: './family.component.html',
@@ -45,7 +66,11 @@ interface ObjectiveCalendarRow {
   imports: [SharedModule, ReactiveFormsModule],
 })
 export default class FamilyComponent implements OnInit {
-  readonly objectiveHistoryDays = 10;
+  readonly objectiveHistoryDays = 7;
+  readonly objectiveTrendMonths = 3;
+  readonly objectiveTrendDays = 90;
+  readonly objectiveTrendChartWidth = 320;
+  readonly objectiveTrendChartHeight = 120;
 
   children = signal<ChildUser[]>([]);
   objectives = signal<FamilyObjective[]>([]);
@@ -409,6 +434,18 @@ export default class FamilyComponent implements OnInit {
     );
   }
 
+  hasObjectiveProgressInTrendWindow(objective: FamilyObjective): boolean {
+    return objective.itemDefinitions.some(itemDefinition => this.getObjectiveTrendSeriesForItem(itemDefinition).points.length > 0);
+  }
+
+  getObjectiveTrendSeries(objective: FamilyObjective): ObjectiveTrendSeries[] {
+    return objective.itemDefinitions.map(itemDefinition => this.getObjectiveTrendSeriesForItem(itemDefinition));
+  }
+
+  getObjectiveTrendPointTitle(itemDefinition: FamilyObjectiveItemDefinition, point: ObjectiveTrendPoint): string {
+    return `${point.label} • ${point.value} ${this.getObjectiveUnitLabel(itemDefinition.unit)}`;
+  }
+
   getLatestProgress(itemDefinition: FamilyObjectiveItemDefinition): FamilyObjectiveProgress | null {
     return itemDefinition.progressHistory?.[0] ?? null;
   }
@@ -625,6 +662,13 @@ export default class FamilyComponent implements OnInit {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
+  private getHistoryWindowStart(days: number): Date {
+    const today = this.startOfDay(new Date());
+    const start = new Date(today);
+    start.setDate(today.getDate() - (days - 1));
+    return start;
+  }
+
   private toDateKey(date: Date): string {
     const year = date.getFullYear();
     const month = `${date.getMonth() + 1}`.padStart(2, '0');
@@ -666,6 +710,98 @@ export default class FamilyComponent implements OnInit {
     return latestProgressByDay;
   }
 
+  private getObjectiveTrendSeriesForItem(itemDefinition: FamilyObjectiveItemDefinition): ObjectiveTrendSeries {
+    const endDate = this.startOfDay(new Date());
+    const startDate = this.getHistoryWindowStart(this.objectiveTrendDays);
+    const progressByDay = this.getLatestProgressByDay(itemDefinition, startDate, endDate);
+    const locale = this.translateService.currentLang || 'en';
+    const labelFormatter = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
+    const startLabel = labelFormatter.format(startDate);
+    const endLabel = labelFormatter.format(endDate);
+    const chartPaddingX = 14;
+    const chartPaddingY = 14;
+    const innerWidth = this.objectiveTrendChartWidth - chartPaddingX * 2;
+    const innerHeight = this.objectiveTrendChartHeight - chartPaddingY * 2;
+    const totalDuration = Math.max(endDate.getTime() - startDate.getTime(), 1);
+
+    const entries = Array.from(progressByDay.entries())
+      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+      .map(([key, progress]) => {
+        const date = this.parseDate(progress.createdAt);
+        return date
+          ? {
+              key,
+              date: this.startOfDay(date),
+              label: labelFormatter.format(date),
+              value: progress.value,
+            }
+          : null;
+      })
+      .filter((entry): entry is { key: string; date: Date; label: string; value: number } => entry !== null);
+
+    if (entries.length === 0) {
+      return {
+        itemDefinition,
+        latestProgress: this.getLatestProgress(itemDefinition),
+        points: [],
+        path: '',
+        areaPath: '',
+        minValue: 0,
+        maxValue: 0,
+        startLabel,
+        endLabel,
+      };
+    }
+
+    let minValue = Math.min(...entries.map(entry => entry.value));
+    let maxValue = Math.max(...entries.map(entry => entry.value));
+
+    if (minValue === maxValue) {
+      if (minValue === 0) {
+        maxValue = 1;
+      } else {
+        minValue = Math.max(0, minValue - 1);
+        maxValue = maxValue + 1;
+      }
+    }
+
+    const range = Math.max(maxValue - minValue, 1);
+    const points: ObjectiveTrendPoint[] = entries.map(entry => {
+      const elapsed = entry.date.getTime() - startDate.getTime();
+      const x = chartPaddingX + (elapsed / totalDuration) * innerWidth;
+      const y = chartPaddingY + (1 - (entry.value - minValue) / range) * innerHeight;
+      return {
+        key: entry.key,
+        date: entry.date,
+        label: entry.label,
+        value: entry.value,
+        x: Number(x.toFixed(2)),
+        y: Number(y.toFixed(2)),
+      };
+    });
+
+    const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
+    const lastPoint = points[points.length - 1];
+    const firstPoint = points[0];
+    const baselineY = chartPaddingY + innerHeight;
+    const areaPath =
+      points.length > 0
+        ? `${path} L ${lastPoint.x} ${baselineY} L ${firstPoint.x} ${baselineY} Z`
+        : '';
+
+    return {
+      itemDefinition,
+      latestProgress: this.getLatestProgress(itemDefinition),
+      points,
+      path,
+      areaPath,
+      minValue,
+      maxValue,
+      startLabel,
+      endLabel,
+    };
+  }
+
   private isWithinHistoryWindow(value: string | null | undefined): boolean {
     const parsed = this.parseDate(value);
     if (!parsed) {
@@ -673,8 +809,7 @@ export default class FamilyComponent implements OnInit {
     }
 
     const today = this.startOfDay(new Date());
-    const start = new Date(today);
-    start.setDate(today.getDate() - (this.objectiveHistoryDays - 1));
+    const start = this.getHistoryWindowStart(this.objectiveHistoryDays);
     const normalized = this.startOfDay(parsed);
     return normalized >= start && normalized <= today;
   }

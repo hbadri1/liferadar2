@@ -5,10 +5,10 @@
 
     <groupId>com.atharsense.lr</groupId>
     <artifactId>liferadar</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
     <packaging>jar</packaging>
     <name>Liferadar</name>
-    <description>Description for Liferadar</description>
+    <description>Liferadar is a personal/family app that guides your goals and gather your family together.</description>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>

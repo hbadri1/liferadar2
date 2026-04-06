@@ -274,5 +274,104 @@ describe('FamilyComponent', () => {
 
     expect(adminComp.objectiveGroups().map(group => group.kidLogin)).toEqual(['kid', 'kid2']);
   });
+
+  it('uses a 7-day objective progress window', () => {
+    const days = comp.getObjectiveCalendarDays();
+
+    expect(comp.objectiveHistoryDays).toBe(7);
+    expect(days).toHaveLength(7);
+  });
+
+  it('builds a 3-month trend series from recent progress history only', () => {
+    const toIsoDaysAgo = (daysAgo: number): string => {
+      const date = new Date();
+      date.setHours(12, 0, 0, 0);
+      date.setDate(date.getDate() - daysAgo);
+      return date.toISOString();
+    };
+
+    const objective: any = {
+      id: 1,
+      kidId: 1,
+      kidLogin: 'kid',
+      kidName: 'Kid One',
+      name: 'Hydration',
+      description: null,
+      active: true,
+      createdAt: toIsoDaysAgo(20),
+      itemDefinitions: [
+        {
+          id: 11,
+          name: 'Water cups',
+          description: null,
+          unit: 'NUMBER',
+          progressHistory: [
+            { id: 101, createdAt: toIsoDaysAgo(95), value: 2, notes: null },
+            { id: 102, createdAt: toIsoDaysAgo(30), value: 4, notes: null },
+            { id: 103, createdAt: toIsoDaysAgo(10), value: 6, notes: null },
+            { id: 104, createdAt: toIsoDaysAgo(3), value: 5, notes: null },
+          ],
+        },
+      ],
+    };
+
+    const [series] = comp.getObjectiveTrendSeries(objective);
+
+    expect(series.points).toHaveLength(3);
+    expect(series.points.map(point => point.value)).toEqual([4, 6, 5]);
+    expect(series.path.startsWith('M ')).toBe(true);
+    expect(series.areaPath.endsWith('Z')).toBe(true);
+    expect(series.startLabel).toBeTruthy();
+    expect(series.endLabel).toBeTruthy();
+  });
+
+  it('exposes trend visibility for both child and family-admin roles', () => {
+    const toIsoDaysAgo = (daysAgo: number): string => {
+      const date = new Date();
+      date.setHours(12, 0, 0, 0);
+      date.setDate(date.getDate() - daysAgo);
+      return date.toISOString();
+    };
+
+    const objective: any = {
+      id: 1,
+      kidId: 1,
+      kidLogin: 'kid',
+      kidName: 'Kid One',
+      name: 'Reading',
+      description: null,
+      active: true,
+      createdAt: toIsoDaysAgo(15),
+      itemDefinitions: [
+        {
+          id: 21,
+          name: 'Pages',
+          description: null,
+          unit: 'NUMBER',
+          progressHistory: [{ id: 201, createdAt: toIsoDaysAgo(4), value: 8, notes: null }],
+        },
+      ],
+    };
+
+    expect(comp.isChild()).toBe(true);
+    expect(comp.hasObjectiveProgressInTrendWindow(objective)).toBe(true);
+
+    currentAccount.set({
+      activated: true,
+      authorities: ['ROLE_FAMILY_ADMIN'],
+      email: '',
+      firstName: null,
+      langKey: 'en',
+      lastName: null,
+      login: 'parent',
+      imageUrl: null,
+    });
+
+    const fixture = TestBed.createComponent(FamilyComponent);
+    const adminComp = fixture.componentInstance;
+
+    expect(adminComp.canManageFamily()).toBe(true);
+    expect(adminComp.hasObjectiveProgressInTrendWindow(objective)).toBe(true);
+  });
 });
 

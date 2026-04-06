@@ -56,15 +56,19 @@
         "empty": "Aucun progrès pour le moment.",
         "historyTitle": "Historique des progrès",
         "lastDays": "{{count}} derniers jours",
+        "lastMonths": "{{count}} derniers mois",
         "last30Days": "30 derniers jours",
         "itemColumn": "Élément",
         "noEntryLastDays": "Aucune entrée au cours des {{count}} derniers jours.",
+        "noEntryLastMonths": "Aucune entrée au cours des {{count}} derniers mois.",
         "noEntryLast30Days": "Aucune entrée au cours des 30 derniers jours.",
         "noEntryDay": "Aucune entrée",
         "created": "Progrès ajouté avec succès.",
         "latest": "Dernier progrès",
         "modalTitle": "Ajouter un progrès",
-        "unitLabel": "Unité : {{unit}}"
+        "unitLabel": "Unité : {{unit}}",
+        "scrollHint": "Balayez vers la gauche ou la droite pour voir tout le tableau hebdomadaire.",
+        "trendAria": "Tendance de progression de {{item}} au cours des {{count}} derniers mois"
       },
       "errors": {
         "deactivate": "Échec de la désactivation de l'objectif.",

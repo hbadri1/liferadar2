@@ -120,9 +120,9 @@ public class UserService {
         }
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
-        // Self-registered users must activate via email link.
-        newUser.setActivated(false);
-        newUser.setActivationKey(RandomUtil.generateActivationKey());
+        // Self-registered users are activated immediately.
+        newUser.setActivated(true);
+        newUser.setActivationKey(null);
         Set<Authority> authorities = new HashSet<>();
         // Self-registered users receive ROLE_FAMILY_ADMIN
         authorityRepository.findById(AuthoritiesConstants.FAMILY_ADMIN).ifPresent(authorities::add);
