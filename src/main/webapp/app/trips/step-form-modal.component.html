@@ -10,6 +10,9 @@
   @if (errorMsg()) {
     <div class="alert alert-danger">{{ errorMsg()! | translate }}</div>
   }
+  @if (warningMsg()) {
+    <div class="alert alert-warning">{{ warningMsg()! | translate }}</div>
+  }
   <form [formGroup]="editForm">
     <div class="mb-3">
       <label class="form-label fw-bold" for="actionName">{{ 'trips.fields.stepName' | translate }} *</label>

@@ -119,6 +119,26 @@
                 </button>
               }
             </div>
+            <div class="trip-view-switch mt-3">
+              <div class="btn-group btn-group-sm" role="group" [attr.aria-label]="'trips.viewMode' | translate">
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="viewMode() === 'timeline' ? 'btn-primary' : 'btn-outline-primary'"
+                  (click)="setViewMode('timeline')">
+                  <fa-icon icon="list" class="me-1"></fa-icon>
+                  <span jhiTranslate="trips.timelineView">Timeline</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [ngClass]="viewMode() === 'calendar' ? 'btn-primary' : 'btn-outline-primary'"
+                  (click)="setViewMode('calendar')">
+                  <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
+                  <span jhiTranslate="trips.calendarView">Calendar</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="card-body">
@@ -138,77 +158,128 @@
                 }
               </div>
             } @else {
-              <!-- TIMELINE -->
-              <div class="trip-timeline">
-                @for (entry of timelineEntries(); track entry.kind === 'step' ? entry.step.id ?? $index : 'today'; let i = $index; let isLast = $last) {
-                  <div class="timeline-item" [class.timeline-left]="i % 2 === 0" [class.timeline-right]="i % 2 !== 0" [class.timeline-today]="entry.kind === 'today'">
-                    <div class="timeline-dot" [class.timeline-today-dot]="entry.kind === 'today'">
-                      @if (entry.kind === 'today') {
-                        <span class="dot-number">T</span>
-                      } @else {
-                        <span class="dot-number">{{ entry.step.sequence }}</span>
-                      }
-                    </div>
-                    <div class="timeline-content">
-                      @if (entry.kind === 'today') {
-                        <div class="step-card today-card">
-                          <div class="step-card-header">
-                            <div class="step-sequence-badge bg-info">{{ formatDate(getCurrentDate()) }}</div>
+              @if (viewMode() === 'timeline') {
+                <!-- TIMELINE -->
+                <div class="trip-timeline trip-timeline--compact">
+                  @for (entry of timelineEntries(); track entry.kind === 'step' ? entry.step.id ?? $index : 'today'; let i = $index; let isLast = $last) {
+                    <div class="timeline-item" [class.timeline-left]="i % 2 === 0" [class.timeline-right]="i % 2 !== 0" [class.timeline-today]="entry.kind === 'today'">
+                      <div class="timeline-dot" [class.timeline-today-dot]="entry.kind === 'today'">
+                        @if (entry.kind === 'today') {
+                          <span class="dot-number">T</span>
+                        } @else {
+                          <span class="dot-number">{{ entry.step.sequence }}</span>
+                        }
+                      </div>
+                      <div class="timeline-content">
+                        @if (entry.kind === 'today') {
+                          <div class="step-card today-card">
+                            <div class="step-card-header">
+                              <div class="step-sequence-badge bg-info">{{ formatDate(getCurrentDate()) }}</div>
+                            </div>
+                            <h6 class="step-title">{{ 'trips.currentDate' | translate }}</h6>
                           </div>
-                          <h6 class="step-title">{{ 'trips.currentDate' | translate }}</h6>
-                        </div>
-                      } @else {
-                        <div class="step-card">
-                          <div class="step-card-header">
-                            <div class="step-sequence-badge">{{ 'trips.stop' | translate }} {{ entry.step.sequence }}</div>
-                            @if (canEdit()) {
-                              <div class="step-card-actions">
-                                <button class="btn btn-xs btn-outline-primary" (click)="openEditStep(entry.step)" title="Edit step">
-                                  <fa-icon icon="pencil-alt"></fa-icon>
-                                </button>
-                                <button class="btn btn-xs btn-outline-danger" (click)="openDeleteStep(entry.step)" title="Delete step">
-                                  <fa-icon icon="trash"></fa-icon>
-                                </button>
+                        } @else {
+                          <div class="step-card">
+                            <div class="step-card-header">
+                              <div class="step-sequence-badge">{{ 'trips.stop' | translate }} {{ entry.step.sequence }}</div>
+                              @if (canEdit()) {
+                                <div class="step-card-actions">
+                                  <button class="btn btn-xs btn-outline-primary" (click)="openEditStep(entry.step)" title="Edit step">
+                                    <fa-icon icon="pencil-alt"></fa-icon>
+                                  </button>
+                                  <button class="btn btn-xs btn-outline-danger" (click)="openDeleteStep(entry.step)" title="Delete step">
+                                    <fa-icon icon="trash"></fa-icon>
+                                  </button>
+                                </div>
+                              }
+                            </div>
+                            <h6 class="step-title">{{ entry.step.actionName }}</h6>
+                            @if (entry.step.locationName) {
+                              <div class="step-location">
+                                <fa-icon icon="map-marker-alt" class="me-1 text-danger"></fa-icon>
+                                {{ entry.step.locationName }}
+                              </div>
+                            }
+                            <div class="step-dates">
+                              <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
+                              {{ formatDate(entry.step.startDate) }}
+                              @if (entry.step.endDate && formatDate(entry.step.endDate) !== formatDate(entry.step.startDate)) {
+                                <span> → {{ formatDate(entry.step.endDate) }}</span>
+                              }
+                            </div>
+                            @if (entry.step.notes) {
+                              <p class="step-notes">{{ entry.step.notes }}</p>
+                            }
+                            @if (entry.step.latitude && entry.step.longitude) {
+                              <div class="step-coords small text-muted">
+                                <fa-icon icon="globe" class="me-1"></fa-icon>
+                                {{ entry.step.latitude | number:'1.4-4' }}, {{ entry.step.longitude | number:'1.4-4' }}
                               </div>
                             }
                           </div>
-                          <h6 class="step-title">{{ entry.step.actionName }}</h6>
-                          @if (entry.step.locationName) {
-                            <div class="step-location">
-                              <fa-icon icon="map-marker-alt" class="me-1 text-danger"></fa-icon>
-                              {{ entry.step.locationName }}
-                            </div>
-                          }
-                          <div class="step-dates">
-                            <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
-                            {{ formatDate(entry.step.startDate) }}
-                            @if (entry.step.endDate && formatDate(entry.step.endDate) !== formatDate(entry.step.startDate)) {
-                              <span> → {{ formatDate(entry.step.endDate) }}</span>
-                            }
-                          </div>
-                          @if (entry.step.notes) {
-                            <p class="step-notes">{{ entry.step.notes }}</p>
-                          }
-                          @if (entry.step.latitude && entry.step.longitude) {
-                            <div class="step-coords small text-muted">
-                              <fa-icon icon="globe" class="me-1"></fa-icon>
-                              {{ entry.step.latitude | number:'1.4-4' }}, {{ entry.step.longitude | number:'1.4-4' }}
-                            </div>
-                          }
-                        </div>
+                        }
+                      </div>
+                      @if (!isLast) {
+                        <div class="timeline-connector"></div>
                       }
                     </div>
-                    @if (!isLast) {
-                      <div class="timeline-connector"></div>
+                  }
+                  <!-- Finish flag -->
+                  <div class="timeline-finish">
+                    <fa-icon icon="flag" class="text-success"></fa-icon>
+                    <span class="ms-1 text-success fw-bold" jhiTranslate="trips.journeyEnd">Journey End</span>
+                  </div>
+                </div>
+              } @else {
+                <!-- MONTHLY CALENDAR -->
+                <div class="trip-calendar">
+                  <div class="trip-calendar-toolbar">
+                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="previousCalendarMonth()">
+                      <span aria-hidden="true">&lt;</span>
+                    </button>
+                    <div class="trip-calendar-title">{{ getCalendarMonthLabel() }}</div>
+                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="nextCalendarMonth()">
+                      <span aria-hidden="true">&gt;</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" (click)="jumpToCurrentMonth()" jhiTranslate="trips.currentMonth">
+                      Current
+                    </button>
+                  </div>
+
+                  <div class="trip-calendar-weekdays" [attr.dir]="'ltr'">
+                    @for (weekday of calendarWeekdayLabels(); track weekday) {
+                      <div class="trip-calendar-weekday">{{ weekday }}</div>
                     }
                   </div>
-                }
-                <!-- Finish flag -->
-                <div class="timeline-finish">
-                  <fa-icon icon="flag" class="text-success"></fa-icon>
-                  <span class="ms-1 text-success fw-bold" jhiTranslate="trips.journeyEnd">Journey End</span>
+
+                  <div class="trip-calendar-grid" [attr.dir]="'ltr'">
+                    @for (week of calendarWeeks(); track $index) {
+                      @for (cell of week; track trackCalendarCell($index, cell)) {
+                        <div class="trip-calendar-cell" [class.trip-calendar-cell--outside]="!cell.inCurrentMonth" [class.trip-calendar-cell--in-trip]="cell.inTripRange" [class.trip-calendar-cell--today]="cell.isToday">
+                          <div class="trip-calendar-cell-header">
+                            <span>{{ cell.date.date() }}</span>
+                          </div>
+                          <div class="trip-calendar-cell-steps">
+                            @for (step of cell.steps | slice: 0 : 2; track step.id) {
+                              <div class="trip-calendar-step-pill" [title]="step.actionName + ' (' + stepDateRangeLabel(step) + ')'">
+                                <span class="trip-calendar-step-seq">#{{ step.sequence }}</span>
+                                <span class="text-truncate">{{ step.actionName }}</span>
+                              </div>
+                            }
+                            @if (cell.steps.length > 2) {
+                              <div class="trip-calendar-more">{{ 'trips.moreSteps' | translate: { count: cell.steps.length - 2 } }}</div>
+                            }
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+
+                  @if (!hasStepsInDisplayedMonth()) {
+                    <div class="trip-calendar-empty" jhiTranslate="trips.noStepsInMonth">No stops this month.</div>
+                  }
                 </div>
-              </div>
+              }
             }
           </div>
         </div>

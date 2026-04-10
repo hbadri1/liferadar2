@@ -51,6 +51,11 @@
   }
 }
 
+.trip-view-switch {
+  display: flex;
+  justify-content: flex-end;
+}
+
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 .trip-timeline {
   position: relative;
@@ -70,12 +75,16 @@
   }
 }
 
+.trip-timeline--compact {
+  padding: 0.5rem 0;
+}
+
 .timeline-item {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 88px minmax(0, 1fr);
   align-items: start;
-  margin-bottom: 2rem;
+  margin-bottom: 1.15rem;
 
   .timeline-content {
     min-width: 0;
@@ -113,22 +122,22 @@
 .timeline-dot {
   position: absolute;
   left: 50%;
-  top: 1rem;
+  top: 0.65rem;
   transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--bs-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2;
-  box-shadow: 0 0 0 4px #fff, 0 0 0 6px var(--bs-primary);
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--bs-primary);
 
   .dot-number {
     color: white;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
   &.timeline-today-dot {
@@ -170,10 +179,10 @@
 .step-card {
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.1rem 1.25rem;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  width: min(100%, 340px);
+  width: min(100%, 320px);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 
   &:hover {
@@ -186,7 +195,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .step-sequence-badge {
@@ -214,24 +223,24 @@
 .step-title {
   font-weight: 700;
   color: #1a1a2e;
-  margin-bottom: 0.4rem;
-  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
 }
 
 .step-location {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   color: #555;
   margin-bottom: 0.3rem;
 }
 
 .step-dates {
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   color: #888;
   margin-bottom: 0.3rem;
 }
 
 .step-notes {
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   color: #666;
   margin-bottom: 0.25rem;
   line-height: 1.4;
@@ -248,12 +257,119 @@
   align-items: center;
   justify-content: center;
   padding-top: 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   z-index: 2;
+}
+
+// ─── Calendar View ────────────────────────────────────────────────────────────
+.trip-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.trip-calendar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.trip-calendar-title {
+  min-width: 11rem;
+  text-align: center;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.trip-calendar-weekdays,
+.trip-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.trip-calendar-weekday {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #667085;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.trip-calendar-cell {
+  min-height: 96px;
+  border: 1px solid #e6e9f0;
+  border-radius: 8px;
+  padding: 0.3rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.trip-calendar-cell--outside {
+  background: #f8fafc;
+  opacity: 0.62;
+}
+
+.trip-calendar-cell--in-trip {
+  border-color: rgba(var(--bs-primary-rgb), 0.42);
+  background: rgba(var(--bs-primary-rgb), 0.04);
+}
+
+.trip-calendar-cell--today {
+  box-shadow: inset 0 0 0 1px rgba(25, 135, 84, 0.55);
+}
+
+.trip-calendar-cell-header {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #465268;
+}
+
+.trip-calendar-cell-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-height: 0;
+}
+
+.trip-calendar-step-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.66rem;
+  line-height: 1.15;
+  padding: 0.18rem 0.28rem;
+  border-radius: 6px;
+  background: rgba(var(--bs-primary-rgb), 0.12);
+  color: #18488f;
+}
+
+.trip-calendar-step-seq {
+  font-weight: 700;
+}
+
+.trip-calendar-more {
+  font-size: 0.64rem;
+  color: #667085;
+}
+
+.trip-calendar-empty {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-align: center;
+  padding-top: 0.4rem;
 }
 
 // ─── Responsive ───────────────────────────────────────────────────────────────
 @media (max-width: 768px) {
+  .trip-view-switch {
+    justify-content: flex-start;
+  }
+
   .trip-timeline::before {
     left: 20px;
   }
@@ -292,6 +408,28 @@
         margin-left: 0;
       }
     }
+  }
+
+  .trip-calendar-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .trip-calendar-title {
+    min-width: unset;
+    flex: 1 1 auto;
+  }
+
+  .trip-calendar-weekday {
+    font-size: 0.62rem;
+  }
+
+  .trip-calendar-cell {
+    min-height: 84px;
+    padding: 0.22rem;
+  }
+
+  .trip-calendar-step-pill {
+    font-size: 0.6rem;
   }
 }
 

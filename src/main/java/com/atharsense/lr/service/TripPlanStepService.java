@@ -2,7 +2,6 @@ package com.atharsense.lr.service;
 
 import com.atharsense.lr.domain.TripPlanStep;
 import com.atharsense.lr.repository.TripPlanStepRepository;
-import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -33,7 +32,6 @@ public class TripPlanStepService {
      */
     public TripPlanStep save(TripPlanStep tripPlanStep) {
         LOG.debug("Request to save TripPlanStep : {}", tripPlanStep);
-        validateNoOverlap(tripPlanStep, null);
         return tripPlanStepRepository.save(tripPlanStep);
     }
 
@@ -45,7 +43,6 @@ public class TripPlanStepService {
      */
     public TripPlanStep update(TripPlanStep tripPlanStep) {
         LOG.debug("Request to update TripPlanStep : {}", tripPlanStep);
-        validateNoOverlap(tripPlanStep, tripPlanStep.getId());
         return tripPlanStepRepository.save(tripPlanStep);
     }
 
@@ -86,7 +83,6 @@ public class TripPlanStepService {
                     existingTripPlanStep.setLongitude(tripPlanStep.getLongitude());
                 }
 
-                validateNoOverlap(existingTripPlanStep, existingTripPlanStep.getId());
                 return existingTripPlanStep;
             })
             .map(tripPlanStepRepository::save);
@@ -134,26 +130,4 @@ public class TripPlanStepService {
         tripPlanStepRepository.deleteById(id);
     }
 
-    private void validateNoOverlap(TripPlanStep tripPlanStep, Long currentStepId) {
-        if (tripPlanStep.getTripPlan() == null || tripPlanStep.getTripPlan().getId() == null) {
-            return;
-        }
-        if (tripPlanStep.getStartDate() == null || tripPlanStep.getEndDate() == null) {
-            return;
-        }
-
-        Long tripPlanId = tripPlanStep.getTripPlan().getId();
-        boolean overlaps = currentStepId == null
-            ? tripPlanStepRepository.existsOverlappingStep(tripPlanId, tripPlanStep.getStartDate(), tripPlanStep.getEndDate())
-            : tripPlanStepRepository.existsOverlappingStepExcludingCurrent(
-                tripPlanId,
-                currentStepId,
-                tripPlanStep.getStartDate(),
-                tripPlanStep.getEndDate()
-            );
-
-        if (overlaps) {
-            throw new BadRequestAlertException("trips.errors.stepDatesOverlap", "tripPlanStep", "stepDatesOverlap");
-        }
-    }
 }
