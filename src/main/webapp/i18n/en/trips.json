@@ -11,6 +11,12 @@
     "selectTripHint": "Select a trip to view its itinerary",
     "selectTripHintSub": "Your journey details and timeline will appear here",
     "addStep": "Add Stop",
+    "viewMode": "Trip view mode",
+    "timelineView": "Timeline",
+    "calendarView": "Calendar",
+    "currentMonth": "Current Month",
+    "noStepsInMonth": "No stops in this month.",
+    "moreSteps": "+{{count}} more",
     "newStep": "New Stop",
     "editStep": "Edit Stop",
     "deleteStep": "Delete Stop",
@@ -50,6 +56,9 @@
       "stepEndDateAfterTripEnd": "Stop end date cannot be after the trip end date.",
       "stepStartDateAfterEndDate": "Stop start date must be before or equal to the stop end date.",
       "stepDatesOverlap": "This stop overlaps another existing stop. Please choose a different date range."
+    },
+    "warnings": {
+      "stepDatesOverlap": "This stop overlaps another existing stop. You can still save it."
     }
   }
 }

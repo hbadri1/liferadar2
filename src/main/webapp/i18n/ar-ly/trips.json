@@ -11,6 +11,12 @@
     "selectTripHint": "اختر رحلة لعرض خط سيرها",
     "selectTripHintSub": "ستظهر هنا تفاصيل الرحلة والجدول الزمني",
     "addStep": "إضافة محطة",
+    "viewMode": "وضع عرض الرحلة",
+    "timelineView": "الخط الزمني",
+    "calendarView": "التقويم",
+    "currentMonth": "الشهر الحالي",
+    "noStepsInMonth": "لا توجد محطات في هذا الشهر.",
+    "moreSteps": "+{{count}} أخرى",
     "newStep": "محطة جديدة",
     "editStep": "تعديل المحطة",
     "deleteStep": "حذف المحطة",
@@ -50,6 +56,9 @@
       "stepEndDateAfterTripEnd": "لا يمكن أن يكون تاريخ نهاية المحطة بعد تاريخ نهاية الرحلة.",
       "stepStartDateAfterEndDate": "يجب أن يكون تاريخ بداية المحطة قبل أو مساوياً لتاريخ النهاية.",
       "stepDatesOverlap": "هذه المحطة تتداخل مع محطة أخرى موجودة. يرجى اختيار نطاق تاريخ مختلف."
+    },
+    "warnings": {
+      "stepDatesOverlap": "هذه المحطة تتداخل مع محطة أخرى موجودة. يمكنك حفظها مع ذلك."
     }
   }
 }

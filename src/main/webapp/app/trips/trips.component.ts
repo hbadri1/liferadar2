@@ -16,6 +16,16 @@ type TimelineEntry =
   | { kind: 'today'; sortDate: dayjs.Dayjs }
   | { kind: 'step'; sortDate: dayjs.Dayjs; step: ITripPlanStep };
 
+type TripViewMode = 'timeline' | 'calendar';
+
+type CalendarCell = {
+  date: dayjs.Dayjs;
+  inCurrentMonth: boolean;
+  inTripRange: boolean;
+  isToday: boolean;
+  steps: ITripPlanStep[];
+};
+
 @Component({
   selector: 'jhi-trips',
   templateUrl: './trips.component.html',
@@ -29,6 +39,8 @@ export default class TripsComponent implements OnInit {
   isLoadingTrips = signal(false);
   isLoadingSteps = signal(false);
   errorMsg = signal<string | null>(null);
+  viewMode = signal<TripViewMode>('timeline');
+  calendarMonth = signal(dayjs().startOf('month'));
 
   account = inject(AccountService).trackCurrentAccount();
 
@@ -82,7 +94,24 @@ export default class TripsComponent implements OnInit {
       return;
     }
     this.selectedTrip.set(trip);
+    this.calendarMonth.set((this.toDayjsDate(trip.startDate) ?? dayjs()).startOf('month'));
     this.loadSteps(trip.id);
+  }
+
+  setViewMode(mode: TripViewMode): void {
+    this.viewMode.set(mode);
+  }
+
+  previousCalendarMonth(): void {
+    this.calendarMonth.set(this.calendarMonth().subtract(1, 'month').startOf('month'));
+  }
+
+  nextCalendarMonth(): void {
+    this.calendarMonth.set(this.calendarMonth().add(1, 'month').startOf('month'));
+  }
+
+  jumpToCurrentMonth(): void {
+    this.calendarMonth.set(dayjs().startOf('month'));
   }
 
   loadSteps(tripId: number): void {
@@ -260,11 +289,94 @@ export default class TripsComponent implements OnInit {
     return dayjs();
   }
 
+  getCalendarMonthLabel(): string {
+    return this.calendarMonth().format('MMMM YYYY');
+  }
+
+  calendarWeekdayLabels(): string[] {
+    const start = dayjs().startOf('week');
+    return Array.from({ length: 7 }, (_, index) => start.add(index, 'day').format('dd'));
+  }
+
+  calendarWeeks(): CalendarCell[][] {
+    const selectedMonth = this.calendarMonth();
+    const monthStart = selectedMonth.startOf('month');
+    const monthEnd = selectedMonth.endOf('month');
+    const gridStart = monthStart.startOf('week');
+    const gridEnd = monthEnd.endOf('week');
+
+    const cells: CalendarCell[] = [];
+    let cursor = gridStart;
+
+    while (cursor.isBefore(gridEnd) || cursor.isSame(gridEnd, 'day')) {
+      cells.push({
+        date: cursor,
+        inCurrentMonth: cursor.isSame(selectedMonth, 'month'),
+        inTripRange: this.isDayInSelectedTripRange(cursor),
+        isToday: cursor.isSame(dayjs(), 'day'),
+        steps: this.stepsForDate(cursor),
+      });
+      cursor = cursor.add(1, 'day');
+    }
+
+    const weeks: CalendarCell[][] = [];
+    for (let i = 0; i < cells.length; i += 7) {
+      weeks.push(cells.slice(i, i + 7));
+    }
+    return weeks;
+  }
+
+  stepDateRangeLabel(step: ITripPlanStep): string {
+    const startDate = this.toDayjsDate(step.startDate);
+    const endDate = this.toDayjsDate(step.endDate);
+    if (!startDate) {
+      return '';
+    }
+    if (!endDate || startDate.isSame(endDate, 'day')) {
+      return startDate.format('DD MMM');
+    }
+    return `${startDate.format('DD MMM')} - ${endDate.format('DD MMM')}`;
+  }
+
+  hasStepsInDisplayedMonth(): boolean {
+    return this.calendarWeeks().some(week => week.some(cell => cell.inCurrentMonth && cell.steps.length > 0));
+  }
+
+  trackCalendarCell(_index: number, cell: CalendarCell): string {
+    return cell.date.format('YYYY-MM-DD');
+  }
+
   private toDayjsDate(value?: unknown): dayjs.Dayjs | null {
     if (!value) return null;
     if (dayjs.isDayjs(value)) return value;
     const parsed = dayjs(value as string | Date);
     return parsed.isValid() ? parsed : null;
+  }
+
+  private isDayInSelectedTripRange(date: dayjs.Dayjs): boolean {
+    const trip = this.selectedTrip();
+    if (!trip) {
+      return false;
+    }
+    const tripStart = this.toDayjsDate(trip.startDate);
+    const tripEnd = this.toDayjsDate(trip.endDate);
+    if (!tripStart || !tripEnd) {
+      return false;
+    }
+    return (date.isSame(tripStart, 'day') || date.isAfter(tripStart, 'day')) && (date.isSame(tripEnd, 'day') || date.isBefore(tripEnd, 'day'));
+  }
+
+  private stepsForDate(date: dayjs.Dayjs): ITripPlanStep[] {
+    return this.steps().filter(step => {
+      const startDate = this.toDayjsDate(step.startDate);
+      const endDate = this.toDayjsDate(step.endDate) ?? startDate;
+      if (!startDate || !endDate) {
+        return false;
+      }
+      const startsBeforeOrOnDay = startDate.isSame(date, 'day') || startDate.isBefore(date, 'day');
+      const endsAfterOrOnDay = endDate.isSame(date, 'day') || endDate.isAfter(date, 'day');
+      return startsBeforeOrOnDay && endsAfterOrOnDay;
+    });
   }
 
   private sortSteps(steps: ITripPlanStep[]): ITripPlanStep[] {

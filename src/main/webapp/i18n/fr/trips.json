@@ -11,6 +11,12 @@
     "selectTripHint": "Sélectionnez un voyage pour voir son itinéraire",
     "selectTripHintSub": "Les détails du voyage et la chronologie apparaîtront ici",
     "addStep": "Ajouter une Étape",
+    "viewMode": "Mode d'affichage du voyage",
+    "timelineView": "Chronologie",
+    "calendarView": "Calendrier",
+    "currentMonth": "Mois actuel",
+    "noStepsInMonth": "Aucune étape dans ce mois.",
+    "moreSteps": "+{{count}} de plus",
     "newStep": "Nouvelle Étape",
     "editStep": "Modifier l'Étape",
     "deleteStep": "Supprimer l'Étape",
@@ -50,6 +56,9 @@
       "stepEndDateAfterTripEnd": "La date de fin de l'étape ne peut pas être postérieure à la date de fin du voyage.",
       "stepStartDateAfterEndDate": "La date de début de l'étape doit être antérieure ou égale à la date de fin.",
       "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Veuillez choisir une plage de dates différente."
+    },
+    "warnings": {
+      "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Vous pouvez quand même l'enregistrer."
     }
   }
 }

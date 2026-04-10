@@ -21,6 +21,7 @@ export class StepFormModalComponent implements OnInit {
 
   isSaving = signal(false);
   errorMsg = signal<string | null>(null);
+  warningMsg = signal<string | null>(null);
 
   protected activeModal = inject(NgbActiveModal);
   private fb = inject(FormBuilder);
@@ -62,6 +63,7 @@ export class StepFormModalComponent implements OnInit {
     if (this.editForm.invalid) return;
     this.isSaving.set(true);
     this.errorMsg.set(null);
+    this.warningMsg.set(null);
 
     const val = this.editForm.getRawValue();
     const startDate = dayjs(val.startDate!);
@@ -123,6 +125,9 @@ export class StepFormModalComponent implements OnInit {
   }
 
   private validateStepDates(startDate: dayjs.Dayjs, endDate: dayjs.Dayjs): boolean {
+    this.errorMsg.set(null);
+    this.warningMsg.set(null);
+
     // Check if startDate is after endDate
     if (startDate.isAfter(endDate)) {
       this.errorMsg.set('trips.errors.stepStartDateAfterEndDate');
@@ -155,8 +160,7 @@ export class StepFormModalComponent implements OnInit {
     });
 
     if (overlapsExistingStep) {
-      this.errorMsg.set('trips.errors.stepDatesOverlap');
-      return false;
+      this.warningMsg.set('trips.warnings.stepDatesOverlap');
     }
 
     return true;
