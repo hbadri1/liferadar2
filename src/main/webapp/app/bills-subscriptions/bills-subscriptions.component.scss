@@ -1,0 +1,264 @@
+.bills-subscriptions-page {
+  min-height: 100%;
+  background-color: #f8f9fa;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.bills-subscriptions-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+.metric-card {
+  border: 1px solid #dee2e6;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-subtitle {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .card-text {
+    margin-top: 0.75rem;
+    color: #212529;
+  }
+}
+
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+
+  .nav-link {
+    color: #6c757d;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: #495057;
+      border-bottom-color: #e9ecef;
+    }
+
+    &.active {
+      color: #0d6efd;
+      border-bottom-color: #0d6efd;
+      background-color: transparent;
+    }
+  }
+}
+
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.table-responsive {
+  border-radius: 0.25rem;
+
+  table {
+    margin-bottom: 0;
+
+    thead {
+      background-color: #f8f9fa;
+
+      th {
+        border-top: 1px solid #dee2e6;
+        font-weight: 600;
+        color: #495057;
+        padding: 1rem;
+      }
+    }
+
+    tbody {
+      tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      td {
+        padding: 1rem;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+.list-group-item {
+  border: 1px solid #dee2e6;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  h6 {
+    margin-bottom: 0.25rem;
+    color: #212529;
+    font-weight: 600;
+  }
+}
+
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-group-sm .btn {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+}
+
+.table-responsive {
+  table {
+    td:last-child {
+      white-space: nowrap;
+
+      .btn-group.btn-group-sm {
+        display: inline-flex;
+        flex-wrap: nowrap;
+        gap: 0.35rem;
+
+        .btn {
+          border-radius: 0.35rem !important;
+          margin: 0 !important;
+        }
+      }
+    }
+  }
+}
+
+/* Keep action buttons visually stable in RTL tables (Arabic). */
+:host-context([dir='rtl']) {
+  .table-responsive {
+    table {
+      th:last-child,
+      td:last-child {
+        text-align: right;
+      }
+
+      td:last-child .btn-group {
+        display: inline-flex;
+        flex-wrap: nowrap;
+        direction: rtl;
+      }
+    }
+  }
+}
+
+.card {
+  border: 1px solid #dee2e6;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1.5rem;
+
+    h5 {
+      margin: 0;
+      color: #212529;
+      font-weight: 600;
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+.alert {
+  border: none;
+  border-radius: 0.25rem;
+
+  &.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+  }
+
+  &.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+
+    h5 {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .bills-subscriptions-page__header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .header-actions {
+      width: 100%;
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  .table-responsive {
+    table {
+      thead th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      tbody td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .nav-tabs {
+    .nav-link {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+  }
+}
+

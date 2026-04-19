@@ -6,6 +6,8 @@
       "home": "Accueil",
       "about": "À propos",
       "actionItems": "Actions",
+      "billsSubscriptions": "Factures & abonnements",
+      "notifications": "Notifications",
       "family": "Famille",
       "trips": "Voyages",
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",

@@ -7,6 +7,8 @@
       "lastname": "Nom",
       "lastname.placeholder": "Votre nom",
       "language": "Langue",
+      "timezone": "Fuseau horaire",
+      "currency": "Devise",
       "button": "Sauvegarder"
     },
     "messages": {

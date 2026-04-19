@@ -6,6 +6,7 @@ import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { LANGUAGES } from 'app/config/language.constants';
+import { CURRENCIES, TIMEZONES } from 'app/shared/constants/preferences.constants';
 
 const initialAccount: Account = {} as Account;
 
@@ -17,6 +18,8 @@ const initialAccount: Account = {} as Account;
 export default class SettingsComponent implements OnInit {
   success = signal(false);
   languages = LANGUAGES;
+  timezones = TIMEZONES;
+  currencies = CURRENCIES;
 
   settingsForm = new FormGroup({
     firstName: new FormControl(initialAccount.firstName, {
@@ -32,6 +35,8 @@ export default class SettingsComponent implements OnInit {
       validators: [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email],
     }),
     langKey: new FormControl(initialAccount.langKey, { nonNullable: true }),
+    timezone: new FormControl('UTC', { nonNullable: true }),
+    currency: new FormControl('USD', { nonNullable: true }),
 
     activated: new FormControl(initialAccount.activated, { nonNullable: true }),
     authorities: new FormControl(initialAccount.authorities, { nonNullable: true }),
@@ -45,7 +50,11 @@ export default class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => {
       if (account) {
-        this.settingsForm.patchValue(account);
+        this.settingsForm.patchValue({
+          ...account,
+          timezone: account.timezone ?? 'UTC',
+          currency: account.currency ?? 'USD',
+        });
       }
     });
   }

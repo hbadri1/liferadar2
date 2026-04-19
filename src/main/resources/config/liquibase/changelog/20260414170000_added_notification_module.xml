@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260414170000-1" author="copilot">
+        <createTable tableName="app_notification">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="recipient_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_type" type="varchar(50)"/>
+            <column name="source_id" type="varchar(100)"/>
+            <column name="title" type="varchar(160)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_url" type="varchar(500)"/>
+            <column name="payload_json" type="${clobType}"/>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="read_at" type="timestamp"/>
+            <column name="deduplication_key" type="varchar(191)"/>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <createIndex tableName="app_notification" indexName="idx_notification_recipient">
+            <column name="recipient_id"/>
+        </createIndex>
+        <createIndex tableName="app_notification" indexName="idx_notification_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="app_notification" indexName="idx_notification_created_date">
+            <column name="created_date"/>
+        </createIndex>
+        <addUniqueConstraint tableName="app_notification" columnNames="deduplication_key" constraintName="ux_notification_dedup_key"/>
+    </changeSet>
+
+    <changeSet id="20260414170000-2" author="copilot">
+        <addForeignKeyConstraint
+            baseTableName="app_notification"
+            baseColumnNames="recipient_id"
+            referencedTableName="jhi_user"
+            referencedColumnNames="id"
+            constraintName="fk_notification__recipient_id"/>
+    </changeSet>
+
+    <changeSet id="20260414170000-3" author="copilot">
+        <createTable tableName="notification_delivery">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="notification_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination" type="varchar(254)"/>
+            <column name="attempt_count" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="max_attempts" type="int" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_attempt_at" type="timestamp"/>
+            <column name="next_attempt_at" type="timestamp"/>
+            <column name="delivered_at" type="timestamp"/>
+            <column name="provider_message_id" type="varchar(255)"/>
+            <column name="failure_reason" type="${clobType}"/>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <createIndex tableName="notification_delivery" indexName="idx_notification_delivery_status_next_attempt">
+            <column name="status"/>
+            <column name="next_attempt_at"/>
+        </createIndex>
+        <createIndex tableName="notification_delivery" indexName="idx_notification_delivery_notification">
+            <column name="notification_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20260414170000-4" author="copilot">
+        <addForeignKeyConstraint
+            baseTableName="notification_delivery"
+            baseColumnNames="notification_id"
+            referencedTableName="app_notification"
+            referencedColumnNames="id"
+            constraintName="fk_notification_delivery__notification_id"/>
+    </changeSet>
+</databaseChangeLog>
+

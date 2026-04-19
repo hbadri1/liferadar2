@@ -1,0 +1,30 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Votre boîte de réception portail pour les alertes et rappels.",
+    "unreadOnly": "Non lus seulement",
+    "refresh": "Actualiser",
+    "markAllRead": "Tout marquer comme lu",
+    "markRead": "Marquer comme lu",
+    "open": "Ouvrir",
+    "empty": "Aucune notification trouvée.",
+    "loading": "Chargement des notifications...",
+    "status": {
+      "UNREAD": "Non lu",
+      "READ": "Lu"
+    },
+    "channels": {
+      "PORTAL": "Portail",
+      "UI": "Portail",
+      "EMAIL": "Email"
+    },
+    "deliveryStatus": {
+      "PENDING": "En attente",
+      "DELIVERED": "Livré",
+      "RETRY_SCHEDULED": "Nouvelle tentative planifiée",
+      "FAILED": "Échoué",
+      "SKIPPED": "Ignoré"
+    }
+  }
+}
+

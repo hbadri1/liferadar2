@@ -131,3 +131,26 @@ jhipster:
 # ===================================================================
 
 # application:
+application:
+  notifications:
+    enabled: ${APPLICATION_NOTIFICATIONS_ENABLED:true}
+    scheduler:
+      cron: ${APPLICATION_NOTIFICATIONS_SCHEDULER_CRON:0 0 0 * * *}
+      zone: ${APPLICATION_NOTIFICATIONS_SCHEDULER_ZONE:UTC}
+      upcoming-renewal-days: ${APPLICATION_NOTIFICATIONS_SCHEDULER_UPCOMING_RENEWAL_DAYS:7}
+      default-channels:
+        - PORTAL
+        - EMAIL
+    delivery:
+      retry-cron: ${APPLICATION_NOTIFICATIONS_DELIVERY_RETRY_CRON:0 */15 * * * *}
+      retry-zone: ${APPLICATION_NOTIFICATIONS_DELIVERY_RETRY_ZONE:UTC}
+      max-attempts: ${APPLICATION_NOTIFICATIONS_DELIVERY_MAX_ATTEMPTS:5}
+      retry-backoff-minutes: ${APPLICATION_NOTIFICATIONS_DELIVERY_RETRY_BACKOFF_MINUTES:30}
+      batch-size: ${APPLICATION_NOTIFICATIONS_DELIVERY_BATCH_SIZE:100}
+    channels:
+      ui-enabled: ${APPLICATION_NOTIFICATIONS_CHANNELS_UI_ENABLED:true}
+      email-enabled: ${APPLICATION_NOTIFICATIONS_CHANNELS_EMAIL_ENABLED:true}
+    websocket:
+      enabled: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_ENABLED:false}
+      endpoint: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_ENDPOINT:/websocket/notifications}
+      user-destination: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_USER_DESTINATION:/queue/notifications}

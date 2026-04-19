@@ -124,3 +124,26 @@ jhipster:
 application:
   liquibase:
     async-start: false
+  notifications:
+    enabled: true
+    scheduler:
+      cron: "0 * * * * *" #every minute
+      #cron: "0 0 0 * * *"  #every day at midnight
+      zone: "UTC"
+      upcoming-renewal-days: 7
+      default-channels:
+        - PORTAL
+        - EMAIL
+    delivery:
+      retry-cron: "0 */15 * * * *"
+      retry-zone: "UTC"
+      max-attempts: 5
+      retry-backoff-minutes: 30
+      batch-size: 100
+    channels:
+      ui-enabled: true
+      email-enabled: true
+    websocket:
+      enabled: false
+      endpoint: /websocket/notifications
+      user-destination: /queue/notifications

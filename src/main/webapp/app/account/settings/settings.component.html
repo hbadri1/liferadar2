@@ -128,16 +128,38 @@
             }
           </div>
 
-          @if (languages && languages.length > 0) {
-            <div class="mb-3">
-              <label for="langKey" jhiTranslate="settings.form.language">Language</label>
-              <select class="form-control" id="langKey" name="langKey" formControlName="langKey" data-cy="langKey">
-                @for (language of languages; track $index) {
-                  <option [value]="language">{{ language | findLanguageFromKey }}</option>
-                }
-              </select>
-            </div>
-          }
+           @if (languages && languages.length > 0) {
+             <div class="mb-3">
+               <label for="langKey" jhiTranslate="settings.form.language">Language</label>
+               <select class="form-control" id="langKey" name="langKey" formControlName="langKey" data-cy="langKey">
+                 @for (language of languages; track $index) {
+                   <option [value]="language">{{ language | findLanguageFromKey }}</option>
+                 }
+               </select>
+             </div>
+           }
+
+           @if (timezones && timezones.length > 0) {
+             <div class="mb-3">
+               <label for="timezone" jhiTranslate="settings.form.timezone">Timezone</label>
+               <select class="form-control" id="timezone" name="timezone" formControlName="timezone" data-cy="timezone">
+                 @for (tz of timezones; track tz.value) {
+                   <option [value]="tz.value">{{ tz.label }}</option>
+                 }
+               </select>
+             </div>
+           }
+
+           @if (currencies && currencies.length > 0) {
+             <div class="mb-3">
+               <label for="currency" jhiTranslate="settings.form.currency">Currency</label>
+               <select class="form-control" id="currency" name="currency" formControlName="currency" data-cy="currency">
+                 @for (curr of currencies; track curr.value) {
+                   <option [value]="curr.value">{{ curr.label }}</option>
+                 }
+               </select>
+             </div>
+           }
 
           <button
             type="submit"

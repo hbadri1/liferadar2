@@ -59,6 +59,21 @@
               </span>
             </a>
           </li>
+
+          <li
+            *jhiHasAnyAuthority="['ROLE_FAMILY_ADMIN', 'ROLE_USER', 'ROLE_ADMIN']"
+            class="nav-item"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <a class="nav-link" routerLink="/bills-subscriptions" (click)="collapseNavbar()" data-cy="billsSubscriptions">
+              <span>
+                <fa-icon icon="list"></fa-icon>
+                <span jhiTranslate="global.menu.billsSubscriptions">Bills &amp; Subscriptions</span>
+              </span>
+            </a>
+          </li>
+
         }
         <li
           *jhiHasAnyAuthority="'ROLE_ADMIN'"
@@ -144,27 +159,19 @@
             </span>
           </a>
         </li>
-        @if (languages && languages.length > 1) {
-          <li ngbDropdown class="nav-item dropdown pointer" display="dynamic">
-            <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="languagesnavBarDropdown">
-              <span>
-                <fa-icon icon="flag"></fa-icon>
-                <span jhiTranslate="global.menu.language">Language</span>
+        @if (account() !== null) {
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/notifications" (click)="collapseNavbar()" data-cy="notifications" title="Notifications">
+              <span class="position-relative d-inline-flex align-items-center">
+                <fa-icon icon="bell"></fa-icon>
+                <span class="visually-hidden" jhiTranslate="global.menu.notifications">Notifications</span>
+                @if (unreadNotificationCount() > 0) {
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger">
+                    {{ unreadNotificationCount() }}
+                  </span>
+                }
               </span>
             </a>
-            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="languagesnavBarDropdown">
-              @for (language of languages; track $index) {
-                <li>
-                  <a
-                    class="dropdown-item"
-                    [jhiActiveMenu]="language"
-                    href="javascript:void(0);"
-                    (click)="changeLanguage(language); collapseNavbar()"
-                    >{{ language | findLanguageFromKey }}</a
-                  >
-                </li>
-              }
-            </ul>
           </li>
         }
         <li

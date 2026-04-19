@@ -87,7 +87,12 @@ public class AccountResource {
     public AdminUserDTO getAccount() {
         return userService
             .getUserWithAuthorities()
-            .map(AdminUserDTO::new)
+            .map(user -> {
+                AdminUserDTO userDTO = new AdminUserDTO(user);
+                // Load extended user info (timezone, currency)
+                userService.loadExtendedUserInfo(userDTO);
+                return userDTO;
+            })
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
     }
 
@@ -117,6 +122,8 @@ public class AccountResource {
             userDTO.getLangKey(),
             userDTO.getImageUrl()
         );
+        // Update timezone and currency preferences
+        userService.updateUserPreferences(userDTO.getTimezone(), userDTO.getCurrency());
     }
 
     /**

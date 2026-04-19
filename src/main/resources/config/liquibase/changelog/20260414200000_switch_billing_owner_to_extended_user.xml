@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260414200000-1" author="liferadar">
+        <addColumn tableName="saas_subscription">
+            <column name="owner_id" type="BIGINT"/>
+        </addColumn>
+
+        <sql>
+            UPDATE saas_subscription s
+            SET owner_id = (
+                SELECT eu.id
+                FROM extended_user eu
+                WHERE eu.user_id = s.user_id
+            )
+            WHERE owner_id IS NULL;
+        </sql>
+
+        <addNotNullConstraint tableName="saas_subscription" columnName="owner_id" columnDataType="BIGINT"/>
+        <dropForeignKeyConstraint baseTableName="saas_subscription" constraintName="fk_saas_subscription_user_id"/>
+        <addForeignKeyConstraint
+            baseTableName="saas_subscription"
+            baseColumnNames="owner_id"
+            constraintName="fk_saas_subscription_owner_id"
+            referencedTableName="extended_user"
+            referencedColumnNames="id"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"/>
+        <dropColumn tableName="saas_subscription" columnName="user_id"/>
+    </changeSet>
+
+    <changeSet id="20260414200000-2" author="liferadar">
+        <addColumn tableName="bill">
+            <column name="owner_id" type="BIGINT"/>
+        </addColumn>
+
+        <sql>
+            UPDATE bill b
+            SET owner_id = (
+                SELECT eu.id
+                FROM extended_user eu
+                WHERE eu.user_id = b.user_id
+            )
+            WHERE owner_id IS NULL;
+        </sql>
+
+
+        <addNotNullConstraint tableName="bill" columnName="owner_id" columnDataType="BIGINT"/>
+        <dropForeignKeyConstraint baseTableName="bill" constraintName="fk_bill_user_id"/>
+        <addForeignKeyConstraint
+            baseTableName="bill"
+            baseColumnNames="owner_id"
+            constraintName="fk_bill_owner_id"
+            referencedTableName="extended_user"
+            referencedColumnNames="id"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"/>
+        <dropColumn tableName="bill" columnName="user_id"/>
+    </changeSet>
+
+</databaseChangeLog>
+
