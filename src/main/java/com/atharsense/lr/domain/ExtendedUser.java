@@ -43,6 +43,14 @@ public class ExtendedUser implements Serializable {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
+    @Size(max = 50)
+    @Column(name = "timezone", length = 50, nullable = false)
+    private String timezone = "UTC";
+
+    @Size(max = 3)
+    @Column(name = "currency", length = 3, nullable = false)
+    private String currency = "USD";
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
     @JoinColumn(unique = true)
@@ -115,6 +123,32 @@ public class ExtendedUser implements Serializable {
         this.active = active;
     }
 
+    public String getTimezone() {
+        return this.timezone;
+    }
+
+    public ExtendedUser timezone(String timezone) {
+        this.setTimezone(timezone);
+        return this;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
+    public String getCurrency() {
+        return this.currency;
+    }
+
+    public ExtendedUser currency(String currency) {
+        this.setCurrency(currency);
+        return this;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public User getUser() {
         return this.user;
     }
@@ -156,6 +190,8 @@ public class ExtendedUser implements Serializable {
             ", mobile='" + getMobile() + "'" +
             ", avatar='" + getAvatar() + "'" +
             ", active='" + getActive() + "'" +
+            ", timezone='" + getTimezone() + "'" +
+            ", currency='" + getCurrency() + "'" +
             "}";
     }
 }

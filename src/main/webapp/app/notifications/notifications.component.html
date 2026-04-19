@@ -1,0 +1,100 @@
+<section class="notifications-page py-4">
+  <div class="container-fluid">
+    <jhi-alert-error />
+    <jhi-alert />
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div>
+        <h1 class="h3 mb-1" jhiTranslate="notifications.title">Notifications</h1>
+        <p class="text-muted mb-0" jhiTranslate="notifications.subtitle">Your portal inbox for alerts and reminders.</p>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <div class="form-check form-switch m-0">
+          <input
+            id="notificationsUnreadOnly"
+            type="checkbox"
+            class="form-check-input"
+            [(ngModel)]="unreadOnly"
+            (ngModelChange)="onUnreadOnlyChange()"
+          />
+          <label class="form-check-label" for="notificationsUnreadOnly" jhiTranslate="notifications.unreadOnly">Unread only</label>
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary" (click)="load()" [disabled]="isLoading">
+          <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+          <span class="ms-2" jhiTranslate="notifications.refresh">Refresh</span>
+        </button>
+
+        <button type="button" class="btn btn-primary" (click)="markAllAsRead()" [disabled]="!hasUnreadNotifications() || isLoading">
+          <fa-icon icon="check-double"></fa-icon>
+          <span class="ms-2" jhiTranslate="notifications.markAllRead">Mark all as read</span>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center my-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden" jhiTranslate="notifications.loading">Loading notifications...</span>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && notifications.length === 0" class="alert alert-info mb-0" jhiTranslate="notifications.empty">
+      No notifications found.
+    </div>
+
+    <div *ngIf="!isLoading && notifications.length > 0" class="notification-list d-grid gap-3">
+      <article
+        *ngFor="let notification of notifications; trackBy: trackById"
+        class="card notification-card"
+        [class.notification-card--unread]="notification.status === 'UNREAD'"
+      >
+        <div class="card-body">
+          <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+            <div class="flex-grow-1">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <h2 class="h5 mb-0">{{ notification.title }}</h2>
+                <span class="badge rounded-pill" [ngClass]="notification.status === 'UNREAD' ? 'text-bg-primary' : 'text-bg-secondary'">
+                  {{ ('notifications.status.' + notification.status) | translate }}
+                </span>
+                <small class="text-muted" *ngIf="notification.createdDate">{{ notification.createdDate | date: 'medium' }}</small>
+              </div>
+
+              <p class="mb-3 text-body-secondary">{{ notification.message }}</p>
+
+              <div class="d-flex flex-wrap gap-2" *ngIf="notification.deliveries.length > 0">
+                <span *ngFor="let delivery of notification.deliveries" class="badge text-bg-light border">
+                  {{ ('notifications.channels.' + getDeliveryChannelKey(delivery)) | translate }} ·
+                  {{ ('notifications.deliveryStatus.' + delivery.status) | translate }}
+                </span>
+              </div>
+            </div>
+
+            <div class="d-flex flex-lg-column align-items-stretch gap-2 notification-card__actions">
+              <button
+                *ngIf="notification.actionUrl"
+                type="button"
+                class="btn btn-outline-primary btn-sm"
+                (click)="openAction(notification)"
+              >
+                <fa-icon icon="external-link-alt"></fa-icon>
+                <span class="ms-2" jhiTranslate="notifications.open">Open</span>
+              </button>
+
+              <button
+                *ngIf="notification.status === 'UNREAD'"
+                type="button"
+                class="btn btn-outline-secondary btn-sm"
+                (click)="markAsRead(notification)"
+              >
+                <fa-icon icon="check"></fa-icon>
+                <span class="ms-2" jhiTranslate="notifications.markRead">Mark as read</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+

@@ -1,0 +1,30 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Your portal inbox for alerts and reminders.",
+    "unreadOnly": "Unread only",
+    "refresh": "Refresh",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "open": "Open",
+    "empty": "No notifications found.",
+    "loading": "Loading notifications...",
+    "status": {
+      "UNREAD": "Unread",
+      "READ": "Read"
+    },
+    "channels": {
+      "PORTAL": "Portal",
+      "UI": "Portal",
+      "EMAIL": "Email"
+    },
+    "deliveryStatus": {
+      "PENDING": "Pending",
+      "DELIVERED": "Delivered",
+      "RETRY_SCHEDULED": "Retry scheduled",
+      "FAILED": "Failed",
+      "SKIPPED": "Skipped"
+    }
+  }
+}
+

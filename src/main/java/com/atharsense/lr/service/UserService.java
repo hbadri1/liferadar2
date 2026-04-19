@@ -185,6 +185,8 @@ public class UserService {
         extendedUser.setUser(user);
         extendedUser.setFullName(buildFullName(userDTO, user));
         extendedUser.setActive(user.isActivated());
+        extendedUser.setTimezone(userDTO.getTimezone() != null ? userDTO.getTimezone() : "UTC");
+        extendedUser.setCurrency(userDTO.getCurrency() != null ? userDTO.getCurrency() : "USD");
         extendedUserRepository.save(extendedUser);
     }
 
@@ -262,6 +264,57 @@ public class UserService {
                 user.setImageUrl(imageUrl);
                 userRepository.save(user);
                 LOG.debug("Changed Information for User: {}", user);
+            });
+    }
+
+    /**
+     * Update timezone and currency preferences for the current user.
+     *
+     * @param timezone timezone preference.
+     * @param currency currency preference.
+     */
+    public void updateUserPreferences(String timezone, String currency) {
+        SecurityUtils.getCurrentUserLogin()
+            .flatMap(userRepository::findOneByLogin)
+            .ifPresent(user -> {
+                ExtendedUser extendedUser = extendedUserRepository.findOneByUserId(user.getId()).orElseGet(() -> {
+                    ExtendedUser created = new ExtendedUser();
+                    created.setUser(user);
+                    String firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
+                    String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
+                    String fullName = (firstName + " " + lastName).trim();
+                    created.setFullName(fullName.isEmpty() ? user.getLogin() : fullName);
+                    created.setActive(user.isActivated());
+                    created.setTimezone("UTC");
+                    created.setCurrency("USD");
+                    return created;
+                });
+
+                if (timezone != null) {
+                    extendedUser.setTimezone(timezone);
+                }
+                if (currency != null) {
+                    extendedUser.setCurrency(currency);
+                }
+
+                extendedUserRepository.save(extendedUser);
+                LOG.debug("Updated preferences for User: {}", user.getLogin());
+            });
+    }
+
+    /**
+     * Load extended user information (timezone, currency) into AdminUserDTO.
+     *
+     * @param userDTO the user DTO to populate with extended user info.
+     */
+    public void loadExtendedUserInfo(AdminUserDTO userDTO) {
+        if (userDTO.getId() == null) {
+            return;
+        }
+        extendedUserRepository.findOneByUserId(userDTO.getId())
+            .ifPresent(extendedUser -> {
+                userDTO.setTimezone(extendedUser.getTimezone());
+                userDTO.setCurrency(extendedUser.getCurrency());
             });
     }
 

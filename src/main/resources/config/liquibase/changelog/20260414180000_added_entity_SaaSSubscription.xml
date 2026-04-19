@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260414180000_added_entity_SaaSSubscription" author="liferadar">
+        <createTable tableName="saas_subscription">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="service_name" type="VARCHAR(200)" remarks="Name of the SaaS service">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(800)" remarks="Description of the subscription">
+                <constraints nullable="true"/>
+            </column>
+            <column name="monthly_cost" type="DECIMAL(10,2)" remarks="Monthly cost of the subscription">
+                <constraints nullable="false"/>
+            </column>
+            <column name="annual_cost" type="DECIMAL(10,2)" remarks="Annual cost of the subscription">
+                <constraints nullable="true"/>
+            </column>
+            <column name="subscription_date" type="DATE" remarks="Date when the subscription started">
+                <constraints nullable="false"/>
+            </column>
+            <column name="renewal_date" type="DATE" remarks="Next renewal date">
+                <constraints nullable="true"/>
+            </column>
+            <column name="billing_cycle" type="VARCHAR(20)" remarks="Billing cycle (MONTHLY, QUARTERLY, SEMI_ANNUAL, ANNUAL)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" remarks="Status (ACTIVE, PAUSED, CANCELLED, PENDING, EXPIRED)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_url" type="VARCHAR(500)" remarks="URL of the service provider">
+                <constraints nullable="true"/>
+            </column>
+            <column name="account_email" type="VARCHAR(200)" remarks="Account email for the service">
+                <constraints nullable="true"/>
+            </column>
+            <column name="account_username" type="VARCHAR(200)" remarks="Account username for the service">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notes" type="VARCHAR(1000)" remarks="Additional notes">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_shared" type="BOOLEAN" defaultValueBoolean="false" remarks="Whether the subscription is shared">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP" remarks="Creation timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP" remarks="Last modification timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_id" type="BIGINT" remarks="Reference to the user who owns the subscription">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="saas_subscription"
+            baseColumnNames="user_id"
+            constraintName="fk_saas_subscription_user_id"
+            referencedTableName="jhi_user"
+            referencedColumnNames="id"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
+

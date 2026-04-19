@@ -194,6 +194,7 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
         this.authorities = authorities;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

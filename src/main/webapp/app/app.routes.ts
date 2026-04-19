@@ -70,6 +70,42 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    path: 'bills-subscriptions',
+    loadComponent: () => import('./bills-subscriptions/bills-subscriptions.component'),
+    title: 'billsSubscriptions.title',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'notifications',
+    loadComponent: () => import('./notifications/notifications.component'),
+    title: 'notifications.title',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN, Authority.CHILD],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'entities/bill/new',
+    loadComponent: () => import('./entities/bill/create/bill-create.component'),
+    title: 'billsSubscriptions.newBill',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'entities/saas-subscription/new',
+    loadComponent: () => import('./entities/saas-subscription/create/saas-subscription-create.component'),
+    title: 'billsSubscriptions.newSubscription',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: '',
     loadChildren: () => import(`./entities/entity.routes`),
   },

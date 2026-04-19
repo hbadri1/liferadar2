@@ -1,0 +1,67 @@
+{
+  "liferadarApp": {
+    "saasSubscription": {
+      "home": {
+        "title": "SaaS Subscriptions",
+        "createLabel": "Create a new SaaS Subscription",
+        "editLabel": "Edit SaaS Subscription",
+        "deleteQuestion": "Are you sure you want to delete this SaaS Subscription?"
+      },
+      "created": "A new SaaS Subscription is created with identifier {{ param }}",
+      "updated": "A SaaS Subscription is updated with identifier {{ param }}",
+      "deleted": "A SaaS Subscription is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete SaaS Subscription {{ id }}?"
+      },
+      "detail": {
+        "title": "SaaS Subscription"
+      },
+      "serviceName": "Service Name",
+      "description": "Description",
+      "monthlyCost": "Monthly Cost",
+      "annualCost": "Annual Cost",
+      "subscriptionDate": "Subscription Date",
+      "renewalDate": "Renewal Date",
+      "billingCycle": "Billing Cycle",
+      "status": "Status",
+      "providerUrl": "Provider URL",
+      "accountEmail": "Account Email",
+      "accountUsername": "Account Username",
+      "notes": "Notes",
+      "isShared": "Is Shared",
+      "createdDate": "Created Date",
+      "lastModifiedDate": "Last Modified Date"
+    },
+    "bill": {
+      "home": {
+        "title": "Bills",
+        "createLabel": "Create a new Bill",
+        "editLabel": "Edit Bill",
+        "deleteQuestion": "Are you sure you want to delete this Bill?"
+      },
+      "created": "A new Bill is created with identifier {{ param }}",
+      "updated": "A Bill is updated with identifier {{ param }}",
+      "deleted": "A Bill is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Bill {{ id }}?"
+      },
+      "detail": {
+        "title": "Bill"
+      },
+      "description": "Description",
+      "amount": "Amount",
+      "billDate": "Bill Date",
+      "dueDate": "Due Date",
+      "paidDate": "Paid Date",
+      "status": "Status",
+      "receiptUrl": "Receipt URL",
+      "notes": "Notes",
+      "paymentMethod": "Payment Method",
+      "isRecurring": "Is Recurring",
+      "createdDate": "Created Date",
+      "lastModifiedDate": "Last Modified Date",
+      "subscription": "Subscription"
+    }
+  }
+}
+

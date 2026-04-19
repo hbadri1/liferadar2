@@ -6,6 +6,8 @@ export interface IExtendedUser {
   mobile?: string | null;
   avatar?: string | null;
   active?: boolean | null;
+  timezone?: string | null;
+  currency?: string | null;
   user?: Pick<IUser, 'id'> | null;
 }
 

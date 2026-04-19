@@ -36,6 +36,11 @@
     <include file="config/liquibase/changelog/20260316160000_added_entity_TodoAppUserConfig.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260328143000_remove_default_user_account.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260329100000_alter_trip_plan_add_fields.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260414170000_added_notification_module.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260414180000_added_entity_SaaSSubscription.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260414180001_added_entity_Bill.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260414200000_switch_billing_owner_to_extended_user.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260415150000_add_timezone_currency_to_extended_user.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->

@@ -41,6 +41,12 @@ public class AdminUserDTO implements Serializable {
     @Size(min = 2, max = 10)
     private String langKey;
 
+    @Size(max = 50)
+    private String timezone;
+
+    @Size(max = 3)
+    private String currency;
+
     private String createdBy;
 
     private Instant createdDate;
@@ -135,6 +141,22 @@ public class AdminUserDTO implements Serializable {
         this.langKey = langKey;
     }
 
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public String getCreatedBy() {
         return createdBy;
     }
@@ -186,6 +208,8 @@ public class AdminUserDTO implements Serializable {
             ", imageUrl='" + imageUrl + '\'' +
             ", activated=" + activated +
             ", langKey='" + langKey + '\'' +
+            ", timezone='" + timezone + '\'' +
+            ", currency='" + currency + '\'' +
             ", createdBy=" + createdBy +
             ", createdDate=" + createdDate +
             ", lastModifiedBy='" + lastModifiedBy + '\'' +

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260414180001_added_entity_Bill" author="liferadar">
+        <createTable tableName="bill">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(200)" remarks="Bill description">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(10,2)" remarks="Bill amount">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bill_date" type="DATE" remarks="Date when the bill was issued">
+                <constraints nullable="false"/>
+            </column>
+            <column name="due_date" type="DATE" remarks="Payment due date">
+                <constraints nullable="true"/>
+            </column>
+            <column name="paid_date" type="DATE" remarks="Date when the bill was paid">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" remarks="Status (PENDING, PAID, OVERDUE, CANCELLED, PARTIAL)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receipt_url" type="VARCHAR(500)" remarks="URL to the receipt">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notes" type="VARCHAR(1000)" remarks="Additional notes">
+                <constraints nullable="true"/>
+            </column>
+            <column name="payment_method" type="VARCHAR(20)" remarks="Payment method (CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER, PAYPAL, OTHER)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_recurring" type="BOOLEAN" defaultValueBoolean="false" remarks="Whether the bill is recurring">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP" remarks="Creation timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP" remarks="Last modification timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_id" type="BIGINT" remarks="Reference to the user who owns the bill">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subscription_id" type="BIGINT" remarks="Reference to the associated subscription">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="bill"
+            baseColumnNames="user_id"
+            constraintName="fk_bill_user_id"
+            referencedTableName="jhi_user"
+            referencedColumnNames="id"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"/>
+        <addForeignKeyConstraint
+            baseTableName="bill"
+            baseColumnNames="subscription_id"
+            constraintName="fk_bill_subscription_id"
+            referencedTableName="saas_subscription"
+            referencedColumnNames="id"
+            onDelete="SET NULL"
+            onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
+
