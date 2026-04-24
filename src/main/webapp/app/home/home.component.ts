@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { HttpResponse } from '@angular/common/http';
+import dayjs from 'dayjs/esm';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -457,6 +458,22 @@ export default class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
+  hasRecentEvaluationForItem(itemId?: number): boolean {
+    if (!itemId) {
+      return false;
+    }
+
+    const cutoff = dayjs().subtract(24, 'hour');
+    return this.lifeEvaluations().some(evaluation => {
+      if (evaluation.subPillarItem?.id !== itemId || !evaluation.evaluationDate) {
+        return false;
+      }
+
+      // evaluationDate is date-only on backend, so use end of day for a fair 24h check window.
+      return evaluation.evaluationDate.endOf('day').isAfter(cutoff);
+    });
+  }
+
   createLifeEvaluation(item: ISubPillarItem): void {
     const modalRef = this.modalService.open(LifeEvaluationCreateModalComponent, {
       size: 'md',
@@ -749,13 +766,13 @@ export default class HomeComponent implements OnInit, OnDestroy {
   loadLifeEvaluations(): void {
     this.isLoadingEvaluations.set(true);
     console.log('Loading life evaluations for current user...');
-    const last30DaysStart = this.getLast30DaysStartDate();
+    const last48HoursStart = this.getLast48HoursStartDate();
 
     this.lifeEvaluationService
       .query({
         size: 100,
         sort: ['evaluationDate,desc', 'id,desc'],
-        'evaluationDate.greaterThanOrEqual': last30DaysStart,
+        'evaluationDate.greaterThanOrEqual': last48HoursStart,
       })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -815,11 +832,10 @@ export default class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getLast30DaysStartDate(): string {
-    const now = new Date();
-    const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    startDate.setDate(startDate.getDate() - 29);
-
+  private getLast48HoursStartDate(): string {
+    const now = Date.now();
+    const fortyEightHoursInMilliseconds = 48 * 60 * 60 * 1000;
+    const startDate = new Date(now - fortyEightHoursInMilliseconds);
     const year = startDate.getFullYear();
     const month = `${startDate.getMonth() + 1}`.padStart(2, '0');
     const day = `${startDate.getDate()}`.padStart(2, '0');

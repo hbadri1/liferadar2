@@ -1,18 +1,20 @@
 <div>
-  <h2 id="page-heading" data-cy="EvaluationDecisionHeading">
-    @if (isActionItemsPage) {
-      <span jhiTranslate="global.menu.actionItems">Action Items</span>
-    } @else {
-      <span jhiTranslate="liferadarApp.evaluationDecision.home.title">Evaluation Decisions</span>
-    }
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
+    <h2 id="page-heading" data-cy="EvaluationDecisionHeading" class="mb-0">
+      @if (isActionItemsPage) {
+        <span jhiTranslate="global.menu.actionItems">Action Items</span>
+      } @else {
+        <span jhiTranslate="liferadarApp.evaluationDecision.home.title">Evaluation Decisions</span>
+      }
+    </h2>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-info" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span jhiTranslate="liferadarApp.evaluationDecision.home.refreshListLabel">Refresh list</span>
       </button>
 
-      <button class="btn btn-success me-2" (click)="exportToExcel()" [disabled]="isLoading || evaluationDecisions().length === 0">
+      <button class="btn btn-success" (click)="exportToExcel()" [disabled]="isLoading || evaluationDecisions().length === 0">
         <fa-icon icon="save"></fa-icon>
         <span jhiTranslate="liferadarApp.evaluationDecision.home.exportExcel">Export to Excel</span>
       </button>
@@ -29,7 +31,13 @@
         </button>
       }
     </div>
-  </h2>
+  </div>
+
+  @if (isActionItemsPage) {
+    <div class="alert alert-info py-2 px-3 mb-3" role="note">
+      <span jhiTranslate="liferadarApp.evaluationDecision.home.last7DaysNote">Showing action items from the last 7 days only.</span>
+    </div>
+  }
 
   <jhi-alert-error />
 
@@ -41,7 +49,7 @@
     </div>
   } @else {
     <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
+      <table class="table table-striped table-sm align-middle" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             @if (!isActionItemsPage) {
@@ -67,6 +75,12 @@
                   <fa-icon class="p-1" icon="sort"></fa-icon>
                 </div>
               </th>
+              <th scope="col" jhiSortBy="lifeEvaluation.evaluationDate">
+                <div class="d-flex">
+                  <span jhiTranslate="liferadarApp.evaluationDecision.creationDate">Creation Date</span>
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                </div>
+              </th>
             }
             @if (!isActionItemsPage) {
               <th scope="col" jhiSortBy="date">
@@ -83,17 +97,19 @@
                 </div>
               </th>
             }
-            <th scope="col" jhiSortBy="lifeEvaluation.id">
+            <th scope="col" jhiSortBy="lifeEvaluation.id" [class.d-none.d-lg-table-cell]="isActionItemsPage">
               <div class="d-flex">
                 <span jhiTranslate="liferadarApp.evaluationDecision.lifeEvaluation">Life Evaluation</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col">
-              <div class="d-flex">
-                <span jhiTranslate="liferadarApp.evaluationDecision.subPillar">Sub Life Pillar</span>
-              </div>
-            </th>
+            @if (!isActionItemsPage) {
+              <th scope="col">
+                <div class="d-flex">
+                  <span jhiTranslate="liferadarApp.evaluationDecision.subPillar">Sub Life Pillar</span>
+                </div>
+              </th>
+            }
             @if (isActionItemsPage) {
               <th scope="col">
                 <div class="d-flex">
@@ -111,19 +127,24 @@
                 <td>
                   <a [routerLink]="['/evaluation-decision', evaluationDecision.id, 'view']">{{ evaluationDecision.id }}</a>
                 </td>
-              }
-              <td>
-                <div>{{ evaluationDecision.decision }}</div>
-                @if (!isActionItemsPage && evaluationDecision.date) {
+               }
+               <td>
+                 <div class="text-break" style="max-width: 300px">{{ evaluationDecision.decision }}</div>
+                 @if (!isActionItemsPage && evaluationDecision.date) {
                   <div class="small text-muted mt-1">
                     {{ evaluationDecision.date.toDate() | date: 'dd-MM-yyyy HH:mm': riyadhTimeZone }}
                   </div>
                 }
               </td>
               @if (isActionItemsPage) {
-                <td>
+                <td class="text-nowrap">
                   @if (evaluationDecision.date) {
                     {{ evaluationDecision.date.toDate() | date: 'dd-MM-yyyy HH:mm': riyadhTimeZone }}
+                  }
+                </td>
+                <td class="text-nowrap">
+                  @if (getLifeEvaluationCreationDate(evaluationDecision)) {
+                    {{ getLifeEvaluationCreationDate(evaluationDecision) | date: 'dd-MM-yyyy' : riyadhTimeZone }}
                   }
                 </td>
               }
@@ -136,24 +157,26 @@
                     </div>
                   }
                 </td>
+               }
+               <td [class.d-none.d-lg-table-cell]="isActionItemsPage">
+                 @if (evaluationDecision.lifeEvaluation) {
+                   <div class="text-truncate" style="max-width: 200px">
+                     <a [routerLink]="['/life-evaluation', evaluationDecision.lifeEvaluation.id, 'view']">{{
+                       getLifeEvaluationDisplayName(evaluationDecision)
+                     }}</a>
+                   </div>
+                 }
+               </td>
+               @if (!isActionItemsPage) {
+                <td>{{ getSubPillarDisplayName(evaluationDecision) }}</td>
               }
-              <td>
-                @if (evaluationDecision.lifeEvaluation) {
-                  <div>
-                    <a [routerLink]="['/life-evaluation', evaluationDecision.lifeEvaluation.id, 'view']">{{
-                      getLifeEvaluationDisplayName(evaluationDecision)
-                    }}</a>
-                  </div>
-                }
-              </td>
-              <td>{{ getSubPillarDisplayName(evaluationDecision) }}</td>
               @if (isActionItemsPage) {
                 <td>
-                  <div class="btn-group btn-group-sm" role="group">
+                  <div class="d-flex flex-wrap gap-1" role="group" aria-label="Integrations">
                     @for (provider of integrationProviders; track provider.code) {
                       <button
                         type="button"
-                        class="btn d-inline-flex align-items-center gap-1"
+                        class="btn btn-sm d-inline-flex align-items-center gap-1"
                         [ngClass]="provider.style"
                         [disabled]="isIntegrationDisabled(evaluationDecision, provider.code)"
                         (click)="pushToIntegration(evaluationDecision, provider.code)"
@@ -174,24 +197,23 @@
                   </div>
                 </td>
               }
-              <td class="text-end">
-                <div class="btn-group">
+               <td class="text-end">
+                 <div class="d-flex flex-wrap gap-1 justify-content-end">
+                   <a
+                     [routerLink]="['/evaluation-decision', evaluationDecision.id, 'edit']"
+                     class="btn btn-primary btn-sm"
+                     data-cy="entityEditButton"
+                   >
+                     <fa-icon icon="pencil-alt"></fa-icon>
+                     <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                   </a>
 
-                  <a
-                    [routerLink]="['/evaluation-decision', evaluationDecision.id, 'edit']"
-                    class="btn btn-primary btn-sm"
-                    data-cy="entityEditButton"
-                  >
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(evaluationDecision)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
-                  </button>
-                </div>
-              </td>
+                   <button type="submit" (click)="delete(evaluationDecision)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                     <fa-icon icon="times"></fa-icon>
+                     <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                   </button>
+                 </div>
+               </td>
             </tr>
           }
         </tbody>
