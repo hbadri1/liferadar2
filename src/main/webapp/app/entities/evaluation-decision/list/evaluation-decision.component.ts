@@ -35,6 +35,7 @@ export class EvaluationDecisionComponent implements OnInit {
     { code: 'microsoft-todo', labelKey: 'liferadarApp.evaluationDecision.integrations.microsoftTodo', style: 'btn-outline-info' },
     { code: 'todoist', labelKey: 'liferadarApp.evaluationDecision.integrations.todoist', style: 'btn-outline-secondary' },
   ];
+  readonly actionItemsWindowDays = 7;
 
   private integrationPushingKeys = new Set<string>();
 
@@ -280,6 +281,36 @@ export class EvaluationDecisionComponent implements OnInit {
     return translationName ?? subPillar?.code ?? '';
   }
 
+  getLifeEvaluationCreationDate(evaluationDecision: IEvaluationDecision): Date | null {
+    const rawValue = evaluationDecision.lifeEvaluation?.evaluationDate as unknown;
+
+    if (!rawValue) {
+      return null;
+    }
+
+    if (dayjs.isDayjs(rawValue)) {
+      return rawValue.toDate();
+    }
+
+    if (rawValue instanceof Date) {
+      return rawValue;
+    }
+
+    if (typeof rawValue === 'string' || typeof rawValue === 'number') {
+      const parsedDate = new Date(rawValue);
+      return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+    }
+
+    if (typeof rawValue === 'object' && rawValue !== null && 'toDate' in rawValue) {
+      const candidate = (rawValue as { toDate?: () => Date }).toDate;
+      if (typeof candidate === 'function') {
+        return candidate.call(rawValue);
+      }
+    }
+
+    return null;
+  }
+
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
@@ -303,7 +334,16 @@ export class EvaluationDecisionComponent implements OnInit {
     const queryObject: any = {
       sort: this.sortService.buildSortParam(this.sortState()),
     };
+
+    if (this.isActionItemsPage) {
+      queryObject['date.greaterThanOrEqual'] = this.getActionItemsStartDate();
+    }
+
     return this.evaluationDecisionService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+  }
+
+  private getActionItemsStartDate(): string {
+    return dayjs().subtract(this.actionItemsWindowDays, 'day').startOf('day').toISOString();
   }
 
   protected handleNavigation(sortState: SortState): void {

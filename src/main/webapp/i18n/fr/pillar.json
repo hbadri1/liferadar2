@@ -20,6 +20,8 @@
         "addSubPillar": "Ajouter un sous-pilier",
         "addItem": "Ajouter un élément",
         "createEvaluation": "Créer une évaluation",
+        "checked": "Verifie",
+        "evaluationLocked24h": "Cet element a deja ete evalue au cours des 24 dernieres heures",
         "scoreMatrix": {
           "title": "Moyenne quotidienne des évaluations",
           "last30Days": "30 derniers jours"

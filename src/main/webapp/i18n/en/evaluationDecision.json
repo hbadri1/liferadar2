@@ -7,7 +7,8 @@
         "exportExcel": "Export to Excel",
         "createLabel": "Create a new Evaluation Decision",
         "createOrEditLabel": "Create or edit a Evaluation Decision",
-        "notFound": "No Evaluation Decisions found"
+        "notFound": "No Evaluation Decisions found",
+        "last7DaysNote": "Showing action items from the last 7 days only."
       },
       "created": "A new Evaluation Decision is created with identifier {{ param }}",
       "updated": "A Evaluation Decision is updated with identifier {{ param }}",
@@ -24,6 +25,7 @@
       "futureDateRequired": "Due date must be in the future.",
       "owner": "Owner",
       "lifeEvaluation": "Life Evaluation",
+      "creationDate": "Creation Date",
       "subPillar": "Sub Life Pillar",
       "integrations": {
         "title": "Integrations",
