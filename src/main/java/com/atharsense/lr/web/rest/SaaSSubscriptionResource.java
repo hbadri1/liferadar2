@@ -104,7 +104,7 @@ public class SaaSSubscriptionResource {
             throw new BadRequestAlertException("Could not find current user", ENTITY_NAME, "userfound");
         }
 
-        SaaSSubscription savedSubscription = result.get();
+        SaaSSubscription savedSubscription = result.orElseThrow();
         return ResponseEntity.created(new URI("/api/saas-subscriptions/" + savedSubscription.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, savedSubscription.getId().toString()))
             .body(savedSubscription);

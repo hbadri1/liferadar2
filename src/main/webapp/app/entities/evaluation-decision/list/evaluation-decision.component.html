@@ -143,8 +143,8 @@
                   }
                 </td>
                 <td class="text-nowrap">
-                  @if (getLifeEvaluationCreationDate(evaluationDecision)) {
-                    {{ getLifeEvaluationCreationDate(evaluationDecision) | date: 'dd-MM-yyyy' : riyadhTimeZone }}
+                  @if (evaluationDecision.date) {
+                    {{ evaluationDecision.date.toDate() | date: 'dd-MM-yyyy HH:mm' : riyadhTimeZone }}
                   }
                 </td>
               }
