@@ -3,13 +3,11 @@ package com.atharsense.lr.web.rest;
 import com.atharsense.lr.domain.SaaSSubscription;
 import com.atharsense.lr.domain.SaaSSubscription.SubscriptionStatus;
 import com.atharsense.lr.repository.ExtendedUserRepository;
-import com.atharsense.lr.repository.SaaSSubscriptionRepository;
 import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.SaaSSubscriptionService;
 import com.atharsense.lr.service.UserService;
-import com.atharsense.lr.service.dto.SaaSSubscriptionDTO;
-import com.atharsense.lr.service.dto.SubscriptionMetricsDTO;
 import com.atharsense.lr.service.dto.CreateSaaSSubscriptionRequest;
+import com.atharsense.lr.service.dto.SubscriptionMetricsDTO;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -34,31 +32,28 @@ import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link com.atharsense.lr.domain.SaaSSubscription}.
+ * REST controller for managing expenses stored in {@link com.atharsense.lr.domain.SaaSSubscription}.
  */
 @RestController
-@RequestMapping("/api/saas-subscriptions")
+@RequestMapping("/api/expenses")
 public class SaaSSubscriptionResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(SaaSSubscriptionResource.class);
-    private static final String ENTITY_NAME = "saasSubscription";
+    private static final String ENTITY_NAME = "expense";
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
     private final SaaSSubscriptionService subscriptionService;
-    private final SaaSSubscriptionRepository subscriptionRepository;
     private final UserService userService;
     private final ExtendedUserRepository extendedUserRepository;
 
     public SaaSSubscriptionResource(
         SaaSSubscriptionService subscriptionService,
-        SaaSSubscriptionRepository subscriptionRepository,
         UserService userService,
         ExtendedUserRepository extendedUserRepository
     ) {
         this.subscriptionService = subscriptionService;
-        this.subscriptionRepository = subscriptionRepository;
         this.userService = userService;
         this.extendedUserRepository = extendedUserRepository;
     }
@@ -74,17 +69,26 @@ public class SaaSSubscriptionResource {
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
     public ResponseEntity<SaaSSubscription> createSubscription(@Valid @RequestBody CreateSaaSSubscriptionRequest request)
         throws URISyntaxException {
-        LOG.debug("REST request to save SaaSSubscription : {}", request);
+        LOG.debug("REST request to save Expense : {}", request);
 
         SaaSSubscription subscription = new SaaSSubscription();
         subscription.setServiceName(request.serviceName());
         subscription.setDescription(request.description());
         subscription.setMonthlyCost(request.monthlyCost());
+        subscription.setCurrency(request.currency());
         subscription.setAnnualCost(request.annualCost());
+        subscription.setBillDate(request.billDate());
+        subscription.setDueDate(request.dueDate());
+        subscription.setPaidDate(request.paidDate());
         subscription.setSubscriptionDate(request.subscriptionDate());
         subscription.setRenewalDate(request.renewalDate());
         subscription.setBillingCycle(request.billingCycle());
-        subscription.setStatus(request.status());
+        subscription.setStatus(SubscriptionStatus.NEW);
+        subscription.setAutoRenewal(request.autoRenewal() != null ? request.autoRenewal() : false);
+        subscription.setManualRenewal(request.manualRenewal() != null ? request.manualRenewal() : false);
+        subscription.setRenewalReminder(request.renewalReminder());
+        subscription.setReceiptUrl(request.receiptUrl());
+        subscription.setPaymentMethod(request.paymentMethod());
         subscription.setProviderUrl(request.providerUrl());
         subscription.setAccountEmail(request.accountEmail());
         subscription.setAccountUsername(request.accountUsername());
@@ -104,8 +108,8 @@ public class SaaSSubscriptionResource {
             throw new BadRequestAlertException("Could not find current user", ENTITY_NAME, "userfound");
         }
 
-        SaaSSubscription savedSubscription = result.get();
-        return ResponseEntity.created(new URI("/api/saas-subscriptions/" + savedSubscription.getId()))
+        SaaSSubscription savedSubscription = result.orElseThrow();
+        return ResponseEntity.created(new URI("/api/expenses/" + savedSubscription.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, savedSubscription.getId().toString()))
             .body(savedSubscription);
     }
@@ -135,8 +139,11 @@ public class SaaSSubscriptionResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!subscriptionService.findOne(id).isPresent()) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        SaaSSubscription existing = subscriptionService
+            .findOne(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        if (existing.getStatus() == SaaSSubscription.SubscriptionStatus.PAID) {
+            throw new BadRequestAlertException("A paid expense cannot be edited", ENTITY_NAME, "paidexpense");
         }
 
         SaaSSubscription result = subscriptionService.update(subscription);
@@ -170,8 +177,11 @@ public class SaaSSubscriptionResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!subscriptionService.findOne(id).isPresent()) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        SaaSSubscription existingForPatch = subscriptionService
+            .findOne(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        if (existingForPatch.getStatus() == SaaSSubscription.SubscriptionStatus.PAID) {
+            throw new BadRequestAlertException("A paid expense cannot be edited", ENTITY_NAME, "paidexpense");
         }
 
         Optional<SaaSSubscription> result = subscriptionService.partialUpdate(subscription);

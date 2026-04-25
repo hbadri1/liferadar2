@@ -7,7 +7,8 @@
         "exportExcel": "تصدير إلى إكسل",
         "createLabel": "إنشاء Evaluation Decision جديد",
         "createOrEditLabel": "إنشاء أو تعديل Evaluation Decision",
-        "notFound": "لم يتم العثور على Evaluation Decisions"
+        "notFound": "لم يتم العثور على Evaluation Decisions",
+        "last7DaysNote": "يتم عرض عناصر الإجراء لآخر 7 أيام فقط."
       },
       "created": "Evaluation Decision جديد تم إنشاؤه بالمعرف {{ param }}",
       "updated": "Evaluation Decision تم تحديثه بالمعرف {{ param }}",
@@ -24,6 +25,7 @@
       "futureDateRequired": "يجب أن يكون تاريخ الاستحقاق في المستقبل.",
       "owner": "Owner",
       "lifeEvaluation": "Life Evaluation",
+      "creationDate": "تاريخ ووقت الإنشاء",
       "subPillar": "الركيزة الفرعية",
       "integrations": {
         "title": "التكاملات",

@@ -26,6 +26,13 @@ public interface SaaSSubscriptionRepository extends JpaRepository<SaaSSubscripti
 
     Optional<SaaSSubscription> findByIdAndOwnerId(Long id, Long ownerId);
 
+    boolean existsByOwnerIdAndServiceNameAndSubscriptionDateAndStatus(
+        Long ownerId,
+        String serviceName,
+        LocalDate subscriptionDate,
+        SubscriptionStatus status
+    );
+
     @Query(
         "SELECT s FROM SaaSSubscription s WHERE s.owner.id = :ownerId " +
         "AND s.status = 'ACTIVE' " +
@@ -35,9 +42,20 @@ public interface SaaSSubscriptionRepository extends JpaRepository<SaaSSubscripti
 
     @Query(
         "SELECT s FROM SaaSSubscription s WHERE s.owner.id = :ownerId " +
-        "AND s.status != 'CANCELLED'"
+        "AND s.status NOT IN ('CANCELLED', 'EXPIRED')"
     )
     List<SaaSSubscription> findActiveSubscriptions(@Param("ownerId") Long ownerId);
+
+    @Query(
+        "SELECT s FROM SaaSSubscription s WHERE s.status = :status " +
+        "AND (s.autoRenewal = true OR s.manualRenewal = true) " +
+        "AND s.renewalDate IS NOT NULL " +
+        "AND s.renewalDate <= :businessDate"
+    )
+    List<SaaSSubscription> findAutoRenewSubscriptionsDueOnOrBefore(
+        @Param("businessDate") LocalDate businessDate,
+        @Param("status") SubscriptionStatus status
+    );
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
@@ -53,6 +71,22 @@ public interface SaaSSubscriptionRepository extends JpaRepository<SaaSSubscripti
         @Param("businessDate") LocalDate businessDate,
         @Param("expiredStatus") SubscriptionStatus expiredStatus,
         @Param("expirableStatuses") Collection<SubscriptionStatus> expirableStatuses
+    );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        """
+        UPDATE SaaSSubscription s
+           SET s.status = :overdueStatus
+         WHERE s.dueDate IS NOT NULL
+           AND s.dueDate < :businessDate
+           AND s.status IN :openStatuses
+        """
+    )
+    int markExpensesOverdue(
+        @Param("businessDate") LocalDate businessDate,
+        @Param("overdueStatus") SubscriptionStatus overdueStatus,
+        @Param("openStatuses") Collection<SubscriptionStatus> openStatuses
     );
 }
 

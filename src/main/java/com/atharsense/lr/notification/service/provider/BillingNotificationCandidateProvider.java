@@ -1,5 +1,6 @@
 package com.atharsense.lr.notification.service.provider;
 
+import com.atharsense.lr.domain.SaaSSubscription.RenewalReminderOption;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +13,8 @@ public interface BillingNotificationCandidateProvider {
     List<BillOverdueCandidate> findOverdueBills(LocalDate businessDate);
 
     List<UpcomingRenewalCandidate> findUpcomingRenewals(LocalDate fromDate, LocalDate toDate);
+
+    List<UpcomingRenewalCandidate> findUpcomingRenewalsForReminder(LocalDate renewalDate, RenewalReminderOption reminderOption);
 
     record SubscriptionDueCandidate(
         Long recipientUserId,

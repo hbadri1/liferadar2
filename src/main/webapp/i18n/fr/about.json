@@ -28,6 +28,10 @@
         "title": "Actions à réaliser",
         "desc": "Chaque évaluation peut générer des actions concrètes (décisions). Suivez leur statut et leurs échéances dans une vue dédiée."
       },
+      "expenseControl": {
+        "title": "Contrôle des dépenses",
+        "desc": "Suivez les factures et abonnements récurrents avec des vues mensuelles et annuelles, le statut des paiements et des rappels de renouvellement pour garder vos dépenses maîtrisées."
+      },
       "family": {
         "title": "Mode famille",
         "desc": "Un administrateur familial peut gérer plusieurs membres sous un seul compte. Chaque membre conserve ses propres piliers privés."

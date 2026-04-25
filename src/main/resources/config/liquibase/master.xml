@@ -41,6 +41,11 @@
     <include file="config/liquibase/changelog/20260414180001_added_entity_Bill.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260414200000_switch_billing_owner_to_extended_user.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260415150000_add_timezone_currency_to_extended_user.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260425090000_add_saas_subscription_auto_renewal_fields.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260425103000_add_currency_to_saas_subscription.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260425120000_merge_bill_into_saas_subscription.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260425143000_cleanup_bill_and_rename_expense.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260425150000_add_manual_renewal_drop_recurring.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->

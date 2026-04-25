@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+t#!/usr/bin/env bash
 # =============================================================================
 # deploy-latest.sh
 # Build the Spring Boot image as "latest", push to ECR, deploy to Lightsail.
@@ -18,7 +18,7 @@ SSH_USER="${SSH_USER:-ec2-user}"
 SSH_PORT="${SSH_PORT:-22}"
 SSH_KEY="${SSH_KEY:-$SCRIPT_DIR/liferadar-lightsail01.pem}"
 REMOTE_DIR="${REMOTE_DIR:-/opt/liferadar}"
-IMAGE_TAG="latest"
+ pusIMAGE_TAG="${IMAGE_TAG:-}"   # may be overridden via env var or loaded from .env below
 
 ENV_FILE="$SCRIPT_DIR/.env"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
@@ -51,6 +51,9 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   fi
   export "$key=$val"
 done < "$ENV_FILE"
+
+# Apply IMAGE_TAG override (env var before .env wins; fall back to .env value)
+IMAGE_TAG="${IMAGE_TAG:-${IMAGE_TAG_FROM_ENV:-latest}}"
 
 # ── Sanity checks ─────────────────────────────────────────────────────────────
 for f in "$ENV_FILE" "$COMPOSE_FILE" "$NGINX_TEMPLATE" "$SETUP_SCRIPT" "$SSH_KEY"; do

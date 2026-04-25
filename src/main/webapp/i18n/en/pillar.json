@@ -20,6 +20,8 @@
         "addSubPillar": "Add Sub-Pillar",
         "addItem": "Add Item",
         "createEvaluation": "Create Evaluation",
+        "checked": "Checked",
+        "evaluationLocked24h": "This item was already evaluated in the last 24 hours",
         "scoreMatrix": {
           "title": "Daily Evaluation Average",
           "last30Days": "Last 30 days"

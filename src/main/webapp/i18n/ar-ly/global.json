@@ -7,6 +7,7 @@
       "about": "عن التطبيق",
       "actionItems": "بنود العمل",
       "billsSubscriptions": "الفواتير والاشتراكات",
+      "expenses": "المصروفات",
       "notifications": "الإشعارات",
       "family": "العائلة",
       "trips": "الرحلات",
@@ -160,5 +161,11 @@
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
     }
   },
-  "footer": "لايفرادار هو منتج لشركة أثرسنس."
+  "footer": {
+    "atharsense": "أثرسنس",
+    "feedback": "ملاحظات",
+    "rights": "جميع الحقوق محفوظة.",
+    "madeWith": "صُنع بـ",
+    "forFamilies": "للعائلات"
+  }
 }

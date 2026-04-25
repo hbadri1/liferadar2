@@ -3,6 +3,7 @@
     "lifeEvaluation": {
       "home": {
         "title": "LifeEvaluations",
+        "last48HoursNote": "Affichage des evaluations des 48 dernieres heures",
         "refreshListLabel": "Actualiser la liste",
         "createLabel": "Créer un nouveau Life Evaluation",
         "createOrEditLabel": "Créer ou éditer un Life Evaluation",

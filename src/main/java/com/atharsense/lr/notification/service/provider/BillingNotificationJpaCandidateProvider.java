@@ -1,6 +1,6 @@
 package com.atharsense.lr.notification.service.provider;
 
-import com.atharsense.lr.domain.Bill.BillStatus;
+import com.atharsense.lr.domain.SaaSSubscription.RenewalReminderOption;
 import com.atharsense.lr.domain.SaaSSubscription.SubscriptionStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class BillingNotificationJpaCandidateProvider implements BillingNotificationCandidateProvider {
 
-    private static final String BILLS_SUBSCRIPTIONS_URL = "/bills-subscriptions";
+    private static final String BILLS_SUBSCRIPTIONS_URL = "/expenses";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -25,13 +25,14 @@ public class BillingNotificationJpaCandidateProvider implements BillingNotificat
         List<Object[]> rows = entityManager
             .createQuery(
                 """
-                select u.id, u.login, u.email, s.id, s.serviceName, s.monthlyCost, o.currency, s.renewalDate
+                select u.id, u.login, u.email, s.id, s.serviceName, s.monthlyCost, coalesce(s.currency, o.currency), s.renewalDate
                 from SaaSSubscription s
                 join s.owner o
                 join o.user u
                 where o.active = true
                   and s.renewalDate = :businessDate
                   and s.status = :activeStatus
+                  and (s.autoRenewal = false or s.autoRenewal is null)
                 """,
                 Object[].class
             )
@@ -47,19 +48,19 @@ public class BillingNotificationJpaCandidateProvider implements BillingNotificat
         List<Object[]> rows = entityManager
             .createQuery(
                 """
-                select u.id, u.login, u.email, b.id, b.description, b.amount, o.currency, b.dueDate
-                from Bill b
-                join b.owner o
+                select u.id, u.login, u.email, s.id, s.serviceName, s.monthlyCost, coalesce(s.currency, o.currency), s.dueDate
+                from SaaSSubscription s
+                join s.owner o
                 join o.user u
                 where o.active = true
-                  and b.dueDate = :businessDate
-                  and b.status not in (:paidStatus, :cancelledStatus)
+                  and s.dueDate = :businessDate
+                  and s.status not in (:paidStatus, :cancelledStatus)
                 """,
                 Object[].class
             )
             .setParameter("businessDate", businessDate)
-            .setParameter("paidStatus", BillStatus.PAID)
-            .setParameter("cancelledStatus", BillStatus.CANCELLED)
+            .setParameter("paidStatus", SubscriptionStatus.PAID)
+            .setParameter("cancelledStatus", SubscriptionStatus.CANCELLED)
             .getResultList();
 
         return rows.stream().map(this::toBillDueCandidate).toList();
@@ -70,20 +71,20 @@ public class BillingNotificationJpaCandidateProvider implements BillingNotificat
         List<Object[]> rows = entityManager
             .createQuery(
                 """
-                select u.id, u.login, u.email, b.id, b.description, b.amount, o.currency, b.dueDate
-                from Bill b
-                join b.owner o
+                select u.id, u.login, u.email, s.id, s.serviceName, s.monthlyCost, coalesce(s.currency, o.currency), s.dueDate
+                from SaaSSubscription s
+                join s.owner o
                 join o.user u
                 where o.active = true
-                  and b.dueDate is not null
-                  and b.dueDate < :businessDate
-                  and b.status not in (:paidStatus, :cancelledStatus)
+                  and s.dueDate is not null
+                  and s.dueDate < :businessDate
+                  and s.status not in (:paidStatus, :cancelledStatus)
                 """,
                 Object[].class
             )
             .setParameter("businessDate", businessDate)
-            .setParameter("paidStatus", BillStatus.PAID)
-            .setParameter("cancelledStatus", BillStatus.CANCELLED)
+            .setParameter("paidStatus", SubscriptionStatus.PAID)
+            .setParameter("cancelledStatus", SubscriptionStatus.CANCELLED)
             .getResultList();
 
         return rows.stream().map(row -> toBillOverdueCandidate(row, businessDate)).toList();
@@ -94,7 +95,7 @@ public class BillingNotificationJpaCandidateProvider implements BillingNotificat
         List<Object[]> rows = entityManager
             .createQuery(
                 """
-                select u.id, u.login, u.email, s.id, s.serviceName, s.monthlyCost, o.currency, s.renewalDate
+                select u.id, u.login, u.email, s.id, s.serviceName, s.monthlyCost, coalesce(s.currency, o.currency), s.renewalDate
                 from SaaSSubscription s
                 join s.owner o
                 join o.user u
@@ -108,6 +109,31 @@ public class BillingNotificationJpaCandidateProvider implements BillingNotificat
             )
             .setParameter("fromDate", fromDate)
             .setParameter("toDate", toDate)
+            .setParameter("activeStatus", SubscriptionStatus.ACTIVE)
+            .getResultList();
+
+        return rows.stream().map(this::toUpcomingRenewalCandidate).toList();
+    }
+
+    @Override
+    public List<UpcomingRenewalCandidate> findUpcomingRenewalsForReminder(LocalDate renewalDate, RenewalReminderOption reminderOption) {
+        List<Object[]> rows = entityManager
+            .createQuery(
+                """
+                select u.id, u.login, u.email, s.id, s.serviceName, s.monthlyCost, coalesce(s.currency, o.currency), s.renewalDate
+                from SaaSSubscription s
+                join s.owner o
+                join o.user u
+                where o.active = true
+                  and (s.autoRenewal = true or s.manualRenewal = true)
+                  and s.renewalReminder = :reminderOption
+                  and s.renewalDate = :renewalDate
+                  and s.status = :activeStatus
+                """,
+                Object[].class
+            )
+            .setParameter("renewalDate", renewalDate)
+            .setParameter("reminderOption", reminderOption)
             .setParameter("activeStatus", SubscriptionStatus.ACTIVE)
             .getResultList();
 

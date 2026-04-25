@@ -18,7 +18,7 @@
 
   <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
     <div class="row g-2 align-items-end mb-2">
-      <div class="col-12 col-md-5">
+      <div class="col-12">
         <label class="form-label" for="field_score" jhiTranslate="liferadarApp.lifeEvaluation.score">Score (1-5)</label>
         <div id="field_score" data-cy="score" class="btn-group d-flex" role="group" aria-label="Score">
           @for (score of scoreOptions; track score) {
@@ -50,33 +50,12 @@
         }
       </div>
 
-      <div class="col-12 col-md-7">
-        <div class="form-check mt-1">
-          <input
-            type="checkbox"
-            class="form-check-input"
-            id="field_reminderEnabled"
-            name="reminderEnabled"
-            formControlName="reminderEnabled"
-          />
-          <label class="form-check-label" for="field_reminderEnabled" jhiTranslate="liferadarApp.lifeEvaluation.reminderEnabled">
-            Enable Reminder
-          </label>
-        </div>
-      </div>
     </div>
 
     <div class="mb-2">
       <label class="form-label" for="field_notes" jhiTranslate="liferadarApp.lifeEvaluation.notes">Notes</label>
       <textarea class="form-control" id="field_notes" data-cy="notes" formControlName="notes" rows="2"></textarea>
     </div>
-
-    @if (editForm.get('reminderEnabled')?.value) {
-      <div class="mb-2">
-        <label class="form-label" for="field_reminderAt" jhiTranslate="liferadarApp.lifeEvaluation.reminderAt">Reminder Date</label>
-        <input type="datetime-local" class="form-control" id="field_reminderAt" data-cy="reminderAt" formControlName="reminderAt" />
-      </div>
-    }
 
     <div class="modal-footer pt-2">
       <button type="button" class="btn btn-secondary" (click)="cancel()">

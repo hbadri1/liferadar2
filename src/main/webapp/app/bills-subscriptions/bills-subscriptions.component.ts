@@ -1,346 +1,329 @@
-import { Component, OnInit, OnDestroy, inject, TemplateRef } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil, map, filter, tap } from 'rxjs/operators';
-import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faClock, faCheckCircle, faTimes, faDollarSign } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import dayjs from 'dayjs/esm';
 
 import SharedModule from 'app/shared/shared.module';
-import { AccountService } from 'app/core/auth/account.service';
 import { AlertService } from 'app/core/util/alert.service';
-import { BillingCycle, ISaaSSubscription, SubscriptionMetrics, SubscriptionStatus } from 'app/entities/saas-subscription/saas-subscription.model';
-import { IBill, BillMetrics, BillStatus, PaymentMethod } from 'app/entities/bill/bill.model';
+import {
+  BillingCycle,
+  ISaaSSubscription,
+  PaymentMethod,
+  RenewalReminderOption,
+  SubscriptionStatus,
+} from 'app/entities/saas-subscription/saas-subscription.model';
 import { SaaSSubscriptionService } from 'app/entities/saas-subscription/service/saas-subscription.service';
-import { BillService } from 'app/entities/bill/service/bill.service';
-import dayjs from 'dayjs/esm';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
-import { ITickTickProjectModalResult, TickTickProjectModalComponent } from 'app/entities/evaluation-decision/list/ticktick-project-modal.component';
 
 @Component({
   selector: 'jhi-bills-subscriptions',
   templateUrl: './bills-subscriptions.component.html',
   styleUrl: './bills-subscriptions.component.scss',
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgbModule, FaIconComponent],
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
 })
-export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
+export default class BillsSubscriptionsComponent implements OnInit {
   private readonly subscriptionService = inject(SaaSSubscriptionService);
-  private readonly billService = inject(BillService);
-  private readonly modalService = inject(NgbModal);
-  private readonly accountService = inject(AccountService);
-  private readonly translateService = inject(TranslateService);
-  private readonly alertService = inject(AlertService);
   private readonly router = inject(Router);
+  private readonly alertService = inject(AlertService);
+  private readonly modalService = inject(NgbModal);
+  private readonly translateService = inject(TranslateService);
 
-  subscriptions$ = new Observable<ISaaSSubscription[]>();
-  bills$ = new Observable<IBill[]>();
-  subscriptionMetrics$ = new Observable<SubscriptionMetrics>();
-  billMetrics$ = new Observable<BillMetrics>();
-  pendingBills$ = new Observable<IBill[]>();
-  overdueBills$ = new Observable<IBill[]>();
-  upcomingRenewals$ = new Observable<ISaaSSubscription[]>();
-
-  // Icons
-  faClockIcon = faClock;
-  faCheckIcon = faCheckCircle;
-  faTimesIcon = faTimes;
-  faDollarIcon = faDollarSign;
-
-  activeTab = 'subscriptions';
-  isLoading = false;
-  userTimezone = 'UTC';
-  userCurrency = 'USD';
-  userLocale = 'en-US';
-
-  isSavingBill = false;
-  billToDelete: IBill | null = null;
-  billToMarkPaid: IBill | null = null;
-  subscriptionToDelete: ISaaSSubscription | null = null;
-  editingBillId: number | null = null;
-  private editingBill: IBill | null = null;
-  editingSubscriptionId: number | null = null;
-  private editingSubscription: ISaaSSubscription | null = null;
-
-  readonly billStatusOptions = Object.values(BillStatus);
-  readonly paymentMethodOptions = Object.values(PaymentMethod);
-  readonly subscriptionStatusOptions = Object.values(SubscriptionStatus);
   readonly billingCycleOptions = Object.values(BillingCycle);
-  readonly integrationProviders = [
-    { code: 'ticktick', labelKey: 'liferadarApp.evaluationDecision.integrations.ticktick', style: 'btn-outline-primary' },
-    { code: 'microsoft-todo', labelKey: 'liferadarApp.evaluationDecision.integrations.microsoftTodo', style: 'btn-outline-info' },
-    { code: 'todoist', labelKey: 'liferadarApp.evaluationDecision.integrations.todoist', style: 'btn-outline-secondary' },
-  ];
+  readonly renewalReminderOptions = Object.values(RenewalReminderOption);
+  readonly paymentMethodOptions = Object.values(PaymentMethod);
+  readonly statusOptions = Object.values(SubscriptionStatus);
 
-  private integrationPushingKeys = new Set<string>();
+  expenses: ISaaSSubscription[] = [];
+  isLoading = false;
+  editingExpenseId: number | null = null;
+  searchTerm = '';
+  statusFilter = 'ALL';
 
-  readonly billEditForm = new FormGroup({
-    description: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
-    amount: new FormControl(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
-    billDate: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    dueDate: new FormControl<string | null>(null),
-    status: new FormControl(BillStatus.PENDING, { nonNullable: true, validators: [Validators.required] }),
-    paymentMethod: new FormControl(PaymentMethod.BANK_TRANSFER, { nonNullable: true, validators: [Validators.required] }),
-    notes: new FormControl<string | null>(null),
-    isRecurring: new FormControl(false, { nonNullable: true }),
-  });
-
-  readonly subscriptionEditForm = new FormGroup({
+  readonly editForm = new FormGroup({
     serviceName: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
-    monthlyCost: new FormControl(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
-    subscriptionDate: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    amount: new FormControl(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
+    currency: new FormControl('SAR', { nonNullable: true, validators: [Validators.required] }),
+    subscriptionDate: new FormControl(dayjs().format('YYYY-MM-DD'), { nonNullable: true, validators: [Validators.required] }),
     billingCycle: new FormControl(BillingCycle.MONTHLY, { nonNullable: true, validators: [Validators.required] }),
     status: new FormControl(SubscriptionStatus.ACTIVE, { nonNullable: true, validators: [Validators.required] }),
+    dueDate: new FormControl<string | null>(null),
+    paidDate: new FormControl<string | null>(null),
+    autoRenewal: new FormControl(false, { nonNullable: true }),
+    manualRenewal: new FormControl(false, { nonNullable: true }),
+    renewalReminder: new FormControl<RenewalReminderOption | null>(null),
+    paymentMethod: new FormControl<PaymentMethod | null>(null),
     description: new FormControl<string | null>(null),
     providerUrl: new FormControl<string | null>(null),
     accountEmail: new FormControl<string | null>(null),
     accountUsername: new FormControl<string | null>(null),
     notes: new FormControl<string | null>(null),
-    isShared: new FormControl(false, { nonNullable: true }),
   });
 
-  private destroy$ = new Subject<void>();
-
   ngOnInit(): void {
-    this.loadData();
-    this.loadUserPreferences();
+    this.loadExpenses();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  loadData(): void {
+  loadExpenses(): void {
     this.isLoading = true;
-    this.subscriptions$ = this.subscriptionService.queryMy().pipe(map(res => res.body || []));
-    this.bills$ = this.billService.queryMy().pipe(map(res => res.body || []));
-    this.subscriptionMetrics$ = this.subscriptionService.getMetrics().pipe(map(res => res.body as SubscriptionMetrics));
-    this.billMetrics$ = this.billService.getMetrics().pipe(map(res => res.body as BillMetrics));
-    this.pendingBills$ = this.billService.getPendingBills().pipe(map(res => res.body || []));
-    this.overdueBills$ = this.billService.getOverdueBills().pipe(map(res => res.body || []));
-    this.upcomingRenewals$ = this.subscriptionService.getUpcomingRenewals(30).pipe(map(res => res.body || []));
-
-    this.subscriptions$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.isLoading = false;
+    this.subscriptionService.queryMy().subscribe({
+      next: res => {
+        this.expenses = [...(res.body ?? [])].sort((a, b) => this.getSortDate(b).valueOf() - this.getSortDate(a).valueOf());
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.alertService.addAlert({ type: 'danger', message: this.translateService.instant('billsSubscriptions.expenseLoadError') });
+      },
     });
   }
 
-  loadUserPreferences(): void {
-    this.accountService
-      .identity(true)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(account => this.applyUserPreferences(account?.timezone, account?.currency, account?.langKey));
-
-    this.accountService
-      .getAuthenticationState()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(account => this.applyUserPreferences(account?.timezone, account?.currency, account?.langKey));
-  }
-
-  private applyUserPreferences(timezone?: string | null, currency?: string | null, langKey?: string | null): void {
-    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    this.userTimezone = timezone ?? browserTimezone ?? 'UTC';
-    this.userCurrency = currency ?? this.defaultCurrencyForTimezone(this.userTimezone);
-    this.userLocale = this.resolveLocale(langKey);
-  }
-
-  private defaultCurrencyForTimezone(timezone: string): string {
-    switch (timezone) {
-      case 'Asia/Riyadh':
-        return 'SAR';
-      case 'Europe/Paris':
-      case 'Europe/Berlin':
-      case 'Europe/Amsterdam':
-        return 'EUR';
-      case 'Europe/London':
-        return 'GBP';
-      default:
-        return 'USD';
-    }
-  }
-
-  private resolveLocale(langKey?: string | null): string {
-    if (!langKey) {
-      return 'en-US';
-    }
-
-    switch (langKey.toLowerCase()) {
-      case 'ar-ly':
-      case 'ar':
-        return 'ar-LY';
-      case 'fr':
-        return 'fr-FR';
-      default:
-        return 'en-US';
-    }
-  }
-
-  switchTab(tab: string): void {
-    this.activeTab = tab;
-  }
-
-  openDeleteSubscriptionModal(content: TemplateRef<unknown>, subscription: ISaaSSubscription): void {
-    this.subscriptionToDelete = subscription;
-    this.modalService.open(content, { centered: true, backdrop: 'static' });
-  }
-
-  confirmDeleteSubscription(modal: { close: () => void }): void {
-    const id = this.subscriptionToDelete?.id;
-    if (!id) {
-      modal.close();
-      return;
-    }
-
-    this.subscriptionService.delete(id).subscribe(() => {
-      modal.close();
-      this.subscriptionToDelete = null;
-      this.loadData();
+  get filteredExpenses(): ISaaSSubscription[] {
+    return this.expenses.filter(expense => {
+      const matchesSearch =
+        !this.searchTerm.trim() ||
+        `${expense.serviceName} ${expense.description ?? ''} ${expense.notes ?? ''}`.toLowerCase().includes(this.searchTerm.trim().toLowerCase());
+      const matchesStatus = this.statusFilter === 'ALL' || expense.status === this.statusFilter;
+      return matchesSearch && matchesStatus;
     });
   }
 
-  openEditSubscriptionModal(content: TemplateRef<unknown>, subscription: ISaaSSubscription): void {
-    if (!subscription.id) {
-      return;
-    }
-
-    this.editingSubscriptionId = subscription.id;
-    this.editingSubscription = subscription;
-    this.subscriptionEditForm.patchValue({
-      serviceName: subscription.serviceName,
-      monthlyCost: subscription.monthlyCost,
-      subscriptionDate: this.toDateInputValue(subscription.subscriptionDate),
-      billingCycle: subscription.billingCycle,
-      status: subscription.status,
-      description: subscription.description ?? null,
-      providerUrl: subscription.providerUrl ?? null,
-      accountEmail: subscription.accountEmail ?? null,
-      accountUsername: subscription.accountUsername ?? null,
-      notes: subscription.notes ?? null,
-      isShared: subscription.isShared ?? false,
-    });
-
-    this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static' });
+  get totalExpenses(): number {
+    return this.expenses.length;
   }
 
-  saveSubscriptionEdits(modal: { close: () => void }): void {
-    if (this.subscriptionEditForm.invalid || this.editingSubscriptionId === null || !this.editingSubscription) {
-      this.subscriptionEditForm.markAllAsTouched();
+  get overdueExpenses(): number {
+    return this.expenses.filter(expense => expense.status === SubscriptionStatus.OVERDUE).length;
+  }
+
+  get upcomingRenewals(): number {
+    const limit = dayjs().add(30, 'day');
+    return this.expenses.filter(expense => expense.renewalDate && expense.renewalDate.isAfter(dayjs().subtract(1, 'day')) && expense.renewalDate.isBefore(limit.add(1, 'day'))).length;
+  }
+
+  get monthlyExpensesSar(): number {
+    return this.roundToTwoDecimals(
+      this.expenses
+        .filter(expense => this.isIncludedInSummaryTotals(expense.status))
+        .reduce((sum, expense) => sum + this.convertToSar(this.getMonthlyEquivalent(expense), expense.currency), 0)
+    );
+  }
+
+  get yearlyExpensesSar(): number {
+    return this.roundToTwoDecimals(
+      this.expenses
+        .filter(expense => this.isIncludedInSummaryTotals(expense.status))
+        .reduce((sum, expense) => sum + this.convertToSar(this.getYearlyEquivalent(expense), expense.currency), 0)
+    );
+  }
+
+  get trackedSpendSar(): number {
+    return this.roundToTwoDecimals(
+      this.expenses
+        .filter(expense => expense.status === SubscriptionStatus.PAID)
+        .reduce((sum, expense) => sum + this.convertToSar(expense.monthlyCost ?? 0, expense.currency), 0)
+    );
+  }
+
+  createExpense(): void {
+    this.router.navigate(['/entities/expense/new']);
+  }
+
+  startEdit(expense: ISaaSSubscription): void {
+    if (expense.status === SubscriptionStatus.PAID) {
+      return;
+    }
+    this.editingExpenseId = expense.id ?? null;
+    this.editForm.reset({
+      serviceName: expense.serviceName,
+      amount: expense.monthlyCost,
+      currency: expense.currency,
+      subscriptionDate: expense.subscriptionDate.format('YYYY-MM-DD'),
+      billingCycle: expense.billingCycle,
+      status: expense.status,
+      dueDate: expense.dueDate?.format('YYYY-MM-DD') ?? null,
+      paidDate: expense.paidDate?.format('YYYY-MM-DD') ?? null,
+      autoRenewal: expense.autoRenewal ?? false,
+      manualRenewal: expense.manualRenewal ?? false,
+      renewalReminder: expense.renewalReminder ?? null,
+      paymentMethod: expense.paymentMethod ?? null,
+      description: expense.description ?? null,
+      providerUrl: expense.providerUrl ?? null,
+      accountEmail: expense.accountEmail ?? null,
+      accountUsername: expense.accountUsername ?? null,
+      notes: expense.notes ?? null,
+    });
+  }
+
+  cancelEdit(): void {
+    this.editingExpenseId = null;
+  }
+
+  saveEdit(): void {
+    if (!this.editingExpenseId || this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
       return;
     }
 
-    const raw = this.subscriptionEditForm.getRawValue();
+    const existing = this.expenses.find(expense => expense.id === this.editingExpenseId);
+    if (!existing) {
+      return;
+    }
+
+    const raw = this.editForm.getRawValue();
     const subscriptionDate = dayjs(raw.subscriptionDate);
-    const renewalDate = this.calculateSubscriptionRenewalDate(subscriptionDate, raw.billingCycle);
-    const payload: ISaaSSubscription = {
-      ...this.editingSubscription,
-      id: this.editingSubscriptionId,
+
+    const updated: ISaaSSubscription = {
+      ...existing,
       serviceName: raw.serviceName,
-      monthlyCost: raw.monthlyCost,
+      description: raw.description,
+      monthlyCost: raw.amount,
+      annualCost: existing.annualCost ?? raw.amount,
+      currency: raw.currency,
+      billDate: existing.billDate ?? subscriptionDate,
+      dueDate: raw.dueDate ? dayjs(raw.dueDate) : null,
+      paidDate: raw.paidDate ? dayjs(raw.paidDate) : null,
       subscriptionDate,
-      renewalDate,
+      renewalDate: this.calculateRenewalDate(subscriptionDate, raw.billingCycle),
       billingCycle: raw.billingCycle,
       status: raw.status,
-      description: raw.description,
+      autoRenewal: raw.autoRenewal,
+      manualRenewal: raw.manualRenewal,
+      renewalReminder: raw.autoRenewal || raw.manualRenewal ? raw.renewalReminder : null,
+      receiptUrl: existing.receiptUrl ?? null,
+      paymentMethod: raw.paymentMethod,
       providerUrl: raw.providerUrl,
       accountEmail: raw.accountEmail,
       accountUsername: raw.accountUsername,
       notes: raw.notes,
-      isShared: raw.isShared,
+      isShared: existing.isShared ?? false,
     };
 
-    this.subscriptionService.update(payload).subscribe(() => {
-      this.editingSubscriptionId = null;
-      this.editingSubscription = null;
-      modal.close();
-      this.loadData();
-    });
-  }
-
-  openDeleteBillModal(content: TemplateRef<unknown>, bill: IBill): void {
-    this.billToDelete = bill;
-    this.modalService.open(content, { centered: true, backdrop: 'static' });
-  }
-
-  confirmDeleteBill(modal: { close: () => void }): void {
-    const id = this.billToDelete?.id;
-    if (!id) {
-      modal.close();
-      return;
-    }
-
-    this.billService.delete(id).subscribe(() => {
-      modal.close();
-      this.billToDelete = null;
-      this.loadData();
-    });
-  }
-
-  openEditBillModal(content: TemplateRef<unknown>, bill: IBill): void {
-    if (!bill.id) {
-      return;
-    }
-
-    this.editingBillId = bill.id;
-    this.editingBill = bill;
-    this.billEditForm.patchValue({
-      description: bill.description,
-      amount: bill.amount,
-      billDate: this.toDateInputValue(bill.billDate),
-      dueDate: bill.dueDate ? this.toDateInputValue(bill.dueDate) : null,
-      status: bill.status,
-      paymentMethod: bill.paymentMethod,
-      notes: bill.notes ?? null,
-      isRecurring: bill.isRecurring ?? false,
-    });
-
-    this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static' });
-  }
-
-  saveBillEdits(modal: { close: () => void }): void {
-    if (this.billEditForm.invalid || this.editingBillId === null || this.isSavingBill || !this.editingBill) {
-      this.billEditForm.markAllAsTouched();
-      return;
-    }
-
-    const raw = this.billEditForm.getRawValue();
-    const payload: IBill = {
-      ...this.editingBill,
-      id: this.editingBillId,
-      description: raw.description,
-      amount: raw.amount,
-      billDate: dayjs(raw.billDate),
-      dueDate: raw.dueDate ? dayjs(raw.dueDate) : null,
-      status: raw.status,
-      paymentMethod: raw.paymentMethod,
-      notes: raw.notes,
-      isRecurring: raw.isRecurring,
-    };
-
-    this.isSavingBill = true;
-    this.billService.update(payload).subscribe({
+    this.subscriptionService.update(updated).subscribe({
       next: () => {
-        this.isSavingBill = false;
-        this.editingBillId = null;
-        this.editingBill = null;
-        modal.close();
-        this.loadData();
+        this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseUpdatedSuccess') });
+        this.editingExpenseId = null;
+        this.loadExpenses();
       },
       error: () => {
-        this.isSavingBill = false;
+        this.alertService.addAlert({ type: 'danger', message: this.translateService.instant('billsSubscriptions.expenseUpdateError') });
       },
     });
   }
 
-  private toDateInputValue(value: unknown): string {
-    const date = this.toDate(value);
-    return date ? dayjs(date).format('YYYY-MM-DD') : '';
+  markAsPaid(expense: ISaaSSubscription): void {
+    if (!expense.id) {
+      return;
+    }
+
+    this.subscriptionService
+      .update({
+        ...expense,
+        status: SubscriptionStatus.PAID,
+        paidDate: dayjs(),
+      })
+      .subscribe({
+        next: () => {
+          this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseMarkedPaidSuccess') });
+          this.loadExpenses();
+        },
+        error: () => {
+          this.alertService.addAlert({ type: 'danger', message: this.translateService.instant('billsSubscriptions.expenseStatusUpdateError') });
+        },
+      });
   }
 
-  private calculateSubscriptionRenewalDate(subscriptionDate: dayjs.Dayjs, billingCycle: BillingCycle): dayjs.Dayjs {
+  deleteExpense(expense: ISaaSSubscription): void {
+    if (!expense.id) {
+      return;
+    }
+
+    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
+    modalRef.componentInstance.title = this.translateService.instant('billsSubscriptions.deleteExpenseTitle');
+    modalRef.componentInstance.message = this.translateService.instant('billsSubscriptions.deleteExpenseConfirm', { serviceName: expense.serviceName });
+    modalRef.componentInstance.confirmButtonText = this.translateService.instant('entity.action.delete');
+    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
+
+    modalRef.closed.subscribe(result => {
+      if (result !== 'confirmed') {
+        return;
+      }
+
+      this.subscriptionService.delete(expense.id!).subscribe({
+        next: () => {
+          this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseDeletedSuccess') });
+          this.loadExpenses();
+        },
+        error: () => {
+          this.alertService.addAlert({ type: 'danger', message: this.translateService.instant('billsSubscriptions.expenseDeleteError') });
+        },
+      });
+    });
+  }
+
+  getPrimaryDate(expense: ISaaSSubscription): string {
+    const value = expense.dueDate ?? expense.renewalDate ?? expense.subscriptionDate;
+    return value ? value.format('YYYY-MM-DD') : '—';
+  }
+
+  getSecondaryDetails(expense: ISaaSSubscription): string {
+    const values: string[] = [];
+    if (expense.billingCycle) {
+      values.push(this.translateService.instant(`billsSubscriptions.billingCycleValues.${expense.billingCycle}`));
+    }
+    if (expense.paymentMethod) {
+      values.push(this.translateService.instant(`billsSubscriptions.paymentMethodValues.${expense.paymentMethod}`));
+    }
+    if (expense.autoRenewal) {
+      values.push(this.translateService.instant('billsSubscriptions.autoRenewal'));
+    }
+    if (expense.manualRenewal) {
+      values.push(this.translateService.instant('billsSubscriptions.manualRenewal'));
+    }
+
+    return values.length > 0 ? values.join(' • ') : '—';
+  }
+
+  getStatusClass(status: SubscriptionStatus): string {
+    switch (status) {
+      case SubscriptionStatus.ACTIVE:
+      case SubscriptionStatus.PAID:
+        return 'bg-success-subtle text-success';
+      case SubscriptionStatus.OVERDUE:
+      case SubscriptionStatus.EXPIRED:
+        return 'bg-danger-subtle text-danger';
+      case SubscriptionStatus.PENDING:
+      case SubscriptionStatus.NEW:
+      case SubscriptionStatus.PARTIAL:
+        return 'bg-warning-subtle text-warning';
+      default:
+        return 'bg-secondary-subtle text-secondary';
+    }
+  }
+
+  formatAmount(expense: ISaaSSubscription): string {
+    return `${this.roundToTwoDecimals(expense.monthlyCost)} ${expense.currency}`;
+  }
+
+  formatMonthlyAmount(expense: ISaaSSubscription): string {
+    return `${this.roundToTwoDecimals(this.getMonthlyEquivalent(expense))} ${expense.currency}`;
+  }
+
+  formatYearlyAmount(expense: ISaaSSubscription): string {
+    return `${this.roundToTwoDecimals(this.getYearlyEquivalent(expense))} ${expense.currency}`;
+  }
+
+  trackById(_: number, expense: ISaaSSubscription): number | undefined {
+    return expense.id;
+  }
+
+  private getSortDate(expense: ISaaSSubscription): dayjs.Dayjs {
+    return expense.dueDate ?? expense.renewalDate ?? expense.subscriptionDate ?? dayjs();
+  }
+
+  private calculateRenewalDate(subscriptionDate: dayjs.Dayjs, billingCycle: BillingCycle): dayjs.Dayjs {
     switch (billingCycle) {
       case BillingCycle.WEEKLY:
         return subscriptionDate.add(1, 'week');
@@ -357,349 +340,37 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  openMarkPaidModal(content: TemplateRef<unknown>, bill: IBill): void {
-    this.billToMarkPaid = bill;
-    this.modalService.open(content, { centered: true, backdrop: 'static' });
+  private isIncludedInSummaryTotals(status: SubscriptionStatus): boolean {
+    return status !== SubscriptionStatus.PAID && status !== SubscriptionStatus.CANCELLED && status !== SubscriptionStatus.EXPIRED;
   }
 
-  confirmMarkBillAsPaid(modal: { close: () => void }): void {
-    const id = this.billToMarkPaid?.id;
-    if (!id) {
-      modal.close();
-      return;
-    }
-
-    this.billService.markAsPaid(id).subscribe(() => {
-      modal.close();
-      this.billToMarkPaid = null;
-      this.loadData();
-    });
-  }
-
-  formatCurrency(value: number | undefined): string {
-    const normalizedValue = value ?? 0;
-
-    try {
-      return new Intl.NumberFormat(this.userLocale, {
-        style: 'currency',
-        currency: this.userCurrency,
-      }).format(normalizedValue);
-    } catch {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(normalizedValue);
+  private getMonthlyEquivalent(expense: ISaaSSubscription): number {
+    const amount = expense.monthlyCost ?? 0;
+    switch (expense.billingCycle) {
+      case BillingCycle.WEEKLY:
+        return amount * (52 / 12);
+      case BillingCycle.MONTHLY:
+        return amount;
+      case BillingCycle.QUARTERLY:
+        return amount / 3;
+      case BillingCycle.SEMI_ANNUAL:
+        return amount / 6;
+      case BillingCycle.ANNUAL:
+        return amount / 12;
+      default:
+        return amount;
     }
   }
 
-  formatDate(value: unknown): string {
-    const date = this.toDate(value);
-    if (!date) return '-';
-
-    try {
-      return new Intl.DateTimeFormat(this.userLocale, {
-        timeZone: this.userTimezone,
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }).format(date);
-    } catch {
-      return new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }).format(date);
-    }
+  private getYearlyEquivalent(expense: ISaaSSubscription): number {
+    return this.getMonthlyEquivalent(expense) * 12;
   }
 
-   private toDate(value: unknown): Date | null {
-     if (!value) return null;
-
-     if (value instanceof Date) {
-       return Number.isNaN(value.getTime()) ? null : value;
-     }
-
-     if (typeof value === 'object' && value !== null && 'toDate' in value && typeof (value as { toDate: unknown }).toDate === 'function') {
-       const converted = (value as { toDate: () => Date }).toDate();
-       return converted instanceof Date && !Number.isNaN(converted.getTime()) ? converted : null;
-     }
-
-     const parsed = new Date(value as string | number);
-     return Number.isNaN(parsed.getTime()) ? null : parsed;
-   }
-
-  // Integration Methods
-  pushBillToIntegration(bill: IBill, provider: string): void {
-    if (!bill.id) {
-      return;
-    }
-
-    if (provider === 'ticktick') {
-      this.openTickTickProjectModalForBill(bill);
-      return;
-    }
-
-    if (provider === 'microsoft-todo' || provider === 'todoist') {
-      this.openComingSoonModal(provider);
-      return;
-    }
-
-    const providerLabel = this.translateService.instant(this.getIntegrationProviderLabelKey(provider));
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
-    modalRef.componentInstance.title = this.translateService.instant('liferadarApp.evaluationDecision.integrations.confirmTitle', {
-      provider: providerLabel,
-    });
-    modalRef.componentInstance.message = this.translateService.instant('liferadarApp.evaluationDecision.integrations.confirmMessage', {
-      provider: providerLabel,
-      actionItem: bill.description ?? '-',
-    });
-    modalRef.componentInstance.confirmButtonText = this.translateService.instant(
-      'liferadarApp.evaluationDecision.integrations.confirmButton',
-      {
-        provider: providerLabel,
-      },
-    );
-    modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
-    modalRef.componentInstance.confirmButtonClass = 'btn-primary';
-
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === 'confirmed'),
-        tap(() => this.executeIntegrationPushForBill(bill, provider)),
-      )
-      .subscribe();
+  private convertToSar(amount: number, currency?: string | null): number {
+    return currency === 'USD' ? amount * 3.75 : amount;
   }
 
-  pushSubscriptionToIntegration(subscription: ISaaSSubscription, provider: string): void {
-    if (!subscription.id) {
-      return;
-    }
-
-    if (provider === 'ticktick') {
-      this.openTickTickProjectModalForSubscription(subscription);
-      return;
-    }
-
-    if (provider === 'microsoft-todo' || provider === 'todoist') {
-      this.openComingSoonModal(provider);
-      return;
-    }
-
-    const providerLabel = this.translateService.instant(this.getIntegrationProviderLabelKey(provider));
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
-    modalRef.componentInstance.title = this.translateService.instant('liferadarApp.evaluationDecision.integrations.confirmTitle', {
-      provider: providerLabel,
-    });
-    modalRef.componentInstance.message = this.translateService.instant('liferadarApp.evaluationDecision.integrations.confirmMessage', {
-      provider: providerLabel,
-      actionItem: subscription.serviceName ?? '-',
-    });
-    modalRef.componentInstance.confirmButtonText = this.translateService.instant(
-      'liferadarApp.evaluationDecision.integrations.confirmButton',
-      {
-        provider: providerLabel,
-      },
-    );
-    modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
-    modalRef.componentInstance.confirmButtonClass = 'btn-primary';
-
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === 'confirmed'),
-        tap(() => this.executeIntegrationPushForSubscription(subscription, provider)),
-      )
-      .subscribe();
-  }
-
-  private openComingSoonModal(provider: string): void {
-    const providerLabel = this.translateService.instant(this.getIntegrationProviderLabelKey(provider));
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
-    modalRef.componentInstance.title = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonTitle', {
-      provider: providerLabel,
-    });
-    modalRef.componentInstance.message = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonMessage');
-    modalRef.componentInstance.confirmButtonText = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonButton');
-    modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
-    modalRef.componentInstance.confirmButtonClass = 'btn-primary';
-  }
-
-  private openTickTickProjectModalForBill(bill: IBill): void {
-    if (!bill.id) {
-      return;
-    }
-
-    const provider = 'ticktick';
-    const key = `bill:${bill.id}:${provider}`;
-    this.integrationPushingKeys.add(key);
-
-    this.billService.getTickTickProjects().subscribe({
-      next: res => {
-        this.integrationPushingKeys.delete(key);
-        const projectsResponse = res.body;
-        const projects = projectsResponse?.projects ?? [];
-        const defaultProjectName = (projectsResponse?.defaultProjectName ?? 'Liferadar').trim() || 'Liferadar';
-
-        const modalRef = this.modalService.open(TickTickProjectModalComponent, { size: 'lg', backdrop: 'static' });
-        modalRef.componentInstance.projects = projects;
-        modalRef.componentInstance.initialTitle = (bill.description ?? '').trim();
-        modalRef.componentInstance.defaultProjectName = defaultProjectName;
-
-        modalRef.closed
-          .pipe(
-            filter((value): value is ITickTickProjectModalResult => typeof value === 'object' && value !== null && 'title' in value),
-            tap(value =>
-              this.executeIntegrationPushForBill(bill, provider, {
-                projectId: value.projectId,
-                title: value.title,
-              }),
-            ),
-          )
-          .subscribe();
-      },
-      error: () => {
-        this.integrationPushingKeys.delete(key);
-        // The global ErrorHandlerInterceptor broadcasts the HTTP error, which AlertErrorComponent handles.
-      },
-    });
-  }
-
-  private openTickTickProjectModalForSubscription(subscription: ISaaSSubscription): void {
-    if (!subscription.id) {
-      return;
-    }
-
-    const provider = 'ticktick';
-    const key = `subscription:${subscription.id}:${provider}`;
-    this.integrationPushingKeys.add(key);
-
-    this.subscriptionService.getTickTickProjects().subscribe({
-      next: res => {
-        this.integrationPushingKeys.delete(key);
-        const projectsResponse = res.body;
-        const projects = projectsResponse?.projects ?? [];
-        const defaultProjectName = (projectsResponse?.defaultProjectName ?? 'Liferadar').trim() || 'Liferadar';
-
-        const modalRef = this.modalService.open(TickTickProjectModalComponent, { size: 'lg', backdrop: 'static' });
-        modalRef.componentInstance.projects = projects;
-        modalRef.componentInstance.initialTitle = (subscription.serviceName ?? '').trim();
-        modalRef.componentInstance.defaultProjectName = defaultProjectName;
-
-        modalRef.closed
-          .pipe(
-            filter((value): value is ITickTickProjectModalResult => typeof value === 'object' && value !== null && 'title' in value),
-            tap(value =>
-              this.executeIntegrationPushForSubscription(subscription, provider, {
-                projectId: value.projectId,
-                title: value.title,
-              }),
-            ),
-          )
-          .subscribe();
-      },
-      error: (error) => {
-        this.integrationPushingKeys.delete(key);
-        this.handleTickTickError(error);
-      },
-    });
-  }
-
-  private executeIntegrationPushForBill(bill: IBill, provider: string, overrides?: { projectId?: string; title?: string }): void {
-    if (!bill.id) {
-      return;
-    }
-
-    const key = `bill:${bill.id}:${provider}`;
-    this.integrationPushingKeys.add(key);
-
-    this.billService
-      .pushToTodoApp({
-        billId: bill.id,
-        provider,
-        projectId: overrides?.projectId,
-        title: overrides?.title,
-        dueAt: bill.dueDate?.toISOString(),
-      })
-      .subscribe({
-        next: res => {
-          this.integrationPushingKeys.delete(key);
-          this.alertService.addAlert({
-            type: 'success',
-            message: res.body?.message ?? this.translateService.instant('liferadarApp.evaluationDecision.integrations.pushSuccess'),
-          });
-        },
-        error: () => {
-          this.integrationPushingKeys.delete(key);
-          // The global ErrorHandlerInterceptor broadcasts the HTTP error, which AlertErrorComponent handles.
-        },
-      });
-  }
-
-  private executeIntegrationPushForSubscription(
-    subscription: ISaaSSubscription,
-    provider: string,
-    overrides?: { projectId?: string; title?: string },
-  ): void {
-    if (!subscription.id) {
-      return;
-    }
-
-    const key = `subscription:${subscription.id}:${provider}`;
-    this.integrationPushingKeys.add(key);
-
-    this.subscriptionService
-      .pushToTodoApp({
-        subscriptionId: subscription.id,
-        provider,
-        projectId: overrides?.projectId,
-        title: overrides?.title,
-        dueAt: subscription.renewalDate?.toISOString(),
-      })
-      .subscribe({
-        next: res => {
-          this.integrationPushingKeys.delete(key);
-          this.alertService.addAlert({
-            type: 'success',
-            message: res.body?.message ?? this.translateService.instant('liferadarApp.evaluationDecision.integrations.pushSuccess'),
-          });
-        },
-        error: () => {
-          this.integrationPushingKeys.delete(key);
-          // The global ErrorHandlerInterceptor broadcasts the HTTP error, which AlertErrorComponent handles.
-        },
-      });
-  }
-
-  private getIntegrationProviderLabelKey(provider: string): string {
-    return this.integrationProviders.find(item => item.code === provider)?.labelKey ?? 'liferadarApp.evaluationDecision.integrations.title';
-  }
-
-  isIntegrationPushing(id: number, type: 'bill' | 'subscription', provider: string): boolean {
-    const key = `${type}:${id}:${provider}`;
-    return this.integrationPushingKeys.has(key);
-  }
-
-  isIntegrationDisabled(id: number, type: 'bill' | 'subscription'): boolean {
-    return this.integrationPushingKeys.has(`${type}:${id}:ticktick`) ||
-      this.integrationPushingKeys.has(`${type}:${id}:microsoft-todo`) ||
-      this.integrationPushingKeys.has(`${type}:${id}:todoist`);
-  }
-
-  private handleTickTickError(error: any): void {
-    const errorTitle = error?.error?.title;
-
-    if (errorTitle && errorTitle.includes('TickTick is not connected')) {
-      const router: Router = this.router;
-      const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
-      modalRef.componentInstance.title = this.translateService.instant('billsSubscriptions.ticktickNotConnected');
-      modalRef.componentInstance.message = this.translateService.instant('billsSubscriptions.ticktickNotConnectedMessage');
-      modalRef.componentInstance.confirmButtonText = this.translateService.instant('billsSubscriptions.goToSettings');
-      modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
-      modalRef.componentInstance.confirmButtonClass = 'btn-primary';
-
-      modalRef.closed
-        .pipe(filter((reason: unknown) => reason === 'confirmed'))
-        .subscribe(() => void router.navigate(['/account/todoapps']));
-    }
+  private roundToTwoDecimals(value: number): number {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
   }
 }
-
