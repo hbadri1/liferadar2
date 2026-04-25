@@ -110,7 +110,7 @@ public class BillResource {
             throw new BadRequestAlertException("Could not find current user", ENTITY_NAME, "userfound");
         }
 
-        Bill savedBill = result.get();
+        Bill savedBill = result.orElseThrow();
         return ResponseEntity.created(new URI("/api/bills/" + savedBill.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, savedBill.getId().toString()))
             .body(savedBill);
