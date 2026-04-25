@@ -139,11 +139,10 @@ public class SaaSSubscriptionResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        Optional<SaaSSubscription> existing = subscriptionService.findOne(id);
-        if (!existing.isPresent()) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-        if (existing.get().getStatus() == SaaSSubscription.SubscriptionStatus.PAID) {
+        SaaSSubscription existing = subscriptionService
+            .findOne(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        if (existing.getStatus() == SaaSSubscription.SubscriptionStatus.PAID) {
             throw new BadRequestAlertException("A paid expense cannot be edited", ENTITY_NAME, "paidexpense");
         }
 
@@ -178,11 +177,10 @@ public class SaaSSubscriptionResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        Optional<SaaSSubscription> existingForPatch = subscriptionService.findOne(id);
-        if (!existingForPatch.isPresent()) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-        if (existingForPatch.get().getStatus() == SaaSSubscription.SubscriptionStatus.PAID) {
+        SaaSSubscription existingForPatch = subscriptionService
+            .findOne(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        if (existingForPatch.getStatus() == SaaSSubscription.SubscriptionStatus.PAID) {
             throw new BadRequestAlertException("A paid expense cannot be edited", ENTITY_NAME, "paidexpense");
         }
 
@@ -247,10 +245,6 @@ public class SaaSSubscriptionResource {
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
     public ResponseEntity<Void> deleteSubscription(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete SaaSSubscription : {}", id);
-        Optional<SaaSSubscription> existing = subscriptionService.findOne(id);
-        if (existing.isPresent() && existing.get().getStatus() == SaaSSubscription.SubscriptionStatus.PAID) {
-            throw new BadRequestAlertException("A paid expense cannot be deleted", ENTITY_NAME, "paidexpense");
-        }
         subscriptionService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

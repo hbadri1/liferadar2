@@ -5,7 +5,7 @@
 
     <groupId>com.atharsense.lr</groupId>
     <artifactId>liferadar</artifactId>
-    <version>1.11</version>
+    <version>1.12</version>
     <packaging>jar</packaging>
     <name>Liferadar</name>
     <description>Liferadar is a personal/family app that guides your goals and gather your family together.</description>

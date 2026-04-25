@@ -263,6 +263,10 @@
 }
 
 @media (max-width: 768px) {
+  .tree-text-pair .tree-desc {
+    display: none;
+  }
+
   .score-matrix-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }

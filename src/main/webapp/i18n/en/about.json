@@ -28,6 +28,10 @@
         "title": "Action Items",
         "desc": "Every evaluation can spawn concrete action items (decisions). Track their status and due dates in a dedicated Action Items view."
       },
+      "expenseControl": {
+        "title": "Expense Control",
+        "desc": "Track recurring bills and subscriptions with monthly and yearly views, payment status, and renewal reminders so spending stays under control."
+      },
       "family": {
         "title": "Family Mode",
         "desc": "A Family Admin can manage multiple members under one account. Each member has their own private pillars while the admin keeps the overview."

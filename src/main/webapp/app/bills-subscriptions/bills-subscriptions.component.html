@@ -11,7 +11,7 @@
   </header>
 
   <div class="row g-3 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
           <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.totalExpenses">Total Expenses</div>
@@ -19,15 +19,23 @@
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
-          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.trackedPaidSpendSar">Tracked Paid Spend (SAR approx.)</div>
-          <div class="display-6 mb-0">{{ trackedSpendSar }}</div>
+          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.monthlyExpense">Monthly Expense</div>
+          <div class="display-6 mb-0">{{ monthlyExpensesSar }}</div>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</div>
+          <div class="display-6 mb-0">{{ yearlyExpensesSar }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
           <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.alerts">Alerts</div>
@@ -199,7 +207,8 @@
             <thead>
               <tr>
                 <th jhiTranslate="billsSubscriptions.serviceName">Name</th>
-                <th jhiTranslate="billsSubscriptions.amount">Amount</th>
+                <th jhiTranslate="billsSubscriptions.monthlyExpense">Monthly Expense</th>
+                <th jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</th>
                 <th jhiTranslate="billsSubscriptions.status">Status</th>
                 <th jhiTranslate="billsSubscriptions.date">Date</th>
                 <th jhiTranslate="billsSubscriptions.details">Details</th>
@@ -215,7 +224,8 @@
                       <div class="text-muted small">{{ expense.description }}</div>
                     }
                   </td>
-                  <td>{{ formatAmount(expense) }}</td>
+                  <td>{{ formatMonthlyAmount(expense) }}</td>
+                  <td>{{ formatYearlyAmount(expense) }}</td>
                   <td>
                     <span class="badge rounded-pill" [class]="getStatusClass(expense.status)">{{ ('billsSubscriptions.statusValues.' + expense.status) | translate }}</span>
                   </td>
@@ -233,8 +243,8 @@
                       @if (expense.status !== 'PAID') {
                         <button type="button" class="btn btn-outline-primary" (click)="startEdit(expense)" jhiTranslate="entity.action.edit">Edit</button>
                         <button type="button" class="btn btn-outline-success" (click)="markAsPaid(expense)" jhiTranslate="billsSubscriptions.markAsPaidButton">Mark Paid</button>
-                        <button type="button" class="btn btn-outline-danger" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
                       }
+                      <button type="button" class="btn btn-outline-danger" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
                     </div>
                   </td>
                 </tr>
