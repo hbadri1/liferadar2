@@ -264,10 +264,18 @@
                                     }
                                   </div>
                                   <div class="tree-actions d-flex gap-1 flex-shrink-0">
-                                    <button class="btn btn-outline-success btn-xs" (click)="createLifeEvaluation(item)"
-                                      [title]="'liferadarApp.pillar.home.createEvaluation' | translate">
-                                      <span jhiTranslate="liferadarApp.pillar.home.createEvaluation">Create Evaluation</span>
-                                    </button>
+                                    @if (hasRecentEvaluationForItem(item.id)) {
+                                      <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle px-2"
+                                        [title]="'liferadarApp.pillar.home.evaluationLocked24h' | translate">
+                                        <fa-icon icon="check" aria-hidden="true"></fa-icon>
+                                        <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.checked">Checked</span>
+                                      </span>
+                                    } @else {
+                                      <button class="btn btn-outline-success btn-xs" (click)="createLifeEvaluation(item)"
+                                        [title]="'liferadarApp.pillar.home.createEvaluation' | translate">
+                                        <span jhiTranslate="liferadarApp.pillar.home.createEvaluation">Create Evaluation</span>
+                                      </button>
+                                    }
                                     <button class="btn btn-outline-primary btn-xs" (click)="editSubPillarItem(item)"
                                       [title]="'entity.action.edit' | translate">
                                       <fa-icon icon="pencil-alt"></fa-icon>
@@ -339,10 +347,15 @@
           <div class="sticky-top" style="top: 20px;">
             <div class="card shadow-sm">
               <div class="card-header bg-success text-white d-flex align-items-center justify-content-between gap-2">
-                <h5 class="mb-0 d-flex align-items-center">
-                  <fa-icon icon="clipboard-check" class="me-2"></fa-icon>
-                  <span jhiTranslate="liferadarApp.lifeEvaluation.home.title">Life Evaluations</span>
-                </h5>
+                <div>
+                  <small class="d-block opacity-75" jhiTranslate="liferadarApp.lifeEvaluation.home.last48HoursNote">
+                    Showing evaluations from the latest 48 hours
+                  </small>
+                  <h5 class="mb-0 d-flex align-items-center">
+                    <fa-icon icon="clipboard-check" class="me-2"></fa-icon>
+                    <span jhiTranslate="liferadarApp.lifeEvaluation.home.title">Life Evaluations</span>
+                  </h5>
+                </div>
                 <button
                   class="btn btn-sm btn-outline-light"
                   type="button"

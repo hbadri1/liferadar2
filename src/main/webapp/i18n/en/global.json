@@ -7,6 +7,7 @@
       "about": "About",
       "actionItems": "Action Items",
       "billsSubscriptions": "Bills & Subscriptions",
+      "expenses": "Expenses",
       "notifications": "Notifications",
       "family": "Family",
       "trips": "Trips",
@@ -161,5 +162,11 @@
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
     }
   },
-  "footer": "Liferadar is a product for Atharsense."
+  "footer": {
+    "atharsense": "Atharsense",
+    "feedback": "Feedback",
+    "rights": "All rights reserved.",
+    "madeWith": "Made with",
+    "forFamilies": "for families"
+  }
 }

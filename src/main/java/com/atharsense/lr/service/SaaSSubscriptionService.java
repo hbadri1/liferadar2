@@ -46,6 +46,7 @@ public class SaaSSubscriptionService {
      */
     public SaaSSubscription save(SaaSSubscription subscription) {
         LOG.debug("Request to save SaaSSubscription : {}", subscription);
+        normalizeRenewalSettings(subscription);
         return subscriptionRepository.save(subscription);
     }
 
@@ -57,7 +58,13 @@ public class SaaSSubscriptionService {
      */
     public SaaSSubscription update(SaaSSubscription subscription) {
         LOG.debug("Request to update SaaSSubscription : {}", subscription);
-        return subscriptionRepository.save(subscription);
+        SaaSSubscription.SubscriptionStatus previousStatus = subscription.getId() != null
+            ? subscriptionRepository.findById(subscription.getId()).map(SaaSSubscription::getStatus).orElse(null)
+            : null;
+        normalizeRenewalSettings(subscription);
+        SaaSSubscription saved = subscriptionRepository.save(subscription);
+        createNextCycleExpenseOnPaidTransition(previousStatus, saved);
+        return saved;
     }
 
     /**
@@ -72,6 +79,7 @@ public class SaaSSubscriptionService {
         return subscriptionRepository
             .findById(subscription.getId())
             .map(existingSubscription -> {
+                SaaSSubscription.SubscriptionStatus previousStatus = existingSubscription.getStatus();
                 if (subscription.getServiceName() != null) {
                     existingSubscription.setServiceName(subscription.getServiceName());
                 }
@@ -81,8 +89,20 @@ public class SaaSSubscriptionService {
                 if (subscription.getMonthlyCost() != null) {
                     existingSubscription.setMonthlyCost(subscription.getMonthlyCost());
                 }
+                if (subscription.getCurrency() != null) {
+                    existingSubscription.setCurrency(subscription.getCurrency());
+                }
                 if (subscription.getAnnualCost() != null) {
                     existingSubscription.setAnnualCost(subscription.getAnnualCost());
+                }
+                if (subscription.getBillDate() != null) {
+                    existingSubscription.setBillDate(subscription.getBillDate());
+                }
+                if (subscription.getDueDate() != null) {
+                    existingSubscription.setDueDate(subscription.getDueDate());
+                }
+                if (subscription.getPaidDate() != null) {
+                    existingSubscription.setPaidDate(subscription.getPaidDate());
                 }
                 if (subscription.getSubscriptionDate() != null) {
                     existingSubscription.setSubscriptionDate(subscription.getSubscriptionDate());
@@ -95,6 +115,24 @@ public class SaaSSubscriptionService {
                 }
                 if (subscription.getStatus() != null) {
                     existingSubscription.setStatus(subscription.getStatus());
+                }
+                if (subscription.getAutoRenewal() != null) {
+                    existingSubscription.setAutoRenewal(subscription.getAutoRenewal());
+                }
+                if (subscription.getManualRenewal() != null) {
+                    existingSubscription.setManualRenewal(subscription.getManualRenewal());
+                }
+                if (
+                    subscription.getRenewalReminder() != null ||
+                    (Boolean.FALSE.equals(subscription.getAutoRenewal()) && Boolean.FALSE.equals(subscription.getManualRenewal()))
+                ) {
+                    existingSubscription.setRenewalReminder(subscription.getRenewalReminder());
+                }
+                if (subscription.getReceiptUrl() != null) {
+                    existingSubscription.setReceiptUrl(subscription.getReceiptUrl());
+                }
+                if (subscription.getPaymentMethod() != null) {
+                    existingSubscription.setPaymentMethod(subscription.getPaymentMethod());
                 }
                 if (subscription.getProviderUrl() != null) {
                     existingSubscription.setProviderUrl(subscription.getProviderUrl());
@@ -111,9 +149,14 @@ public class SaaSSubscriptionService {
                 if (subscription.getIsShared() != null) {
                     existingSubscription.setIsShared(subscription.getIsShared());
                 }
-                return existingSubscription;
+                normalizeRenewalSettings(existingSubscription);
+                return new PartialUpdateContext(previousStatus, existingSubscription);
             })
-            .map(subscriptionRepository::save);
+            .flatMap(context -> {
+                SaaSSubscription saved = subscriptionRepository.save(context.subscription());
+                createNextCycleExpenseOnPaidTransition(context.previousStatus(), saved);
+                return Optional.of(saved);
+            });
     }
 
     /**
@@ -245,5 +288,171 @@ public class SaaSSubscriptionService {
             })
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public int processDueAutoRenewals(LocalDate businessDate) {
+        List<SaaSSubscription> dueSubscriptions = subscriptionRepository.findAutoRenewSubscriptionsDueOnOrBefore(
+            businessDate,
+            SaaSSubscription.SubscriptionStatus.ACTIVE
+        );
+
+        int processed = 0;
+        for (SaaSSubscription source : dueSubscriptions) {
+            if (source.getRenewalDate() == null) {
+                continue;
+            }
+
+            SaaSSubscription renewedSubscription = new SaaSSubscription();
+            LocalDate nextSubscriptionDate = source.getRenewalDate();
+
+            renewedSubscription.setServiceName(source.getServiceName());
+            renewedSubscription.setDescription(source.getDescription());
+            renewedSubscription.setMonthlyCost(source.getMonthlyCost());
+            renewedSubscription.setCurrency(source.getCurrency());
+            renewedSubscription.setAnnualCost(source.getAnnualCost());
+            renewedSubscription.setSubscriptionDate(nextSubscriptionDate);
+            renewedSubscription.setRenewalDate(calculateRenewalDate(nextSubscriptionDate, source.getBillingCycle()));
+            renewedSubscription.setBillingCycle(source.getBillingCycle());
+            renewedSubscription.setStatus(SaaSSubscription.SubscriptionStatus.NEW);
+            renewedSubscription.setAutoRenewal(Boolean.TRUE.equals(source.getAutoRenewal()));
+            renewedSubscription.setManualRenewal(Boolean.TRUE.equals(source.getManualRenewal()));
+            renewedSubscription.setRenewalReminder(source.getRenewalReminder());
+            renewedSubscription.setProviderUrl(source.getProviderUrl());
+            renewedSubscription.setAccountEmail(source.getAccountEmail());
+            renewedSubscription.setAccountUsername(source.getAccountUsername());
+            renewedSubscription.setNotes(source.getNotes());
+            renewedSubscription.setIsShared(source.getIsShared());
+            renewedSubscription.setOwner(source.getOwner());
+
+            source.setStatus(SaaSSubscription.SubscriptionStatus.EXPIRED);
+
+            normalizeRenewalSettings(renewedSubscription);
+            subscriptionRepository.save(renewedSubscription);
+            subscriptionRepository.save(source);
+            processed++;
+        }
+
+        return processed;
+    }
+
+    private void normalizeRenewalSettings(SaaSSubscription subscription) {
+        if (subscription.getAutoRenewal() == null) {
+            subscription.setAutoRenewal(false);
+        }
+
+        if (subscription.getManualRenewal() == null) {
+            subscription.setManualRenewal(false);
+        }
+
+        if (!Boolean.TRUE.equals(subscription.getAutoRenewal()) && !Boolean.TRUE.equals(subscription.getManualRenewal())) {
+            subscription.setRenewalReminder(null);
+        }
+
+        if (subscription.getCurrency() == null || subscription.getCurrency().isBlank()) {
+            String ownerCurrency = subscription.getOwner() != null ? subscription.getOwner().getCurrency() : null;
+            subscription.setCurrency(ownerCurrency != null && !ownerCurrency.isBlank() ? ownerCurrency : "USD");
+        } else {
+            subscription.setCurrency(subscription.getCurrency().trim().toUpperCase());
+        }
+
+        if (subscription.getSubscriptionDate() != null && subscription.getBillingCycle() != null) {
+            subscription.setRenewalDate(calculateRenewalDate(subscription.getSubscriptionDate(), subscription.getBillingCycle()));
+        }
+
+        if (subscription.getSubscriptionDate() == null) {
+            subscription.setSubscriptionDate(subscription.getBillDate() != null ? subscription.getBillDate() : LocalDate.now());
+        }
+        if (subscription.getBillingCycle() == null) {
+            subscription.setBillingCycle(SaaSSubscription.BillingCycle.MONTHLY);
+        }
+        if (subscription.getStatus() == null) {
+            subscription.setStatus(SaaSSubscription.SubscriptionStatus.ACTIVE);
+        }
+        if (subscription.getBillDate() == null) {
+            subscription.setBillDate(subscription.getSubscriptionDate());
+        }
+        if (subscription.getMonthlyCost() == null && subscription.getAnnualCost() != null) {
+            subscription.setMonthlyCost(subscription.getAnnualCost());
+        }
+        if (subscription.getAnnualCost() == null && subscription.getMonthlyCost() != null) {
+            subscription.setAnnualCost(subscription.getMonthlyCost());
+        }
+        subscription.setManualRenewal(Boolean.TRUE.equals(subscription.getManualRenewal()));
+    }
+
+    private LocalDate calculateRenewalDate(LocalDate subscriptionDate, SaaSSubscription.BillingCycle billingCycle) {
+        return switch (billingCycle) {
+            case WEEKLY -> subscriptionDate.plusWeeks(1);
+            case MONTHLY -> subscriptionDate.plusMonths(1);
+            case QUARTERLY -> subscriptionDate.plusMonths(3);
+            case SEMI_ANNUAL -> subscriptionDate.plusMonths(6);
+            case ANNUAL -> subscriptionDate.plusYears(1);
+        };
+    }
+
+    private void createNextCycleExpenseOnPaidTransition(SaaSSubscription.SubscriptionStatus previousStatus, SaaSSubscription paidExpense) {
+        if (paidExpense == null) {
+            return;
+        }
+
+        boolean transitionedToPaid =
+            previousStatus != SaaSSubscription.SubscriptionStatus.PAID &&
+            paidExpense.getStatus() == SaaSSubscription.SubscriptionStatus.PAID;
+        boolean renewalEnabled = Boolean.TRUE.equals(paidExpense.getAutoRenewal()) || Boolean.TRUE.equals(paidExpense.getManualRenewal());
+
+        if (!transitionedToPaid || !renewalEnabled || paidExpense.getBillingCycle() == null) {
+            return;
+        }
+
+        LocalDate nextSubscriptionDate = paidExpense.getRenewalDate();
+        if (nextSubscriptionDate == null && paidExpense.getSubscriptionDate() != null) {
+            nextSubscriptionDate = calculateRenewalDate(paidExpense.getSubscriptionDate(), paidExpense.getBillingCycle());
+        }
+        if (nextSubscriptionDate == null || paidExpense.getOwner() == null || paidExpense.getOwner().getId() == null) {
+            return;
+        }
+
+        boolean alreadyCreated = subscriptionRepository.existsByOwnerIdAndServiceNameAndSubscriptionDateAndStatus(
+            paidExpense.getOwner().getId(),
+            paidExpense.getServiceName(),
+            nextSubscriptionDate,
+            SaaSSubscription.SubscriptionStatus.NEW
+        );
+        if (alreadyCreated) {
+            return;
+        }
+
+        SaaSSubscription nextExpense = new SaaSSubscription();
+        nextExpense.setServiceName(paidExpense.getServiceName());
+        nextExpense.setDescription(paidExpense.getDescription());
+        nextExpense.setMonthlyCost(paidExpense.getMonthlyCost());
+        nextExpense.setCurrency(paidExpense.getCurrency());
+        nextExpense.setAnnualCost(paidExpense.getAnnualCost());
+        nextExpense.setSubscriptionDate(nextSubscriptionDate);
+        nextExpense.setBillingCycle(paidExpense.getBillingCycle());
+        nextExpense.setStatus(SaaSSubscription.SubscriptionStatus.NEW);
+        nextExpense.setAutoRenewal(Boolean.TRUE.equals(paidExpense.getAutoRenewal()));
+        nextExpense.setManualRenewal(Boolean.TRUE.equals(paidExpense.getManualRenewal()));
+        nextExpense.setRenewalReminder(paidExpense.getRenewalReminder());
+        nextExpense.setBillDate(
+            paidExpense.getBillDate() != null ? calculateRenewalDate(paidExpense.getBillDate(), paidExpense.getBillingCycle()) : nextSubscriptionDate
+        );
+        nextExpense.setDueDate(
+            paidExpense.getDueDate() != null ? calculateRenewalDate(paidExpense.getDueDate(), paidExpense.getBillingCycle()) : null
+        );
+        nextExpense.setPaidDate(null);
+        nextExpense.setReceiptUrl(null);
+        nextExpense.setPaymentMethod(paidExpense.getPaymentMethod());
+        nextExpense.setProviderUrl(paidExpense.getProviderUrl());
+        nextExpense.setAccountEmail(paidExpense.getAccountEmail());
+        nextExpense.setAccountUsername(paidExpense.getAccountUsername());
+        nextExpense.setNotes(paidExpense.getNotes());
+        nextExpense.setIsShared(paidExpense.getIsShared());
+        nextExpense.setOwner(paidExpense.getOwner());
+
+        normalizeRenewalSettings(nextExpense);
+        subscriptionRepository.save(nextExpense);
+    }
+
+    private record PartialUpdateContext(SaaSSubscription.SubscriptionStatus previousStatus, SaaSSubscription subscription) {}
 }
 

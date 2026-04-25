@@ -3,6 +3,7 @@
     "lifeEvaluation": {
       "home": {
         "title": "تقييمات الحياة",
+        "last48HoursNote": "عرض تقييمات آخر 48 ساعة فقط",
         "refreshListLabel": "تحديث القائمة",
         "createLabel": "إنشاء Life Evaluation جديد",
         "createOrEditLabel": "إنشاء أو تعديل Life Evaluation",

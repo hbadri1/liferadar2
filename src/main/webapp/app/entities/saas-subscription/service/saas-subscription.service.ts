@@ -38,8 +38,11 @@ export interface ITickTickProjectsResponse {
 
 type RestOf<T extends ISaaSSubscription | NewSaaSSubscription | PartialUpdateSaaSSubscription> = Omit<
   T,
-  'subscriptionDate' | 'renewalDate' | 'createdDate' | 'lastModifiedDate'
+  'billDate' | 'dueDate' | 'paidDate' | 'subscriptionDate' | 'renewalDate' | 'createdDate' | 'lastModifiedDate'
 > & {
+  billDate?: string | null;
+  dueDate?: string | null;
+  paidDate?: string | null;
   subscriptionDate?: string | null;
   renewalDate?: string | null;
   createdDate?: string | null;
@@ -58,7 +61,7 @@ export class SaaSSubscriptionService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/saas-subscriptions');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/expenses');
   protected todoAppsUrl = this.applicationConfigService.getEndpointFor('api/todoapps');
 
   create(saasSubscription: NewSaaSSubscription): Observable<EntityResponseType> {
@@ -171,18 +174,31 @@ export class SaaSSubscriptionService {
   protected convertDateFromClient<T extends ISaaSSubscription | NewSaaSSubscription | PartialUpdateSaaSSubscription>(
     saasSubscription: T
   ): RestOf<T> {
+    const billingItem = saasSubscription as Partial<ISaaSSubscription>;
     return {
       ...saasSubscription,
-      subscriptionDate: saasSubscription.subscriptionDate?.format(DATE_FORMAT) ?? null,
-      renewalDate: saasSubscription.renewalDate?.format(DATE_FORMAT) ?? null,
-      createdDate: saasSubscription.createdDate?.toISOString() ?? null,
-      lastModifiedDate: saasSubscription.lastModifiedDate?.toISOString() ?? null,
+      billDate: billingItem.billDate?.format(DATE_FORMAT) ?? null,
+      dueDate: billingItem.dueDate?.format(DATE_FORMAT) ?? null,
+      paidDate: billingItem.paidDate?.format(DATE_FORMAT) ?? null,
+      subscriptionDate: billingItem.subscriptionDate?.format(DATE_FORMAT) ?? null,
+      renewalDate: billingItem.renewalDate?.format(DATE_FORMAT) ?? null,
+      createdDate: billingItem.createdDate?.toISOString() ?? null,
+      lastModifiedDate: billingItem.lastModifiedDate?.toISOString() ?? null,
     };
   }
 
   protected convertDateFromServer(restSaaSSubscription: RestSaaSSubscription): ISaaSSubscription {
     return {
       ...restSaaSSubscription,
+      billDate: (restSaaSSubscription as RestSaaSSubscription & { billDate?: string | null }).billDate
+        ? dayjs((restSaaSSubscription as RestSaaSSubscription & { billDate?: string | null }).billDate)
+        : undefined,
+      dueDate: (restSaaSSubscription as RestSaaSSubscription & { dueDate?: string | null }).dueDate
+        ? dayjs((restSaaSSubscription as RestSaaSSubscription & { dueDate?: string | null }).dueDate)
+        : undefined,
+      paidDate: (restSaaSSubscription as RestSaaSSubscription & { paidDate?: string | null }).paidDate
+        ? dayjs((restSaaSSubscription as RestSaaSSubscription & { paidDate?: string | null }).paidDate)
+        : undefined,
       subscriptionDate: dayjs(restSaaSSubscription.subscriptionDate),
       renewalDate: restSaaSSubscription.renewalDate ? dayjs(restSaaSSubscription.renewalDate) : undefined,
       createdDate: restSaaSSubscription.createdDate ? dayjs(restSaaSSubscription.createdDate) : undefined,
@@ -202,4 +218,5 @@ export class SaaSSubscriptionService {
     });
   }
 }
+
 

@@ -1,10 +1,12 @@
 package com.atharsense.lr.notification.service;
 
 import com.atharsense.lr.config.ApplicationProperties;
+import com.atharsense.lr.domain.SaaSSubscription.RenewalReminderOption;
 import com.atharsense.lr.notification.domain.enumeration.NotificationSourceType;
 import com.atharsense.lr.notification.domain.enumeration.NotificationType;
 import com.atharsense.lr.notification.service.dto.CreateNotificationRequest;
 import com.atharsense.lr.notification.service.provider.BillingNotificationCandidateProvider;
+import com.atharsense.lr.service.SaaSSubscriptionService;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -27,17 +29,20 @@ public class NotificationScheduler {
     private final NotificationService notificationService;
     private final NotificationStatusMaintenanceService notificationStatusMaintenanceService;
     private final BillingNotificationCandidateProvider billingCandidateProvider;
+    private final SaaSSubscriptionService subscriptionService;
     private final ApplicationProperties applicationProperties;
 
     public NotificationScheduler(
         NotificationService notificationService,
         NotificationStatusMaintenanceService notificationStatusMaintenanceService,
         BillingNotificationCandidateProvider billingCandidateProvider,
+        SaaSSubscriptionService subscriptionService,
         ApplicationProperties applicationProperties
     ) {
         this.notificationService = notificationService;
         this.notificationStatusMaintenanceService = notificationStatusMaintenanceService;
         this.billingCandidateProvider = billingCandidateProvider;
+        this.subscriptionService = subscriptionService;
         this.applicationProperties = applicationProperties;
     }
 
@@ -49,6 +54,11 @@ public class NotificationScheduler {
 
         ZoneId zoneId = ZoneId.of(applicationProperties.getNotifications().getScheduler().getZone());
         LocalDate businessDate = LocalDate.now(zoneId);
+
+        int autoRenewedSubscriptions = subscriptionService.processDueAutoRenewals(businessDate);
+        if (autoRenewedSubscriptions > 0) {
+            LOG.info("Processed {} due auto-renewing subscription(s) for business date {}", autoRenewedSubscriptions, businessDate);
+        }
 
         NotificationStatusMaintenanceService.StatusUpdateResult statusUpdateResult = notificationStatusMaintenanceService.syncStatuses(
             businessDate
@@ -118,20 +128,43 @@ public class NotificationScheduler {
             )
         );
 
-        LocalDate upcomingRenewalLimit = businessDate.plusDays(applicationProperties.getNotifications().getScheduler().getUpcomingRenewalDays());
-        billingCandidateProvider.findUpcomingRenewals(businessDate, upcomingRenewalLimit).forEach(candidate ->
+        billingCandidateProvider.findUpcomingRenewalsForReminder(
+            businessDate.plusWeeks(1),
+            RenewalReminderOption.ONE_WEEK
+        ).forEach(candidate ->
             requests.add(
                 new CreateNotificationRequest(
                     recipient(candidate.recipientUserId(), candidate.recipientLogin(), candidate.recipientEmail()),
                     NotificationType.SUBSCRIPTION_RENEWAL_UPCOMING,
                     NotificationSourceType.SUBSCRIPTION,
                     candidate.subscriptionId(),
-                    "Upcoming renewal: " + candidate.subscriptionName(),
-                    "Your subscription '" + candidate.subscriptionName() + "' renews on " + candidate.renewalDate() +
+                    "Renewal in 1 week: " + candidate.subscriptionName(),
+                    "Your auto-renewing subscription '" + candidate.subscriptionName() + "' renews in 1 week on " + candidate.renewalDate() +
                     formatAmount(candidate.amount(), candidate.currency()) + ".",
                     candidate.actionUrl(),
                     null,
-                    dedupKey("subscription-renewal", candidate.subscriptionId(), candidate.renewalDate()),
+                    dedupKey("subscription-renewal-one-week", candidate.subscriptionId(), candidate.renewalDate()),
+                    applicationProperties.getNotifications().getScheduler().getDefaultChannels()
+                )
+            )
+        );
+
+        billingCandidateProvider.findUpcomingRenewalsForReminder(
+            businessDate.plusDays(1),
+            RenewalReminderOption.TWENTY_FOUR_HOURS
+        ).forEach(candidate ->
+            requests.add(
+                new CreateNotificationRequest(
+                    recipient(candidate.recipientUserId(), candidate.recipientLogin(), candidate.recipientEmail()),
+                    NotificationType.SUBSCRIPTION_RENEWAL_UPCOMING,
+                    NotificationSourceType.SUBSCRIPTION,
+                    candidate.subscriptionId(),
+                    "Renewal in 24 hours: " + candidate.subscriptionName(),
+                    "Your auto-renewing subscription '" + candidate.subscriptionName() + "' renews in 24 hours on " + candidate.renewalDate() +
+                    formatAmount(candidate.amount(), candidate.currency()) + ".",
+                    candidate.actionUrl(),
+                    null,
+                    dedupKey("subscription-renewal-24-hours", candidate.subscriptionId(), candidate.renewalDate()),
                     applicationProperties.getNotifications().getScheduler().getDefaultChannels()
                 )
             )
