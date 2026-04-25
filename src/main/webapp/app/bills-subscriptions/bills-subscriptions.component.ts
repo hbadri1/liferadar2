@@ -103,6 +103,22 @@ export default class BillsSubscriptionsComponent implements OnInit {
     return this.expenses.filter(expense => expense.renewalDate && expense.renewalDate.isAfter(dayjs().subtract(1, 'day')) && expense.renewalDate.isBefore(limit.add(1, 'day'))).length;
   }
 
+  get monthlyExpensesSar(): number {
+    return this.roundToTwoDecimals(
+      this.expenses
+        .filter(expense => this.isIncludedInSummaryTotals(expense.status))
+        .reduce((sum, expense) => sum + this.convertToSar(this.getMonthlyEquivalent(expense), expense.currency), 0)
+    );
+  }
+
+  get yearlyExpensesSar(): number {
+    return this.roundToTwoDecimals(
+      this.expenses
+        .filter(expense => this.isIncludedInSummaryTotals(expense.status))
+        .reduce((sum, expense) => sum + this.convertToSar(this.getYearlyEquivalent(expense), expense.currency), 0)
+    );
+  }
+
   get trackedSpendSar(): number {
     return this.roundToTwoDecimals(
       this.expenses
@@ -220,7 +236,7 @@ export default class BillsSubscriptionsComponent implements OnInit {
   }
 
   deleteExpense(expense: ISaaSSubscription): void {
-    if (!expense.id || expense.status === SubscriptionStatus.PAID) {
+    if (!expense.id) {
       return;
     }
 
@@ -291,6 +307,14 @@ export default class BillsSubscriptionsComponent implements OnInit {
     return `${this.roundToTwoDecimals(expense.monthlyCost)} ${expense.currency}`;
   }
 
+  formatMonthlyAmount(expense: ISaaSSubscription): string {
+    return `${this.roundToTwoDecimals(this.getMonthlyEquivalent(expense))} ${expense.currency}`;
+  }
+
+  formatYearlyAmount(expense: ISaaSSubscription): string {
+    return `${this.roundToTwoDecimals(this.getYearlyEquivalent(expense))} ${expense.currency}`;
+  }
+
   trackById(_: number, expense: ISaaSSubscription): number | undefined {
     return expense.id;
   }
@@ -314,6 +338,32 @@ export default class BillsSubscriptionsComponent implements OnInit {
       default:
         return subscriptionDate.add(1, 'month');
     }
+  }
+
+  private isIncludedInSummaryTotals(status: SubscriptionStatus): boolean {
+    return status !== SubscriptionStatus.PAID && status !== SubscriptionStatus.CANCELLED && status !== SubscriptionStatus.EXPIRED;
+  }
+
+  private getMonthlyEquivalent(expense: ISaaSSubscription): number {
+    const amount = expense.monthlyCost ?? 0;
+    switch (expense.billingCycle) {
+      case BillingCycle.WEEKLY:
+        return amount * (52 / 12);
+      case BillingCycle.MONTHLY:
+        return amount;
+      case BillingCycle.QUARTERLY:
+        return amount / 3;
+      case BillingCycle.SEMI_ANNUAL:
+        return amount / 6;
+      case BillingCycle.ANNUAL:
+        return amount / 12;
+      default:
+        return amount;
+    }
+  }
+
+  private getYearlyEquivalent(expense: ISaaSSubscription): number {
+    return this.getMonthlyEquivalent(expense) * 12;
   }
 
   private convertToSar(amount: number, currency?: string | null): number {

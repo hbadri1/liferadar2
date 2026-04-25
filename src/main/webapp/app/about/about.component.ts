@@ -16,6 +16,7 @@ export default class AboutComponent {
     { icon: '🧭', key: 'pillars' },
     { icon: '📊', key: 'evaluations' },
     { icon: '✅', key: 'actionItems' },
+    { icon: '💸', key: 'expenseControl' },
     { icon: '👨‍👩‍👧‍👦', key: 'family' },
     { icon: '✈️', key: 'trips' },
     { icon: '🌐', key: 'multilingual' },
