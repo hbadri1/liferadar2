@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260425120000-1" author="liferadar">
+        <addColumn tableName="saas_subscription">
+            <column name="item_type" type="VARCHAR(20)" defaultValue="SAAS">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bill_date" type="DATE"/>
+            <column name="due_date" type="DATE"/>
+            <column name="paid_date" type="DATE"/>
+            <column name="receipt_url" type="VARCHAR(500)"/>
+            <column name="payment_method" type="VARCHAR(30)"/>
+            <column name="is_recurring" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+
+        <sql>
+            UPDATE saas_subscription
+            SET item_type = 'SAAS'
+            WHERE item_type IS NULL;
+        </sql>
+
+        <sql>
+            INSERT INTO saas_subscription (
+                service_name,
+                item_type,
+                description,
+                monthly_cost,
+                currency,
+                annual_cost,
+                bill_date,
+                due_date,
+                paid_date,
+                subscription_date,
+                renewal_date,
+                billing_cycle,
+                status,
+                auto_renewal,
+                renewal_reminder,
+                receipt_url,
+                payment_method,
+                is_recurring,
+                provider_url,
+                account_email,
+                account_username,
+                notes,
+                is_shared,
+                created_date,
+                last_modified_date,
+                owner_id
+            )
+            SELECT
+                b.description,
+                'BILL',
+                NULL,
+                b.amount,
+                COALESCE(eu.currency, 'USD'),
+                b.amount,
+                b.bill_date,
+                b.due_date,
+                b.paid_date,
+                COALESCE(b.bill_date, CURRENT_DATE),
+                b.due_date,
+                'MONTHLY',
+                b.status,
+                FALSE,
+                NULL,
+                b.receipt_url,
+                b.payment_method,
+                COALESCE(b.is_recurring, FALSE),
+                NULL,
+                NULL,
+                NULL,
+                b.notes,
+                FALSE,
+                b.created_date,
+                b.last_modified_date,
+                b.owner_id
+            FROM bill b
+            LEFT JOIN extended_user eu ON eu.id = b.owner_id;
+        </sql>
+
+        <sql>
+            DELETE FROM bill;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
+

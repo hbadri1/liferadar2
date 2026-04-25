@@ -1,0 +1,127 @@
+// ─── Footer ─────────────────────────────────────────────────────────────────
+
+.app-footer {
+  margin-top: auto;
+  background: linear-gradient(135deg, #0f1e33 0%, #1a2f4a 100%);
+  color: rgba(255, 255, 255, 0.75);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem 0.7rem;
+}
+
+// ── Top row ──────────────────────────────────────────────────────────────────
+
+.footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.footer-logo-mark {
+  font-size: 1.15rem;
+  color: #1fb7a6;
+  line-height: 1;
+}
+
+.footer-brand-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: color 0.18s ease;
+
+  &:hover,
+  &:focus {
+    color: #1fb7a6;
+    text-decoration: none;
+  }
+}
+
+.footer-feedback-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(31, 183, 166, 0.55);
+  border-radius: 20px;
+  background: rgba(31, 183, 166, 0.1);
+  color: #1fb7a6;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+
+  &:hover,
+  &:focus {
+    background: rgba(31, 183, 166, 0.22);
+    border-color: #1fb7a6;
+    color: #fff;
+    outline: none;
+  }
+}
+
+// ── Bottom row ───────────────────────────────────────────────────────────────
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.footer-aths-link {
+  color: rgba(31, 183, 166, 0.85);
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    color: #1fb7a6;
+    text-decoration: underline;
+  }
+}
+
+.footer-made-with {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.76rem;
+}
+
+.footer-heart {
+  color: #e05c6e;
+  font-size: 0.7rem;
+}
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260425143000-1" author="liferadar">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="saas_subscription" columnName="item_type"/>
+        </preConditions>
+
+        <sql>
+            UPDATE saas_subscription
+            SET item_type = 'SAAS'
+            WHERE item_type IS NULL OR item_type = 'BILL';
+        </sql>
+
+        <dropColumn tableName="saas_subscription" columnName="item_type"/>
+    </changeSet>
+
+    <changeSet id="20260425143000-2" author="liferadar">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="bill"/>
+        </preConditions>
+        <dropTable tableName="bill" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="20260425143000-3" author="liferadar">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="saas_subscription"/>
+            <not>
+                <tableExists tableName="expense"/>
+            </not>
+        </preConditions>
+        <renameTable oldTableName="saas_subscription" newTableName="expense"/>
+    </changeSet>
+
+</databaseChangeLog>
+

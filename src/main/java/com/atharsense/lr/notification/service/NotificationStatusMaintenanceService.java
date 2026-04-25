@@ -1,8 +1,6 @@
 package com.atharsense.lr.notification.service;
 
-import com.atharsense.lr.domain.Bill.BillStatus;
 import com.atharsense.lr.domain.SaaSSubscription.SubscriptionStatus;
-import com.atharsense.lr.repository.BillRepository;
 import com.atharsense.lr.repository.SaaSSubscriptionRepository;
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -13,19 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NotificationStatusMaintenanceService {
 
-    private final BillRepository billRepository;
     private final SaaSSubscriptionRepository subscriptionRepository;
 
-    public NotificationStatusMaintenanceService(BillRepository billRepository, SaaSSubscriptionRepository subscriptionRepository) {
-        this.billRepository = billRepository;
+    public NotificationStatusMaintenanceService(SaaSSubscriptionRepository subscriptionRepository) {
         this.subscriptionRepository = subscriptionRepository;
     }
 
     public StatusUpdateResult syncStatuses(LocalDate businessDate) {
-        int overdueBills = billRepository.markBillsOverdue(
+        int overdueBills = subscriptionRepository.markExpensesOverdue(
             businessDate,
-            BillStatus.OVERDUE,
-            EnumSet.of(BillStatus.PENDING, BillStatus.PARTIAL)
+            SubscriptionStatus.OVERDUE,
+            EnumSet.of(SubscriptionStatus.PENDING, SubscriptionStatus.PARTIAL)
         );
 
         int expiredSubscriptions = subscriptionRepository.markSubscriptionsExpired(

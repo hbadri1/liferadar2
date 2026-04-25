@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260425090000-1" author="liferadar">
+        <addColumn tableName="saas_subscription">
+            <column name="auto_renewal" type="BOOLEAN" defaultValueBoolean="false" remarks="Whether the subscription renews automatically">
+                <constraints nullable="false"/>
+            </column>
+            <column name="renewal_reminder" type="VARCHAR(32)" remarks="Renewal reminder lead time (ONE_WEEK, TWENTY_FOUR_HOURS)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
+

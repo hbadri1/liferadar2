@@ -9,10 +9,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * A SaaS Subscription.
+ * An Expense.
  */
 @Entity
-@Table(name = "saas_subscription")
+@Table(name = "expense")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class SaaSSubscription implements Serializable {
 
@@ -37,8 +37,22 @@ public class SaaSSubscription implements Serializable {
     @Column(name = "monthly_cost", nullable = false, precision = 10, scale = 2)
     private BigDecimal monthlyCost;
 
+    @NotNull
+    @Size(max = 3)
+    @Column(name = "currency", length = 3, nullable = false)
+    private String currency = "USD";
+
     @Column(name = "annual_cost", precision = 10, scale = 2)
     private BigDecimal annualCost;
+
+    @Column(name = "bill_date")
+    private LocalDate billDate;
+
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
+    @Column(name = "paid_date")
+    private LocalDate paidDate;
 
     @NotNull
     @Column(name = "subscription_date", nullable = false)
@@ -56,6 +70,24 @@ public class SaaSSubscription implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private SubscriptionStatus status;
+
+    @Column(name = "auto_renewal", nullable = false)
+    private Boolean autoRenewal = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "renewal_reminder")
+    private RenewalReminderOption renewalReminder;
+
+    @Size(max = 500)
+    @Column(name = "receipt_url", length = 500)
+    private String receiptUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
+    private PaymentMethod paymentMethod;
+
+    @Column(name = "manual_renewal", nullable = false)
+    private Boolean manualRenewal = false;
 
     @Size(max = 500)
     @Column(name = "provider_url", length = 500)
@@ -135,6 +167,38 @@ public class SaaSSubscription implements Serializable {
         this.annualCost = annualCost;
     }
 
+    public LocalDate getBillDate() {
+        return billDate;
+    }
+
+    public void setBillDate(LocalDate billDate) {
+        this.billDate = billDate;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalDate getPaidDate() {
+        return paidDate;
+    }
+
+    public void setPaidDate(LocalDate paidDate) {
+        this.paidDate = paidDate;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public LocalDate getSubscriptionDate() {
         return subscriptionDate;
     }
@@ -169,6 +233,46 @@ public class SaaSSubscription implements Serializable {
 
     public String getProviderUrl() {
         return providerUrl;
+    }
+
+    public Boolean getAutoRenewal() {
+        return autoRenewal;
+    }
+
+    public void setAutoRenewal(Boolean autoRenewal) {
+        this.autoRenewal = autoRenewal;
+    }
+
+    public RenewalReminderOption getRenewalReminder() {
+        return renewalReminder;
+    }
+
+    public void setRenewalReminder(RenewalReminderOption renewalReminder) {
+        this.renewalReminder = renewalReminder;
+    }
+
+    public String getReceiptUrl() {
+        return receiptUrl;
+    }
+
+    public void setReceiptUrl(String receiptUrl) {
+        this.receiptUrl = receiptUrl;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public Boolean getManualRenewal() {
+        return manualRenewal;
+    }
+
+    public void setManualRenewal(Boolean manualRenewal) {
+        this.manualRenewal = manualRenewal;
     }
 
     public void setProviderUrl(String providerUrl) {
@@ -248,13 +352,19 @@ public class SaaSSubscription implements Serializable {
             "id=" + id +
             ", serviceName='" + serviceName + '\'' +
             ", monthlyCost=" + monthlyCost +
+            ", currency='" + currency + '\'' +
             ", billingCycle=" + billingCycle +
             ", status=" + status +
+            ", autoRenewal=" + autoRenewal +
+            ", renewalReminder=" + renewalReminder +
+            ", billDate=" + billDate +
+            ", dueDate=" + dueDate +
             ", renewalDate=" + renewalDate +
             '}';
     }
 
     // Enums
+
     public enum BillingCycle {
         WEEKLY("Weekly"),
         MONTHLY("Monthly"),
@@ -274,15 +384,52 @@ public class SaaSSubscription implements Serializable {
     }
 
     public enum SubscriptionStatus {
+        NEW("New"),
         ACTIVE("Active"),
         PAUSED("Paused"),
         CANCELLED("Cancelled"),
         PENDING("Pending"),
-        EXPIRED("Expired");
+        EXPIRED("Expired"),
+        PAID("Paid"),
+        OVERDUE("Overdue"),
+        PARTIAL("Partial");
 
         private final String displayName;
 
         SubscriptionStatus(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+    public enum RenewalReminderOption {
+        ONE_WEEK("1 week"),
+        TWENTY_FOUR_HOURS("24 hours");
+
+        private final String displayName;
+
+        RenewalReminderOption(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+    public enum PaymentMethod {
+        CREDIT_CARD("Credit Card"),
+        DEBIT_CARD("Debit Card"),
+        BANK_TRANSFER("Bank Transfer"),
+        PAYPAL("PayPal"),
+        OTHER("Other");
+
+        private final String displayName;
+
+        PaymentMethod(String displayName) {
             this.displayName = displayName;
         }
 

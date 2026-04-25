@@ -15,6 +15,7 @@ public record CreateSaaSSubscriptionRequest(
     @Size(min = 1, max = 200, message = "Service name must be between 1 and 200 characters")
     String serviceName,
 
+
     @Size(max = 800, message = "Description must not exceed 800 characters")
     String description,
 
@@ -22,8 +23,18 @@ public record CreateSaaSSubscriptionRequest(
     @DecimalMin(value = "0.00", message = "Monthly cost must be greater than or equal to 0")
     BigDecimal monthlyCost,
 
+    @NotNull(message = "Currency is required")
+    @Size(min = 3, max = 3, message = "Currency must be a 3-letter code")
+    String currency,
+
     @DecimalMin(value = "0.00", message = "Annual cost must be greater than or equal to 0")
     BigDecimal annualCost,
+
+    LocalDate billDate,
+
+    LocalDate dueDate,
+
+    LocalDate paidDate,
 
     @NotNull(message = "Subscription date is required")
     LocalDate subscriptionDate,
@@ -33,8 +44,17 @@ public record CreateSaaSSubscriptionRequest(
     @NotNull(message = "Billing cycle is required")
     SaaSSubscription.BillingCycle billingCycle,
 
-    @NotNull(message = "Status is required")
-    SaaSSubscription.SubscriptionStatus status,
+    Boolean autoRenewal,
+
+    Boolean manualRenewal,
+
+    SaaSSubscription.RenewalReminderOption renewalReminder,
+
+    @Size(max = 500, message = "Receipt URL must not exceed 500 characters")
+    String receiptUrl,
+
+    SaaSSubscription.PaymentMethod paymentMethod,
+
 
     @Size(max = 500, message = "Provider URL must not exceed 500 characters")
     String providerUrl,

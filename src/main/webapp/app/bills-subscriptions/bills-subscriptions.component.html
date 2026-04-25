@@ -1,612 +1,249 @@
-<section class="bills-subscriptions-page py-4">
-  <div class="container-fluid">
-    <!-- Error Alert -->
-    <jhi-alert-error />
-
-    <!-- Header -->
-    <header class="bills-subscriptions-page__header mb-4">
-      <div>
-        <h1 class="h3 mb-0" jhiTranslate="billsSubscriptions.title">Bills & Subscriptions</h1>
-        <p class="text-muted" jhiTranslate="billsSubscriptions.subtitle">Manage your SaaS subscriptions and bills</p>
-      </div>
-      <div class="header-actions">
-        <button class="btn btn-primary" routerLink="/entities/saas-subscription/new">
-          <fa-icon icon="plus" class="me-2"></fa-icon>
-          <span jhiTranslate="billsSubscriptions.newSubscription">New Subscription</span>
-        </button>
-        <button class="btn btn-success ms-2" routerLink="/entities/bill/new">
-          <fa-icon icon="plus" class="me-2"></fa-icon>
-          <span jhiTranslate="billsSubscriptions.newBill">New Bill</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Loading Spinner -->
-    <div *ngIf="isLoading" class="text-center my-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+<section class="container py-4">
+  <header class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1" jhiTranslate="billsSubscriptions.expensesTitle">Expenses</h1>
+      <p class="text-muted mb-0" jhiTranslate="billsSubscriptions.expensesSubtitle">Manage all your expenses in one place.</p>
     </div>
 
-    <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-4" role="tablist" *ngIf="!isLoading">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" [class.active]="activeTab === 'dashboard'" (click)="switchTab('dashboard')" type="button">
-          <fa-icon icon="chart-bar" class="me-2"></fa-icon>
-          <span jhiTranslate="billsSubscriptions.tabDashboard">Dashboard</span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          [class.active]="activeTab === 'subscriptions'"
-          (click)="switchTab('subscriptions')"
-          type="button"
-        >
-          <fa-icon icon="list" class="me-2"></fa-icon>
-          <span jhiTranslate="billsSubscriptions.tabSubscriptions">Subscriptions</span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" [class.active]="activeTab === 'bills'" (click)="switchTab('bills')" type="button">
-          <fa-icon icon="receipt" class="me-2"></fa-icon>
-          <span jhiTranslate="billsSubscriptions.tabBills">Bills</span>
-        </button>
-      </li>
-    </ul>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-primary" (click)="createExpense()" jhiTranslate="billsSubscriptions.newExpense">New Expense</button>
+    </div>
+  </header>
 
-    <!-- Subscriptions Tab -->
-    <div *ngIf="activeTab === 'subscriptions' && !isLoading" class="tab-content">
-      <!-- Subscriptions Metrics -->
-      <div class="row mb-4" *ngIf="subscriptionMetrics$ | async as metrics">
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.totalSubscriptions">Total Subscriptions</h6>
-              <p class="card-text h4">{{ metrics.totalSubscriptions }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.activeSubscriptions">Active Subscriptions</h6>
-              <p class="card-text h4">{{ metrics.activeSubscriptions }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.monthlyExpense">Monthly Expense</h6>
-              <p class="card-text h4">{{ formatCurrency(metrics.totalMonthlyCost) }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</h6>
-              <p class="card-text h4">{{ formatCurrency(metrics.totalAnnualCost) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Upcoming Renewals -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0" jhiTranslate="billsSubscriptions.upcomingRenewals">Upcoming Renewals (30 days)</h5>
-        </div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
         <div class="card-body">
-          <div *ngIf="(upcomingRenewals$ | async) as renewals">
-            <div *ngIf="renewals.length === 0" class="alert alert-info" jhiTranslate="billsSubscriptions.noUpcomingRenewals">
-              No upcoming renewals in the next 30 days.
-            </div>
-            <div class="list-group" *ngIf="renewals.length > 0">
-              <div *ngFor="let renewal of renewals" class="list-group-item">
-                <div class="d-flex w-100 justify-content-between align-items-center">
-                  <div>
-                    <h6 class="mb-1">{{ renewal.serviceName }}</h6>
-                    <p class="mb-0 text-muted small" *ngIf="renewal.renewalDate">
-                        <span jhiTranslate="billsSubscriptions.renewalDateLabel">Renewal date</span>: {{ formatDate(renewal.renewalDate) }}
-                     </p>
-                  </div>
-                  <div class="text-end">
-                    <p class="mb-0">
-                      <strong>{{ formatCurrency(renewal.monthlyCost) }}</strong>
-                      <span class="text-muted" jhiTranslate="billsSubscriptions.perMonth">/month</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Subscriptions List -->
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0" jhiTranslate="billsSubscriptions.subscriptionsList">Subscriptions List</h5>
-        </div>
-        <div class="card-body">
-          <div *ngIf="(subscriptions$ | async) as subscriptions">
-            <div *ngIf="subscriptions.length === 0" class="alert alert-info" jhiTranslate="billsSubscriptions.noSubscriptions">
-              No subscriptions found. Add your first subscription!
-            </div>
-            <div class="table-responsive" *ngIf="subscriptions.length > 0">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th jhiTranslate="billsSubscriptions.serviceName">Service Name</th>
-                    <th jhiTranslate="billsSubscriptions.monthlyCost">Monthly Cost</th>
-                    <th jhiTranslate="billsSubscriptions.billingCycle">Billing Cycle</th>
-                    <th jhiTranslate="billsSubscriptions.status">Status</th>
-                    <th jhiTranslate="billsSubscriptions.renewalDate">Renewal Date</th>
-                    <th>{{ 'liferadarApp.evaluationDecision.integrations.title' | translate }}</th>
-                    <th jhiTranslate="billsSubscriptions.actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let subscription of subscriptions">
-                    <td>{{ subscription.serviceName }}</td>
-                    <td>{{ formatCurrency(subscription.monthlyCost) }}</td>
-                    <td>{{ ('billsSubscriptions.billingCycleValues.' + subscription.billingCycle) | translate }}</td>
-                    <td>
-                      <span
-                        class="badge"
-                        [ngClass]="{
-                          'bg-success': subscription.status === 'ACTIVE',
-                          'bg-warning': subscription.status === 'PAUSED',
-                          'bg-danger': subscription.status === 'CANCELLED',
-                          'bg-secondary': subscription.status === 'PENDING',
-                          'bg-info': subscription.status === 'EXPIRED'
-                        }"
-                      >
-                        {{ ('billsSubscriptions.statusValues.' + subscription.status) | translate }}
-                      </span>
-                    </td>
-                    <td>{{ formatDate(subscription.renewalDate) }}</td>
-                    <td>
-                      <div class="btn-group btn-group-sm" role="group">
-                        @for (provider of integrationProviders; track provider.code) {
-                          <button
-                            type="button"
-                            class="btn d-inline-flex align-items-center gap-1"
-                            [ngClass]="provider.style"
-                            [disabled]="isIntegrationDisabled(subscription.id!, 'subscription')"
-                            (click)="pushSubscriptionToIntegration(subscription, provider.code)"
-                          >
-                            @if (provider.code === 'ticktick') {
-                              <img
-                                src="/content/images/ticktick.png"
-                                alt="TickTick"
-                                width="14"
-                                height="14"
-                                class="d-inline-block align-middle bg-transparent p-0 m-0"
-                                style="object-fit: contain"
-                              />
-                            }
-                            <span>{{ provider.labelKey | translate }}</span>
-                          </button>
-                        }
-                      </div>
-                    </td>
-                    <td>
-                      <div class="btn-group btn-group-sm">
-                        <button
-                          type="button"
-                          class="btn btn-warning"
-                          (click)="openEditSubscriptionModal(editSubscriptionModal, subscription)"
-                        >
-                          <fa-icon icon="pencil"></fa-icon>
-                        </button>
-                        <button type="button" class="btn btn-danger" (click)="openDeleteSubscriptionModal(deleteSubscriptionModal, subscription)">
-                          <fa-icon icon="trash"></fa-icon>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.totalExpenses">Total Expenses</div>
+          <div class="display-6 mb-0">{{ totalExpenses }}</div>
         </div>
       </div>
     </div>
-
-    <!-- Bills Tab -->
-    <div *ngIf="activeTab === 'bills' && !isLoading" class="tab-content">
-      <!-- Bills Metrics -->
-      <div class="row mb-4" *ngIf="billMetrics$ | async as metrics">
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.totalBills">Total Bills</h6>
-              <p class="card-text h4">{{ metrics.totalBills }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.paidBills">Paid Bills</h6>
-              <p class="card-text h4 text-success">{{ metrics.paidBills }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.pendingBills">Pending Bills</h6>
-              <p class="card-text h4 text-warning">{{ metrics.pendingBills }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-3">
-          <div class="card metric-card">
-            <div class="card-body">
-              <h6 class="card-subtitle text-muted" jhiTranslate="billsSubscriptions.totalAmount">Total Amount</h6>
-              <p class="card-text h4">{{ formatCurrency(metrics.totalBillAmount) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Overdue Bills Alert -->
-      <div *ngIf="(overdueBills$ | async) as overdue">
-        <div class="alert alert-danger" *ngIf="overdue.length > 0">
-          <h5>
-            <fa-icon [icon]="faTimesIcon" class="me-2"></fa-icon>
-            <span jhiTranslate="billsSubscriptions.overdueBillsAlert" [translateValues]="{ count: overdue.length }"
-              >You have {{ overdue.length }} overdue bills</span
-            >
-          </h5>
-        </div>
-      </div>
-
-      <!-- Bills List -->
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0" jhiTranslate="billsSubscriptions.billsList">Bills List</h5>
-        </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
         <div class="card-body">
-          <div *ngIf="(bills$ | async) as bills">
-            <div *ngIf="bills.length === 0" class="alert alert-info" jhiTranslate="billsSubscriptions.noBills">
-              No bills found. Add your first bill!
-            </div>
-            <div class="table-responsive" *ngIf="bills.length > 0">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th jhiTranslate="billsSubscriptions.description">Description</th>
-                    <th jhiTranslate="billsSubscriptions.amount">Amount</th>
-                    <th jhiTranslate="billsSubscriptions.billDate">Bill Date</th>
-                    <th jhiTranslate="billsSubscriptions.dueDate">Due Date</th>
-                    <th jhiTranslate="billsSubscriptions.status">Status</th>
-                    <th jhiTranslate="billsSubscriptions.paymentMethod">Payment Method</th>
-                    <th>{{ 'liferadarApp.evaluationDecision.integrations.title' | translate }}</th>
-                    <th jhiTranslate="billsSubscriptions.actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let bill of bills">
-                    <td>{{ bill.description }}</td>
-                    <td>{{ formatCurrency(bill.amount) }}</td>
-                    <td>{{ formatDate(bill.billDate) }}</td>
-                    <td>{{ formatDate(bill.dueDate) }}</td>
-                    <td>
-                      <span
-                        class="badge"
-                        [ngClass]="{
-                          'bg-success': bill.status === 'PAID',
-                          'bg-warning': bill.status === 'PENDING',
-                          'bg-danger': bill.status === 'OVERDUE' || bill.status === 'CANCELLED',
-                          'bg-secondary': bill.status === 'PARTIAL'
-                        }"
-                      >
-                        {{ ('billsSubscriptions.statusValues.' + bill.status) | translate }}
-                      </span>
-                    </td>
-                    <td>{{ ('billsSubscriptions.paymentMethodValues.' + bill.paymentMethod) | translate }}</td>
-                    <td>
-                      <div class="btn-group btn-group-sm" role="group">
-                        @for (provider of integrationProviders; track provider.code) {
-                          <button
-                            type="button"
-                            class="btn d-inline-flex align-items-center gap-1"
-                            [ngClass]="provider.style"
-                            [disabled]="isIntegrationDisabled(bill.id!, 'bill')"
-                            (click)="pushBillToIntegration(bill, provider.code)"
-                          >
-                            @if (provider.code === 'ticktick') {
-                              <img
-                                src="/content/images/ticktick.png"
-                                alt="TickTick"
-                                width="14"
-                                height="14"
-                                class="d-inline-block align-middle bg-transparent p-0 m-0"
-                                style="object-fit: contain"
-                              />
-                            }
-                            <span>{{ provider.labelKey | translate }}</span>
-                          </button>
-                        }
-                      </div>
-                    </td>
-                    <td>
-                      <div class="btn-group btn-group-sm">
-                        <button
-                          type="button"
-                          class="btn btn-warning"
-                          (click)="openEditBillModal(editBillModal, bill)"
-                        >
-                          <fa-icon icon="pencil"></fa-icon>
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-success"
-                          (click)="openMarkPaidModal(markPaidBillModal, bill)"
-                          *ngIf="bill.status !== 'PAID'"
-                        >
-                          <fa-icon icon="check"></fa-icon>
-                        </button>
-                        <button type="button" class="btn btn-danger" (click)="openDeleteBillModal(deleteBillModal, bill)">
-                          <fa-icon icon="trash"></fa-icon>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.trackedPaidSpendSar">Tracked Paid Spend (SAR approx.)</div>
+          <div class="display-6 mb-0">{{ trackedSpendSar }}</div>
         </div>
       </div>
     </div>
-
-    <!-- Dashboard Tab -->
-    <div *ngIf="activeTab === 'dashboard' && !isLoading" class="tab-content">
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="mb-0" jhiTranslate="billsSubscriptions.subscriptionSummary">Subscription Summary</h5>
-            </div>
-            <div class="card-body">
-              <div *ngIf="subscriptionMetrics$ | async as metrics">
-                <div class="mb-3">
-                  <div class="d-flex justify-content-between mb-2">
-                    <span jhiTranslate="billsSubscriptions.activeTotal">Active / Total:</span>
-                    <strong>{{ metrics.activeSubscriptions }} / {{ metrics.totalSubscriptions }}</strong>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span jhiTranslate="billsSubscriptions.monthlyCostLabel">Monthly Cost:</span>
-                    <strong>{{ formatCurrency(metrics.totalMonthlyCost) }}</strong>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span jhiTranslate="billsSubscriptions.annualCostLabel">Annual Cost:</span>
-                    <strong>{{ formatCurrency(metrics.totalAnnualCost) }}</strong>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span jhiTranslate="billsSubscriptions.averageCost">Average Cost:</span>
-                    <strong>{{ formatCurrency(metrics.averageMonthlyCost) }}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="mb-0" jhiTranslate="billsSubscriptions.billSummary">Bill Summary</h5>
-            </div>
-            <div class="card-body">
-              <div *ngIf="billMetrics$ | async as metrics">
-                <div class="mb-3">
-                  <div class="d-flex justify-content-between mb-2">
-                    <span jhiTranslate="billsSubscriptions.totalBillsLabel">Total Bills:</span>
-                    <strong>{{ metrics.totalBills }}</strong>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span jhiTranslate="billsSubscriptions.paidAmount">Paid Amount:</span>
-                    <strong class="text-success">{{ formatCurrency(metrics.paidAmount) }}</strong>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span jhiTranslate="billsSubscriptions.pendingAmount">Pending Amount:</span>
-                    <strong class="text-warning">{{ formatCurrency(metrics.pendingAmount) }}</strong>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span jhiTranslate="billsSubscriptions.overdueAmount">Overdue Amount:</span>
-                    <strong class="text-danger">{{ formatCurrency(metrics.overdueAmount) }}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.alerts">Alerts</div>
+          <div class="small text-muted mt-1">{{ 'billsSubscriptions.upcomingRenewalsCount' | translate: { count: upcomingRenewals } }}</div>
+          <div class="small text-muted">{{ 'billsSubscriptions.overdueExpensesCount' | translate: { count: overdueExpenses } }}</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  @if (editingExpenseId !== null) {
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold" jhiTranslate="billsSubscriptions.editExpenseTitle">Edit Expense</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelEdit()" jhiTranslate="entity.action.cancel">Close</button>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" novalidate>
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label" for="editServiceName" jhiTranslate="billsSubscriptions.serviceName">Name</label>
+              <input id="editServiceName" type="text" class="form-control" formControlName="serviceName" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editAmount" jhiTranslate="billsSubscriptions.amount">Amount</label>
+              <input id="editAmount" type="number" min="0" step="0.01" class="form-control" formControlName="amount" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editCurrency" jhiTranslate="billsSubscriptions.currency">Currency</label>
+              <select id="editCurrency" class="form-select" formControlName="currency">
+                <option value="SAR">SAR</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editStatus" jhiTranslate="billsSubscriptions.status">Status</label>
+              <select id="editStatus" class="form-select" formControlName="status">
+                @for (option of statusOptions; track option) {
+                  <option [value]="option">{{ ('billsSubscriptions.statusValues.' + option) | translate }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editSubscriptionDate" jhiTranslate="billsSubscriptions.startDate">Start Date</label>
+              <input id="editSubscriptionDate" type="date" class="form-control" formControlName="subscriptionDate" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editBillingCycle" jhiTranslate="billsSubscriptions.billingCycle">Billing Cycle</label>
+              <select id="editBillingCycle" class="form-select" formControlName="billingCycle">
+                @for (option of billingCycleOptions; track option) {
+                  <option [value]="option">{{ ('billsSubscriptions.billingCycleValues.' + option) | translate }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editDueDate" jhiTranslate="billsSubscriptions.dueDate">Due Date</label>
+              <input id="editDueDate" type="date" class="form-control" formControlName="dueDate" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editPaidDate" jhiTranslate="billsSubscriptions.paidDate">Paid Date</label>
+              <input id="editPaidDate" type="date" class="form-control" formControlName="paidDate" />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editPaymentMethod" jhiTranslate="billsSubscriptions.paymentMethod">Payment Method</label>
+              <select id="editPaymentMethod" class="form-select" formControlName="paymentMethod">
+                <option [ngValue]="null" jhiTranslate="billsSubscriptions.none">None</option>
+                @for (option of paymentMethodOptions; track option) {
+                  <option [ngValue]="option">{{ ('billsSubscriptions.paymentMethodValues.' + option) | translate }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+              <div class="form-check mb-2">
+                <input id="editAutoRenewal" class="form-check-input" type="checkbox" formControlName="autoRenewal" />
+                <label class="form-check-label" for="editAutoRenewal" jhiTranslate="billsSubscriptions.autoRenewal">Auto-renewal</label>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+              <div class="form-check mb-2">
+                <input id="editManualRenewal" class="form-check-input" type="checkbox" formControlName="manualRenewal" />
+                <label class="form-check-label" for="editManualRenewal" jhiTranslate="billsSubscriptions.manualRenewal">Manual-renewal</label>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editRenewalReminder" jhiTranslate="billsSubscriptions.notify">Reminder</label>
+              <select
+                id="editRenewalReminder"
+                class="form-select"
+                formControlName="renewalReminder"
+                [disabled]="!editForm.controls.autoRenewal.value && !editForm.controls.manualRenewal.value"
+              >
+                <option [ngValue]="null" jhiTranslate="billsSubscriptions.noReminder">No reminder</option>
+                @for (option of renewalReminderOptions; track option) {
+                  <option [ngValue]="option">{{ ('billsSubscriptions.renewalReminderValues.' + option) | translate }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="editProviderUrl" jhiTranslate="billsSubscriptions.providerUrl">Provider URL</label>
+              <input id="editProviderUrl" type="url" class="form-control" formControlName="providerUrl" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="editAccountEmail" jhiTranslate="billsSubscriptions.accountEmail">Account Email</label>
+              <input id="editAccountEmail" type="email" class="form-control" formControlName="accountEmail" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="editAccountUsername" jhiTranslate="billsSubscriptions.accountUsername">Account Username</label>
+              <input id="editAccountUsername" type="text" class="form-control" formControlName="accountUsername" />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" for="editDescription" jhiTranslate="billsSubscriptions.description">Description</label>
+              <textarea id="editDescription" rows="2" class="form-control" formControlName="description"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="editNotes" jhiTranslate="billsSubscriptions.notes">Notes</label>
+              <textarea id="editNotes" rows="3" class="form-control" formControlName="notes"></textarea>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary" jhiTranslate="billsSubscriptions.saveChanges">Save Changes</button>
+            <button type="button" class="btn btn-outline-secondary" (click)="cancelEdit()" jhiTranslate="entity.action.cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body row g-3">
+      <div class="col-md-8">
+        <label class="form-label" for="searchTerm" jhiTranslate="billsSubscriptions.search">Search</label>
+        <input id="searchTerm" type="search" class="form-control" [(ngModel)]="searchTerm" [placeholder]="'billsSubscriptions.searchExpenses' | translate" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="statusFilter" jhiTranslate="billsSubscriptions.status">Status</label>
+        <select id="statusFilter" class="form-select" [(ngModel)]="statusFilter">
+          <option value="ALL" jhiTranslate="billsSubscriptions.all">All</option>
+          @for (option of statusOptions; track option) {
+            <option [value]="option">{{ ('billsSubscriptions.statusValues.' + option) | translate }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      @if (isLoading) {
+        <div class="p-4 text-center text-muted" jhiTranslate="billsSubscriptions.loadingExpenses">Loading expenses…</div>
+      } @else if (filteredExpenses.length === 0) {
+        <div class="p-4 text-center text-muted" jhiTranslate="billsSubscriptions.noExpensesFound">No expenses found for the current filters.</div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th jhiTranslate="billsSubscriptions.serviceName">Name</th>
+                <th jhiTranslate="billsSubscriptions.amount">Amount</th>
+                <th jhiTranslate="billsSubscriptions.status">Status</th>
+                <th jhiTranslate="billsSubscriptions.date">Date</th>
+                <th jhiTranslate="billsSubscriptions.details">Details</th>
+                <th class="text-end" jhiTranslate="billsSubscriptions.actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (expense of filteredExpenses; track trackById($index, expense)) {
+                <tr>
+                  <td>
+                    <div class="fw-semibold">{{ expense.serviceName }}</div>
+                    @if (expense.description) {
+                      <div class="text-muted small">{{ expense.description }}</div>
+                    }
+                  </td>
+                  <td>{{ formatAmount(expense) }}</td>
+                  <td>
+                    <span class="badge rounded-pill" [class]="getStatusClass(expense.status)">{{ ('billsSubscriptions.statusValues.' + expense.status) | translate }}</span>
+                  </td>
+                  <td>
+                    <div class="fw-semibold">{{ getPrimaryDate(expense) }}</div>
+                  </td>
+                  <td>
+                    <div>{{ getSecondaryDetails(expense) }}</div>
+                    @if (expense.notes) {
+                      <div class="text-muted small text-truncate" style="max-width: 220px">{{ expense.notes }}</div>
+                    }
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                      @if (expense.status !== 'PAID') {
+                        <button type="button" class="btn btn-outline-primary" (click)="startEdit(expense)" jhiTranslate="entity.action.edit">Edit</button>
+                        <button type="button" class="btn btn-outline-success" (click)="markAsPaid(expense)" jhiTranslate="billsSubscriptions.markAsPaidButton">Mark Paid</button>
+                        <button type="button" class="btn btn-outline-danger" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </div>
   </div>
 </section>
-
-<ng-template #deleteSubscriptionModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" jhiTranslate="billsSubscriptions.deleteSubscriptionTitle">Delete Subscription</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
-  </div>
-  <div class="modal-body">
-    <p class="mb-0" jhiTranslate="billsSubscriptions.deleteSubscriptionConfirm" [translateValues]="{ serviceName: subscriptionToDelete?.serviceName || '-' }">
-      Are you sure you want to delete this subscription: {{ subscriptionToDelete?.serviceName }}?
-    </p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')" jhiTranslate="entity.action.cancel">Cancel</button>
-    <button type="button" class="btn btn-danger" (click)="confirmDeleteSubscription(modal)" jhiTranslate="entity.action.delete">Delete</button>
-  </div>
-</ng-template>
-
-<ng-template #editSubscriptionModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" jhiTranslate="billsSubscriptions.editSubscriptionTitle">Edit Subscription</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
-  </div>
-  <form [formGroup]="subscriptionEditForm" (ngSubmit)="saveSubscriptionEdits(modal)">
-    <div class="modal-body">
-      <div class="row g-3">
-        <div class="col-md-8">
-          <label for="editSubServiceName" class="form-label" jhiTranslate="billsSubscriptions.serviceName">Service Name</label>
-          <input id="editSubServiceName" type="text" class="form-control" formControlName="serviceName" />
-        </div>
-        <div class="col-md-4">
-          <label for="editSubMonthlyCost" class="form-label" jhiTranslate="billsSubscriptions.monthlyCost">Monthly Cost</label>
-          <input id="editSubMonthlyCost" type="number" min="0" step="0.01" class="form-control" formControlName="monthlyCost" />
-        </div>
-        <div class="col-md-4">
-          <label for="editSubDate" class="form-label" jhiTranslate="billsSubscriptions.subscriptionDate">Subscription Date</label>
-          <input id="editSubDate" type="date" class="form-control" formControlName="subscriptionDate" />
-        </div>
-        <div class="col-md-4">
-          <label for="editSubCycle" class="form-label" jhiTranslate="billsSubscriptions.billingCycle">Billing Cycle</label>
-          <select id="editSubCycle" class="form-select" formControlName="billingCycle">
-            @for (cycle of billingCycleOptions; track cycle) {
-              <option [value]="cycle">{{ ('billsSubscriptions.billingCycleValues.' + cycle) | translate }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label for="editSubStatus" class="form-label" jhiTranslate="billsSubscriptions.status">Status</label>
-          <select id="editSubStatus" class="form-select" formControlName="status">
-            @for (status of subscriptionStatusOptions; track status) {
-              <option [value]="status">{{ ('billsSubscriptions.statusValues.' + status) | translate }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-12">
-          <label for="editSubDescription" class="form-label" jhiTranslate="billsSubscriptions.description">Description</label>
-          <textarea id="editSubDescription" rows="2" class="form-control" formControlName="description"></textarea>
-        </div>
-        <div class="col-md-6">
-          <label for="editSubProviderUrl" class="form-label" jhiTranslate="billsSubscriptions.providerUrl">Provider URL</label>
-          <input id="editSubProviderUrl" type="url" class="form-control" formControlName="providerUrl" />
-        </div>
-        <div class="col-md-3">
-          <label for="editSubEmail" class="form-label" jhiTranslate="billsSubscriptions.accountEmail">Account Email</label>
-          <input id="editSubEmail" type="email" class="form-control" formControlName="accountEmail" />
-        </div>
-        <div class="col-md-3">
-          <label for="editSubUsername" class="form-label" jhiTranslate="billsSubscriptions.accountUsername">Account Username</label>
-          <input id="editSubUsername" type="text" class="form-control" formControlName="accountUsername" />
-        </div>
-        <div class="col-12">
-          <label for="editSubNotes" class="form-label" jhiTranslate="billsSubscriptions.notes">Notes</label>
-          <textarea id="editSubNotes" rows="3" class="form-control" formControlName="notes"></textarea>
-        </div>
-        <div class="col-12">
-          <div class="form-check mb-2">
-            <input id="editSubShared" class="form-check-input" type="checkbox" formControlName="isShared" />
-            <label class="form-check-label" for="editSubShared" jhiTranslate="billsSubscriptions.sharedSubscription">Shared subscription</label>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')" jhiTranslate="entity.action.cancel">Cancel</button>
-      <button type="submit" class="btn btn-primary" [disabled]="subscriptionEditForm.invalid" jhiTranslate="entity.action.save">Save</button>
-    </div>
-  </form>
-</ng-template>
-
-<ng-template #deleteBillModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" jhiTranslate="billsSubscriptions.deleteBillTitle">Delete Bill</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
-  </div>
-  <div class="modal-body">
-    <p class="mb-0" jhiTranslate="billsSubscriptions.deleteBillConfirm" [translateValues]="{ description: billToDelete?.description || '-' }">
-      Are you sure you want to delete this bill: {{ billToDelete?.description }}?
-    </p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')" jhiTranslate="entity.action.cancel">Cancel</button>
-    <button type="button" class="btn btn-danger" (click)="confirmDeleteBill(modal)" jhiTranslate="entity.action.delete">Delete</button>
-  </div>
-</ng-template>
-
-<ng-template #markPaidBillModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" jhiTranslate="billsSubscriptions.markPaidTitle">Mark Bill as Paid</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
-  </div>
-  <div class="modal-body">
-    <p class="mb-0" jhiTranslate="billsSubscriptions.markPaidConfirm" [translateValues]="{ description: billToMarkPaid?.description || '-' }">
-      Mark this bill as paid: {{ billToMarkPaid?.description }}?
-    </p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')" jhiTranslate="entity.action.cancel">Cancel</button>
-    <button type="button" class="btn btn-success" (click)="confirmMarkBillAsPaid(modal)" jhiTranslate="billsSubscriptions.markAsPaidButton">Mark as paid</button>
-  </div>
-</ng-template>
-
-<ng-template #editBillModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" jhiTranslate="billsSubscriptions.editBillTitle">Edit Bill</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
-  </div>
-  <form [formGroup]="billEditForm" (ngSubmit)="saveBillEdits(modal)">
-    <div class="modal-body">
-      <div class="row g-3">
-        <div class="col-md-8">
-          <label for="editDescription" class="form-label" jhiTranslate="billsSubscriptions.description">Description</label>
-          <input id="editDescription" type="text" class="form-control" formControlName="description" />
-        </div>
-        <div class="col-md-4">
-          <label for="editAmount" class="form-label" jhiTranslate="billsSubscriptions.amount">Amount</label>
-          <input id="editAmount" type="number" min="0" step="0.01" class="form-control" formControlName="amount" />
-        </div>
-        <div class="col-md-4">
-          <label for="editBillDate" class="form-label" jhiTranslate="billsSubscriptions.billDate">Bill Date</label>
-          <input id="editBillDate" type="date" class="form-control" formControlName="billDate" />
-        </div>
-        <div class="col-md-4">
-          <label for="editDueDate" class="form-label" jhiTranslate="billsSubscriptions.dueDate">Due Date</label>
-          <input id="editDueDate" type="date" class="form-control" formControlName="dueDate" />
-        </div>
-        <div class="col-md-4">
-          <label for="editStatus" class="form-label" jhiTranslate="billsSubscriptions.status">Status</label>
-          <select id="editStatus" class="form-select" formControlName="status">
-            @for (status of billStatusOptions; track status) {
-              <option [value]="status">{{ ('billsSubscriptions.statusValues.' + status) | translate }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="editPaymentMethod" class="form-label" jhiTranslate="billsSubscriptions.paymentMethod">Payment Method</label>
-          <select id="editPaymentMethod" class="form-select" formControlName="paymentMethod">
-            @for (payment of paymentMethodOptions; track payment) {
-              <option [value]="payment">{{ ('billsSubscriptions.paymentMethodValues.' + payment) | translate }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-md-6 d-flex align-items-end">
-          <div class="form-check mb-2">
-            <input id="editRecurring" class="form-check-input" type="checkbox" formControlName="isRecurring" />
-            <label class="form-check-label" for="editRecurring" jhiTranslate="billsSubscriptions.recurringBill">Recurring bill</label>
-          </div>
-        </div>
-        <div class="col-12">
-          <label for="editNotes" class="form-label" jhiTranslate="billsSubscriptions.notes">Notes</label>
-          <textarea id="editNotes" rows="3" class="form-control" formControlName="notes"></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')" jhiTranslate="entity.action.cancel">Cancel</button>
-      <button type="submit" class="btn btn-primary" [disabled]="billEditForm.invalid || isSavingBill" jhiTranslate="entity.action.save">Save</button>
-    </div>
-  </form>
-</ng-template>
 
