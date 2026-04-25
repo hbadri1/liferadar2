@@ -70,9 +70,9 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
-    path: 'bills-subscriptions',
+    path: 'expenses',
     loadComponent: () => import('./bills-subscriptions/bills-subscriptions.component'),
-    title: 'billsSubscriptions.title',
+    title: 'billsSubscriptions.expensesTitle',
     data: {
       authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
     },
@@ -88,18 +88,9 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
-    path: 'entities/bill/new',
-    loadComponent: () => import('./entities/bill/create/bill-create.component'),
-    title: 'billsSubscriptions.newBill',
-    data: {
-      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
-    },
-    canActivate: [UserRouteAccessService],
-  },
-  {
-    path: 'entities/saas-subscription/new',
+    path: 'entities/expense/new',
     loadComponent: () => import('./entities/saas-subscription/create/saas-subscription-create.component'),
-    title: 'billsSubscriptions.newSubscription',
+    title: 'billsSubscriptions.newExpense',
     data: {
       authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
     },

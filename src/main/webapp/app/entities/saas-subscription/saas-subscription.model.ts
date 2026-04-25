@@ -9,11 +9,28 @@ export enum BillingCycle {
 }
 
 export enum SubscriptionStatus {
+  NEW = 'NEW',
   ACTIVE = 'ACTIVE',
   PAUSED = 'PAUSED',
   CANCELLED = 'CANCELLED',
   PENDING = 'PENDING',
   EXPIRED = 'EXPIRED',
+  PAID = 'PAID',
+  OVERDUE = 'OVERDUE',
+  PARTIAL = 'PARTIAL',
+}
+
+export enum RenewalReminderOption {
+  ONE_WEEK = 'ONE_WEEK',
+  TWENTY_FOUR_HOURS = 'TWENTY_FOUR_HOURS',
+}
+
+export enum PaymentMethod {
+  CREDIT_CARD = 'CREDIT_CARD',
+  DEBIT_CARD = 'DEBIT_CARD',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  PAYPAL = 'PAYPAL',
+  OTHER = 'OTHER',
 }
 
 export interface ISaaSSubscription {
@@ -21,11 +38,20 @@ export interface ISaaSSubscription {
   serviceName: string;
   description?: string | null;
   monthlyCost: number;
+  currency: string;
   annualCost?: number | null;
+  billDate?: dayjs.Dayjs | null;
+  dueDate?: dayjs.Dayjs | null;
+  paidDate?: dayjs.Dayjs | null;
   subscriptionDate: dayjs.Dayjs;
   renewalDate?: dayjs.Dayjs | null;
   billingCycle: BillingCycle;
   status: SubscriptionStatus;
+  autoRenewal?: boolean | null;
+  manualRenewal?: boolean | null;
+  renewalReminder?: RenewalReminderOption | null;
+  receiptUrl?: string | null;
+  paymentMethod?: PaymentMethod | null;
   providerUrl?: string | null;
   accountEmail?: string | null;
   accountUsername?: string | null;
@@ -39,13 +65,14 @@ export interface ISaaSSubscription {
 export type NewSaaSSubscription = Omit<ISaaSSubscription, 'id'>;
 
 export interface SubscriptionMetrics {
-  totalSubscriptions: number;
-  activeSubscriptions: number;
-  pausedSubscriptions: number;
-  cancelledSubscriptions: number;
+  totalExpenses: number;
+  activeExpenses: number;
+  pendingExpenses: number;
+  overdueExpenses: number;
+  paidExpenses: number;
+  cancelledExpenses: number;
   totalMonthlyCost: number;
   totalAnnualCost: number;
   averageMonthlyCost: number;
   upcomingRenewalsCount: number;
 }
-
