@@ -7,6 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 
 import SharedModule from 'app/shared/shared.module';
+import { ItemCountComponent } from 'app/shared/pagination';
+import { AccountService } from 'app/core/auth/account.service';
 import { AlertService } from 'app/core/util/alert.service';
 import {
   BillingCycle,
@@ -22,10 +24,11 @@ import { ConfirmationModalComponent } from 'app/home/confirmation-modal.componen
   selector: 'jhi-bills-subscriptions',
   templateUrl: './bills-subscriptions.component.html',
   styleUrl: './bills-subscriptions.component.scss',
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule, ItemCountComponent],
 })
 export default class BillsSubscriptionsComponent implements OnInit {
   private readonly subscriptionService = inject(SaaSSubscriptionService);
+  private readonly account = inject(AccountService).trackCurrentAccount();
   private readonly router = inject(Router);
   private readonly alertService = inject(AlertService);
   private readonly modalService = inject(NgbModal);
@@ -41,6 +44,8 @@ export default class BillsSubscriptionsComponent implements OnInit {
   editingExpenseId: number | null = null;
   searchTerm = '';
   statusFilter = 'ALL';
+  currentPage = 1;
+  readonly itemsPerPage = 10;
 
   readonly editForm = new FormGroup({
     serviceName: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
@@ -90,6 +95,15 @@ export default class BillsSubscriptionsComponent implements OnInit {
     });
   }
 
+  get pagedExpenses(): ISaaSSubscription[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredExpenses.slice(start, start + this.itemsPerPage);
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 1;
+  }
+
   get totalExpenses(): number {
     return this.expenses.length;
   }
@@ -104,9 +118,18 @@ export default class BillsSubscriptionsComponent implements OnInit {
   }
 
   get monthlyExpensesSar(): number {
+    const now = dayjs();
+    const startOfCurrentMonth = now.startOf('month');
+    const endOfCurrentMonth = now.endOf('month');
     return this.roundToTwoDecimals(
       this.expenses
-        .filter(expense => this.isIncludedInSummaryTotals(expense.status))
+        .filter(
+          expense =>
+            this.isIncludedInSummaryTotals(expense.status) &&
+            expense.subscriptionDate != null &&
+            !expense.subscriptionDate.isBefore(startOfCurrentMonth) &&
+            !expense.subscriptionDate.isAfter(endOfCurrentMonth)
+        )
         .reduce((sum, expense) => sum + this.convertToSar(this.getMonthlyEquivalent(expense), expense.currency), 0)
     );
   }
@@ -364,6 +387,30 @@ export default class BillsSubscriptionsComponent implements OnInit {
 
   private getYearlyEquivalent(expense: ISaaSSubscription): number {
     return this.getMonthlyEquivalent(expense) * 12;
+  }
+
+  private isDateInCurrentUserMonth(dateValue: dayjs.Dayjs | null | undefined): boolean {
+    if (!dateValue) {
+      return false;
+    }
+
+    const userTimeZone = this.account()?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
+    const currentMonthKey = this.getMonthKeyForTimeZone(new Date(), userTimeZone);
+    const dateMonthKey = this.getMonthKeyForTimeZone(dateValue.toDate(), userTimeZone);
+
+    return dateMonthKey === currentMonthKey;
+  }
+
+  private getMonthKeyForTimeZone(date: Date, timeZone: string): string {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+    }).formatToParts(date);
+    const year = parts.find(part => part.type === 'year')?.value;
+    const month = parts.find(part => part.type === 'month')?.value;
+
+    return `${year ?? '0000'}-${month ?? '00'}`;
   }
 
   private convertToSar(amount: number, currency?: string | null): number {

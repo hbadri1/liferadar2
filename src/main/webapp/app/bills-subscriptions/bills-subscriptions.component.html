@@ -181,11 +181,11 @@
     <div class="card-body row g-3">
       <div class="col-md-8">
         <label class="form-label" for="searchTerm" jhiTranslate="billsSubscriptions.search">Search</label>
-        <input id="searchTerm" type="search" class="form-control" [(ngModel)]="searchTerm" [placeholder]="'billsSubscriptions.searchExpenses' | translate" />
+        <input id="searchTerm" type="search" class="form-control" [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" [placeholder]="'billsSubscriptions.searchExpenses' | translate" />
       </div>
       <div class="col-md-4">
         <label class="form-label" for="statusFilter" jhiTranslate="billsSubscriptions.status">Status</label>
-        <select id="statusFilter" class="form-select" [(ngModel)]="statusFilter">
+        <select id="statusFilter" class="form-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
           <option value="ALL" jhiTranslate="billsSubscriptions.all">All</option>
           @for (option of statusOptions; track option) {
             <option [value]="option">{{ ('billsSubscriptions.statusValues.' + option) | translate }}</option>
@@ -207,7 +207,7 @@
             <thead>
               <tr>
                 <th jhiTranslate="billsSubscriptions.serviceName">Name</th>
-                <th jhiTranslate="billsSubscriptions.monthlyExpense">Monthly Expense</th>
+                <th jhiTranslate="billsSubscriptions.amount">Amount</th>
                 <th jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</th>
                 <th jhiTranslate="billsSubscriptions.status">Status</th>
                 <th jhiTranslate="billsSubscriptions.date">Date</th>
@@ -216,10 +216,15 @@
               </tr>
             </thead>
             <tbody>
-              @for (expense of filteredExpenses; track trackById($index, expense)) {
-                <tr>
+              @for (expense of pagedExpenses; track trackById($index, expense)) {
+                <tr [class.auto-renewal-row]="expense.autoRenewal">
                   <td>
-                    <div class="fw-semibold">{{ expense.serviceName }}</div>
+                    <div class="fw-semibold">
+                      {{ expense.serviceName }}
+                      @if (expense.autoRenewal) {
+                        <span class="badge bg-danger ms-1 auto-renewal-badge" [title]="'billsSubscriptions.autoRenewal' | translate">↻</span>
+                      }
+                    </div>
                     @if (expense.description) {
                       <div class="text-muted small">{{ expense.description }}</div>
                     }
@@ -252,6 +257,24 @@
             </tbody>
           </table>
         </div>
+
+        @if (filteredExpenses.length > itemsPerPage) {
+          <div class="p-3 border-top">
+            <div class="d-flex justify-content-center mb-2">
+              <jhi-item-count [params]="{ page: currentPage, totalItems: filteredExpenses.length, itemsPerPage }" />
+            </div>
+            <div class="d-flex justify-content-center">
+              <ngb-pagination
+                [collectionSize]="filteredExpenses.length"
+                [(page)]="currentPage"
+                [pageSize]="itemsPerPage"
+                [maxSize]="5"
+                [rotate]="true"
+                [boundaryLinks]="true"
+              ></ngb-pagination>
+            </div>
+          </div>
+        }
       }
     </div>
   </div>
