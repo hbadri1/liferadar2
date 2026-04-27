@@ -5,7 +5,7 @@
 
     <groupId>com.atharsense.lr</groupId>
     <artifactId>liferadar</artifactId>
-    <version>1.12</version>
+    <version>1.13</version>
     <packaging>jar</packaging>
     <name>Liferadar</name>
     <description>Liferadar is a personal/family app that guides your goals and gather your family together.</description>
@@ -447,8 +447,8 @@
                                 <version>[${maven.version},)</version>
                             </requireMavenVersion>
                             <requireJavaVersion>
-                                <message>You are running an incompatible version of Java. JHipster supports JDK 17 to 24.</message>
-                                <version>[17,18),[21,22),[24,25)</version>
+                                <message>You are running an incompatible version of Java. JHipster supports JDK 17 to 27.</message>
+                                <version>[17,18),[21,22),[24,27)</version>
                             </requireJavaVersion>
                         </rules>
                     </configuration>

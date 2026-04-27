@@ -108,6 +108,14 @@
         background-color: #f8f9fa;
       }
 
+      tr.auto-renewal-row {
+        background-color: rgba(220, 53, 69, 0.05);
+
+        &:hover {
+          background-color: rgba(220, 53, 69, 0.1);
+        }
+      }
+
       td {
         padding: 1rem;
         vertical-align: middle;
@@ -262,3 +270,9 @@
   }
 }
 
+.auto-renewal-badge {
+  font-size: 0.7rem;
+  padding: 0.2em 0.45em;
+  vertical-align: middle;
+  cursor: default;
+}
