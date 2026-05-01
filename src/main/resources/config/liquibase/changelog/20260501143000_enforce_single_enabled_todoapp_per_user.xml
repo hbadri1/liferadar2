@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260501143000-1" author="liferadar">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="todo_app_user_config"/>
+            <columnExists tableName="todo_app_user_config" columnName="user_id"/>
+            <columnExists tableName="todo_app_user_config" columnName="enabled"/>
+        </preConditions>
+
+        <sql>
+            UPDATE todo_app_user_config
+            SET enabled = false
+            WHERE enabled = true
+              AND id NOT IN (
+                SELECT latest.id
+                FROM (
+                  SELECT MAX(id) AS id
+                  FROM todo_app_user_config
+                  WHERE enabled = true
+                  GROUP BY user_id
+                ) latest
+              );
+        </sql>
+    </changeSet>
+
+    <changeSet id="20260501143000-2" author="liferadar" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="todo_app_user_config" indexName="ux_todo_app_user_config_one_enabled_per_user"/>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE UNIQUE INDEX ux_todo_app_user_config_one_enabled_per_user
+            ON todo_app_user_config (user_id)
+            WHERE enabled = true;
+        </sql>
+    </changeSet>
+
+    <changeSet id="20260501143000-3" author="liferadar" dbms="h2">
+        <comment>
+            PostgreSQL enforces one enabled provider via partial unique index.
+            For H2, enforcement is handled by service-layer logic.
+        </comment>
+    </changeSet>
+
+</databaseChangeLog>
+

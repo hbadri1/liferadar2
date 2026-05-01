@@ -10,7 +10,6 @@ import { ITodoAppConfigUpdate, ITodoAppUserConfig } from './todoapps.model';
 import { TodoAppsService } from './todoapps.service';
 
 type TodoAppFormGroup = FormGroup<{
-  enabled: FormControl<boolean>;
   accessToken: FormControl<string>;
   externalUserId: FormControl<string>;
   defaultProjectId: FormControl<string>;
@@ -28,6 +27,7 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
   readonly isLoading = signal(false);
   readonly savingProviders = signal<Set<string>>(new Set());
   readonly providerForms = signal<Record<string, TodoAppFormGroup>>({});
+  readonly selectedProvider = signal<string | null>(null);
 
   readonly providerOrder = ['ticktick', 'microsoft-todo', 'todoist'];
 
@@ -70,6 +70,9 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
         const configs = response.body ?? [];
         this.todoAppConfigs.set(configs);
         this.providerForms.set(this.buildForms(configs));
+        // Set the currently enabled provider
+        const enabledConfig = configs.find(c => c.enabled);
+        this.selectedProvider.set(enabledConfig?.provider ?? null);
         this.isLoading.set(false);
       },
       error: () => {
@@ -79,6 +82,13 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
     });
   }
 
+  selectProvider(provider: string): void {
+    if (this.selectedProvider() === provider) {
+      return; // Already selected
+    }
+    this.selectedProvider.set(provider);
+  }
+
   save(provider: string): void {
     const form = this.providerForms()[provider];
     const config = this.todoAppConfigs().find(item => item.provider === provider);
@@ -86,20 +96,21 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.syncValidators(form, config);
+    const isEnabled = provider === this.selectedProvider();
+    this.syncValidators(form, config, isEnabled);
     form.markAllAsTouched();
     form.updateValueAndValidity();
-    if (form.invalid) {
+    if (form.invalid && isEnabled) {
       return;
     }
 
     this.setSaving(provider, true);
     const payload: ITodoAppConfigUpdate = {
-      enabled: form.controls.enabled.getRawValue(),
-      accessToken: form.controls.accessToken.getRawValue().trim() || null,
-      externalUserId: form.controls.externalUserId.getRawValue().trim() || null,
-      defaultProjectId: form.controls.defaultProjectId.getRawValue().trim() || null,
-      defaultProjectName: form.controls.defaultProjectName.getRawValue().trim() || null,
+      enabled: isEnabled,
+      accessToken: isEnabled ? (form.controls.accessToken.getRawValue().trim() || null) : null,
+      externalUserId: isEnabled ? (form.controls.externalUserId.getRawValue().trim() || null) : null,
+      defaultProjectId: isEnabled ? (form.controls.defaultProjectId.getRawValue().trim() || null) : null,
+      defaultProjectName: isEnabled ? (form.controls.defaultProjectName.getRawValue().trim() || null) : null,
     };
 
     this.todoAppsService.update(provider, payload).subscribe({
@@ -113,7 +124,7 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
         this.alertService.addAlert({
           type: 'success',
           message: this.translateService.instant(
-            config.configured ? 'todoapps.messages.updateSuccess' : 'todoapps.messages.createSuccess',
+            isEnabled ? 'todoapps.messages.enableSuccess' : 'todoapps.messages.disableSuccess',
             { provider: this.getProviderLabel(provider) },
           ),
         });
@@ -177,12 +188,29 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
     return this.savingProviders().has(provider);
   }
 
+  isProviderSelected(provider: string): boolean {
+    return this.selectedProvider() === provider;
+  }
+
   getForm(provider: string): TodoAppFormGroup | undefined {
     return this.providerForms()[provider];
   }
 
   getProviderLabel(provider: string): string {
     return this.translateService.instant(`todoapps.providers.${provider}`);
+  }
+
+  getProviderIcon(provider: string): string {
+    switch (provider) {
+      case 'ticktick':
+        return 'fa-check-circle';
+      case 'microsoft-todo':
+        return 'fa-microsoft';
+      case 'todoist':
+        return 'fa-list-check';
+      default:
+        return 'fa-circle';
+    }
   }
 
   getProjectIdLabel(config: ITodoAppUserConfig): string {
@@ -216,21 +244,17 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
 
   private createForm(config: ITodoAppUserConfig): TodoAppFormGroup {
     const form = new FormGroup({
-      enabled: new FormControl(config.enabled, { nonNullable: true }),
       accessToken: new FormControl('', { nonNullable: true }),
       externalUserId: new FormControl(config.externalUserId ?? '', { nonNullable: true }),
       defaultProjectId: new FormControl(config.defaultProjectId ?? '', { nonNullable: true }),
       defaultProjectName: new FormControl(config.defaultProjectName ?? '', { nonNullable: true }),
     });
 
-    this.syncValidators(form, config);
-    form.controls.enabled.valueChanges.subscribe(() => this.syncValidators(form, config));
+    this.syncValidators(form, config, config.enabled);
     return form;
   }
 
-  private syncValidators(form: TodoAppFormGroup, config: ITodoAppUserConfig): void {
-    const isEnabled = form.controls.enabled.getRawValue();
-
+  private syncValidators(form: TodoAppFormGroup, config: ITodoAppUserConfig, isEnabled: boolean): void {
     form.controls.accessToken.setValidators(isEnabled && !this.isTickTickProvider(config.provider) ? [Validators.required] : []);
     form.controls.accessToken.updateValueAndValidity({ emitEvent: false });
 

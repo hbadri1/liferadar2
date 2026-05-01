@@ -5,6 +5,7 @@
     "menu": {
       "home": "Home",
       "about": "About",
+      "premium": "Premium",
       "actionItems": "Action Items",
       "billsSubscriptions": "Bills & Subscriptions",
       "expenses": "Expenses",
@@ -15,6 +16,7 @@
       "entities": {
         "main": "Entities",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
+        "adminAuthority": "Admin Authority",
         "extendedUser": "Extended User",
         "pillar": "Life Pillar",
         "pillarTranslation": "Life Pillar Translation",

@@ -126,6 +126,51 @@
   padding: 0.85rem 1rem;
 }
 
+/* Child-role compact objective layout */
+.objective-group-card--compact {
+  padding: 0.75rem 0.9rem;
+}
+
+.objective-list--compact {
+  gap: 0.5rem;
+}
+
+.objective-card--compact {
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+
+  h5,
+  h6 {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.98rem;
+    line-height: 1.2;
+  }
+}
+
+.objective-items-list--compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.55rem;
+}
+
+.objective-item-card--compact {
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  .small {
+    font-size: 0.74rem;
+  }
+
+  .btn {
+    padding: 0.24rem 0.46rem;
+    font-size: 0.75rem;
+    align-self: flex-start;
+  }
+}
+
 .objective-progress-history {
   border-top: 1px dashed #cbd5e1;
   padding-top: 0.75rem;
@@ -556,6 +601,10 @@
 
   .objective-group-header .btn {
     width: 100%;
+  }
+
+  .objective-items-list--compact {
+    grid-template-columns: 1fr;
   }
 
   .objective-progress-matrix-desktop {

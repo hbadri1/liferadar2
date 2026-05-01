@@ -1,180 +1,230 @@
-<div class="d-flex justify-content-center">
-  <div class="col-lg-10">
-    <h2 jhiTranslate="todoapps.title">My Configuration</h2>
-    <p class="text-muted" jhiTranslate="todoapps.subtitle">Manage your user integrations and todo app settings.</p>
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 200px; display: flex; align-items: center;">
+  <div class="container">
+    <h1 class="text-white mb-2" jhiTranslate="todoapps.title">My Configuration</h1>
+    <p class="text-white-50" jhiTranslate="todoapps.subtitle">Manage your integration preferences and connect your favorite todo apps.</p>
+  </div>
+</div>
 
-    <jhi-alert-error />
-    <jhi-alert />
+<div class="container py-5">
+  <jhi-alert-error />
+  <jhi-alert />
 
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <h5 class="card-title" jhiTranslate="todoapps.profile.title">Profile Summary</h5>
-        <div class="row g-3">
-          <div class="col-md-4">
-            <div class="small text-muted" jhiTranslate="todoapps.profile.username">Username</div>
-            <div class="fw-semibold">{{ account()?.login || '-' }}</div>
-          </div>
-          <div class="col-md-4">
-            <div class="small text-muted" jhiTranslate="todoapps.profile.email">Email</div>
-            <div class="fw-semibold">{{ account()?.email || '-' }}</div>
-          </div>
-          <div class="col-md-4">
-            <div class="small text-muted" jhiTranslate="todoapps.profile.language">Language</div>
-            <div class="fw-semibold">{{ account()?.langKey || '-' }}</div>
+  <!-- Profile Summary Section -->
+  <div class="row mb-5">
+    <div class="col-lg-10 mx-auto">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+          <h5 class="card-title fw-bold text-dark mb-4">
+            <i class="fa fa-user-circle me-2 text-primary"></i>
+            <span jhiTranslate="todoapps.profile.title">Profile Summary</span>
+          </h5>
+          <div class="row g-4">
+            <div class="col-md-4">
+              <div class="small text-muted text-uppercase fw-semibold" jhiTranslate="todoapps.profile.username">Username</div>
+              <div class="fs-6 fw-semibold text-dark">{{ account()?.login || '-' }}</div>
+            </div>
+            <div class="col-md-4">
+              <div class="small text-muted text-uppercase fw-semibold" jhiTranslate="todoapps.profile.email">Email</div>
+              <div class="fs-6 fw-semibold text-dark">{{ account()?.email || '-' }}</div>
+            </div>
+            <div class="col-md-4">
+              <div class="small text-muted text-uppercase fw-semibold" jhiTranslate="todoapps.profile.language">Language</div>
+              <div class="fs-6 fw-semibold text-dark">{{ account()?.langKey || '-' }}</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div>
-        <h4 class="mb-1" jhiTranslate="todoapps.integrations.title">Todo App Integrations</h4>
-        <p class="text-muted mb-0" jhiTranslate="todoapps.integrations.description">
-          Configure the todo applications used from your Action Items page.
-        </p>
-      </div>
-      <button class="btn btn-outline-primary" type="button" (click)="loadConfigs()" [disabled]="isLoading()">
-        <span jhiTranslate="todoapps.actions.refresh">Refresh</span>
-      </button>
-    </div>
-
-    @if (isLoading()) {
-      <div class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden" jhiTranslate="todoapps.actions.loading">Loading...</span>
+  <!-- Integrations Section -->
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="fw-bold text-dark mb-2">
+              <i class="fa fa-plug me-2 text-success"></i>
+              <span jhiTranslate="todoapps.integrations.title">Todo App Integrations</span>
+            </h3>
+            <p class="text-muted mb-0" jhiTranslate="todoapps.integrations.description">
+              Select one todo app to use for your Action Items. Only one integration can be active at a time.
+            </p>
+          </div>
+          <button class="btn btn-outline-primary" type="button" (click)="loadConfigs()" [disabled]="isLoading()">
+            <i class="fa fa-sync-alt me-2" [class.fa-spin]="isLoading()"></i>
+            <span jhiTranslate="todoapps.actions.refresh">Refresh</span>
+          </button>
         </div>
       </div>
-    } @else {
-      <div class="row g-4">
-        @for (config of orderedConfigs(); track config.provider) {
-          @let form = getForm(config.provider);
-          <div class="col-12">
-            <div class="card shadow-sm h-100">
-              <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
-                <div>
-                  <h5 class="mb-1">{{ getProviderLabel(config.provider) }}</h5>
-                  <div class="small text-muted">{{ config.baseUrl || '-' }}</div>
-                </div>
-                <div class="d-flex gap-2 flex-wrap">
-                  @if (config.provider === 'ticktick') {
-                    @if (isTickTickConnected(config)) {
-                      <button type="button" class="btn btn-sm btn-outline-danger" [disabled]="!config.available" (click)="disconnectTickTick()">
-                        <span jhiTranslate="todoapps.actions.disconnect">Disconnect</span>
-                      </button>
-                    } @else {
-                      <button type="button" class="btn btn-sm btn-outline-primary" [disabled]="!config.available" (click)="authorizeTickTick()">
-                        <span jhiTranslate="todoapps.actions.authorize">Authorize</span>
-                      </button>
-                    }
-                  }
-                  <span class="badge" [ngClass]="config.available ? 'bg-success' : 'bg-secondary'">
-                    {{ (config.available ? 'todoapps.status.available' : 'todoapps.status.unavailable') | translate }}
-                  </span>
-                  <span class="badge" [ngClass]="config.configured ? 'bg-info' : 'bg-warning text-dark'">
-                    {{ (config.configured ? 'todoapps.status.configured' : 'todoapps.status.notConfigured') | translate }}
-                  </span>
-                </div>
-              </div>
-              <div class="card-body">
-                @if (form) {
-                  <form [formGroup]="form" (ngSubmit)="save(config.provider)">
-                    <div class="form-check form-switch mb-3">
-                      <input class="form-check-input" type="checkbox" [id]="'enabled-' + config.provider" formControlName="enabled" />
-                      <label class="form-check-label" [for]="'enabled-' + config.provider" jhiTranslate="todoapps.form.enabled">
-                        Enable integration
-                      </label>
-                    </div>
 
-                    @if (showManualCredentialFields(config)) {
-                      <div class="mb-3">
-                        <label class="form-label" [for]="'token-' + config.provider" jhiTranslate="todoapps.form.accessToken">Access Token</label>
-                        <input
-                          class="form-control"
-                          type="password"
-                          [id]="'token-' + config.provider"
-                          formControlName="accessToken"
-                          placeholder="{{ 'todoapps.form.accessTokenPlaceholder' | translate }}"
-                        />
-                        @if (config.hasAccessToken) {
-                          <div class="form-text" jhiTranslate="todoapps.form.tokenRetainedHint">
-                            Leave blank to keep the current stored token.
-                          </div>
-                        }
-                        @if (form.controls.accessToken.invalid && (form.controls.accessToken.dirty || form.controls.accessToken.touched)) {
-                          <small class="form-text text-danger" jhiTranslate="todoapps.validation.accessTokenRequired">
-                            Access token is required when the integration is enabled.
-                          </small>
-                        }
+      @if (isLoading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden" jhiTranslate="todoapps.actions.loading">Loading...</span>
+          </div>
+          <p class="text-muted mt-3" jhiTranslate="todoapps.actions.loading">Loading...</p>
+        </div>
+      } @else {
+        <div class="row g-4">
+          @for (config of orderedConfigs(); track config.provider) {
+            @let form = getForm(config.provider);
+            @let isSelected = isProviderSelected(config.provider);
+            <div class="col-12">
+              <div class="card shadow transition-all h-100" [class.border-primary]="isSelected" [class.border-3]="isSelected" style="cursor: pointer;">
+                <div class="card-header bg-light border-0 p-3">
+                  <div class="row align-items-center g-3">
+                    <div class="col">
+                      <div class="d-flex align-items-center gap-3">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            [id]="'provider-' + config.provider"
+                            [value]="config.provider"
+                            [checked]="isSelected"
+                            (change)="selectProvider(config.provider)"
+                            [disabled]="!config.available"
+                          />
+                          <label class="form-check-label fw-bold" [for]="'provider-' + config.provider">
+                            <i [class]="'fa ' + getProviderIcon(config.provider) + ' me-2'"></i>
+                            {{ getProviderLabel(config.provider) }}
+                          </label>
+                        </div>
                       </div>
-                    }
+                      <div class="small text-muted mt-1">{{ config.baseUrl || '-' }}</div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="d-flex gap-2 flex-wrap">
+                        @if (config.provider === 'ticktick') {
+                          @if (isTickTickConnected(config)) {
+                            <button type="button" class="btn btn-sm btn-outline-danger" [disabled]="!config.available" (click)="disconnectTickTick()">
+                              <i class="fa fa-unlink me-1"></i>
+                              <span jhiTranslate="todoapps.actions.disconnect">Disconnect</span>
+                            </button>
+                          } @else {
+                            <button type="button" class="btn btn-sm btn-outline-success" [disabled]="!config.available" (click)="authorizeTickTick()">
+                              <i class="fa fa-link me-1"></i>
+                              <span jhiTranslate="todoapps.actions.authorize">Authorize</span>
+                            </button>
+                          }
+                        }
+                        <span class="badge" [ngClass]="config.available ? 'bg-success' : 'bg-secondary'">
+                          {{ (config.available ? 'todoapps.status.available' : 'todoapps.status.unavailable') | translate }}
+                        </span>
+                        <span class="badge" [ngClass]="config.configured ? 'bg-info' : 'bg-warning text-dark'">
+                          {{ (config.configured ? 'todoapps.status.configured' : 'todoapps.status.notConfigured') | translate }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                    <div class="row g-3">
+                @if (isSelected && form) {
+                  <div class="card-body p-4">
+                    <form [formGroup]="form" (ngSubmit)="save(config.provider)">
                       @if (showManualCredentialFields(config)) {
-                        <div class="col-md-6">
-                          <label class="form-label" [for]="'external-user-' + config.provider" jhiTranslate="todoapps.form.externalUserId">
-                            External User ID
+                        <div class="mb-4">
+                          <label class="form-label fw-semibold" [for]="'token-' + config.provider" jhiTranslate="todoapps.form.accessToken">
+                            Access Token
                           </label>
                           <input
-                            class="form-control"
-                            type="text"
-                            [id]="'external-user-' + config.provider"
-                            formControlName="externalUserId"
-                            placeholder="{{ 'todoapps.form.externalUserIdPlaceholder' | translate }}"
+                            class="form-control form-control-lg"
+                            type="password"
+                            [id]="'token-' + config.provider"
+                            formControlName="accessToken"
+                            placeholder="{{ 'todoapps.form.accessTokenPlaceholder' | translate }}"
                           />
-                        </div>
-                      }
-                      @if (showDefaultProjectIdField(config)) {
-                        <div class="col-md-6">
-                          <label class="form-label" [for]="'project-' + config.provider">{{ getProjectIdLabel(config) }}</label>
-                          <input
-                            class="form-control"
-                            type="text"
-                            [id]="'project-' + config.provider"
-                            formControlName="defaultProjectId"
-                            placeholder="{{ 'todoapps.form.defaultProjectIdPlaceholder' | translate }}"
-                          />
-                          @if (form.controls.defaultProjectId.invalid && (form.controls.defaultProjectId.dirty || form.controls.defaultProjectId.touched)) {
-                            <small class="form-text text-danger" jhiTranslate="todoapps.validation.defaultProjectIdRequired">
-                              Default project/list ID is required for this integration.
+                          @if (config.hasAccessToken) {
+                            <div class="form-text mt-2" jhiTranslate="todoapps.form.tokenRetainedHint">
+                              Leave blank to keep the current stored token.
+                            </div>
+                          }
+                          @if (form.controls.accessToken.invalid && (form.controls.accessToken.dirty || form.controls.accessToken.touched)) {
+                            <small class="form-text text-danger d-block mt-2">
+                              <i class="fa fa-exclamation-circle me-1"></i>
+                              <span jhiTranslate="todoapps.validation.accessTokenRequired">Access token is required when the integration is enabled.</span>
                             </small>
                           }
                         </div>
                       }
-                      @if (showDefaultProjectNameField(config)) {
-                        <div class="col-md-12">
-                          <label class="form-label" [for]="'project-name-' + config.provider" jhiTranslate="todoapps.form.defaultProjectName">
-                            Default Project Name
-                          </label>
-                          <input
-                            class="form-control"
-                            type="text"
-                            [id]="'project-name-' + config.provider"
-                            formControlName="defaultProjectName"
-                            placeholder="{{ 'todoapps.form.defaultProjectNamePlaceholder' | translate }}"
-                          />
-                          <div class="form-text" jhiTranslate="todoapps.form.defaultProjectNameHint">
-                            This name will be suggested in the TickTick popup and used if a new project needs to be created.
-                          </div>
-                        </div>
-                      }
-                    </div>
 
-                    <div class="mt-4 d-flex justify-content-end">
-                      <button type="submit" class="btn btn-primary" [disabled]="isSaving(config.provider) || !config.available">
-                        @if (isSaving(config.provider)) {
-                          <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                      <div class="row g-4 mb-4">
+                        @if (showManualCredentialFields(config)) {
+                          <div class="col-md-6">
+                            <label class="form-label fw-semibold" [for]="'external-user-' + config.provider" jhiTranslate="todoapps.form.externalUserId">
+                              External User ID
+                            </label>
+                            <input
+                              class="form-control form-control-lg"
+                              type="text"
+                              [id]="'external-user-' + config.provider"
+                              formControlName="externalUserId"
+                              placeholder="{{ 'todoapps.form.externalUserIdPlaceholder' | translate }}"
+                            />
+                          </div>
                         }
-                        <span>{{ (config.configured ? 'todoapps.actions.update' : 'todoapps.actions.create') | translate }}</span>
-                      </button>
-                    </div>
-                  </form>
+                        @if (showDefaultProjectIdField(config)) {
+                          <div class="col-md-6">
+                            <label class="form-label fw-semibold" [for]="'project-' + config.provider">
+                              {{ getProjectIdLabel(config) }}
+                            </label>
+                            <input
+                              class="form-control form-control-lg"
+                              type="text"
+                              [id]="'project-' + config.provider"
+                              formControlName="defaultProjectId"
+                              placeholder="{{ 'todoapps.form.defaultProjectIdPlaceholder' | translate }}"
+                            />
+                            @if (form.controls.defaultProjectId.invalid && (form.controls.defaultProjectId.dirty || form.controls.defaultProjectId.touched)) {
+                              <small class="form-text text-danger d-block mt-2">
+                                <i class="fa fa-exclamation-circle me-1"></i>
+                                <span jhiTranslate="todoapps.validation.defaultProjectIdRequired">Default project/list ID is required for this integration.</span>
+                              </small>
+                            }
+                          </div>
+                        }
+                        @if (showDefaultProjectNameField(config)) {
+                          <div class="col-md-12">
+                            <label class="form-label fw-semibold" [for]="'project-name-' + config.provider" jhiTranslate="todoapps.form.defaultProjectName">
+                              Default Project Name
+                            </label>
+                            <input
+                              class="form-control form-control-lg"
+                              type="text"
+                              [id]="'project-name-' + config.provider"
+                              formControlName="defaultProjectName"
+                              placeholder="{{ 'todoapps.form.defaultProjectNamePlaceholder' | translate }}"
+                            />
+                            <div class="form-text mt-2" jhiTranslate="todoapps.form.defaultProjectNameHint">
+                              This name will be suggested in the TickTick popup and used if a new project needs to be created.
+                            </div>
+                          </div>
+                        }
+                      </div>
+
+                      <div class="d-flex justify-content-end gap-2">
+                        <button
+                          type="submit"
+                          class="btn btn-primary btn-lg"
+                          [disabled]="isSaving(config.provider) || !config.available"
+                        >
+                          @if (isSaving(config.provider)) {
+                            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                          }
+                          <i class="fa fa-save me-2"></i>
+                          <span>{{ (config.configured ? 'todoapps.actions.update' : 'todoapps.actions.create') | translate }}</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 }
               </div>
             </div>
-          </div>
-        }
-      </div>
-    }
+          }
+        </div>
+      }
+    </div>
   </div>
 </div>
 

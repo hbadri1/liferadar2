@@ -1,5 +1,9 @@
 <div class="modal-header">
-  <h4 class="modal-title" jhiTranslate="liferadarApp.evaluationDecision.home.createLabel">Create new Evaluation Decision</h4>
+  @if (modalTitle) {
+    <h4 class="modal-title">{{ modalTitle }}</h4>
+  } @else {
+    <h4 class="modal-title" jhiTranslate="liferadarApp.evaluationDecision.home.createLabel">Create new Evaluation Decision</h4>
+  }
   <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
 </div>
 

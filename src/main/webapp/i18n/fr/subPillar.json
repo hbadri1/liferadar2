@@ -5,6 +5,7 @@
         "title": "SubPillars",
         "refreshListLabel": "Actualiser la liste",
         "createLabel": "Créer un nouveau Sub Life Pillar",
+        "editLabel": "Modifier le Sub Life Pillar",
         "createOrEditLabel": "Créer ou éditer un Sub Life Pillar",
         "notFound": "Aucun Sub Life Pillar trouvé"
       },
@@ -20,6 +21,7 @@
       "id": "ID",
       "code": "Code",
       "isActive": "Is Active",
+      "pillar": "Life Pillar",
       "translations": "Translations",
       "owner": "Owner"
     }

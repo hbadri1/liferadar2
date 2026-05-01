@@ -9,9 +9,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ILifeEvaluation } from 'app/entities/life-evaluation/life-evaluation.model';
 import { LifeEvaluationService } from 'app/entities/life-evaluation/service/life-evaluation.service';
+import { ISaaSSubscription } from 'app/entities/saas-subscription/saas-subscription.model';
+import { SaaSSubscriptionService } from 'app/entities/saas-subscription/service/saas-subscription.service';
 import { EvaluationDecisionService } from '../service/evaluation-decision.service';
 import { IEvaluationDecision } from '../evaluation-decision.model';
 import { EvaluationDecisionFormGroup, EvaluationDecisionFormService } from './evaluation-decision-form.service';
+import dayjs from 'dayjs/esm';
+import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 
 @Component({
   selector: 'jhi-evaluation-decision-update',
@@ -23,10 +27,12 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
   evaluationDecision: IEvaluationDecision | null = null;
 
   lifeEvaluationsSharedCollection: ILifeEvaluation[] = [];
+  expensesSharedCollection: ISaaSSubscription[] = [];
 
   protected evaluationDecisionService = inject(EvaluationDecisionService);
   protected evaluationDecisionFormService = inject(EvaluationDecisionFormService);
   protected lifeEvaluationService = inject(LifeEvaluationService);
+  protected expenseService = inject(SaaSSubscriptionService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -35,11 +41,15 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
   compareLifeEvaluation = (o1: ILifeEvaluation | null, o2: ILifeEvaluation | null): boolean =>
     this.lifeEvaluationService.compareLifeEvaluation(o1, o2);
 
+  compareExpense = (o1: ISaaSSubscription | null, o2: ISaaSSubscription | null): boolean => this.expenseService.compareSaaSSubscription(o1, o2);
+
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ evaluationDecision }) => {
       this.evaluationDecision = evaluationDecision;
       if (evaluationDecision) {
         this.updateForm(evaluationDecision);
+      } else {
+        this.applyPrefillFromQueryParams();
       }
 
       this.loadRelationshipsOptions();
@@ -87,6 +97,11 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
       this.lifeEvaluationsSharedCollection,
       evaluationDecision.lifeEvaluation,
     );
+
+    this.expensesSharedCollection = this.expenseService.addSaaSSubscriptionToCollectionIfMissing<ISaaSSubscription>(
+      this.expensesSharedCollection,
+      evaluationDecision.expense ?? undefined,
+    );
   }
 
   protected loadRelationshipsOptions(): void {
@@ -102,5 +117,50 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
         ),
       )
       .subscribe((lifeEvaluations: ILifeEvaluation[]) => (this.lifeEvaluationsSharedCollection = lifeEvaluations));
+
+    this.expenseService
+      .queryMy()
+      .pipe(map((res: HttpResponse<ISaaSSubscription[]>) => res.body ?? []))
+      .pipe(
+        map((expenses: ISaaSSubscription[]) =>
+          this.expenseService.addSaaSSubscriptionToCollectionIfMissing<ISaaSSubscription>(expenses, this.editForm.get('expense')!.value),
+        ),
+      )
+      .subscribe((expenses: ISaaSSubscription[]) => (this.expensesSharedCollection = expenses));
+  }
+
+  private applyPrefillFromQueryParams(): void {
+    const queryMap = this.activatedRoute.snapshot.queryParamMap;
+    const expenseIdParam = queryMap.get('expenseId');
+    const decisionParam = queryMap.get('decision');
+    const dateParam = queryMap.get('date');
+
+    const patch: {
+      decision?: string;
+      date?: string;
+      expense?: ISaaSSubscription;
+    } = {};
+
+    if (decisionParam) {
+      patch.decision = decisionParam;
+    }
+
+    if (dateParam) {
+      const parsed = dayjs(dateParam);
+      if (parsed.isValid()) {
+        patch.date = parsed.format(DATE_TIME_FORMAT);
+      }
+    }
+
+    if (expenseIdParam) {
+      const expenseId = Number(expenseIdParam);
+      if (!Number.isNaN(expenseId) && expenseId > 0) {
+        patch.expense = { id: expenseId } as ISaaSSubscription;
+      }
+    }
+
+    if (Object.keys(patch).length > 0) {
+      this.editForm.patchValue(patch);
+    }
   }
 }

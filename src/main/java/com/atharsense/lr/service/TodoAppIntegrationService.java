@@ -137,6 +137,7 @@ public class TodoAppIntegrationService {
             userConfig.setExternalUserId(tokenResponse.externalUserId());
         }
 
+        disableOtherEnabledProviders(user.getId(), TodoAppProvider.TICKTICK);
         todoAppUserConfigRepository.save(userConfig);
         return new TickTickAuthorizationResult(TodoAppProvider.TICKTICK.getCode(), true);
     }
@@ -238,6 +239,10 @@ public class TodoAppIntegrationService {
         config.setDefaultProjectName(normalize(defaultProjectName));
 
         validateConfig(config);
+
+        if (Boolean.TRUE.equals(config.getEnabled())) {
+            disableOtherEnabledProviders(user.getId(), provider);
+        }
 
         TodoAppUserConfig saved = todoAppUserConfigRepository.save(config);
         return buildConfigView(user.getId(), saved.getProvider());
@@ -408,6 +413,10 @@ public class TodoAppIntegrationService {
 
     private String normalize(String value) {
         return StringUtils.hasText(value) ? value.trim() : null;
+    }
+
+    private void disableOtherEnabledProviders(Long userId, TodoAppProvider providerToKeepEnabled) {
+        todoAppUserConfigRepository.disableOtherEnabledConfigs(userId, providerToKeepEnabled);
     }
 
     private String resolveTickTickDefaultProjectName(TodoAppUserConfig config) {

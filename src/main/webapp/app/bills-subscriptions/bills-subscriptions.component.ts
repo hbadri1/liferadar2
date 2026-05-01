@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -19,6 +19,7 @@ import {
 } from 'app/entities/saas-subscription/saas-subscription.model';
 import { SaaSSubscriptionService } from 'app/entities/saas-subscription/service/saas-subscription.service';
 import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
+import { EvaluationDecisionCreateModalComponent } from 'app/home/evaluation-decision-create-modal.component';
 
 @Component({
   selector: 'jhi-bills-subscriptions',
@@ -33,6 +34,7 @@ export default class BillsSubscriptionsComponent implements OnInit {
   private readonly alertService = inject(AlertService);
   private readonly modalService = inject(NgbModal);
   private readonly translateService = inject(TranslateService);
+  private readonly ngZone = inject(NgZone);
 
   readonly billingCycleOptions = Object.values(BillingCycle);
   readonly renewalReminderOptions = Object.values(RenewalReminderOption);
@@ -64,12 +66,13 @@ export default class BillsSubscriptionsComponent implements OnInit {
     providerUrl: new FormControl<string | null>(null),
     accountEmail: new FormControl<string | null>(null),
     accountUsername: new FormControl<string | null>(null),
-    notes: new FormControl<string | null>(null),
-  });
+     notes: new FormControl<string | null>(null),
+   });
 
   ngOnInit(): void {
     this.loadExpenses();
   }
+
 
   loadExpenses(): void {
     this.isLoading = true;
@@ -152,6 +155,31 @@ export default class BillsSubscriptionsComponent implements OnInit {
 
   createExpense(): void {
     this.router.navigate(['/entities/expense/new']);
+  }
+
+  createActionItemForExpense(expense: ISaaSSubscription): void {
+    if (!expense.id) {
+      return;
+    }
+
+    const modalRef = this.modalService.open(EvaluationDecisionCreateModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      windowClass: 'compact-entity-modal',
+    });
+
+    // Pass expense context to modal if supported
+    if (modalRef.componentInstance) {
+      modalRef.componentInstance.modalTitle = 'Add Action Item';
+      modalRef.componentInstance.defaultExpenseId = expense.id;
+      modalRef.componentInstance.defaultDecision = `${expense.serviceName} - follow up`;
+    }
+
+    modalRef.closed.subscribe((reason: unknown) => {
+      if (reason === 'saved') {
+        this.loadExpenses();
+      }
+    });
   }
 
   startEdit(expense: ISaaSSubscription): void {
@@ -417,7 +445,7 @@ export default class BillsSubscriptionsComponent implements OnInit {
     return currency === 'USD' ? amount * 3.75 : amount;
   }
 
-  private roundToTwoDecimals(value: number): number {
-    return Math.round((value + Number.EPSILON) * 100) / 100;
-  }
+   private roundToTwoDecimals(value: number): number {
+     return Math.round((value + Number.EPSILON) * 100) / 100;
+   }
 }

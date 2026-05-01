@@ -25,6 +25,7 @@
       "futureDateRequired": "La date d'échéance doit être dans le futur.",
       "owner": "Owner",
       "lifeEvaluation": "Life Evaluation",
+      "expense": "Depense",
       "creationDate": "Date de creation",
       "subPillar": "Sous-pilier de vie",
       "integrations": {

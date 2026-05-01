@@ -5,6 +5,7 @@
         "title": "Sub Life Pillars",
         "refreshListLabel": "Refresh list",
         "createLabel": "Create a new Sub Life Pillar",
+        "editLabel": "Edit Sub Life Pillar",
         "createOrEditLabel": "Create or edit a Sub Life Pillar",
         "notFound": "No Sub Life Pillars found"
       },
@@ -20,6 +21,7 @@
       "id": "ID",
       "code": "Code",
       "isActive": "Is Active",
+      "pillar": "Pillar",
       "translations": "Translations",
       "owner": "Owner"
     }

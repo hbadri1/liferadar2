@@ -32,6 +32,8 @@ public class EvaluationDecisionCriteria implements Serializable, Criteria {
 
     private LongFilter lifeEvaluationId;
 
+    private LongFilter expenseId;
+
     private Boolean distinct;
 
     public EvaluationDecisionCriteria() {}
@@ -42,6 +44,7 @@ public class EvaluationDecisionCriteria implements Serializable, Criteria {
         this.date = other.optionalDate().map(InstantFilter::copy).orElse(null);
         this.ownerId = other.optionalOwnerId().map(LongFilter::copy).orElse(null);
         this.lifeEvaluationId = other.optionalLifeEvaluationId().map(LongFilter::copy).orElse(null);
+        this.expenseId = other.optionalExpenseId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -145,6 +148,25 @@ public class EvaluationDecisionCriteria implements Serializable, Criteria {
         this.lifeEvaluationId = lifeEvaluationId;
     }
 
+    public LongFilter getExpenseId() {
+        return expenseId;
+    }
+
+    public Optional<LongFilter> optionalExpenseId() {
+        return Optional.ofNullable(expenseId);
+    }
+
+    public LongFilter expenseId() {
+        if (expenseId == null) {
+            setExpenseId(new LongFilter());
+        }
+        return expenseId;
+    }
+
+    public void setExpenseId(LongFilter expenseId) {
+        this.expenseId = expenseId;
+    }
+
     public Boolean getDistinct() {
         return distinct;
     }
@@ -179,13 +201,14 @@ public class EvaluationDecisionCriteria implements Serializable, Criteria {
             Objects.equals(date, that.date) &&
             Objects.equals(ownerId, that.ownerId) &&
             Objects.equals(lifeEvaluationId, that.lifeEvaluationId) &&
+            Objects.equals(expenseId, that.expenseId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, decision, date, ownerId, lifeEvaluationId, distinct);
+        return Objects.hash(id, decision, date, ownerId, lifeEvaluationId, expenseId, distinct);
     }
 
     // prettier-ignore
@@ -197,6 +220,7 @@ public class EvaluationDecisionCriteria implements Serializable, Criteria {
             optionalDate().map(f -> "date=" + f + ", ").orElse("") +
             optionalOwnerId().map(f -> "ownerId=" + f + ", ").orElse("") +
             optionalLifeEvaluationId().map(f -> "lifeEvaluationId=" + f + ", ").orElse("") +
+            optionalExpenseId().map(f -> "expenseId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

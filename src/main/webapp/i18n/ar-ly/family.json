@@ -57,10 +57,12 @@
         "historyTitle": "سجل التقدم",
         "lastDays": "آخر {{count}} أيام",
         "lastMonths": "آخر {{count}} أشهر",
+        "lastEntries": "آخر {{count}} إدخالات",
         "last30Days": "آخر 30 يومًا",
         "itemColumn": "العنصر",
         "noEntryLastDays": "لا توجد إدخالات خلال آخر {{count}} أيام.",
         "noEntryLastMonths": "لا توجد إدخالات خلال آخر {{count}} أشهر.",
+        "noEntryLastEntries": "لا توجد إدخالات بعد.",
         "noEntryLast30Days": "لا توجد إدخالات خلال آخر 30 يومًا.",
         "noEntryDay": "لا يوجد إدخال",
         "created": "تمت إضافة التقدم بنجاح.",
@@ -68,7 +70,8 @@
         "modalTitle": "إضافة تقدم",
         "unitLabel": "الوحدة: {{unit}}",
         "scrollHint": "اسحب لليسار أو لليمين لعرض الجدول الأسبوعي كاملًا.",
-        "trendAria": "اتجاه تقدم {{item}} خلال آخر {{count}} أشهر"
+        "trendAria": "اتجاه تقدم {{item}} خلال آخر {{count}} أشهر",
+        "trendAriaEntries": "اتجاه تقدم {{item}} خلال آخر {{count}} إدخالات"
       },
       "errors": {
         "deactivate": "فشل تعطيل الهدف.",

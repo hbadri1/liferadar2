@@ -33,10 +33,13 @@ public class EvaluationDecision implements Serializable {
     @JsonIgnoreProperties(value = { "user" }, allowSetters = true)
     private ExtendedUser owner;
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(optional = true)
     @JsonIgnoreProperties(value = { "decisions", "owner" }, allowSetters = true)
     private LifeEvaluation lifeEvaluation;
+
+    @ManyToOne(optional = true)
+    @JsonIgnoreProperties(value = { "owner" }, allowSetters = true)
+    private SaaSSubscription expense;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -105,6 +108,19 @@ public class EvaluationDecision implements Serializable {
         return this;
     }
 
+    public SaaSSubscription getExpense() {
+        return this.expense;
+    }
+
+    public void setExpense(SaaSSubscription expense) {
+        this.expense = expense;
+    }
+
+    public EvaluationDecision expense(SaaSSubscription expense) {
+        this.setExpense(expense);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -131,6 +147,7 @@ public class EvaluationDecision implements Serializable {
             "id=" + getId() +
             ", decision='" + getDecision() + "'" +
             ", date='" + getDate() + "'" +
+            ", expenseId='" + (getExpense() != null ? getExpense().getId() : null) + "'" +
             "}";
     }
 }

@@ -44,6 +44,7 @@ type EvaluationDecisionFormGroupContent = {
   decision: FormControl<EvaluationDecisionFormRawValue['decision']>;
   date: FormControl<EvaluationDecisionFormRawValue['date']>;
   lifeEvaluation: FormControl<EvaluationDecisionFormRawValue['lifeEvaluation']>;
+  expense: FormControl<EvaluationDecisionFormRawValue['expense']>;
 };
 
 export type EvaluationDecisionFormGroup = FormGroup<EvaluationDecisionFormGroupContent>;
@@ -72,6 +73,7 @@ export class EvaluationDecisionFormService {
       lifeEvaluation: new FormControl(evaluationDecisionRawValue.lifeEvaluation, {
         validators: [Validators.required],
       }),
+      expense: new FormControl(evaluationDecisionRawValue.expense),
     });
   }
 

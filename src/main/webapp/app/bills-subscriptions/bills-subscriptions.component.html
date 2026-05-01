@@ -243,15 +243,23 @@
                       <div class="text-muted small text-truncate" style="max-width: 220px">{{ expense.notes }}</div>
                     }
                   </td>
-                  <td class="text-end">
-                    <div class="btn-group btn-group-sm">
-                      @if (expense.status !== 'PAID') {
-                        <button type="button" class="btn btn-outline-primary" (click)="startEdit(expense)" jhiTranslate="entity.action.edit">Edit</button>
-                        <button type="button" class="btn btn-outline-success" (click)="markAsPaid(expense)" jhiTranslate="billsSubscriptions.markAsPaidButton">Mark Paid</button>
-                      }
-                      <button type="button" class="btn btn-outline-danger" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
-                    </div>
-                  </td>
+                   <td class="text-end">
+                     <div class="btn-group btn-group-sm">
+                       @if (expense.status !== 'PAID') {
+                         <button type="button" class="btn btn-outline-primary" (click)="startEdit(expense)" jhiTranslate="entity.action.edit">Edit</button>
+                         <button type="button" class="btn btn-outline-success" (click)="markAsPaid(expense)" jhiTranslate="billsSubscriptions.markAsPaidButton">Mark Paid</button>
+                       }
+                       <button
+                         type="button"
+                         class="btn btn-primary"
+                         (click)="createActionItemForExpense(expense)"
+                         jhiTranslate="billsSubscriptions.createActionItem"
+                       >
+                         Action Item
+                       </button>
+                       <button type="button" class="btn btn-outline-danger" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
+                     </div>
+                   </td>
                 </tr>
               }
             </tbody>

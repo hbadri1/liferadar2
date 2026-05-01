@@ -1,0 +1,68 @@
+{
+  "premium": {
+    "title": "Liferadar Premium",
+    "hero": {
+      "badge": "Priorite au sens",
+      "title": "Un Premium qui soutient vos objectifs de vie",
+      "subtitle": "Liferadar Premium vous aide a rester constant et intentionnel. La monetisation sert a maintenir la valeur, pas a detourner votre progression.",
+      "ctaPublicPrimary": "Creer un compte gratuit",
+      "ctaPublicSecondary": "Decouvrir Liferadar",
+      "ctaAuthPrimary": "Ouvrir ma configuration",
+      "ctaAuthSecondary": "Retour au tableau de bord"
+    },
+    "publicMessage": {
+      "title": "Concu d'abord pour ameliorer les vies, ensuite pour les revenus.",
+      "body": "Vous pouvez commencer gratuitement et obtenir de la valeur immediatement. Le Premium reste optionnel pour ceux qui veulent un accompagnement plus pousse."
+    },
+    "memberMessage": {
+      "title": "Vous etes deja en mouvement.",
+      "body": "Le Premium apporte surtout plus de structure, de coordination familiale et d'outils de suivi avances."
+    },
+    "packages": {
+      "title": "Formules d'abonnement",
+      "subtitle": "Choisissez le niveau adapte a votre etape de vie et a votre engagement.",
+      "recommended": "Le plus choisi",
+      "starter": {
+        "name": "Starter (Gratuit)",
+        "audience": "Pour toute personne qui commence une gestion de vie intentionnelle",
+        "price": "0 $ / mois",
+        "feature1": "Piliers de vie et evaluations de base",
+        "feature2": "Actions et rappels essentiels",
+        "feature3": "Suivi des depenses et abonnements",
+        "feature4": "Espace mono-utilisateur",
+        "note": "Commencez ici et montez en gamme seulement quand c'est utile."
+      },
+      "focus": {
+        "name": "Focus Premium",
+        "audience": "Pour les individus engages qui construisent des habitudes solides",
+        "price": "7,99 $ / mois",
+        "feature1": "Analyses avancees et vues de tendance",
+        "feature2": "Rythme de rappels intelligent",
+        "feature3": "Integrations productivite prioritaires",
+        "feature4": "Support prioritaire",
+        "note": "Le meilleur equilibre pour progres et responsabilisation personnels."
+      },
+      "family": {
+        "name": "Family Premium",
+        "audience": "Pour les foyers qui veulent progresser ensemble",
+        "price": "14,99 $ / mois",
+        "feature1": "Jusqu'a 6 membres de la famille",
+        "feature2": "Vue d'ensemble des progres familiaux",
+        "feature3": "Objectifs partages avec visibilite selon les roles",
+        "feature4": "Flux de planification familiale",
+        "note": "Ideal pour aligner la famille sans complexite."
+      },
+      "coach": {
+        "name": "Coach et Equipe",
+        "audience": "Pour mentors, coachs ou petites communautes accompagnees",
+        "price": "29,99 $ / mois",
+        "feature1": "Tableau de bord multi-profils",
+        "feature2": "Modeles de revue guides",
+        "feature3": "Check-ins de responsabilisation structures",
+        "feature4": "Acces anticipe aux nouveautes Premium",
+        "note": "Concu pour celles et ceux qui accompagnent d'autres personnes."
+      }
+    }
+  }
+}
+

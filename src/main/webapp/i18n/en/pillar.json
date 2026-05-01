@@ -5,6 +5,7 @@
         "title": "Pillars",
         "refreshListLabel": "Refresh list",
         "createLabel": "Create a new Pillar",
+        "editLabel": "Edit Pillar",
         "createOrEditLabel": "Create or edit a Pillar",
         "notFound": "No Pillars found",
         "createFirst": "Create your first Pillar to get started!",
