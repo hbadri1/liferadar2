@@ -25,6 +25,7 @@
       "futureDateRequired": "Due date must be in the future.",
       "owner": "Owner",
       "lifeEvaluation": "Life Evaluation",
+      "expense": "Expense",
       "creationDate": "Creation Date",
       "subPillar": "Sub Life Pillar",
       "integrations": {

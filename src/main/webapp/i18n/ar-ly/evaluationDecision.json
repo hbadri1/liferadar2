@@ -25,6 +25,7 @@
       "futureDateRequired": "يجب أن يكون تاريخ الاستحقاق في المستقبل.",
       "owner": "Owner",
       "lifeEvaluation": "Life Evaluation",
+      "expense": "المصروف",
       "creationDate": "تاريخ ووقت الإنشاء",
       "subPillar": "الركيزة الفرعية",
       "integrations": {

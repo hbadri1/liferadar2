@@ -1,6 +1,7 @@
 import dayjs from 'dayjs/esm';
 import { IExtendedUser } from 'app/entities/extended-user/extended-user.model';
 import { ILifeEvaluation } from 'app/entities/life-evaluation/life-evaluation.model';
+import { ISaaSSubscription } from 'app/entities/saas-subscription/saas-subscription.model';
 
 export interface IEvaluationDecision {
   id: number;
@@ -8,6 +9,7 @@ export interface IEvaluationDecision {
   date?: dayjs.Dayjs | null;
   owner?: IExtendedUser | null;
   lifeEvaluation?: ILifeEvaluation | null;
+  expense?: ISaaSSubscription | null;
 }
 
 export type NewEvaluationDecision = Omit<IEvaluationDecision, 'id'> & { id: null };

@@ -22,6 +22,9 @@ import { ILifeEvaluation } from 'app/entities/life-evaluation/life-evaluation.mo
 })
 export class EvaluationDecisionCreateModalComponent implements OnInit {
   @Input() lifeEvaluation?: ILifeEvaluation;
+  @Input() modalTitle?: string;
+  @Input() defaultDecision?: string;
+  @Input() defaultExpenseId?: number;
 
   isSaving = false;
 
@@ -39,6 +42,29 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
     if (this.lifeEvaluation) {
       this.editForm.patchValue({
         lifeEvaluation: this.lifeEvaluation,
+      });
+    } else {
+      // When creating from expense page without lifeEvaluation, make it optional
+      const lifeEvaluationControl = this.editForm.get('lifeEvaluation');
+      if (lifeEvaluationControl) {
+        lifeEvaluationControl.clearAsyncValidators();
+        lifeEvaluationControl.clearValidators();
+        lifeEvaluationControl.updateValueAndValidity();
+      }
+    }
+
+    // Pre-fill with default values
+    if (this.defaultDecision) {
+      this.editForm.patchValue({
+        decision: this.defaultDecision,
+      });
+    }
+
+
+    // Set expense if provided
+    if (this.defaultExpenseId) {
+      this.editForm.patchValue({
+        expense: { id: this.defaultExpenseId } as any,
       });
     }
   }

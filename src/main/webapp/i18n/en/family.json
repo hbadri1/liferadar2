@@ -57,10 +57,12 @@
         "historyTitle": "Progress history",
         "lastDays": "Last {{count}} days",
         "lastMonths": "Last {{count}} months",
+        "lastEntries": "Last {{count}} entries",
         "last30Days": "Last 30 days",
         "itemColumn": "Item",
         "noEntryLastDays": "No entries in the last {{count}} days.",
         "noEntryLastMonths": "No entries in the last {{count}} months.",
+        "noEntryLastEntries": "No entries yet.",
         "noEntryLast30Days": "No entries in the last 30 days.",
         "noEntryDay": "No entry",
         "created": "Progress added successfully.",
@@ -68,7 +70,8 @@
         "modalTitle": "Add progress",
         "unitLabel": "Unit: {{unit}}",
         "scrollHint": "Swipe left or right to view the full weekly table.",
-        "trendAria": "{{item}} progress trend over the last {{count}} months"
+        "trendAria": "{{item}} progress trend over the last {{count}} months",
+        "trendAriaEntries": "{{item}} progress trend over the last {{count}} entries"
       },
       "errors": {
         "deactivate": "Failed to deactivate objective.",

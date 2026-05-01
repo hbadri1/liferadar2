@@ -5,6 +5,7 @@
         "title": "Piliers",
         "refreshListLabel": "Actualiser la liste",
         "createLabel": "Créer un nouveau Pilier",
+        "editLabel": "Modifier le Pilier",
         "createOrEditLabel": "Créer ou éditer un Pilier",
         "notFound": "Aucun Pilier trouvé",
         "createFirst": "Créez votre premier Pilier pour commencer!",

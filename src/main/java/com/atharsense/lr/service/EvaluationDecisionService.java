@@ -63,6 +63,12 @@ public class EvaluationDecisionService {
                 if (evaluationDecision.getDate() != null) {
                     existingEvaluationDecision.setDate(evaluationDecision.getDate());
                 }
+                if (evaluationDecision.getLifeEvaluation() != null) {
+                    existingEvaluationDecision.setLifeEvaluation(evaluationDecision.getLifeEvaluation());
+                }
+                if (evaluationDecision.getExpense() != null) {
+                    existingEvaluationDecision.setExpense(evaluationDecision.getExpense());
+                }
 
                 return existingEvaluationDecision;
             })

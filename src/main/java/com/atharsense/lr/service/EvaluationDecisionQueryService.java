@@ -76,6 +76,9 @@ public class EvaluationDecisionQueryService extends QueryService<EvaluationDecis
                 ),
                 buildSpecification(criteria.getLifeEvaluationId(), root ->
                     root.join(EvaluationDecision_.lifeEvaluation, JoinType.LEFT).get(LifeEvaluation_.id)
+                ),
+                buildSpecification(criteria.getExpenseId(), root ->
+                    root.join(EvaluationDecision_.expense, JoinType.LEFT).get(SaaSSubscription_.id)
                 )
             );
         }

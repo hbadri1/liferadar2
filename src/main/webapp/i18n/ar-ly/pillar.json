@@ -5,6 +5,7 @@
         "title": "الأركان",
         "refreshListLabel": "تحديث القائمة",
         "createLabel": "إنشاء ركن جديد",
+        "editLabel": "تعديل الركن",
         "createOrEditLabel": "إنشاء أو تعديل ركن",
         "notFound": "لم يتم العثور على أركان",
         "createFirst": "أنشئ أول ركن للبدء!",

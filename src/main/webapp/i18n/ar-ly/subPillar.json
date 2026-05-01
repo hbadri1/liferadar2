@@ -5,6 +5,7 @@
         "title": "Sub Life Pillars",
         "refreshListLabel": "تحديث القائمة",
         "createLabel": "إنشاء Sub Life Pillar جديد",
+        "editLabel": "تعديل Sub Life Pillar",
         "createOrEditLabel": "إنشاء أو تعديل Sub Life Pillar",
         "notFound": "لم يتم العثور على Sub Life Pillars"
       },
@@ -20,6 +21,7 @@
       "id": "ID",
       "code": "Code",
       "isActive": "Is Active",
+      "pillar": "Life Pillar",
       "translations": "Translations",
       "owner": "Owner"
     }

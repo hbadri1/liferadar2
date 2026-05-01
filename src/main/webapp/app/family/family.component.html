@@ -311,88 +311,12 @@
                           }
                         </div>
 
-                        @let objectiveCalendarDays = getObjectiveCalendarDays();
                         @let objectiveTrendSeries = getObjectiveTrendSeries(objective);
-                        <div class="objective-progress-matrix mt-3">
-                          <div class="objective-progress-matrix-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                            <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastDays' | translate: { count: objectiveHistoryDays } }}</p>
-                            @if (!hasObjectiveProgressInHistoryWindow(objective)) {
-                              <small class="text-muted">{{ 'family.objectives.progress.noEntryLastDays' | translate: { count: objectiveHistoryDays } }}</small>
-                            }
-                          </div>
-                          <div class="objective-progress-matrix-desktop mt-2">
-                            <div class="objective-progress-matrix-scroll">
-                              <div class="objective-progress-matrix-grid">
-                                <div class="objective-progress-matrix-corner" jhiTranslate="family.objectives.progress.itemColumn">Item</div>
-                                @for (day of objectiveCalendarDays; track day.key) {
-                                  <div class="objective-progress-day-header" [class.is-today]="day.isToday" [attr.title]="day.title">
-                                    <span class="weekday">{{ day.weekdayLabel }}</span>
-                                    <span class="day-number">{{ day.dayNumber }}</span>
-                                    <span class="month-label">{{ day.monthLabel }}</span>
-                                  </div>
-                                }
-
-                                @for (row of getObjectiveCalendarRows(objective); track row.itemDefinition.id) {
-                                  <div class="objective-progress-item-label">
-                                    <strong>{{ row.itemDefinition.name }}</strong>
-                                    <span class="badge bg-light text-dark mt-1">{{ getObjectiveUnitLabel(row.itemDefinition.unit) }}</span>
-                                  </div>
-                                  @for (cell of row.cells; track cell.key; let cellIndex = $index) {
-                                    @let day = objectiveCalendarDays[cellIndex];
-                                    <div
-                                      class="objective-progress-day-cell"
-                                      [class.has-progress]="!!cell.progress"
-                                      [class.is-today]="day.isToday"
-                                      [attr.title]="getObjectiveCalendarCellTitle(row.itemDefinition, day, cell.progress)"
-                                    >
-                                      @if (cell.progress) {
-                                        <span class="cell-value">{{ cell.progress.value }}</span>
-                                      } @else {
-                                        <span class="cell-empty">—</span>
-                                      }
-                                    </div>
-                                  }
-                                }
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="objective-progress-matrix-mobile mt-2">
-                            @for (row of getObjectiveCalendarRows(objective); track row.itemDefinition.id) {
-                              <div class="objective-progress-mobile-item-card">
-                                <div class="objective-progress-mobile-item-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                                  <strong>{{ row.itemDefinition.name }}</strong>
-                                  <span class="badge bg-light text-dark">{{ getObjectiveUnitLabel(row.itemDefinition.unit) }}</span>
-                                </div>
-                                <div class="objective-progress-mobile-days mt-2">
-                                  @for (cell of row.cells; track cell.key; let cellIndex = $index) {
-                                    @let day = objectiveCalendarDays[cellIndex];
-                                    <div
-                                      class="objective-progress-mobile-day-cell"
-                                      [class.has-progress]="!!cell.progress"
-                                      [class.is-today]="day.isToday"
-                                      [attr.title]="getObjectiveCalendarCellTitle(row.itemDefinition, day, cell.progress)"
-                                    >
-                                      <span class="weekday">{{ day.weekdayLabel }}</span>
-                                      <span class="day-number">{{ day.dayNumber }}</span>
-                                      @if (cell.progress) {
-                                        <span class="cell-value">{{ cell.progress.value }}</span>
-                                      } @else {
-                                        <span class="cell-empty">—</span>
-                                      }
-                                    </div>
-                                  }
-                                </div>
-                              </div>
-                            }
-                          </div>
-                        </div>
-
                         <div class="objective-progress-trends mt-3">
                           <div class="objective-progress-trends-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                            <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastMonths' | translate: { count: objectiveTrendMonths } }}</p>
+                            <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastEntries' | translate: { count: objectiveRecentEntriesCount } }}</p>
                             @if (!hasObjectiveProgressInTrendWindow(objective)) {
-                              <small class="text-muted">{{ 'family.objectives.progress.noEntryLastMonths' | translate: { count: objectiveTrendMonths } }}</small>
+                              <small class="text-muted">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
                             }
                           </div>
 
@@ -423,7 +347,7 @@
                                       [attr.viewBox]="'0 0 ' + objectiveTrendChartWidth + ' ' + objectiveTrendChartHeight"
                                       preserveAspectRatio="none"
                                       role="img"
-                                      [attr.aria-label]="'family.objectives.progress.trendAria' | translate: { item: trend.itemDefinition.name, count: objectiveTrendMonths }"
+                                      [attr.aria-label]="'family.objectives.progress.trendAriaEntries' | translate: { item: trend.itemDefinition.name, count: objectiveRecentEntriesCount }"
                                     >
                                       <line x1="14" y1="14" x2="14" [attr.y2]="objectiveTrendChartHeight - 14" class="objective-trend-axis-line"></line>
                                       <line
@@ -451,7 +375,7 @@
                                     <span>{{ trend.endLabel }}</span>
                                   </div>
                                 } @else {
-                                  <small class="text-muted mt-2 d-block">{{ 'family.objectives.progress.noEntryLastMonths' | translate: { count: objectiveTrendMonths } }}</small>
+                                  <small class="text-muted mt-2 d-block">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
                                 }
                               </div>
                             }
@@ -490,7 +414,7 @@
           </p>
         </div>
       } @else if (activeChild) {
-        <div class="objective-group-card">
+        <div class="objective-group-card" [class.objective-group-card--compact]="isChild()">
           <div class="objective-group-header d-flex align-items-center justify-content-between gap-2">
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <h4 class="mb-0">{{ getChildDisplayName(activeChild) }}</h4>
@@ -502,9 +426,9 @@
             </button>
           </div>
 
-          <div class="objective-list mt-3">
+          <div class="objective-list mt-3" [class.objective-list--compact]="isChild()">
             @for (objective of getObjectivesForChild(activeChild.login); track objective.id) {
-              <div class="objective-card">
+              <div class="objective-card" [class.objective-card--compact]="isChild()">
                 <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-2">
                   <div>
                     <h5 class="mb-1">{{ objective.name }}</h5>
@@ -518,9 +442,9 @@
                   </span>
                 </div>
 
-                <div class="objective-items-list mt-3">
+                <div class="objective-items-list mt-3" [class.objective-items-list--compact]="isChild()">
                   @for (itemDefinition of objective.itemDefinitions; track itemDefinition.id) {
-                    <div class="objective-item-card">
+                    <div class="objective-item-card" [class.objective-item-card--compact]="isChild()">
                       <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-2">
                         <div>
                           <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
@@ -532,9 +456,14 @@
                           }
                         </div>
                         @if (objective.active) {
-                          <button class="btn btn-outline-primary btn-sm" type="button" (click)="openProgressModal(itemDefinition)">
-                            <fa-icon icon="plus" class="me-1"></fa-icon>
-                            <span jhiTranslate="family.objectives.progress.add">Add progress</span>
+                          <button
+                            class="btn btn-outline-primary btn-sm"
+                            type="button"
+                            (click)="openProgressModal(itemDefinition)"
+                            [attr.aria-label]="'family.objectives.progress.add' | translate"
+                            [title]="'family.objectives.progress.add' | translate"
+                          >
+                            <fa-icon icon="plus"></fa-icon>
                           </button>
                         }
                       </div>
@@ -543,88 +472,12 @@
                   }
                 </div>
 
-                @let objectiveCalendarDays = getObjectiveCalendarDays();
                 @let objectiveTrendSeries = getObjectiveTrendSeries(objective);
-                <div class="objective-progress-matrix mt-3">
-                  <div class="objective-progress-matrix-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                    <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastDays' | translate: { count: objectiveHistoryDays } }}</p>
-                    @if (!hasObjectiveProgressInHistoryWindow(objective)) {
-                      <small class="text-muted">{{ 'family.objectives.progress.noEntryLastDays' | translate: { count: objectiveHistoryDays } }}</small>
-                    }
-                  </div>
-                  <div class="objective-progress-matrix-desktop mt-2">
-                    <div class="objective-progress-matrix-scroll">
-                      <div class="objective-progress-matrix-grid">
-                        <div class="objective-progress-matrix-corner" jhiTranslate="family.objectives.progress.itemColumn">Item</div>
-                        @for (day of objectiveCalendarDays; track day.key) {
-                          <div class="objective-progress-day-header" [class.is-today]="day.isToday" [attr.title]="day.title">
-                            <span class="weekday">{{ day.weekdayLabel }}</span>
-                            <span class="day-number">{{ day.dayNumber }}</span>
-                            <span class="month-label">{{ day.monthLabel }}</span>
-                          </div>
-                        }
-
-                        @for (row of getObjectiveCalendarRows(objective); track row.itemDefinition.id) {
-                          <div class="objective-progress-item-label">
-                            <strong>{{ row.itemDefinition.name }}</strong>
-                            <span class="badge bg-light text-dark mt-1">{{ getObjectiveUnitLabel(row.itemDefinition.unit) }}</span>
-                          </div>
-                          @for (cell of row.cells; track cell.key; let cellIndex = $index) {
-                            @let day = objectiveCalendarDays[cellIndex];
-                            <div
-                              class="objective-progress-day-cell"
-                              [class.has-progress]="!!cell.progress"
-                              [class.is-today]="day.isToday"
-                              [attr.title]="getObjectiveCalendarCellTitle(row.itemDefinition, day, cell.progress)"
-                            >
-                              @if (cell.progress) {
-                                <span class="cell-value">{{ cell.progress.value }}</span>
-                              } @else {
-                                <span class="cell-empty">—</span>
-                              }
-                            </div>
-                          }
-                        }
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="objective-progress-matrix-mobile mt-2">
-                    @for (row of getObjectiveCalendarRows(objective); track row.itemDefinition.id) {
-                      <div class="objective-progress-mobile-item-card">
-                        <div class="objective-progress-mobile-item-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                          <strong>{{ row.itemDefinition.name }}</strong>
-                          <span class="badge bg-light text-dark">{{ getObjectiveUnitLabel(row.itemDefinition.unit) }}</span>
-                        </div>
-                        <div class="objective-progress-mobile-days mt-2">
-                          @for (cell of row.cells; track cell.key; let cellIndex = $index) {
-                            @let day = objectiveCalendarDays[cellIndex];
-                            <div
-                              class="objective-progress-mobile-day-cell"
-                              [class.has-progress]="!!cell.progress"
-                              [class.is-today]="day.isToday"
-                              [attr.title]="getObjectiveCalendarCellTitle(row.itemDefinition, day, cell.progress)"
-                            >
-                              <span class="weekday">{{ day.weekdayLabel }}</span>
-                              <span class="day-number">{{ day.dayNumber }}</span>
-                              @if (cell.progress) {
-                                <span class="cell-value">{{ cell.progress.value }}</span>
-                              } @else {
-                                <span class="cell-empty">—</span>
-                              }
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    }
-                  </div>
-                </div>
-
                 <div class="objective-progress-trends mt-3">
                   <div class="objective-progress-trends-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                    <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastMonths' | translate: { count: objectiveTrendMonths } }}</p>
+                    <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastEntries' | translate: { count: objectiveRecentEntriesCount } }}</p>
                     @if (!hasObjectiveProgressInTrendWindow(objective)) {
-                      <small class="text-muted">{{ 'family.objectives.progress.noEntryLastMonths' | translate: { count: objectiveTrendMonths } }}</small>
+                      <small class="text-muted">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
                     }
                   </div>
 
@@ -655,7 +508,7 @@
                               [attr.viewBox]="'0 0 ' + objectiveTrendChartWidth + ' ' + objectiveTrendChartHeight"
                               preserveAspectRatio="none"
                               role="img"
-                              [attr.aria-label]="'family.objectives.progress.trendAria' | translate: { item: trend.itemDefinition.name, count: objectiveTrendMonths }"
+                              [attr.aria-label]="'family.objectives.progress.trendAriaEntries' | translate: { item: trend.itemDefinition.name, count: objectiveRecentEntriesCount }"
                             >
                               <line x1="14" y1="14" x2="14" [attr.y2]="objectiveTrendChartHeight - 14" class="objective-trend-axis-line"></line>
                               <line
@@ -683,7 +536,7 @@
                             <span>{{ trend.endLabel }}</span>
                           </div>
                         } @else {
-                          <small class="text-muted mt-2 d-block">{{ 'family.objectives.progress.noEntryLastMonths' | translate: { count: objectiveTrendMonths } }}</small>
+                          <small class="text-muted mt-2 d-block">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
                         }
                       </div>
                     }

@@ -14,10 +14,11 @@ import { AlertService } from 'app/core/util/alert.service';
 import { IEvaluationDecision } from '../evaluation-decision.model';
 import { ISubPillarItemTranslation } from 'app/entities/sub-pillar-item-translation/sub-pillar-item-translation.model';
 import { ISubPillarTranslation } from 'app/entities/sub-pillar-translation/sub-pillar-translation.model';
-import { EntityArrayResponseType, EvaluationDecisionService } from '../service/evaluation-decision.service';
+import { EntityArrayResponseType, EvaluationDecisionService, ITodoAppUserConfig } from '../service/evaluation-decision.service';
 import { EvaluationDecisionDeleteDialogComponent } from '../delete/evaluation-decision-delete-dialog.component';
 import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
 import { ITickTickProjectModalResult, TickTickProjectModalComponent } from './ticktick-project-modal.component';
+import { EvaluationDecisionCreateModalComponent } from 'app/home/evaluation-decision-create-modal.component';
 
 @Component({
   selector: 'jhi-evaluation-decision',
@@ -35,6 +36,7 @@ export class EvaluationDecisionComponent implements OnInit {
     { code: 'microsoft-todo', labelKey: 'liferadarApp.evaluationDecision.integrations.microsoftTodo', style: 'btn-outline-info' },
     { code: 'todoist', labelKey: 'liferadarApp.evaluationDecision.integrations.todoist', style: 'btn-outline-secondary' },
   ];
+  enabledIntegrationProviders = signal(this.integrationProviders);
   readonly actionItemsWindowDays = 7;
 
   private integrationPushingKeys = new Set<string>();
@@ -55,12 +57,29 @@ export class EvaluationDecisionComponent implements OnInit {
   ngOnInit(): void {
     this.isActionItemsPage = this.activatedRoute.snapshot.data['actionItems'] === true;
 
+    if (this.isActionItemsPage) {
+      this.loadEnabledIntegrations();
+    }
+
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
         tap(() => this.load()),
       )
       .subscribe();
+  }
+
+  private loadEnabledIntegrations(): void {
+    this.evaluationDecisionService.getTodoAppConfigs().subscribe({
+      next: response => {
+        const configs: ITodoAppUserConfig[] = response.body ?? [];
+        const enabledCodes = new Set(configs.filter(config => config.enabled).map(config => config.provider));
+        this.enabledIntegrationProviders.set(this.integrationProviders.filter(provider => enabledCodes.has(provider.code)));
+      },
+      error: () => {
+        this.enabledIntegrationProviders.set([]);
+      },
+    });
   }
 
   delete(evaluationDecision: IEvaluationDecision): void {
@@ -281,6 +300,13 @@ export class EvaluationDecisionComponent implements OnInit {
     return translationName ?? subPillar?.code ?? '';
   }
 
+  getExpenseDisplayName(evaluationDecision: IEvaluationDecision): string {
+    if (!evaluationDecision.expense) {
+      return '-';
+    }
+    return evaluationDecision.expense.serviceName?.trim() || `#${evaluationDecision.expense.id}`;
+  }
+
   getLifeEvaluationCreationDate(evaluationDecision: IEvaluationDecision): Date | null {
     const rawValue = evaluationDecision.lifeEvaluation?.evaluationDate as unknown;
 
@@ -396,28 +422,42 @@ export class EvaluationDecisionComponent implements OnInit {
       .replace(/'/g, '&#39;');
   }
 
-  private findBestLanguageMatch<T>(items: T[], getLang: (item: T) => string | undefined | null): T | null {
-    const current = (this.translateService.currentLang ?? 'en').toLowerCase();
-    const candidates = new Set<string>([
-      current,
-      current.replace('_', '-'),
-      current.replace('-', '_'),
-      current.split('-')[0],
-      current.split('_')[0],
-    ]);
+   private findBestLanguageMatch<T>(items: T[], getLang: (item: T) => string | undefined | null): T | null {
+     const current = (this.translateService.currentLang ?? 'en').toLowerCase();
+     const candidates = new Set<string>([
+       current,
+       current.replace('_', '-'),
+       current.replace('-', '_'),
+       current.split('-')[0],
+       current.split('_')[0],
+     ]);
 
-    for (const candidate of candidates) {
-      if (!candidate) {
-        continue;
-      }
+     for (const candidate of candidates) {
+       if (!candidate) {
+         continue;
+       }
 
-      const exact = items.find(item => getLang(item)?.toLowerCase() === candidate);
-      if (exact) {
-        return exact;
-      }
-    }
+       const exact = items.find(item => getLang(item)?.toLowerCase() === candidate);
+       if (exact) {
+         return exact;
+       }
+     }
 
-    return null;
-  }
+     return null;
+   }
+
+   openActionItemCreateModal(): void {
+     const modalRef = this.modalService.open(EvaluationDecisionCreateModalComponent, {
+       size: 'lg',
+       backdrop: 'static',
+       windowClass: 'compact-entity-modal',
+     });
+     modalRef.closed
+       .pipe(
+         filter(reason => reason === 'saved'),
+         tap(() => this.load()),
+       )
+       .subscribe();
+   }
 
 }

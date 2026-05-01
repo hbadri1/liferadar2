@@ -19,7 +19,17 @@
         <span jhiTranslate="liferadarApp.evaluationDecision.home.exportExcel">Export to Excel</span>
       </button>
 
-      @if (!isActionItemsPage) {
+      @if (isActionItemsPage) {
+        <button
+          id="jh-create-entity"
+          data-cy="entityCreateButton"
+          class="btn btn-primary jh-create-entity create-evaluation-decision"
+          (click)="openActionItemCreateModal()"
+        >
+          <fa-icon icon="plus"></fa-icon>
+          <span jhiTranslate="liferadarApp.evaluationDecision.home.createLabel">Create a new Evaluation Decision</span>
+        </button>
+      } @else {
         <button
           id="jh-create-entity"
           data-cy="entityCreateButton"
@@ -111,6 +121,12 @@
               </th>
             }
             @if (isActionItemsPage) {
+              <th scope="col" jhiSortBy="expense.id">
+                <div class="d-flex">
+                  <span jhiTranslate="liferadarApp.evaluationDecision.expense">Expense</span>
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                </div>
+              </th>
               <th scope="col">
                 <div class="d-flex">
                   <span jhiTranslate="liferadarApp.evaluationDecision.integrations.title">Integrations</span>
@@ -172,29 +188,40 @@
               }
               @if (isActionItemsPage) {
                 <td>
-                  <div class="d-flex flex-wrap gap-1" role="group" aria-label="Integrations">
-                    @for (provider of integrationProviders; track provider.code) {
-                      <button
-                        type="button"
-                        class="btn btn-sm d-inline-flex align-items-center gap-1"
-                        [ngClass]="provider.style"
-                        [disabled]="isIntegrationDisabled(evaluationDecision, provider.code)"
-                        (click)="pushToIntegration(evaluationDecision, provider.code)"
-                      >
-                        @if (provider.code === 'ticktick') {
-                          <img
-                            src="/content/images/ticktick.png"
-                            alt="TickTick"
-                            width="14"
-                            height="14"
-                            class="d-inline-block align-middle bg-transparent p-0 m-0"
-                            style="object-fit: contain"
-                          />
-                        }
-                        <span>{{ provider.labelKey | translate }}</span>
-                      </button>
-                    }
-                  </div>
+                  @if (evaluationDecision.expense) {
+                    <a [routerLink]="['/expenses']">{{ getExpenseDisplayName(evaluationDecision) }}</a>
+                  } @else {
+                    <span>-</span>
+                  }
+                </td>
+                <td>
+                  @if (enabledIntegrationProviders().length > 0) {
+                    <div class="d-flex flex-wrap gap-1" role="group" aria-label="Integrations">
+                      @for (provider of enabledIntegrationProviders(); track provider.code) {
+                        <button
+                          type="button"
+                          class="btn btn-sm d-inline-flex align-items-center gap-1"
+                          [ngClass]="provider.style"
+                          [disabled]="isIntegrationDisabled(evaluationDecision, provider.code)"
+                          (click)="pushToIntegration(evaluationDecision, provider.code)"
+                        >
+                          @if (provider.code === 'ticktick') {
+                            <img
+                              src="/content/images/ticktick.png"
+                              alt="TickTick"
+                              width="14"
+                              height="14"
+                              class="d-inline-block align-middle bg-transparent p-0 m-0"
+                              style="object-fit: contain"
+                            />
+                          }
+                          <span>{{ provider.labelKey | translate }}</span>
+                        </button>
+                      }
+                    </div>
+                  } @else {
+                    <span>-</span>
+                  }
                 </td>
               }
                <td class="text-end">

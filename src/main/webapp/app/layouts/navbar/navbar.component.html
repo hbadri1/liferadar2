@@ -27,6 +27,14 @@
             </span>
           </a>
         </li>
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/premium" (click)="collapseNavbar()" data-cy="premium">
+            <span>
+              <fa-icon icon="gem"></fa-icon>
+              <span jhiTranslate="global.menu.premium">Premium</span>
+            </span>
+          </a>
+        </li>
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         @if (account() !== null) {
           <!-- Action Items: FAMILY_ADMIN, USER, ADMIN only — hidden from ROLE_CHILD -->
@@ -151,14 +159,16 @@
             }
           </ul>
         </li>
-        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a class="nav-link" routerLink="/about" (click)="collapseNavbar()" data-cy="about">
-            <span>
-              <fa-icon icon="info-circle"></fa-icon>
-              <span jhiTranslate="global.menu.about">About</span>
-            </span>
-          </a>
-        </li>
+        @if (account() === null) {
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/about" (click)="collapseNavbar()" data-cy="about">
+              <span>
+                <fa-icon icon="info-circle"></fa-icon>
+                <span jhiTranslate="global.menu.about">About</span>
+              </span>
+            </a>
+          </li>
+        }
         @if (account() !== null) {
           <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <a class="nav-link" routerLink="/notifications" (click)="collapseNavbar()" data-cy="notifications" title="Notifications">

@@ -48,6 +48,13 @@ export interface ITickTickProjectsResponse {
   projects: ITickTickProject[];
 }
 
+export interface ITodoAppUserConfig {
+  provider: string;
+  available: boolean;
+  configured: boolean;
+  enabled: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EvaluationDecisionService {
   protected readonly http = inject(HttpClient);
@@ -104,6 +111,10 @@ export class EvaluationDecisionService {
 
   getTickTickProjects(): Observable<HttpResponse<ITickTickProjectsResponse>> {
     return this.http.get<ITickTickProjectsResponse>(`${this.todoAppsUrl}/ticktick/projects`, { observe: 'response' });
+  }
+
+  getTodoAppConfigs(): Observable<HttpResponse<ITodoAppUserConfig[]>> {
+    return this.http.get<ITodoAppUserConfig[]>(`${this.todoAppsUrl}/configs`, { observe: 'response' });
   }
 
   getEvaluationDecisionIdentifier(evaluationDecision: Pick<IEvaluationDecision, 'id'>): number {

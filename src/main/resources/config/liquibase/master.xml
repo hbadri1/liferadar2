@@ -46,7 +46,10 @@
     <include file="config/liquibase/changelog/20260425120000_merge_bill_into_saas_subscription.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260425143000_cleanup_bill_and_rename_expense.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260425150000_add_manual_renewal_drop_recurring.xml" relativeToChangelogFile="false"/>
-    <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+     <include file="config/liquibase/changelog/20260501090000_add_expense_link_to_evaluation_decision.xml" relativeToChangelogFile="false"/>
+     <include file="config/liquibase/changelog/20260501120000_make_life_evaluation_nullable_in_evaluation_decision.xml" relativeToChangelogFile="false"/>
+     <include file="config/liquibase/changelog/20260501143000_enforce_single_enabled_todoapp_per_user.xml" relativeToChangelogFile="false"/>
+     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

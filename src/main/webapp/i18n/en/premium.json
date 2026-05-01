@@ -1,0 +1,68 @@
+{
+  "premium": {
+    "title": "Liferadar Premium",
+    "hero": {
+      "badge": "Purpose First",
+      "title": "Premium that supports your life goals",
+      "subtitle": "Liferadar Premium helps you stay consistent and intentional. We monetize so we can sustain value, not to distract from your growth.",
+      "ctaPublicPrimary": "Create Free Account",
+      "ctaPublicSecondary": "Learn About Liferadar",
+      "ctaAuthPrimary": "Open My Configuration",
+      "ctaAuthSecondary": "Back to Dashboard"
+    },
+    "publicMessage": {
+      "title": "Built for better lives first, revenue second.",
+      "body": "You can start free and get real value right away. Premium is optional for people who want deeper support."
+    },
+    "memberMessage": {
+      "title": "You are already on the journey.",
+      "body": "Premium simply gives you more structure, family coordination, and advanced follow-through tools."
+    },
+    "packages": {
+      "title": "Subscription Packages",
+      "subtitle": "Choose the level that matches your stage of life and commitment.",
+      "recommended": "Most Popular",
+      "starter": {
+        "name": "Starter (Free)",
+        "audience": "For anyone beginning intentional life management",
+        "price": "$0 / month",
+        "feature1": "Core life pillars and evaluations",
+        "feature2": "Basic action items and reminders",
+        "feature3": "Expense and subscription tracking",
+        "feature4": "Single-user workspace",
+        "note": "Start here and upgrade only when you need more depth."
+      },
+      "focus": {
+        "name": "Focus Premium",
+        "audience": "For committed individuals building stronger habits",
+        "price": "$7.99 / month",
+        "feature1": "Advanced progress insights and trend views",
+        "feature2": "Smarter reminder cadence for consistency",
+        "feature3": "Priority productivity integrations",
+        "feature4": "Priority support",
+        "note": "Best balance for personal growth and accountability."
+      },
+      "family": {
+        "name": "Family Premium",
+        "audience": "For households growing together",
+        "price": "$14.99 / month",
+        "feature1": "Up to 6 family members",
+        "feature2": "Family-level progress snapshots",
+        "feature3": "Shared goals with role-aware visibility",
+        "feature4": "Family planning workflows",
+        "note": "Ideal for parents who want alignment without complexity."
+      },
+      "coach": {
+        "name": "Coach and Team",
+        "audience": "For mentors, coaches, or small guided communities",
+        "price": "$29.99 / month",
+        "feature1": "Multi-profile oversight dashboard",
+        "feature2": "Guided review templates",
+        "feature3": "Structured accountability check-ins",
+        "feature4": "Early access to premium experiments",
+        "note": "Built for people helping others stay on track."
+      }
+    }
+  }
+}
+

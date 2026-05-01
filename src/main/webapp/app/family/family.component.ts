@@ -66,6 +66,7 @@ interface ObjectiveTrendSeries {
   imports: [SharedModule, ReactiveFormsModule],
 })
 export default class FamilyComponent implements OnInit {
+  readonly objectiveRecentEntriesCount = 7;
   readonly objectiveHistoryDays = 7;
   readonly objectiveTrendMonths = 3;
   readonly objectiveTrendDays = 90;
@@ -435,7 +436,7 @@ export default class FamilyComponent implements OnInit {
   }
 
   hasObjectiveProgressInTrendWindow(objective: FamilyObjective): boolean {
-    return objective.itemDefinitions.some(itemDefinition => this.getObjectiveTrendSeriesForItem(itemDefinition).points.length > 0);
+    return objective.itemDefinitions.some(itemDefinition => (itemDefinition.progressHistory?.length ?? 0) > 0);
   }
 
   getObjectiveTrendSeries(objective: FamilyObjective): ObjectiveTrendSeries[] {
@@ -711,33 +712,39 @@ export default class FamilyComponent implements OnInit {
   }
 
   private getObjectiveTrendSeriesForItem(itemDefinition: FamilyObjectiveItemDefinition): ObjectiveTrendSeries {
-    const endDate = this.startOfDay(new Date());
-    const startDate = this.getHistoryWindowStart(this.objectiveTrendDays);
-    const progressByDay = this.getLatestProgressByDay(itemDefinition, startDate, endDate);
     const locale = this.translateService.currentLang || 'en';
-    const labelFormatter = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
-    const startLabel = labelFormatter.format(startDate);
-    const endLabel = labelFormatter.format(endDate);
-    const chartPaddingX = 14;
-    const chartPaddingY = 14;
-    const innerWidth = this.objectiveTrendChartWidth - chartPaddingX * 2;
-    const innerHeight = this.objectiveTrendChartHeight - chartPaddingY * 2;
-    const totalDuration = Math.max(endDate.getTime() - startDate.getTime(), 1);
+    const labelFormatter = new Intl.DateTimeFormat(locale, {
+      month: 'short',
+      day: 'numeric',
+    });
 
-    const entries = Array.from(progressByDay.entries())
-      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
-      .map(([key, progress]) => {
-        const date = this.parseDate(progress.createdAt);
-        return date
+    const entries = (itemDefinition.progressHistory ?? [])
+      .map(progress => {
+        const parsed = this.parseDate(progress.createdAt);
+        return parsed
           ? {
-              key,
-              date: this.startOfDay(date),
-              label: labelFormatter.format(date),
+              date: parsed,
               value: progress.value,
             }
           : null;
       })
-      .filter((entry): entry is { key: string; date: Date; label: string; value: number } => entry !== null);
+      .filter((entry): entry is { date: Date; value: number } => entry !== null)
+      .sort((left, right) => right.date.getTime() - left.date.getTime())
+      .slice(0, this.objectiveRecentEntriesCount)
+      .reverse()
+      .map((entry, index) => ({
+        key: `${index}-${entry.date.toISOString()}`,
+        date: entry.date,
+        label: labelFormatter.format(entry.date),
+        value: entry.value,
+      }));
+
+    const startLabel = entries[0]?.label ?? '-';
+    const endLabel = entries[entries.length - 1]?.label ?? '-';
+    const chartPaddingX = 14;
+    const chartPaddingY = 14;
+    const innerWidth = this.objectiveTrendChartWidth - chartPaddingX * 2;
+    const innerHeight = this.objectiveTrendChartHeight - chartPaddingY * 2;
 
     if (entries.length === 0) {
       return {
@@ -766,9 +773,9 @@ export default class FamilyComponent implements OnInit {
     }
 
     const range = Math.max(maxValue - minValue, 1);
-    const points: ObjectiveTrendPoint[] = entries.map(entry => {
-      const elapsed = entry.date.getTime() - startDate.getTime();
-      const x = chartPaddingX + (elapsed / totalDuration) * innerWidth;
+    const totalSteps = Math.max(entries.length - 1, 1);
+    const points: ObjectiveTrendPoint[] = entries.map((entry, index) => {
+      const x = chartPaddingX + (index / totalSteps) * innerWidth;
       const y = chartPaddingY + (1 - (entry.value - minValue) / range) * innerHeight;
       return {
         key: entry.key,
