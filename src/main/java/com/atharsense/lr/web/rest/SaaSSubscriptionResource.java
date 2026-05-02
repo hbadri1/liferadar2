@@ -7,6 +7,7 @@ import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.SaaSSubscriptionService;
 import com.atharsense.lr.service.UserService;
 import com.atharsense.lr.service.dto.CreateSaaSSubscriptionRequest;
+import com.atharsense.lr.service.dto.MonthlyPaidExpensesDTO;
 import com.atharsense.lr.service.dto.SubscriptionMetricsDTO;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -292,6 +293,17 @@ public class SaaSSubscriptionResource {
         );
 
         return ResponseEntity.ok(metrics);
+    }
+
+    /**
+     * {@code GET  /expenses/metrics/monthly-paid-current} : get current month paid expenses total for the current user timezone.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the monthly paid summary in body.
+     */
+    @GetMapping("/metrics/monthly-paid-current")
+    public ResponseEntity<MonthlyPaidExpensesDTO> getCurrentMonthPaidExpenses() {
+        LOG.debug("REST request to get current month paid expenses summary");
+        return ResponseEntity.ok(subscriptionService.getCurrentMonthPaidExpensesSummary());
     }
 
     /**

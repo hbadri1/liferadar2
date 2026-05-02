@@ -44,6 +44,7 @@
     "monthlyExpense": "Monthly Expense",
     "annualExpense": "Annual Expense",
     "upcomingRenewals": "Upcoming Renewals (30 days)",
+    "overdueExpenses": "Overdue Expenses",
     "renewalDateLabel": "Renewal date",
     "perMonth": "/month",
     "noUpcomingRenewals": "No upcoming renewals in the next 30 days.",
@@ -63,6 +64,7 @@
     "convertedFromUsd": "≈ {{amount}}",
     "subscriptionDate": "Subscription Date",
     "actions": "Actions",
+    "decisionButton": "Decision",
     "createActionItem": "Action Item",
     "noSubscriptions": "No subscriptions found. Add your first subscription!",
     "totalBills": "Total Bills",
@@ -144,4 +146,3 @@
     "goToSettings": "Go to Settings"
   }
 }
-

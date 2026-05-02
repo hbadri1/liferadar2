@@ -10,172 +10,177 @@
     </div>
   </header>
 
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.totalExpenses">Total Expenses</div>
-          <div class="display-6 mb-0">{{ totalExpenses }}</div>
+  <div class="row g-3 mb-4 top-kpi-row">
+    <div class="col-12 col-lg-7">
+      <div class="card h-100 shadow-sm expense-kpi-card expense-kpi-card--primary">
+        <div class="card-body d-flex align-items-start gap-3">
+          <div class="expense-kpi-icon" aria-hidden="true">
+            <fa-icon icon="calendar-alt"></fa-icon>
+          </div>
+          <div>
+            <div class="text-muted small mb-1">
+              <span jhiTranslate="billsSubscriptions.monthlyExpense">Monthly Expense</span>
+              <span class="mx-1">·</span>
+              <span class="text-capitalize">{{ currentMonthName }}</span>
+            </div>
+            <div class="display-6 mb-0 fw-semibold">{{ monthlyExpensesSar }}</div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.monthlyExpense">Monthly Expense</div>
-          <div class="display-6 mb-0">{{ monthlyExpensesSar }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</div>
-          <div class="display-6 mb-0">{{ yearlyExpensesSar }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <div class="text-muted small mb-1" jhiTranslate="billsSubscriptions.alerts">Alerts</div>
-          <div class="small text-muted mt-1">{{ 'billsSubscriptions.upcomingRenewalsCount' | translate: { count: upcomingRenewals } }}</div>
-          <div class="small text-muted">{{ 'billsSubscriptions.overdueExpensesCount' | translate: { count: overdueExpenses } }}</div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card h-100 shadow-sm expense-kpi-card expense-kpi-card--alerts">
+        <div class="card-body d-flex align-items-start gap-3">
+          <div class="expense-kpi-icon" aria-hidden="true">
+            <fa-icon icon="bell"></fa-icon>
+          </div>
+          <div class="w-100">
+            <div class="text-muted small mb-2" jhiTranslate="billsSubscriptions.alerts">Alerts</div>
+            <div class="d-flex flex-column gap-1">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="small text-muted" jhiTranslate="billsSubscriptions.upcomingRenewals">Upcoming renewals</span>
+                <span class="badge text-bg-warning-subtle border text-dark">{{ upcomingRenewals }}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="small text-muted" jhiTranslate="billsSubscriptions.overdueExpenses">Overdue expenses</span>
+                <span class="badge text-bg-danger-subtle border text-dark">{{ overdueExpenses }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  @if (editingExpenseId !== null) {
-    <div class="card shadow-sm mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span class="fw-semibold" jhiTranslate="billsSubscriptions.editExpenseTitle">Edit Expense</span>
-        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelEdit()" jhiTranslate="entity.action.cancel">Close</button>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" novalidate>
-          <div class="row g-3">
-            <div class="col-md-8">
-              <label class="form-label" for="editServiceName" jhiTranslate="billsSubscriptions.serviceName">Name</label>
-              <input id="editServiceName" type="text" class="form-control" formControlName="serviceName" />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editAmount" jhiTranslate="billsSubscriptions.amount">Amount</label>
-              <input id="editAmount" type="number" min="0" step="0.01" class="form-control" formControlName="amount" />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editCurrency" jhiTranslate="billsSubscriptions.currency">Currency</label>
-              <select id="editCurrency" class="form-select" formControlName="currency">
-                <option value="SAR">SAR</option>
-                <option value="USD">USD</option>
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editStatus" jhiTranslate="billsSubscriptions.status">Status</label>
-              <select id="editStatus" class="form-select" formControlName="status">
-                @for (option of statusOptions; track option) {
-                  <option [value]="option">{{ ('billsSubscriptions.statusValues.' + option) | translate }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editSubscriptionDate" jhiTranslate="billsSubscriptions.startDate">Start Date</label>
-              <input id="editSubscriptionDate" type="date" class="form-control" formControlName="subscriptionDate" />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editBillingCycle" jhiTranslate="billsSubscriptions.billingCycle">Billing Cycle</label>
-              <select id="editBillingCycle" class="form-select" formControlName="billingCycle">
-                @for (option of billingCycleOptions; track option) {
-                  <option [value]="option">{{ ('billsSubscriptions.billingCycleValues.' + option) | translate }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editDueDate" jhiTranslate="billsSubscriptions.dueDate">Due Date</label>
-              <input id="editDueDate" type="date" class="form-control" formControlName="dueDate" />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editPaidDate" jhiTranslate="billsSubscriptions.paidDate">Paid Date</label>
-              <input id="editPaidDate" type="date" class="form-control" formControlName="paidDate" />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editPaymentMethod" jhiTranslate="billsSubscriptions.paymentMethod">Payment Method</label>
-              <select id="editPaymentMethod" class="form-select" formControlName="paymentMethod">
-                <option [ngValue]="null" jhiTranslate="billsSubscriptions.none">None</option>
-                @for (option of paymentMethodOptions; track option) {
-                  <option [ngValue]="option">{{ ('billsSubscriptions.paymentMethodValues.' + option) | translate }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-md-4 d-flex align-items-end">
-              <div class="form-check mb-2">
-                <input id="editAutoRenewal" class="form-check-input" type="checkbox" formControlName="autoRenewal" />
-                <label class="form-check-label" for="editAutoRenewal" jhiTranslate="billsSubscriptions.autoRenewal">Auto-renewal</label>
-              </div>
-            </div>
-
-            <div class="col-md-4 d-flex align-items-end">
-              <div class="form-check mb-2">
-                <input id="editManualRenewal" class="form-check-input" type="checkbox" formControlName="manualRenewal" />
-                <label class="form-check-label" for="editManualRenewal" jhiTranslate="billsSubscriptions.manualRenewal">Manual-renewal</label>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editRenewalReminder" jhiTranslate="billsSubscriptions.notify">Reminder</label>
-              <select
-                id="editRenewalReminder"
-                class="form-select"
-                formControlName="renewalReminder"
-                [disabled]="!editForm.controls.autoRenewal.value && !editForm.controls.manualRenewal.value"
-              >
-                <option [ngValue]="null" jhiTranslate="billsSubscriptions.noReminder">No reminder</option>
-                @for (option of renewalReminderOptions; track option) {
-                  <option [ngValue]="option">{{ ('billsSubscriptions.renewalReminderValues.' + option) | translate }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editProviderUrl" jhiTranslate="billsSubscriptions.providerUrl">Provider URL</label>
-              <input id="editProviderUrl" type="url" class="form-control" formControlName="providerUrl" />
-            </div>
-            <div class="col-md-4">
-              <label class="form-label" for="editAccountEmail" jhiTranslate="billsSubscriptions.accountEmail">Account Email</label>
-              <input id="editAccountEmail" type="email" class="form-control" formControlName="accountEmail" />
-            </div>
-            <div class="col-md-4">
-              <label class="form-label" for="editAccountUsername" jhiTranslate="billsSubscriptions.accountUsername">Account Username</label>
-              <input id="editAccountUsername" type="text" class="form-control" formControlName="accountUsername" />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label" for="editDescription" jhiTranslate="billsSubscriptions.description">Description</label>
-              <textarea id="editDescription" rows="2" class="form-control" formControlName="description"></textarea>
-            </div>
-            <div class="col-12">
-              <label class="form-label" for="editNotes" jhiTranslate="billsSubscriptions.notes">Notes</label>
-              <textarea id="editNotes" rows="3" class="form-control" formControlName="notes"></textarea>
-            </div>
-          </div>
-
-          <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-primary" jhiTranslate="billsSubscriptions.saveChanges">Save Changes</button>
-            <button type="button" class="btn btn-outline-secondary" (click)="cancelEdit()" jhiTranslate="entity.action.cancel">Cancel</button>
-          </div>
-        </form>
-      </div>
+  <ng-template #editExpenseModal>
+    <div class="modal-header py-2">
+      <h5 class="modal-title" jhiTranslate="billsSubscriptions.editExpenseTitle">Edit Expense</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="cancelEdit()"></button>
     </div>
-  }
+    <div class="modal-body pt-2 pb-2">
+      <form [formGroup]="editForm" (ngSubmit)="saveEdit()" novalidate>
+        <div class="row g-2">
+          <div class="col-md-7">
+            <label class="form-label mb-1 small" for="editServiceName" jhiTranslate="billsSubscriptions.serviceName">Name</label>
+            <input id="editServiceName" type="text" class="form-control form-control-sm" formControlName="serviceName" />
+          </div>
+
+          <div class="col-md-5">
+            <label class="form-label mb-1 small" for="editAmount" jhiTranslate="billsSubscriptions.amount">Amount</label>
+            <input id="editAmount" type="number" min="0" step="0.01" class="form-control form-control-sm" formControlName="amount" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editCurrency" jhiTranslate="billsSubscriptions.currency">Currency</label>
+            <select id="editCurrency" class="form-select form-select-sm" formControlName="currency">
+              <option value="SAR">SAR</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editStatus" jhiTranslate="billsSubscriptions.status">Status</label>
+            <select id="editStatus" class="form-select form-select-sm" formControlName="status">
+              @for (option of statusOptions; track option) {
+                <option [value]="option">{{ ('billsSubscriptions.statusValues.' + option) | translate }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editSubscriptionDate" jhiTranslate="billsSubscriptions.startDate">Start Date</label>
+            <input id="editSubscriptionDate" type="date" class="form-control form-control-sm" formControlName="subscriptionDate" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editBillingCycle" jhiTranslate="billsSubscriptions.billingCycle">Billing Cycle</label>
+            <select id="editBillingCycle" class="form-select form-select-sm" formControlName="billingCycle">
+              @for (option of billingCycleOptions; track option) {
+                <option [value]="option">{{ ('billsSubscriptions.billingCycleValues.' + option) | translate }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editDueDate" jhiTranslate="billsSubscriptions.dueDate">Due Date</label>
+            <input id="editDueDate" type="date" class="form-control form-control-sm" formControlName="dueDate" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editPaidDate" jhiTranslate="billsSubscriptions.paidDate">Paid Date</label>
+            <input id="editPaidDate" type="date" class="form-control form-control-sm" formControlName="paidDate" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editPaymentMethod" jhiTranslate="billsSubscriptions.paymentMethod">Payment Method</label>
+            <select id="editPaymentMethod" class="form-select form-select-sm" formControlName="paymentMethod">
+              <option [ngValue]="null" jhiTranslate="billsSubscriptions.none">None</option>
+              @for (option of paymentMethodOptions; track option) {
+                <option [ngValue]="option">{{ ('billsSubscriptions.paymentMethodValues.' + option) | translate }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-md-4 d-flex align-items-end">
+            <div class="form-check mb-1">
+              <input id="editAutoRenewal" class="form-check-input" type="checkbox" formControlName="autoRenewal" />
+              <label class="form-check-label" for="editAutoRenewal" jhiTranslate="billsSubscriptions.autoRenewal">Auto-renewal</label>
+            </div>
+          </div>
+
+          <div class="col-md-4 d-flex align-items-end">
+            <div class="form-check mb-1">
+              <input id="editManualRenewal" class="form-check-input" type="checkbox" formControlName="manualRenewal" />
+              <label class="form-check-label" for="editManualRenewal" jhiTranslate="billsSubscriptions.manualRenewal">Manual-renewal</label>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editRenewalReminder" jhiTranslate="billsSubscriptions.notify">Reminder</label>
+            <select
+              id="editRenewalReminder"
+              class="form-select form-select-sm"
+              formControlName="renewalReminder"
+              [disabled]="!editForm.controls.autoRenewal.value && !editForm.controls.manualRenewal.value"
+            >
+              <option [ngValue]="null" jhiTranslate="billsSubscriptions.noReminder">No reminder</option>
+              @for (option of renewalReminderOptions; track option) {
+                <option [ngValue]="option">{{ ('billsSubscriptions.renewalReminderValues.' + option) | translate }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editProviderUrl" jhiTranslate="billsSubscriptions.providerUrl">Provider URL</label>
+            <input id="editProviderUrl" type="url" class="form-control form-control-sm" formControlName="providerUrl" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editAccountEmail" jhiTranslate="billsSubscriptions.accountEmail">Account Email</label>
+            <input id="editAccountEmail" type="email" class="form-control form-control-sm" formControlName="accountEmail" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label mb-1 small" for="editAccountUsername" jhiTranslate="billsSubscriptions.accountUsername">Account Username</label>
+            <input id="editAccountUsername" type="text" class="form-control form-control-sm" formControlName="accountUsername" />
+          </div>
+
+          <div class="col-12">
+            <label class="form-label mb-1 small" for="editDescription" jhiTranslate="billsSubscriptions.description">Description</label>
+            <textarea id="editDescription" rows="2" class="form-control form-control-sm" formControlName="description"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label mb-1 small" for="editNotes" jhiTranslate="billsSubscriptions.notes">Notes</label>
+            <textarea id="editNotes" rows="2" class="form-control form-control-sm" formControlName="notes"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer px-0 pb-0 mt-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cancelEdit()" jhiTranslate="entity.action.cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" jhiTranslate="billsSubscriptions.saveChanges">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
 
   <div class="card shadow-sm mb-4">
     <div class="card-body row g-3">
@@ -195,96 +200,187 @@
     </div>
   </div>
 
-  <div class="card shadow-sm">
-    <div class="card-body p-0">
+  <section class="card border-0 shadow-sm expense-list-shell">
+    <div class="card-body p-3 p-lg-4">
       @if (isLoading) {
-        <div class="p-4 text-center text-muted" jhiTranslate="billsSubscriptions.loadingExpenses">Loading expenses…</div>
+        <div class="py-5 text-center text-muted" jhiTranslate="billsSubscriptions.loadingExpenses">Loading expenses…</div>
       } @else if (filteredExpenses.length === 0) {
-        <div class="p-4 text-center text-muted" jhiTranslate="billsSubscriptions.noExpensesFound">No expenses found for the current filters.</div>
+        <div class="py-4 text-center text-muted" jhiTranslate="billsSubscriptions.noExpensesFound">No expenses found for the current filters.</div>
       } @else {
-        <div class="table-responsive">
-          <table class="table align-middle mb-0">
-            <thead>
-              <tr>
-                <th jhiTranslate="billsSubscriptions.serviceName">Name</th>
-                <th jhiTranslate="billsSubscriptions.amount">Amount</th>
-                <th jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</th>
-                <th jhiTranslate="billsSubscriptions.status">Status</th>
-                <th jhiTranslate="billsSubscriptions.date">Date</th>
-                <th jhiTranslate="billsSubscriptions.details">Details</th>
-                <th class="text-end" jhiTranslate="billsSubscriptions.actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (expense of pagedExpenses; track trackById($index, expense)) {
-                <tr [class.auto-renewal-row]="expense.autoRenewal">
-                  <td>
-                    <div class="fw-semibold">
-                      {{ expense.serviceName }}
-                      @if (expense.autoRenewal) {
-                        <span class="badge bg-danger ms-1 auto-renewal-badge" [title]="'billsSubscriptions.autoRenewal' | translate">↻</span>
-                      }
-                    </div>
-                    @if (expense.description) {
-                      <div class="text-muted small">{{ expense.description }}</div>
-                    }
-                  </td>
-                  <td>{{ formatMonthlyAmount(expense) }}</td>
-                  <td>{{ formatYearlyAmount(expense) }}</td>
-                  <td>
-                    <span class="badge rounded-pill" [class]="getStatusClass(expense.status)">{{ ('billsSubscriptions.statusValues.' + expense.status) | translate }}</span>
-                  </td>
-                  <td>
-                    <div class="fw-semibold">{{ getPrimaryDate(expense) }}</div>
-                  </td>
-                  <td>
-                    <div>{{ getSecondaryDetails(expense) }}</div>
-                    @if (expense.notes) {
-                      <div class="text-muted small text-truncate" style="max-width: 220px">{{ expense.notes }}</div>
-                    }
-                  </td>
-                   <td class="text-end">
-                     <div class="btn-group btn-group-sm">
-                       @if (expense.status !== 'PAID') {
-                         <button type="button" class="btn btn-outline-primary" (click)="startEdit(expense)" jhiTranslate="entity.action.edit">Edit</button>
-                         <button type="button" class="btn btn-outline-success" (click)="markAsPaid(expense)" jhiTranslate="billsSubscriptions.markAsPaidButton">Mark Paid</button>
-                       }
-                       <button
-                         type="button"
-                         class="btn btn-primary"
-                         (click)="createActionItemForExpense(expense)"
-                         jhiTranslate="billsSubscriptions.createActionItem"
-                       >
-                         Action Item
-                       </button>
-                       <button type="button" class="btn btn-outline-danger" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
-                     </div>
-                   </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-
-        @if (filteredExpenses.length > itemsPerPage) {
-          <div class="p-3 border-top">
-            <div class="d-flex justify-content-center mb-2">
-              <jhi-item-count [params]="{ page: currentPage, totalItems: filteredExpenses.length, itemsPerPage }" />
+        <section class="card border-0 shadow-sm decision-toolbar mb-3">
+          <div class="card-body p-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+            <div class="badge rounded-pill text-bg-light border fw-semibold px-3 py-2">
+              <span>{{ showingCountLabel }}</span>
             </div>
-            <div class="d-flex justify-content-center">
-              <ngb-pagination
-                [collectionSize]="filteredExpenses.length"
-                [(page)]="currentPage"
-                [pageSize]="itemsPerPage"
-                [maxSize]="5"
-                [rotate]="true"
-                [boundaryLinks]="true"
-              ></ngb-pagination>
+
+            <div class="btn-group view-toggle" role="group" aria-label="View mode">
+              <button type="button" class="btn btn-sm" [ngClass]="viewMode === 'cards' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('cards')">
+                <fa-icon icon="th-list"></fa-icon>
+                <span class="ms-2" jhiTranslate="liferadarApp.evaluationDecision.home.viewCards">Card view</span>
+              </button>
+              <button type="button" class="btn btn-sm" [ngClass]="viewMode === 'table' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('table')">
+                <fa-icon icon="list"></fa-icon>
+                <span class="ms-2" jhiTranslate="liferadarApp.evaluationDecision.home.viewCompactTable">Compact table</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        @if (viewMode === 'cards') {
+          <div class="row g-3" id="entities">
+            @for (expense of pagedExpenses; track trackById($index, expense)) {
+              <div class="col-12 col-md-6 col-xl-4" data-cy="expenseCard">
+                <article class="card border-0 shadow-sm decision-card h-100" [class.auto-renewal-row]="expense.autoRenewal">
+                  <div class="card-body p-2 p-lg-3 d-flex flex-column gap-2">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-2">
+                      <div class="flex-grow-1 min-w-0">
+                        <h3 class="h5 mb-0 text-break decision-card-title">
+                          {{ expense.serviceName }}
+                          @if (expense.autoRenewal) {
+                            <span class="badge bg-danger ms-1 auto-renewal-badge" [title]="'billsSubscriptions.autoRenewal' | translate">↻</span>
+                          }
+                        </h3>
+                        @if (expense.description) {
+                          <div class="text-muted small mt-1">{{ expense.description }}</div>
+                        }
+                      </div>
+
+                      <div class="decision-metric ms-sm-auto">
+                        <div class="decision-metric-label" jhiTranslate="billsSubscriptions.amount">Amount</div>
+                        <div class="decision-metric-value">{{ formatMonthlyAmount(expense) }}</div>
+                      </div>
+                    </div>
+
+                    <div class="decision-meta-grid">
+                      <div class="decision-meta-item">
+                        <div class="decision-meta-label" jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</div>
+                        <div class="decision-meta-value">{{ formatYearlyAmount(expense) }}</div>
+                      </div>
+
+                      <div class="decision-meta-item">
+                        <div class="decision-meta-label" jhiTranslate="billsSubscriptions.status">Status</div>
+                        <div class="decision-meta-value">
+                          <span class="badge rounded-pill" [class]="getStatusClass(expense.status)">{{ ('billsSubscriptions.statusValues.' + expense.status) | translate }}</span>
+                        </div>
+                      </div>
+
+                      <div class="decision-meta-item">
+                        <div class="decision-meta-label" jhiTranslate="billsSubscriptions.date">Date</div>
+                        <div class="decision-meta-value">{{ getPrimaryDate(expense) }}</div>
+                      </div>
+
+                      <div class="decision-meta-item">
+                        <div class="decision-meta-label" jhiTranslate="billsSubscriptions.details">Details</div>
+                        <div class="decision-meta-value">{{ getSecondaryDetails(expense) }}</div>
+                      </div>
+                    </div>
+
+                    @if (expense.notes) {
+                      <div class="text-muted small text-truncate" style="max-width: 100%">{{ expense.notes }}</div>
+                    }
+
+                    <div class="d-flex flex-wrap gap-1 mt-auto pt-2 border-top decision-card-actions">
+                      @if (expense.status !== 'PAID') {
+                        <button type="button" class="btn btn-outline-primary btn-sm" (click)="startEdit(expense)" jhiTranslate="entity.action.edit">Edit</button>
+                        <button type="button" class="btn btn-outline-success btn-sm" (click)="markAsPaid(expense)" jhiTranslate="billsSubscriptions.markAsPaidButton">
+                          Mark Paid
+                        </button>
+                      }
+                      <button type="button" class="btn btn-outline-primary btn-sm" (click)="createActionItemForExpense(expense)" jhiTranslate="billsSubscriptions.decisionButton">
+                        Decision
+                      </button>
+                      <button type="button" class="btn btn-outline-danger btn-sm" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="card border-0 shadow-sm compact-table-shell" id="entities">
+            <div class="table-responsive mb-0">
+              <table class="table table-hover table-sm align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th jhiTranslate="billsSubscriptions.serviceName">Name</th>
+                    <th jhiTranslate="billsSubscriptions.amount">Amount</th>
+                    <th jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</th>
+                    <th jhiTranslate="billsSubscriptions.status">Status</th>
+                    <th jhiTranslate="billsSubscriptions.date">Date</th>
+                    <th jhiTranslate="billsSubscriptions.details">Details</th>
+                    <th class="text-end" jhiTranslate="billsSubscriptions.actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (expense of pagedExpenses; track trackById($index, expense)) {
+                    <tr [class.auto-renewal-row]="expense.autoRenewal">
+                      <td>
+                        <div class="fw-semibold">
+                          {{ expense.serviceName }}
+                          @if (expense.autoRenewal) {
+                            <span class="badge bg-danger ms-1 auto-renewal-badge" [title]="'billsSubscriptions.autoRenewal' | translate">↻</span>
+                          }
+                        </div>
+                        @if (expense.description) {
+                          <div class="text-muted small">{{ expense.description }}</div>
+                        }
+                      </td>
+                      <td>{{ formatMonthlyAmount(expense) }}</td>
+                      <td>{{ formatYearlyAmount(expense) }}</td>
+                      <td>
+                        <span class="badge rounded-pill" [class]="getStatusClass(expense.status)">{{ ('billsSubscriptions.statusValues.' + expense.status) | translate }}</span>
+                      </td>
+                      <td>
+                        <div class="fw-semibold">{{ getPrimaryDate(expense) }}</div>
+                      </td>
+                      <td>
+                        <div>{{ getSecondaryDetails(expense) }}</div>
+                        @if (expense.notes) {
+                          <div class="text-muted small text-truncate" style="max-width: 220px">{{ expense.notes }}</div>
+                        }
+                      </td>
+                      <td class="text-end">
+                        <div class="d-flex flex-wrap gap-1 justify-content-end">
+                          @if (expense.status !== 'PAID') {
+                            <button type="button" class="btn btn-outline-primary btn-sm" (click)="startEdit(expense)" jhiTranslate="entity.action.edit">Edit</button>
+                            <button type="button" class="btn btn-outline-success btn-sm" (click)="markAsPaid(expense)" jhiTranslate="billsSubscriptions.markAsPaidButton">
+                              Mark Paid
+                            </button>
+                          }
+                          <button type="button" class="btn btn-outline-primary btn-sm" (click)="createActionItemForExpense(expense)" jhiTranslate="billsSubscriptions.decisionButton">
+                            Decision
+                          </button>
+                          <button type="button" class="btn btn-outline-danger btn-sm" (click)="deleteExpense(expense)" jhiTranslate="entity.action.delete">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
         }
+
+        <section class="card border-0 shadow-sm decision-footer mt-3">
+          <div class="card-body p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="small text-muted">{{ showingCountLabel }}</div>
+
+            <div class="d-flex align-items-center gap-2">
+              @if (hasMoreExpenses) {
+                <button class="btn btn-primary" (click)="loadMoreExpenses()">
+                  <fa-icon icon="plus"></fa-icon>
+                  <span class="ms-2" jhiTranslate="liferadarApp.evaluationDecision.home.loadMore">Load more</span>
+                </button>
+              } @else {
+                <span class="badge rounded-pill text-bg-light border px-3 py-2" jhiTranslate="liferadarApp.evaluationDecision.home.allLoaded">
+                  All loaded
+                </span>
+              }
+            </div>
+          </div>
+        </section>
       }
     </div>
-  </div>
+  </section>
 </section>
 

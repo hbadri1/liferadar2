@@ -233,6 +233,147 @@
   }
 }
 
+.expense-list-shell {
+  border-radius: 1rem;
+
+  .decision-toolbar,
+  .decision-footer,
+  .decision-card,
+  .compact-table-shell {
+    border-radius: 1rem;
+  }
+
+  .decision-toolbar,
+  .decision-footer {
+    background: rgba(var(--bs-body-bg-rgb), 0.98);
+  }
+
+  .view-toggle .btn {
+    min-width: 9.5rem;
+  }
+
+  .decision-card {
+    background: linear-gradient(180deg, rgba(var(--bs-body-bg-rgb), 1), rgba(var(--bs-light-rgb), 0.65));
+  }
+
+  .decision-card-title {
+    line-height: 1.25;
+    font-weight: 700;
+    font-size: 0.98rem;
+  }
+
+  .decision-metric {
+    min-width: 9rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.14);
+    background: rgba(var(--bs-primary-rgb), 0.07);
+  }
+
+  .decision-metric-label,
+  .decision-meta-label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+  }
+
+  .decision-metric-value {
+    font-weight: 700;
+    line-height: 1.2;
+    font-size: 0.9rem;
+    color: var(--bs-body-color);
+  }
+
+  .decision-meta-grid {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+
+  .decision-meta-item {
+    padding: 0.5rem 0.65rem;
+    border-radius: 0.75rem;
+    background-color: rgba(var(--bs-light-rgb), 0.72);
+    border: 1px solid rgba(var(--bs-border-color-rgb), 0.7);
+    min-width: 0;
+  }
+
+  .decision-meta-value {
+    min-width: 0;
+    word-break: break-word;
+    line-height: 1.25;
+    font-size: 0.88rem;
+  }
+
+  .decision-card-actions {
+    border-color: rgba(var(--bs-border-color-rgb), 0.7) !important;
+    padding-top: 0.65rem !important;
+  }
+
+  .decision-card-actions .btn {
+    --bs-btn-padding-y: 0.2rem;
+    --bs-btn-padding-x: 0.45rem;
+    font-size: 0.76rem;
+  }
+
+  .compact-table-shell {
+    overflow: hidden;
+  }
+
+  .compact-table-shell .table {
+    --bs-table-bg: transparent;
+    margin-bottom: 0;
+  }
+
+  .compact-table-shell thead th {
+    white-space: nowrap;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--bs-secondary-color);
+    border-bottom-width: 1px;
+  }
+}
+
+.top-kpi-row {
+  .expense-kpi-card {
+    border: 1px solid rgba(var(--bs-border-color-rgb), 0.7);
+    border-radius: 1rem;
+    margin-bottom: 0;
+    box-shadow: 0 0.35rem 1rem rgba(15, 23, 42, 0.08);
+  }
+
+  .expense-kpi-card .card-body {
+    padding: 1.1rem 1.2rem;
+  }
+
+  .expense-kpi-card--primary {
+    background: linear-gradient(180deg, rgba(var(--bs-primary-rgb), 0.07), rgba(var(--bs-body-bg-rgb), 1));
+  }
+
+  .expense-kpi-card--alerts {
+    background: linear-gradient(180deg, rgba(var(--bs-warning-rgb), 0.08), rgba(var(--bs-body-bg-rgb), 1));
+  }
+
+  .expense-kpi-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.12);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .bills-subscriptions-page__header {
     flex-direction: column;
@@ -266,6 +407,25 @@
     .nav-link {
       padding: 0.5rem 1rem;
       font-size: 0.875rem;
+    }
+  }
+
+  .expense-list-shell {
+    .decision-metric {
+      min-width: 100%;
+    }
+
+    .decision-card-title {
+      font-size: 0.95rem;
+    }
+
+    .view-toggle {
+      width: 100%;
+    }
+
+    .view-toggle .btn {
+      flex: 1 1 50%;
+      min-width: 0;
     }
   }
 }
