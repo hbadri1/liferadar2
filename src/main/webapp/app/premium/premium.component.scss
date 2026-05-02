@@ -3,42 +3,73 @@
   min-height: calc(100vh - 64px);
 }
 
+// ── Hero ────────────────────────────────────────────────────────────────────
+
 .premium-hero-inner {
   max-width: 52rem;
 }
 
-.premium-badge {
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
+.premium-phase-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e0f0ff 0%, #ede9fe 100%);
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
 }
 
-.premium-public-note,
-.premium-member-note {
-  border: 1px solid #dbe7ff;
-  background: #f7f9ff;
+.premium-transparency-box {
+  border: 1px solid #d1e3f8;
+  background: #f0f7ff;
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.premium-plan-card {
+// ── Planned Areas ────────────────────────────────────────────────────────────
+
+.premium-area-card {
   border: 1px solid #e5e7eb;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  background: #ffffff;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.07);
+    transform: translateY(-2px);
+  }
 }
 
-.premium-plan-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0.75rem 2rem rgba(15, 23, 42, 0.08);
+.premium-area-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-.premium-plan-card--featured {
-  border-color: #3b82f6;
-  box-shadow: 0 0.75rem 2rem rgba(59, 130, 246, 0.15);
+// ── Early Access Form ─────────────────────────────────────────────────────────
+
+.premium-form-card {
+  max-width: 32rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 2rem 2rem;
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
 }
 
-.premium-feature-list {
-  margin: 0;
-  padding-left: 1rem;
+.premium-success-box {
+  border-radius: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
 }
 
-.premium-feature-list li {
-  margin-bottom: 0.35rem;
+.premium-success-icon {
+  font-size: 2.5rem;
+  line-height: 1;
 }
-

@@ -1,0 +1,18 @@
+{
+  "premiumInterests": {
+    "title": "تسجيلات الوصول المبكر",
+    "refresh": "تحديث",
+    "total": "إجمالي",
+    "filterPlaceholder": "تصفية بالبريد الإلكتروني أو التعليق…",
+    "empty": "لا توجد تسجيلات للوصول المبكر.",
+    "anonymous": "مجهول",
+    "field": {
+      "email": "البريد الإلكتروني",
+      "source": "المصدر",
+      "userLogin": "المستخدم",
+      "createdDate": "تاريخ التسجيل",
+      "feedback": "التعليق"
+    }
+  }
+}
+

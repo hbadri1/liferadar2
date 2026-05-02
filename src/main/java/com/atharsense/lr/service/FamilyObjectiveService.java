@@ -19,6 +19,7 @@ import com.atharsense.lr.service.dto.CreateObjectiveProgressRequest;
 import com.atharsense.lr.service.dto.FamilyObjectiveDTO;
 import com.atharsense.lr.service.dto.FamilyObjectiveItemDefinitionDTO;
 import com.atharsense.lr.service.dto.FamilyObjectiveProgressDTO;
+import com.atharsense.lr.service.dto.UpdateFamilyObjectiveRequest;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -141,6 +142,27 @@ public class FamilyObjectiveService {
     public FamilyObjectiveDTO deactivateObjective(Long objectiveId) {
         KidObjective objective = resolveAccessibleObjective(objectiveId, true);
         objective.setIsActive(false);
+        return toDto(kidObjectiveRepository.save(objective));
+    }
+
+    public FamilyObjectiveDTO updateObjective(Long objectiveId, UpdateFamilyObjectiveRequest request) {
+        KidObjective objective = resolveAccessibleObjective(objectiveId, true);
+
+        if (request.itemDefinitions() == null || request.itemDefinitions().isEmpty()) {
+            throw new BadRequestAlertException("At least one item definition is required", "familyObjective", "noitemdefinitions");
+        }
+
+        objective.setName(request.name().trim());
+        objective.setDescription(normalizeOptionalText(request.description()));
+        objective.getItemDefinitions().clear();
+
+        for (CreateFamilyObjectiveItemDefinitionRequest itemRequest : request.itemDefinitions()) {
+            objective.addItemDefinitions(new KidObjectiveItemDefinition()
+                .name(itemRequest.name().trim())
+                .description(normalizeOptionalText(itemRequest.description()))
+                .unit(itemRequest.unit()));
+        }
+
         return toDto(kidObjectiveRepository.save(objective));
     }
 

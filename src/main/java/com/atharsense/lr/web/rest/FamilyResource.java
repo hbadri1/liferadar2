@@ -10,6 +10,7 @@ import com.atharsense.lr.service.dto.CreateFamilyObjectiveRequest;
 import com.atharsense.lr.service.dto.CreateObjectiveProgressRequest;
 import com.atharsense.lr.service.dto.AdminUserDTO;
 import com.atharsense.lr.service.dto.FamilyObjectiveDTO;
+import com.atharsense.lr.service.dto.UpdateFamilyObjectiveRequest;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -90,6 +91,18 @@ public class FamilyResource {
     @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
     public ResponseEntity<List<FamilyObjectiveDTO>> createFamilyObjectives(@Valid @RequestBody CreateFamilyObjectiveRequest request) {
         return ResponseEntity.ok(familyObjectiveService.createObjectives(request));
+    }
+
+    /**
+     * PUT /api/family/objectives/{objectiveId} — update objective and its item definitions.
+     */
+    @PutMapping("/objectives/{objectiveId}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<FamilyObjectiveDTO> updateFamilyObjective(
+        @PathVariable Long objectiveId,
+        @Valid @RequestBody UpdateFamilyObjectiveRequest request
+    ) {
+        return ResponseEntity.ok(familyObjectiveService.updateObjective(objectiveId, request));
     }
 
     /**

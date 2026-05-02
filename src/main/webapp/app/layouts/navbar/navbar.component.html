@@ -134,6 +134,12 @@
                 <span jhiTranslate="global.menu.admin.logs">Logs</span>
               </a>
             </li>
+            <li>
+              <a class="dropdown-item" routerLink="/admin/premium-interests" routerLinkActive="active" (click)="collapseNavbar()">
+                <fa-icon icon="gem" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.admin.premiumInterests">Early Access List</span>
+              </a>
+            </li>
             @if (openAPIEnabled) {
               <li>
                 <a class="dropdown-item" routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
@@ -222,19 +228,21 @@
           </a>
           <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
             @if (accountRef !== null) {
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/premium"
-                  routerLinkActive="active"
-                  (click)="collapseNavbar()"
-                  data-cy="premium"
-                >
-                  <fa-icon icon="gem" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.premium">Premium</span>
-                </a>
-              </li>
-              <li><hr class="dropdown-divider" /></li>
+              @if (!isChildOnly()) {
+                <li>
+                  <a
+                    class="dropdown-item"
+                    routerLink="/premium"
+                    routerLinkActive="active"
+                    (click)="collapseNavbar()"
+                    data-cy="premium"
+                  >
+                    <fa-icon icon="gem" [fixedWidth]="true"></fa-icon>
+                    <span jhiTranslate="global.menu.premium">Premium</span>
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+              }
               @if (!isChildOnly()) {
                 <li>
                   <a
@@ -270,6 +278,20 @@
                   >
                     <fa-icon icon="lock" [fixedWidth]="true"></fa-icon>
                     <span jhiTranslate="global.menu.account.password">Password</span>
+                  </a>
+                </li>
+              }
+              @if (isChildOnly()) {
+                <li>
+                  <a
+                    class="dropdown-item"
+                    routerLink="/account/profile-settings"
+                    routerLinkActive="active"
+                    (click)="collapseNavbar()"
+                    data-cy="kidProfileSettings"
+                  >
+                    <fa-icon icon="wrench" [fixedWidth]="true"></fa-icon>
+                    <span jhiTranslate="global.menu.account.profileSettings">Profile Settings</span>
                   </a>
                 </li>
               }

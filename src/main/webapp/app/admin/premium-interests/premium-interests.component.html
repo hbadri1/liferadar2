@@ -1,0 +1,107 @@
+<div class="container-fluid">
+  <h2 id="page-heading" data-cy="PremiumInterestsHeading">
+    <span jhiTranslate="premiumInterests.title">Early Access Registrations</span>
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-sm btn-outline-secondary me-2" (click)="load()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="premiumInterests.refresh">Refresh</span>
+      </button>
+    </div>
+  </h2>
+
+  <!-- Summary badge -->
+  <div class="mb-3">
+    <span class="badge bg-primary me-2">
+      {{ filteredEntries().length }}
+      <span jhiTranslate="premiumInterests.total">total</span>
+    </span>
+  </div>
+
+  <!-- Search filter -->
+  <div class="mb-3">
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      [ngModel]="filter()"
+      (ngModelChange)="filter.set($event)"
+      placeholder="{{ 'premiumInterests.filterPlaceholder' | translate }}"
+    />
+  </div>
+
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center my-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
+    </div>
+  } @else if (filteredEntries().length === 0) {
+    <div class="alert alert-info" jhiTranslate="premiumInterests.empty">
+      No early access registrations found.
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-sm table-striped table-hover align-middle" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState">
+            <th scope="col" jhiSortBy="id">
+              <span jhiTranslate="global.field.id">ID</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </th>
+            <th scope="col" jhiSortBy="email">
+              <span jhiTranslate="premiumInterests.field.email">Email</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </th>
+            <th scope="col" jhiSortBy="source">
+              <span jhiTranslate="premiumInterests.field.source">Source</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </th>
+            <th scope="col" jhiSortBy="userLogin">
+              <span jhiTranslate="premiumInterests.field.userLogin">User</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </th>
+            <th scope="col" jhiSortBy="createdDate">
+              <span jhiTranslate="premiumInterests.field.createdDate">Registered</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </th>
+            <th scope="col" jhiTranslate="premiumInterests.field.feedback">Feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of filteredEntries(); track trackById($index, entry)) {
+            <tr>
+              <td><span class="text-muted small">{{ entry.id }}</span></td>
+              <td>
+                <strong>{{ entry.email }}</strong>
+              </td>
+              <td>
+                @if (entry.source) {
+                  <span class="badge bg-secondary">{{ entry.source }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td>
+                @if (entry.userLogin) {
+                  <span class="badge bg-info text-dark">{{ entry.userLogin }}</span>
+                } @else {
+                  <span class="text-muted small" jhiTranslate="premiumInterests.anonymous">anonymous</span>
+                }
+              </td>
+              <td>
+                <span class="small">{{ entry.createdDate | date: 'medium' }}</span>
+              </td>
+              <td>
+                @if (entry.feedback) {
+                  <span class="small text-muted fst-italic entry-feedback" title="{{ entry.feedback }}">{{ entry.feedback }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+

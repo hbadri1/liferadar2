@@ -19,6 +19,7 @@
       "managementDesc": "Créez un objectif et assignez-le à un ou plusieurs enfants.",
       "add": "Ajouter un objectif",
       "created": "Objectif créé avec succès.",
+      "updated": "Objectif mis à jour avec succès.",
       "deactivated": "Objectif désactivé avec succès.",
       "deleted": "Objectif supprimé avec succès.",
       "loading": "Chargement des objectifs…",
@@ -28,11 +29,13 @@
         "inactive": "Inactif"
       },
       "actions": {
+        "edit": "Modifier",
         "deactivate": "Désactiver",
         "delete": "Supprimer"
       },
       "modal": {
-        "title": "Ajouter un objectif"
+        "title": "Ajouter un objectif",
+        "editTitle": "Modifier l'objectif"
       },
       "form": {
         "name": "Nom de l'objectif",
@@ -40,6 +43,7 @@
         "kids": "Assigner aux enfants",
         "kidsRequired": "Sélectionnez au moins un enfant.",
         "save": "Enregistrer l'objectif",
+        "update": "Mettre à jour l'objectif",
         "items": "Éléments de l'objectif",
         "itemsRequired": "Ajoutez au moins une définition d'élément.",
         "addItem": "Ajouter un élément",

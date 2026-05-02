@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { forkJoin } from 'rxjs';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
@@ -57,6 +58,14 @@ interface ObjectiveTrendSeries {
   maxValue: number;
   startLabel: string;
   endLabel: string;
+}
+
+interface ManagementObjectiveGroup {
+  key: string;
+  representative: FamilyObjective;
+  objectiveIds: number[];
+  kidNames: string[];
+  assignments: Array<{ objectiveId: number; kidLogin: string }>;
 }
 
 @Component({
@@ -165,6 +174,45 @@ export default class FamilyComponent implements OnInit {
     return Array.from(grouped.values())
       .map(group => ({ ...group, objectives: this.sortObjectives(group.objectives) }))
       .sort((left, right) => left.kidName.localeCompare(right.kidName));
+  });
+
+  managementObjectiveGroups = computed<ManagementObjectiveGroup[]>(() => {
+    const grouped = new Map<string, ManagementObjectiveGroup>();
+
+    for (const objective of this.objectives()) {
+      const key = this.getManagementObjectiveGroupKey(objective);
+      const existing = grouped.get(key);
+
+      if (existing) {
+        existing.objectiveIds.push(objective.id);
+        if (objective.kidLogin) {
+          existing.assignments.push({ objectiveId: objective.id, kidLogin: objective.kidLogin });
+        }
+        if (objective.kidName && !existing.kidNames.includes(objective.kidName)) {
+          existing.kidNames.push(objective.kidName);
+        }
+        continue;
+      }
+
+      grouped.set(key, {
+        key,
+        representative: objective,
+        objectiveIds: [objective.id],
+        kidNames: objective.kidName ? [objective.kidName] : [],
+        assignments: objective.kidLogin ? [{ objectiveId: objective.id, kidLogin: objective.kidLogin }] : [],
+      });
+    }
+
+    return Array.from(grouped.values())
+      .map(group => ({ ...group, kidNames: [...group.kidNames].sort((a, b) => a.localeCompare(b)) }))
+      .sort((left, right) => {
+        const leftTime = Date.parse(left.representative.createdAt ?? '') || 0;
+        const rightTime = Date.parse(right.representative.createdAt ?? '') || 0;
+        if (leftTime !== rightTime) {
+          return rightTime - leftTime;
+        }
+        return right.representative.id - left.representative.id;
+      });
   });
 
   addForm = inject(FormBuilder).group({
@@ -302,8 +350,27 @@ export default class FamilyComponent implements OnInit {
     });
   }
 
-  deactivateObjective(objective: FamilyObjective): void {
-    if (!objective.id || !objective.active) {
+  openEditObjectiveModal(
+    objective: FamilyObjective,
+    objectiveIds: number[] = [],
+    assignments: Array<{ objectiveId: number; kidLogin: string }> = [],
+  ): void {
+    const modalRef = this.modalService.open(FamilyObjectiveModalComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.children = this.children();
+    modalRef.componentInstance.objective = objective;
+    modalRef.componentInstance.objectiveIds = objectiveIds;
+    modalRef.componentInstance.objectiveAssignments = assignments;
+    modalRef.closed.subscribe(result => {
+      if (result === 'saved') {
+        this.successMsg.set('family.objectives.updated');
+        this.loadObjectives();
+      }
+    });
+  }
+
+  deactivateObjective(objective: FamilyObjective, objectiveIds: number[] = []): void {
+    const ids = (objectiveIds.length > 0 ? objectiveIds : [objective.id]).filter(Boolean);
+    if (ids.length === 0 || !objective.active) {
       return;
     }
 
@@ -312,7 +379,7 @@ export default class FamilyComponent implements OnInit {
         return;
       }
 
-      this.http.patch(`/api/family/objectives/${objective.id}/deactivate`, {}).subscribe({
+      forkJoin(ids.map(id => this.http.patch(`/api/family/objectives/${id}/deactivate`, {}))).subscribe({
         next: () => {
           this.successMsg.set('family.objectives.deactivated');
           this.loadObjectives();
@@ -324,8 +391,9 @@ export default class FamilyComponent implements OnInit {
     });
   }
 
-  deleteObjective(objective: FamilyObjective): void {
-    if (!objective.id) {
+  deleteObjective(objective: FamilyObjective, objectiveIds: number[] = []): void {
+    const ids = (objectiveIds.length > 0 ? objectiveIds : [objective.id]).filter(Boolean);
+    if (ids.length === 0) {
       return;
     }
 
@@ -334,7 +402,7 @@ export default class FamilyComponent implements OnInit {
         return;
       }
 
-      this.http.delete(`/api/family/objectives/${objective.id}`).subscribe({
+      forkJoin(ids.map(id => this.http.delete(`/api/family/objectives/${id}`))).subscribe({
         next: () => {
           this.successMsg.set('family.objectives.deleted');
           this.loadObjectives();
@@ -605,6 +673,24 @@ export default class FamilyComponent implements OnInit {
       }
 
       return right.id - left.id;
+    });
+  }
+
+  private getManagementObjectiveGroupKey(objective: FamilyObjective): string {
+    const normalizedItems = [...(objective.itemDefinitions ?? [])]
+      .map(item => ({
+        name: item.name ?? '',
+        description: item.description ?? '',
+        unit: item.unit,
+      }))
+      .sort((left, right) => left.name.localeCompare(right.name));
+
+    return JSON.stringify({
+      name: objective.name ?? '',
+      description: objective.description ?? '',
+      createdAt: objective.createdAt ?? '',
+      active: objective.active ?? false,
+      items: normalizedItems,
     });
   }
 
