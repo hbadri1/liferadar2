@@ -4,8 +4,13 @@ import com.atharsense.lr.domain.SaaSSubscription;
 import com.atharsense.lr.repository.ExtendedUserRepository;
 import com.atharsense.lr.repository.SaaSSubscriptionRepository;
 import com.atharsense.lr.security.SecurityUtils;
+import com.atharsense.lr.service.dto.MonthlyPaidExpensesDTO;
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -23,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SaaSSubscriptionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SaaSSubscriptionService.class);
+    private static final BigDecimal USD_TO_SAR_RATE = new BigDecimal("3.75");
 
     private final SaaSSubscriptionRepository subscriptionRepository;
     private final UserService userService;
@@ -334,6 +340,45 @@ public class SaaSSubscriptionService {
         return processed;
     }
 
+    /**
+     * Get current month paid expenses summary for the current user.
+     *
+     * @return the monthly paid expenses summary.
+     */
+    @Transactional(readOnly = true)
+    public MonthlyPaidExpensesDTO getCurrentMonthPaidExpensesSummary() {
+        return SecurityUtils.getCurrentUserLogin()
+            .flatMap(userService::getUserWithAuthoritiesByLogin)
+            .flatMap(user -> extendedUserRepository.findOneByUserId(user.getId()))
+            .map(owner -> {
+                ZoneId userZoneId = resolveUserZoneId(owner.getTimezone());
+                ZonedDateTime nowInUserZone = ZonedDateTime.now(userZoneId);
+                LocalDate monthStart = nowInUserZone.toLocalDate().withDayOfMonth(1);
+                LocalDate monthEnd = nowInUserZone.toLocalDate().with(TemporalAdjusters.lastDayOfMonth());
+
+                List<SaaSSubscription> paidExpenses = subscriptionRepository.findPaidExpensesInMonthWindow(
+                    owner.getId(),
+                    SaaSSubscription.SubscriptionStatus.PAID,
+                    monthStart,
+                    monthEnd
+                );
+
+                BigDecimal totalPaidSar = paidExpenses
+                    .stream()
+                    .map(expense -> convertToSar(expense.getMonthlyCost(), expense.getCurrency()))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                return new MonthlyPaidExpensesDTO(totalPaidSar, userZoneId.getId(), monthStart, monthEnd);
+            })
+            .orElseGet(() -> {
+                ZoneId fallbackZone = ZoneId.of("UTC");
+                LocalDate today = LocalDate.now(fallbackZone);
+                LocalDate monthStart = today.withDayOfMonth(1);
+                LocalDate monthEnd = today.with(TemporalAdjusters.lastDayOfMonth());
+                return new MonthlyPaidExpensesDTO(BigDecimal.ZERO, fallbackZone.getId(), monthStart, monthEnd);
+            });
+    }
+
     private void normalizeRenewalSettings(SaaSSubscription subscription) {
         if (subscription.getAutoRenewal() == null) {
             subscription.setAutoRenewal(false);
@@ -451,6 +496,26 @@ public class SaaSSubscriptionService {
 
         normalizeRenewalSettings(nextExpense);
         subscriptionRepository.save(nextExpense);
+    }
+
+    private BigDecimal convertToSar(BigDecimal amount, String currency) {
+        if (amount == null) {
+            return BigDecimal.ZERO;
+        }
+        return "USD".equalsIgnoreCase(currency) ? amount.multiply(USD_TO_SAR_RATE) : amount;
+    }
+
+    private ZoneId resolveUserZoneId(String timezone) {
+        if (timezone == null || timezone.isBlank()) {
+            return ZoneId.of("UTC");
+        }
+
+        try {
+            return ZoneId.of(timezone);
+        } catch (DateTimeException ex) {
+            LOG.warn("Invalid timezone '{}' for user, falling back to UTC", timezone);
+            return ZoneId.of("UTC");
+        }
     }
 
     private record PartialUpdateContext(SaaSSubscription.SubscriptionStatus previousStatus, SaaSSubscription subscription) {}

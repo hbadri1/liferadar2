@@ -36,6 +36,13 @@ export interface ITickTickProjectsResponse {
   projects: ITickTickProject[];
 }
 
+export interface IMonthlyPaidExpenses {
+  totalPaidSar: number;
+  timezone: string;
+  monthStart: string;
+  monthEnd: string;
+}
+
 type RestOf<T extends ISaaSSubscription | NewSaaSSubscription | PartialUpdateSaaSSubscription> = Omit<
   T,
   'billDate' | 'dueDate' | 'paidDate' | 'subscriptionDate' | 'renewalDate' | 'createdDate' | 'lastModifiedDate'
@@ -119,6 +126,10 @@ export class SaaSSubscriptionService {
 
   getMetrics(): Observable<HttpResponse<SubscriptionMetrics>> {
     return this.http.get<SubscriptionMetrics>(`${this.resourceUrl}/metrics/dashboard`, { observe: 'response' });
+  }
+
+  getCurrentMonthPaidExpenses(): Observable<HttpResponse<IMonthlyPaidExpenses>> {
+    return this.http.get<IMonthlyPaidExpenses>(`${this.resourceUrl}/metrics/monthly-paid-current`, { observe: 'response' });
   }
 
   getUpcomingRenewals(days: number = 30): Observable<EntityArrayResponseType> {
@@ -218,5 +229,4 @@ export class SaaSSubscriptionService {
     });
   }
 }
-
 

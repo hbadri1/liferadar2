@@ -44,6 +44,7 @@
     "monthlyExpense": "المصروف الشهري",
     "annualExpense": "المصروف السنوي",
     "upcomingRenewals": "التجديدات القادمة (30 يوما)",
+    "overdueExpenses": "المصروفات المتاخرة",
     "renewalDateLabel": "تاريخ التجديد",
     "perMonth": "/شهريا",
     "noUpcomingRenewals": "لا توجد تجديدات قادمة خلال الثلاثين يوما القادمة.",
@@ -63,6 +64,7 @@
     "convertedFromUsd": "≈ {{amount}}",
     "subscriptionDate": "تاريخ الاشتراك",
     "actions": "الاجراءات",
+    "decisionButton": "قرار",
     "createActionItem": "عنصر إجراء",
     "noSubscriptions": "لم يتم العثور على اشتراكات. اضف اول اشتراك لك!",
     "totalBills": "اجمالي الفواتير",
@@ -144,4 +146,3 @@
     "goToSettings": "الذهاب إلى الإعدادات"
   }
 }
-

@@ -1,13 +1,12 @@
-import { Component, OnInit, inject, NgZone } from '@angular/core';
+import { Component, OnInit, inject, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 
 import SharedModule from 'app/shared/shared.module';
-import { ItemCountComponent } from 'app/shared/pagination';
 import { AccountService } from 'app/core/auth/account.service';
 import { AlertService } from 'app/core/util/alert.service';
 import {
@@ -25,7 +24,7 @@ import { EvaluationDecisionCreateModalComponent } from 'app/home/evaluation-deci
   selector: 'jhi-bills-subscriptions',
   templateUrl: './bills-subscriptions.component.html',
   styleUrl: './bills-subscriptions.component.scss',
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule, ItemCountComponent],
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
 })
 export default class BillsSubscriptionsComponent implements OnInit {
   private readonly subscriptionService = inject(SaaSSubscriptionService);
@@ -35,6 +34,10 @@ export default class BillsSubscriptionsComponent implements OnInit {
   private readonly modalService = inject(NgbModal);
   private readonly translateService = inject(TranslateService);
   private readonly ngZone = inject(NgZone);
+
+  @ViewChild('editExpenseModal') editExpenseModal?: TemplateRef<unknown>;
+
+  private editModalRef: NgbModalRef | null = null;
 
   readonly billingCycleOptions = Object.values(BillingCycle);
   readonly renewalReminderOptions = Object.values(RenewalReminderOption);
@@ -48,6 +51,11 @@ export default class BillsSubscriptionsComponent implements OnInit {
   statusFilter = 'ALL';
   currentPage = 1;
   readonly itemsPerPage = 10;
+  viewMode: 'cards' | 'table' = this.restoreViewMode();
+  visibleItems = this.itemsPerPage;
+
+  monthlyPaidSarValue = 0;
+  monthlyPaidTimezone = 'UTC';
 
   readonly editForm = new FormGroup({
     serviceName: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
@@ -79,6 +87,8 @@ export default class BillsSubscriptionsComponent implements OnInit {
     this.subscriptionService.queryMy().subscribe({
       next: res => {
         this.expenses = [...(res.body ?? [])].sort((a, b) => this.getSortDate(b).valueOf() - this.getSortDate(a).valueOf());
+        this.visibleItems = this.itemsPerPage;
+        this.loadCurrentMonthPaidTotal();
         this.isLoading = false;
       },
       error: () => {
@@ -99,12 +109,23 @@ export default class BillsSubscriptionsComponent implements OnInit {
   }
 
   get pagedExpenses(): ISaaSSubscription[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.filteredExpenses.slice(start, start + this.itemsPerPage);
+    return this.filteredExpenses.slice(0, this.visibleItems);
+  }
+
+  get hasMoreExpenses(): boolean {
+    return this.pagedExpenses.length < this.filteredExpenses.length;
+  }
+
+  get showingCountLabel(): string {
+    return this.translateService.instant('liferadarApp.evaluationDecision.home.showingCount', {
+      shown: this.pagedExpenses.length,
+      total: this.filteredExpenses.length,
+    });
   }
 
   onFilterChange(): void {
     this.currentPage = 1;
+    this.visibleItems = this.itemsPerPage;
   }
 
   get totalExpenses(): number {
@@ -121,27 +142,14 @@ export default class BillsSubscriptionsComponent implements OnInit {
   }
 
   get monthlyExpensesSar(): number {
-    const now = dayjs();
-    const startOfCurrentMonth = now.startOf('month');
-    const endOfCurrentMonth = now.endOf('month');
-    return this.roundToTwoDecimals(
-      this.expenses
-        .filter(
-          expense =>
-            this.isIncludedInSummaryTotals(expense.status) &&
-            expense.subscriptionDate != null &&
-            !expense.subscriptionDate.isBefore(startOfCurrentMonth) &&
-            !expense.subscriptionDate.isAfter(endOfCurrentMonth)
-        )
-        .reduce((sum, expense) => sum + this.convertToSar(this.getMonthlyEquivalent(expense), expense.currency), 0)
-    );
+    return this.roundToTwoDecimals(this.monthlyPaidSarValue);
   }
 
   get yearlyExpensesSar(): number {
     return this.roundToTwoDecimals(
       this.expenses
         .filter(expense => this.isIncludedInSummaryTotals(expense.status))
-        .reduce((sum, expense) => sum + this.convertToSar(this.getYearlyEquivalent(expense), expense.currency), 0)
+        .reduce((sum, expense) => sum + this.convertToSar(this.getYearlyEquivalent(expense), expense.currency), 0),
     );
   }
 
@@ -149,8 +157,27 @@ export default class BillsSubscriptionsComponent implements OnInit {
     return this.roundToTwoDecimals(
       this.expenses
         .filter(expense => expense.status === SubscriptionStatus.PAID)
-        .reduce((sum, expense) => sum + this.convertToSar(expense.monthlyCost ?? 0, expense.currency), 0)
+        .reduce((sum, expense) => sum + this.convertToSar(expense.monthlyCost ?? 0, expense.currency), 0),
     );
+  }
+
+  get currentMonthName(): string {
+    const lang = this.translateService.currentLang || this.translateService.defaultLang || 'en';
+    const timeZone = this.monthlyPaidTimezone || this.account()?.timezone || 'UTC';
+    return new Intl.DateTimeFormat(lang, { month: 'long', timeZone }).format(new Date());
+  }
+
+  setViewMode(mode: 'cards' | 'table'): void {
+    this.viewMode = mode;
+    this.persistViewMode(mode);
+  }
+
+  loadMoreExpenses(): void {
+    if (!this.hasMoreExpenses) {
+      return;
+    }
+
+    this.visibleItems = Math.min(this.visibleItems + this.itemsPerPage, this.filteredExpenses.length);
   }
 
   createExpense(): void {
@@ -206,10 +233,30 @@ export default class BillsSubscriptionsComponent implements OnInit {
       accountUsername: expense.accountUsername ?? null,
       notes: expense.notes ?? null,
     });
+
+    if (!this.editExpenseModal) {
+      return;
+    }
+
+    this.editModalRef = this.modalService.open(this.editExpenseModal, {
+      size: 'lg',
+      backdrop: 'static',
+      scrollable: true,
+      windowClass: 'compact-entity-modal',
+    });
+
+    this.editModalRef.result.finally(() => {
+      this.editModalRef = null;
+      this.editingExpenseId = null;
+    });
   }
 
   cancelEdit(): void {
     this.editingExpenseId = null;
+    if (this.editModalRef) {
+      this.editModalRef.dismiss();
+      this.editModalRef = null;
+    }
   }
 
   saveEdit(): void {
@@ -255,6 +302,10 @@ export default class BillsSubscriptionsComponent implements OnInit {
     this.subscriptionService.update(updated).subscribe({
       next: () => {
         this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseUpdatedSuccess') });
+        if (this.editModalRef) {
+          this.editModalRef.close();
+          this.editModalRef = null;
+        }
         this.editingExpenseId = null;
         this.loadExpenses();
       },
@@ -269,21 +320,35 @@ export default class BillsSubscriptionsComponent implements OnInit {
       return;
     }
 
-    this.subscriptionService
-      .update({
-        ...expense,
-        status: SubscriptionStatus.PAID,
-        paidDate: dayjs(),
-      })
-      .subscribe({
-        next: () => {
-          this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseMarkedPaidSuccess') });
-          this.loadExpenses();
-        },
-        error: () => {
-          this.alertService.addAlert({ type: 'danger', message: this.translateService.instant('billsSubscriptions.expenseStatusUpdateError') });
-        },
-      });
+    const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
+    modalRef.componentInstance.title = this.translateService.instant('billsSubscriptions.markPaidTitle');
+    modalRef.componentInstance.message = this.translateService.instant('billsSubscriptions.markPaidConfirm', {
+      description: expense.serviceName,
+    });
+    modalRef.componentInstance.confirmButtonText = this.translateService.instant('billsSubscriptions.markAsPaidButton');
+    modalRef.componentInstance.confirmButtonClass = 'btn-success';
+
+    modalRef.closed.subscribe(result => {
+      if (result !== 'confirmed') {
+        return;
+      }
+
+      this.subscriptionService
+        .update({
+          ...expense,
+          status: SubscriptionStatus.PAID,
+          paidDate: dayjs(),
+        })
+        .subscribe({
+          next: () => {
+            this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseMarkedPaidSuccess') });
+            this.loadExpenses();
+          },
+          error: () => {
+            this.alertService.addAlert({ type: 'danger', message: this.translateService.instant('billsSubscriptions.expenseStatusUpdateError') });
+          },
+        });
+    });
   }
 
   deleteExpense(expense: ISaaSSubscription): void {
@@ -370,6 +435,19 @@ export default class BillsSubscriptionsComponent implements OnInit {
     return expense.id;
   }
 
+  private loadCurrentMonthPaidTotal(): void {
+    this.subscriptionService.getCurrentMonthPaidExpenses().subscribe({
+      next: res => {
+        this.monthlyPaidSarValue = Number(res.body?.totalPaidSar ?? 0);
+        this.monthlyPaidTimezone = res.body?.timezone ?? this.account()?.timezone ?? 'UTC';
+      },
+      error: () => {
+        this.monthlyPaidSarValue = 0;
+        this.monthlyPaidTimezone = this.account()?.timezone ?? 'UTC';
+      },
+    });
+  }
+
   private getSortDate(expense: ISaaSSubscription): dayjs.Dayjs {
     return expense.dueDate ?? expense.renewalDate ?? expense.subscriptionDate ?? dayjs();
   }
@@ -417,32 +495,33 @@ export default class BillsSubscriptionsComponent implements OnInit {
     return this.getMonthlyEquivalent(expense) * 12;
   }
 
-  private isDateInCurrentUserMonth(dateValue: dayjs.Dayjs | null | undefined): boolean {
-    if (!dateValue) {
-      return false;
-    }
-
-    const userTimeZone = this.account()?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
-    const currentMonthKey = this.getMonthKeyForTimeZone(new Date(), userTimeZone);
-    const dateMonthKey = this.getMonthKeyForTimeZone(dateValue.toDate(), userTimeZone);
-
-    return dateMonthKey === currentMonthKey;
-  }
-
-  private getMonthKeyForTimeZone(date: Date, timeZone: string): string {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-    }).formatToParts(date);
-    const year = parts.find(part => part.type === 'year')?.value;
-    const month = parts.find(part => part.type === 'month')?.value;
-
-    return `${year ?? '0000'}-${month ?? '00'}`;
-  }
 
   private convertToSar(amount: number, currency?: string | null): number {
     return currency === 'USD' ? amount * 3.75 : amount;
+  }
+
+  private restoreViewMode(): 'cards' | 'table' {
+    if (typeof window === 'undefined') {
+      return 'cards';
+    }
+
+    try {
+      return window.localStorage.getItem('liferadar.expenses.view-mode') === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  }
+
+  private persistViewMode(mode: 'cards' | 'table'): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem('liferadar.expenses.view-mode', mode);
+    } catch {
+      // Ignore storage access issues and keep the in-memory preference.
+    }
   }
 
    private roundToTwoDecimals(value: number): number {

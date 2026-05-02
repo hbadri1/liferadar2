@@ -44,6 +44,7 @@
     "monthlyExpense": "Depense mensuelle",
     "annualExpense": "Depense annuelle",
     "upcomingRenewals": "Renouvellements a venir (30 jours)",
+    "overdueExpenses": "Depenses en retard",
     "renewalDateLabel": "Date de renouvellement",
     "perMonth": "/mois",
     "noUpcomingRenewals": "Aucun renouvellement a venir dans les 30 prochains jours.",
@@ -63,6 +64,7 @@
     "convertedFromUsd": "≈ {{amount}}",
     "subscriptionDate": "Date d'abonnement",
     "actions": "Actions",
+    "decisionButton": "Decision",
     "createActionItem": "Action",
     "noSubscriptions": "Aucun abonnement trouve. Ajoutez votre premier abonnement !",
     "totalBills": "Total des factures",
@@ -144,4 +146,3 @@
     "goToSettings": "Aller aux paramètres"
   }
 }
-

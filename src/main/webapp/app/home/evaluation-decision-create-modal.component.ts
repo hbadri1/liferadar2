@@ -1,5 +1,4 @@
 import { Component, OnInit, inject, Input } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -25,6 +24,7 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
   @Input() modalTitle?: string;
   @Input() defaultDecision?: string;
   @Input() defaultExpenseId?: number;
+  @Input() evaluationDecision?: IEvaluationDecision;
 
   isSaving = false;
 
@@ -39,6 +39,11 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.evaluationDecision) {
+      this.evaluationDecisionFormService.resetForm(this.editForm, this.evaluationDecision);
+      return;
+    }
+
     if (this.lifeEvaluation) {
       this.editForm.patchValue({
         lifeEvaluation: this.lifeEvaluation,
@@ -60,7 +65,6 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
       });
     }
 
-
     // Set expense if provided
     if (this.defaultExpenseId) {
       this.editForm.patchValue({
@@ -76,12 +80,12 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
   save(): void {
     this.isSaving = true;
     const evaluationDecision = this.evaluationDecisionFormService.getEvaluationDecision(this.editForm);
-    if (evaluationDecision.id !== null) {
-      return;
-    }
 
+    const saveRequest: any = evaluationDecision.id !== null
+      ? this.evaluationDecisionService.update(evaluationDecision)
+      : this.evaluationDecisionService.create(evaluationDecision);
 
-    this.evaluationDecisionService.create(evaluationDecision).subscribe({
+    saveRequest.subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
     });

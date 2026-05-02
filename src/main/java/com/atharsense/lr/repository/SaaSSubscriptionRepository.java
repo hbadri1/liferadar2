@@ -88,5 +88,18 @@ public interface SaaSSubscriptionRepository extends JpaRepository<SaaSSubscripti
         @Param("overdueStatus") SubscriptionStatus overdueStatus,
         @Param("openStatuses") Collection<SubscriptionStatus> openStatuses
     );
-}
 
+    @Query(
+        "SELECT s FROM SaaSSubscription s WHERE s.owner.id = :ownerId " +
+        "AND s.status = :status " +
+        "AND s.paidDate IS NOT NULL " +
+        "AND s.paidDate >= :monthStart " +
+        "AND s.paidDate <= :monthEnd"
+    )
+    List<SaaSSubscription> findPaidExpensesInMonthWindow(
+        @Param("ownerId") Long ownerId,
+        @Param("status") SubscriptionStatus status,
+        @Param("monthStart") LocalDate monthStart,
+        @Param("monthEnd") LocalDate monthEnd
+    );
+}
