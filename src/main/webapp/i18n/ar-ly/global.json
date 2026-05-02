@@ -32,6 +32,7 @@
       "account": {
         "main": "الحساب",
         "settings": "الإعدادات",
+        "profileSettings": "إعدادات الملف الشخصي",
         "configuration": "إعداداتي",
         "password": "كلمه السر",
         "sessions": "جلسات",
@@ -49,6 +50,7 @@
         "logs": "السجلات",
         "apidocs": "API",
         "database": "قاعدة البيانات",
+        "premiumInterests": "قائمة الوصول المبكر",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
       },
       "language": "اللغة"

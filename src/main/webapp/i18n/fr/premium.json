@@ -1,68 +1,52 @@
 {
   "premium": {
-    "title": "Liferadar Premium",
+    "title": "LifeRadar Premium",
     "hero": {
-      "badge": "Priorite au sens",
-      "title": "Un Premium qui soutient vos objectifs de vie",
-      "subtitle": "Liferadar Premium vous aide a rester constant et intentionnel. La monetisation sert a maintenir la valeur, pas a detourner votre progression.",
-      "ctaPublicPrimary": "Creer un compte gratuit",
-      "ctaPublicSecondary": "Decouvrir Liferadar",
-      "ctaAuthPrimary": "Ouvrir ma configuration",
+      "phaseBadge": "Accès anticipé",
+      "title": "LifeRadar Premium",
+      "subtitle": "Des fonctionnalités avancées sont en cours de planification pour une offre Premium future. Rien n'est encore verrouillé.",
+      "ctaPublicPrimary": "Créer un compte gratuit",
+      "ctaPublicSecondary": "Découvrir LifeRadar",
       "ctaAuthSecondary": "Retour au tableau de bord"
     },
-    "publicMessage": {
-      "title": "Concu d'abord pour ameliorer les vies, ensuite pour les revenus.",
-      "body": "Vous pouvez commencer gratuitement et obtenir de la valeur immediatement. Le Premium reste optionnel pour ceux qui veulent un accompagnement plus pousse."
+    "transparency": {
+      "title": "Notre engagement de transparence",
+      "body": "LifeRadar restera accessible à tous, mais les fonctionnalités avancées d'intelligence et d'automatisation pourraient faire partie d'une offre Premium future."
     },
-    "memberMessage": {
-      "title": "Vous etes deja en mouvement.",
-      "body": "Le Premium apporte surtout plus de structure, de coordination familiale et d'outils de suivi avances."
-    },
-    "packages": {
-      "title": "Formules d'abonnement",
-      "subtitle": "Choisissez le niveau adapte a votre etape de vie et a votre engagement.",
-      "recommended": "Le plus choisi",
-      "starter": {
-        "name": "Starter (Gratuit)",
-        "audience": "Pour toute personne qui commence une gestion de vie intentionnelle",
-        "price": "0 $ / mois",
-        "feature1": "Piliers de vie et evaluations de base",
-        "feature2": "Actions et rappels essentiels",
-        "feature3": "Suivi des depenses et abonnements",
-        "feature4": "Espace mono-utilisateur",
-        "note": "Commencez ici et montez en gamme seulement quand c'est utile."
+    "areas": {
+      "title": "Domaines Premium planifiés",
+      "subtitle": "Ces domaines sont en exploration – rien n'est verrouillé ni imposé pour l'instant.",
+      "ai": {
+        "title": "Insights de vie par IA",
+        "desc": "Analyse intelligente de vos piliers de vie pour identifier des tendances et suggérer des priorités."
       },
-      "focus": {
-        "name": "Focus Premium",
-        "audience": "Pour les individus engages qui construisent des habitudes solides",
-        "price": "7,99 $ / mois",
-        "feature1": "Analyses avancees et vues de tendance",
-        "feature2": "Rythme de rappels intelligent",
-        "feature3": "Integrations productivite prioritaires",
-        "feature4": "Support prioritaire",
-        "note": "Le meilleur equilibre pour progres et responsabilisation personnels."
+      "finance": {
+        "title": "Suivi financier avancé",
+        "desc": "Analyse approfondie des dépenses, objectifs budgétaires et prévisions de tendances."
       },
-      "family": {
-        "name": "Family Premium",
-        "audience": "Pour les foyers qui veulent progresser ensemble",
-        "price": "14,99 $ / mois",
-        "feature1": "Jusqu'a 6 membres de la famille",
-        "feature2": "Vue d'ensemble des progres familiaux",
-        "feature3": "Objectifs partages avec visibilite selon les roles",
-        "feature4": "Flux de planification familiale",
-        "note": "Ideal pour aligner la famille sans complexite."
+      "reminders": {
+        "title": "Rappels et alertes prédictifs",
+        "desc": "Rappels intelligents qui s'adaptent à vos habitudes et signalent proactivement les échéances."
       },
-      "coach": {
-        "name": "Coach et Equipe",
-        "audience": "Pour mentors, coachs ou petites communautes accompagnees",
-        "price": "29,99 $ / mois",
-        "feature1": "Tableau de bord multi-profils",
-        "feature2": "Modeles de revue guides",
-        "feature3": "Check-ins de responsabilisation structures",
-        "feature4": "Acces anticipe aux nouveautes Premium",
-        "note": "Concu pour celles et ceux qui accompagnent d'autres personnes."
+      "analytics": {
+        "title": "Analytique multi-piliers",
+        "desc": "Un tableau de bord unifié offrant des insights sur tous les piliers de vie simultanément."
+      },
+      "mobile": {
+        "title": "Intelligence mobile future",
+        "desc": "Fonctionnalités mobiles natives incluant widgets, mode hors ligne et notifications contextuelles."
       }
+    },
+    "earlyAccess": {
+      "title": "Accès anticipé",
+      "subtitle": "Enregistrez votre intérêt et nous vous contacterons lorsque ces fonctionnalités seront prêtes.",
+      "emailLabel": "Adresse e-mail",
+      "feedbackLabel": "Pour quelle fonctionnalité paieriez-vous ?",
+      "feedbackPlaceholder": "Dites-nous quelle fonctionnalité compte le plus pour vous (optionnel)…",
+      "submit": "Rejoindre l'accès anticipé",
+      "error": "Une erreur est survenue. Veuillez réessayer.",
+      "successTitle": "Vous êtes sur la liste !",
+      "successBody": "Merci. Vous êtes inscrit sur la liste d'accès anticipé."
     }
   }
 }
-

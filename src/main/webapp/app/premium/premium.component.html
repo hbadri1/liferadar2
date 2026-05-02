@@ -1,66 +1,65 @@
 <div class="premium-page">
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       Hero
+  ════════════════════════════════════════════════════════════════════ -->
   <section class="premium-hero">
     <div class="container py-5">
       <div class="premium-hero-inner text-center mx-auto">
-        <span class="badge rounded-pill text-bg-light premium-badge" jhiTranslate="premium.hero.badge">Purpose First</span>
-        <h1 class="display-5 fw-bold mt-3" jhiTranslate="premium.hero.title">Premium that supports your life goals</h1>
+        <span class="premium-phase-badge" jhiTranslate="premium.hero.phaseBadge">Early Access</span>
+        <h1 class="display-5 fw-bold mt-3" jhiTranslate="premium.hero.title">LifeRadar Premium</h1>
         <p class="lead text-muted mt-3" jhiTranslate="premium.hero.subtitle">
-          Liferadar Premium helps you stay consistent and intentional. We monetize so we can sustain value, not to distract from your growth.
+          Advanced features are being planned for a future Premium offering.
         </p>
 
-        @if (account() === null) {
-          <div class="premium-public-note mt-4 p-3 rounded-3">
-            <h2 class="h5 mb-2" jhiTranslate="premium.publicMessage.title">Built for better lives first, revenue second.</h2>
-            <p class="mb-0" jhiTranslate="premium.publicMessage.body">
-              You can start free and get real value right away. Premium is optional for people who want deeper support.
-            </p>
-          </div>
-        } @else {
-          <div class="premium-member-note mt-4 p-3 rounded-3">
-            <h2 class="h5 mb-2" jhiTranslate="premium.memberMessage.title">You are already on the journey.</h2>
-            <p class="mb-0" jhiTranslate="premium.memberMessage.body">
-              Premium simply gives you more structure, family coordination, and advanced follow-through tools.
-            </p>
-          </div>
-        }
+        <div class="premium-transparency-box mt-4 p-4 rounded-3 text-start">
+          <h2 class="h6 fw-semibold mb-2">
+            <span class="me-1">🔍</span>
+            <span jhiTranslate="premium.transparency.title">Our transparency commitment</span>
+          </h2>
+          <p class="mb-0 small" jhiTranslate="premium.transparency.body">
+            LifeRadar will remain accessible, but advanced intelligence and automation features
+            may become part of a future premium offering.
+          </p>
+        </div>
 
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
           @if (account() === null) {
-            <a routerLink="/account/register" class="btn btn-primary" jhiTranslate="premium.hero.ctaPublicPrimary">Create Free Account</a>
-            <a routerLink="/about" class="btn btn-outline-primary" jhiTranslate="premium.hero.ctaPublicSecondary">Learn About Liferadar</a>
+            <a routerLink="/account/register" class="btn btn-primary btn-sm" jhiTranslate="premium.hero.ctaPublicPrimary">Create Free Account</a>
+            <a routerLink="/about" class="btn btn-outline-secondary btn-sm" jhiTranslate="premium.hero.ctaPublicSecondary">Learn About LifeRadar</a>
           } @else {
-            <a routerLink="/account/configuration" class="btn btn-primary" jhiTranslate="premium.hero.ctaAuthPrimary">Open My Configuration</a>
-            <a routerLink="/" class="btn btn-outline-primary" jhiTranslate="premium.hero.ctaAuthSecondary">Back to Dashboard</a>
+            <a routerLink="/" class="btn btn-outline-secondary btn-sm" jhiTranslate="premium.hero.ctaAuthSecondary">Back to Dashboard</a>
           }
         </div>
       </div>
     </div>
   </section>
 
-  <section class="premium-plans pb-5">
+  <!-- ═══════════════════════════════════════════════════════════════════
+       Planned Premium Areas
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="premium-areas pb-5">
     <div class="container">
       <div class="text-center mb-4">
-        <h2 class="fw-bold" jhiTranslate="premium.packages.title">Subscription Packages</h2>
-        <p class="text-muted mb-0" jhiTranslate="premium.packages.subtitle">Choose the level that matches your stage of life and commitment.</p>
+        <h2 class="fw-bold h4" jhiTranslate="premium.areas.title">Planned Premium Areas</h2>
+        <p class="text-muted small mb-0" jhiTranslate="premium.areas.subtitle">
+          These are being explored – nothing is locked or enforced yet.
+        </p>
       </div>
 
-      <div class="row g-4">
-        @for (plan of plans; track plan.key) {
-          <div class="col-12 col-md-6 col-xl-3">
-            <article class="card premium-plan-card h-100" [class.premium-plan-card--featured]="plan.featured">
-              <div class="card-body d-flex flex-column">
-                @if (plan.featured) {
-                  <span class="badge text-bg-primary align-self-start mb-2" jhiTranslate="premium.packages.recommended">Most Popular</span>
-                }
-                <h3 class="h5 mb-1" [jhiTranslate]="'premium.packages.' + plan.key + '.name'">Plan</h3>
-                <p class="small text-muted mb-3" [jhiTranslate]="'premium.packages.' + plan.key + '.audience'">Audience</p>
-                <p class="display-6 fw-semibold mb-3" [jhiTranslate]="'premium.packages.' + plan.key + '.price'">Price</p>
-                <ul class="premium-feature-list">
-                  @for (featureIndex of planFeatureIndexes; track featureIndex) {
-                    <li [jhiTranslate]="'premium.packages.' + plan.key + '.feature' + featureIndex">Feature</li>
-                  }
-                </ul>
-                <p class="small text-muted mt-auto mb-0" [jhiTranslate]="'premium.packages.' + plan.key + '.note'">Note</p>
+      <div class="row g-3 justify-content-center">
+        @for (area of plannedAreas; track area.titleKey) {
+          <div class="col-12 col-sm-6 col-lg-4">
+            <article class="premium-area-card h-100">
+              <div class="d-flex align-items-start gap-3">
+                <span class="premium-area-icon">{{ area.icon }}</span>
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <h3 class="h6 fw-semibold mb-0" [jhiTranslate]="area.titleKey"></h3>
+                    <jhi-premium-badge />
+                  </div>
+                  <p class="small text-muted mb-0" [jhiTranslate]="area.descKey"></p>
+                </div>
               </div>
             </article>
           </div>
@@ -68,5 +67,82 @@
       </div>
     </div>
   </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       Early Access Form
+  ════════════════════════════════════════════════════════════════════ -->
+  <section class="premium-early-access pb-5">
+    <div class="container">
+      <div class="premium-form-card mx-auto">
+        <h2 class="h4 fw-bold mb-1" jhiTranslate="premium.earlyAccess.title">Early Access</h2>
+        <p class="text-muted small mb-4" jhiTranslate="premium.earlyAccess.subtitle">
+          Register your interest. We will reach out when these features are ready.
+        </p>
+
+        @if (!submitted()) {
+          <form (ngSubmit)="submitInterest()" #earlyAccessForm="ngForm" novalidate>
+            <div class="mb-3">
+              <label for="premiumEmail" class="form-label small fw-medium" jhiTranslate="premium.earlyAccess.emailLabel">
+                Email address
+              </label>
+              <input
+                id="premiumEmail"
+                type="email"
+                class="form-control"
+                [(ngModel)]="email"
+                name="email"
+                required
+                email
+                placeholder="you@example.com"
+                [disabled]="submitting()"
+              />
+            </div>
+
+            <div class="mb-4">
+              <label for="premiumFeedback" class="form-label small fw-medium" jhiTranslate="premium.earlyAccess.feedbackLabel">
+                What feature would you pay for? <span class="text-muted">(optional)</span>
+              </label>
+              <textarea
+                id="premiumFeedback"
+                class="form-control"
+                [(ngModel)]="feedback"
+                name="feedback"
+                rows="3"
+                maxlength="2000"
+                [placeholder]="'premium.earlyAccess.feedbackPlaceholder' | translate"
+                [disabled]="submitting()"
+              ></textarea>
+            </div>
+
+            @if (errorMessage()) {
+              <div class="alert alert-danger py-2 small" role="alert">
+                <span jhiTranslate="premium.earlyAccess.error">Something went wrong. Please try again.</span>
+              </div>
+            }
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="earlyAccessForm.invalid || submitting()"
+            >
+              @if (submitting()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              }
+              <span jhiTranslate="premium.earlyAccess.submit">Join Early Access</span>
+            </button>
+          </form>
+        } @else {
+          <div class="premium-success-box text-center p-4">
+            <div class="premium-success-icon mb-3">✅</div>
+            <h3 class="h5 fw-semibold" jhiTranslate="premium.earlyAccess.successTitle">You're on the list!</h3>
+            <p class="text-muted small mb-0" jhiTranslate="premium.earlyAccess.successBody">
+              Thanks. You are on the early access list.
+            </p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
 </div>
 

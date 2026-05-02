@@ -19,6 +19,7 @@
       "managementDesc": "Create an objective and assign it to one or more kids.",
       "add": "Add objective",
       "created": "Objective created successfully.",
+      "updated": "Objective updated successfully.",
       "deactivated": "Objective deactivated successfully.",
       "deleted": "Objective deleted successfully.",
       "loading": "Loading objectives…",
@@ -28,11 +29,13 @@
         "inactive": "Inactive"
       },
       "actions": {
+        "edit": "Edit",
         "deactivate": "Deactivate",
         "delete": "Delete"
       },
       "modal": {
-        "title": "Add objective"
+        "title": "Add objective",
+        "editTitle": "Edit objective"
       },
       "form": {
         "name": "Objective name",
@@ -40,6 +43,7 @@
         "kids": "Assign to kids",
         "kidsRequired": "Select at least one kid.",
         "save": "Save objective",
+        "update": "Update objective",
         "items": "Objective items",
         "itemsRequired": "Add at least one item definition.",
         "addItem": "Add item",

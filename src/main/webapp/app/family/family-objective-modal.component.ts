@@ -1,10 +1,11 @@
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
-import { ChildUser, ObjectiveUnit } from './family.models';
+import { ChildUser, FamilyObjective, ObjectiveUnit } from './family.models';
 
 @Component({
   selector: 'jhi-family-objective-modal',
@@ -12,8 +13,11 @@ import { ChildUser, ObjectiveUnit } from './family.models';
   standalone: true,
   imports: [SharedModule, ReactiveFormsModule],
 })
-export class FamilyObjectiveModalComponent {
+export class FamilyObjectiveModalComponent implements OnInit {
   @Input() children: ChildUser[] = [];
+  @Input() objective: FamilyObjective | null = null;
+  @Input() objectiveIds: number[] = [];
+  @Input() objectiveAssignments: Array<{ objectiveId: number; kidLogin: string }> = [];
 
   isSaving = signal(false);
   selectionError = signal(false);
@@ -23,6 +27,48 @@ export class FamilyObjectiveModalComponent {
   protected readonly activeModal = inject(NgbActiveModal);
   private readonly http = inject(HttpClient);
   private readonly formBuilder = inject(FormBuilder);
+
+  ngOnInit(): void {
+    if (!this.objective) {
+      return;
+    }
+
+    this.editForm.patchValue({
+      name: this.objective.name,
+      description: this.objective.description ?? '',
+    });
+
+    const itemForms = this.objective.itemDefinitions.map(item =>
+      this.formBuilder.group({
+        name: [item.name, [Validators.required, Validators.maxLength(255)]],
+        description: [item.description ?? '', [Validators.maxLength(1000)]],
+        unit: [item.unit ?? ObjectiveUnit.NUMBER, [Validators.required]],
+      }),
+    );
+
+    if (itemForms.length > 0) {
+      this.editForm.setControl('itemDefinitions', this.formBuilder.array(itemForms));
+    }
+
+    const assignedKidLogins = this.objectiveAssignments.map(item => item.kidLogin).filter(Boolean);
+    if (assignedKidLogins.length > 0) {
+      this.selectedKidLogins = new Set(assignedKidLogins);
+    } else if (this.objective.kidLogin) {
+      this.selectedKidLogins = new Set([this.objective.kidLogin]);
+    }
+  }
+
+  get isEditMode(): boolean {
+    return this.objective !== null;
+  }
+
+  get modalTitleKey(): string {
+    return this.isEditMode ? 'family.objectives.modal.editTitle' : 'family.objectives.modal.title';
+  }
+
+  get submitKey(): string {
+    return this.isEditMode ? 'family.objectives.form.update' : 'family.objectives.form.save';
+  }
 
   readonly editForm = this.formBuilder.group({
     name: ['', [Validators.required, Validators.maxLength(255)]],
@@ -46,26 +92,37 @@ export class FamilyObjectiveModalComponent {
 
     const formValue = this.editForm.getRawValue();
     this.isSaving.set(true);
-    this.http
-      .post('/api/family/objectives', {
-        name: formValue.name ?? '',
-        description: formValue.description?.trim() ? formValue.description : null,
-        kidLogins: Array.from(this.selectedKidLogins),
-        itemDefinitions: (formValue.itemDefinitions ?? []).map(item => ({
-          name: item?.name ?? '',
-          description: item?.description?.trim() ? item.description : null,
-          unit: item?.unit ?? ObjectiveUnit.NUMBER,
-        })),
-      })
-      .subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.activeModal.close('saved');
-        },
-        error: () => {
-          this.isSaving.set(false);
-        },
-      });
+    const payload = {
+      name: formValue.name ?? '',
+      description: formValue.description?.trim() ? formValue.description : null,
+      itemDefinitions: (formValue.itemDefinitions ?? []).map(item => ({
+        name: item?.name ?? '',
+        description: item?.description?.trim() ? item.description : null,
+        unit: item?.unit ?? ObjectiveUnit.NUMBER,
+      })),
+    };
+
+    const request = this.isEditMode
+      ? this.buildUpdateRequest(payload)
+      : this.http.post('/api/family/objectives', {
+          ...payload,
+          kidLogins: Array.from(this.selectedKidLogins),
+        });
+
+    if (!request) {
+      this.isSaving.set(false);
+      return;
+    }
+
+    request.subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.activeModal.close('saved');
+      },
+      error: () => {
+        this.isSaving.set(false);
+      },
+    });
   }
 
   get itemDefinitions(): FormArray {
@@ -120,6 +177,55 @@ export class FamilyObjectiveModalComponent {
       description: ['', [Validators.maxLength(1000)]],
       unit: [ObjectiveUnit.NUMBER, [Validators.required]],
     });
+  }
+
+  private buildUpdateRequest(payload: {
+    name: string;
+    description: string | null;
+    itemDefinitions: Array<{ name: string; description: string | null; unit: ObjectiveUnit }>;
+  }) {
+    const selectedLogins = Array.from(this.selectedKidLogins);
+    const currentAssignments = this.objectiveAssignments.length > 0
+      ? this.objectiveAssignments
+      : this.objective?.id && this.objective?.kidLogin
+        ? [{ objectiveId: this.objective.id, kidLogin: this.objective.kidLogin }]
+        : [];
+
+    const assignmentByLogin = new Map<string, number[]>();
+    for (const assignment of currentAssignments) {
+      const existing = assignmentByLogin.get(assignment.kidLogin) ?? [];
+      existing.push(assignment.objectiveId);
+      assignmentByLogin.set(assignment.kidLogin, existing);
+    }
+
+    const requests = [];
+
+    // Update objectives for kids that remain assigned.
+    for (const login of selectedLogins) {
+      const idsForLogin = assignmentByLogin.get(login);
+      if (idsForLogin && idsForLogin.length > 0) {
+        idsForLogin.forEach(id => requests.push(this.http.put(`/api/family/objectives/${id}`, payload)));
+      } else {
+        // Create a new objective for newly added kids.
+        requests.push(this.http.post('/api/family/objectives', { ...payload, kidLogins: [login] }));
+      }
+    }
+
+    // Remove objectives for kids that were unassigned.
+    for (const [login, idsForLogin] of assignmentByLogin.entries()) {
+      if (selectedLogins.includes(login)) {
+        continue;
+      }
+      idsForLogin.forEach(id => requests.push(this.http.delete(`/api/family/objectives/${id}`)));
+    }
+
+    if (requests.length === 0) {
+      return null;
+    }
+    if (requests.length <= 1) {
+      return requests[0];
+    }
+    return forkJoin(requests);
   }
 }
 

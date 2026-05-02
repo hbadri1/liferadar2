@@ -6,6 +6,7 @@ import passwordResetFinishRoute from './password-reset/finish/password-reset-fin
 import passwordResetInitRoute from './password-reset/init/password-reset-init.route';
 import registerRoute from './register/register.route';
 import settingsRoute from './settings/settings.route';
+import kidProfileSettingsRoute from './kid-profile-settings/kid-profile-settings.route';
 import todoAppsRoute from './todoapps/todoapps.route';
 
 const accountRoutes: Routes = [
@@ -15,6 +16,7 @@ const accountRoutes: Routes = [
   passwordResetInitRoute,
   registerRoute,
   settingsRoute,
+  kidProfileSettingsRoute,
   todoAppsRoute,
 ];
 

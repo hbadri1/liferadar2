@@ -1,30 +1,30 @@
-<div class="modal-header">
-  <h4 class="modal-title" jhiTranslate="family.objectives.modal.title">Add objective</h4>
+<div class="modal-header py-2">
+  <h5 class="modal-title" [jhiTranslate]="modalTitleKey">Add objective</h5>
   <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
 </div>
 
-<div class="modal-body">
+<div class="modal-body py-2">
   <jhi-alert-error></jhi-alert-error>
 
   <form [formGroup]="editForm" (ngSubmit)="save()" novalidate>
-    <div class="mb-3">
-      <label class="form-label" for="family-objective-name" jhiTranslate="family.objectives.form.name">Objective name</label>
-      <input id="family-objective-name" type="text" class="form-control" formControlName="name" />
+    <div class="mb-2">
+      <label class="form-label small mb-1" for="family-objective-name" jhiTranslate="family.objectives.form.name">Objective name</label>
+      <input id="family-objective-name" type="text" class="form-control form-control-sm" formControlName="name" />
       @if (editForm.get('name')?.invalid && editForm.get('name')?.touched) {
         <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
       }
     </div>
 
-    <div class="mb-3">
-      <label class="form-label" for="family-objective-description" jhiTranslate="family.objectives.form.description">Description</label>
-      <textarea id="family-objective-description" class="form-control" rows="4" formControlName="description"></textarea>
+    <div class="mb-2">
+      <label class="form-label small mb-1" for="family-objective-description" jhiTranslate="family.objectives.form.description">Description</label>
+      <textarea id="family-objective-description" class="form-control form-control-sm" rows="2" formControlName="description"></textarea>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label d-block" jhiTranslate="family.objectives.form.kids">Assign to kids</label>
-      <div class="border rounded p-3 bg-light objective-kid-list">
+    <div class="mb-2">
+      <label class="form-label small d-block mb-1" jhiTranslate="family.objectives.form.kids">Assign to kids</label>
+      <div class="border rounded p-2 bg-light objective-kid-list">
         @for (child of children; track child.login) {
-          <div class="form-check mb-2">
+          <div class="form-check mb-1">
             <input
               class="form-check-input"
               type="checkbox"
@@ -43,9 +43,9 @@
       }
     </div>
 
-    <div class="mb-3" formArrayName="itemDefinitions">
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <label class="form-label mb-0" jhiTranslate="family.objectives.form.items">Objective items</label>
+    <div class="mb-2" formArrayName="itemDefinitions">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <label class="form-label small mb-0" jhiTranslate="family.objectives.form.items">Objective items</label>
         <button type="button" class="btn btn-outline-primary btn-sm" (click)="addItemDefinition()">
           <fa-icon icon="plus" class="me-1"></fa-icon>
           <span jhiTranslate="family.objectives.form.addItem">Add item</span>
@@ -53,23 +53,23 @@
       </div>
 
       @for (itemGroup of itemDefinitions.controls; track $index) {
-        <div class="border rounded p-3 mb-3 bg-light" [formGroupName]="$index">
-          <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="border rounded p-2 mb-2 bg-light" [formGroupName]="$index">
+          <div class="d-flex align-items-center justify-content-between mb-1">
             <h6 class="mb-0">{{ 'family.objectives.form.itemCardTitle' | translate:{ index: $index + 1 } }}</h6>
             <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeItemDefinition($index)" [disabled]="itemDefinitions.length === 1">
               <fa-icon icon="trash-alt"></fa-icon>
             </button>
           </div>
 
-          <div class="row g-3">
+          <div class="row g-2">
             <div class="col-md-5">
-              <label class="form-label" [for]="'family-objective-item-name-' + $index" jhiTranslate="family.objectives.form.itemName">Item name</label>
-              <input [id]="'family-objective-item-name-' + $index" type="text" class="form-control" formControlName="name" />
+              <label class="form-label small mb-1" [for]="'family-objective-item-name-' + $index" jhiTranslate="family.objectives.form.itemName">Item name</label>
+              <input [id]="'family-objective-item-name-' + $index" type="text" class="form-control form-control-sm" formControlName="name" />
             </div>
 
             <div class="col-md-3">
-              <label class="form-label" [for]="'family-objective-item-unit-' + $index" jhiTranslate="family.objectives.form.unit">Unit</label>
-              <select [id]="'family-objective-item-unit-' + $index" class="form-select" formControlName="unit">
+              <label class="form-label small mb-1" [for]="'family-objective-item-unit-' + $index" jhiTranslate="family.objectives.form.unit">Unit</label>
+              <select [id]="'family-objective-item-unit-' + $index" class="form-select form-select-sm" formControlName="unit">
                 @for (unit of units; track unit) {
                   <option [value]="unit">{{ getUnitLabel(unit) }}</option>
                 }
@@ -77,8 +77,8 @@
             </div>
 
             <div class="col-md-12">
-              <label class="form-label" [for]="'family-objective-item-description-' + $index" jhiTranslate="family.objectives.form.itemDescription">Item description</label>
-              <textarea [id]="'family-objective-item-description-' + $index" class="form-control" rows="2" formControlName="description"></textarea>
+              <label class="form-label small mb-1" [for]="'family-objective-item-description-' + $index" jhiTranslate="family.objectives.form.itemDescription">Item description</label>
+              <textarea [id]="'family-objective-item-description-' + $index" class="form-control form-control-sm" rows="2" formControlName="description"></textarea>
             </div>
           </div>
         </div>
@@ -89,17 +89,17 @@
       }
     </div>
 
-    <div class="modal-footer px-0 pb-0">
-      <button type="button" class="btn btn-secondary" (click)="cancel()">
+    <div class="modal-footer px-0 pt-2 pb-0">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="cancel()">
         <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
       </button>
-      <button type="submit" class="btn btn-primary" [disabled]="isSaving()">
+      <button type="submit" class="btn btn-primary btn-sm" [disabled]="isSaving()">
         @if (isSaving()) {
           <span class="spinner-border spinner-border-sm me-2"></span>
         } @else {
           <fa-icon icon="save"></fa-icon>
         }
-        &nbsp;<span jhiTranslate="family.objectives.form.save">Save objective</span>
+        &nbsp;<span [jhiTranslate]="submitKey">Save objective</span>
       </button>
     </div>
   </form>

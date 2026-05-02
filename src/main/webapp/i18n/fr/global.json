@@ -32,6 +32,7 @@
       "account": {
         "main": "Compte",
         "settings": "Profil",
+        "profileSettings": "Parametres du profil",
         "configuration": "Ma configuration",
         "password": "Mot de passe",
         "sessions": "Sessions",
@@ -49,6 +50,7 @@
         "logs": "Logs",
         "apidocs": "API",
         "database": "Base de données",
+        "premiumInterests": "Liste accès anticipé",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
       },
       "language": "Langue"

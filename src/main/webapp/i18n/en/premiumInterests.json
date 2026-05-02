@@ -1,0 +1,18 @@
+{
+  "premiumInterests": {
+    "title": "Early Access Registrations",
+    "refresh": "Refresh",
+    "total": "total",
+    "filterPlaceholder": "Filter by email or feedback…",
+    "empty": "No early access registrations found.",
+    "anonymous": "anonymous",
+    "field": {
+      "email": "Email",
+      "source": "Source",
+      "userLogin": "User",
+      "createdDate": "Registered",
+      "feedback": "Feedback"
+    }
+  }
+}
+

@@ -1,68 +1,52 @@
 {
   "premium": {
-    "title": "Liferadar Premium",
+    "title": "LifeRadar Premium",
     "hero": {
-      "badge": "Purpose First",
-      "title": "Premium that supports your life goals",
-      "subtitle": "Liferadar Premium helps you stay consistent and intentional. We monetize so we can sustain value, not to distract from your growth.",
+      "phaseBadge": "Early Access",
+      "title": "LifeRadar Premium",
+      "subtitle": "Advanced features are being planned for a future Premium offering. Nothing is locked yet.",
       "ctaPublicPrimary": "Create Free Account",
-      "ctaPublicSecondary": "Learn About Liferadar",
-      "ctaAuthPrimary": "Open My Configuration",
+      "ctaPublicSecondary": "Learn About LifeRadar",
       "ctaAuthSecondary": "Back to Dashboard"
     },
-    "publicMessage": {
-      "title": "Built for better lives first, revenue second.",
-      "body": "You can start free and get real value right away. Premium is optional for people who want deeper support."
+    "transparency": {
+      "title": "Our transparency commitment",
+      "body": "LifeRadar will remain accessible, but advanced intelligence and automation features may become part of a future premium offering."
     },
-    "memberMessage": {
-      "title": "You are already on the journey.",
-      "body": "Premium simply gives you more structure, family coordination, and advanced follow-through tools."
-    },
-    "packages": {
-      "title": "Subscription Packages",
-      "subtitle": "Choose the level that matches your stage of life and commitment.",
-      "recommended": "Most Popular",
-      "starter": {
-        "name": "Starter (Free)",
-        "audience": "For anyone beginning intentional life management",
-        "price": "$0 / month",
-        "feature1": "Core life pillars and evaluations",
-        "feature2": "Basic action items and reminders",
-        "feature3": "Expense and subscription tracking",
-        "feature4": "Single-user workspace",
-        "note": "Start here and upgrade only when you need more depth."
+    "areas": {
+      "title": "Planned Premium Areas",
+      "subtitle": "These are being explored – nothing is locked or enforced yet.",
+      "ai": {
+        "title": "AI-Based Life Insights",
+        "desc": "Intelligent analysis of your life pillars to surface patterns and suggest priorities."
       },
-      "focus": {
-        "name": "Focus Premium",
-        "audience": "For committed individuals building stronger habits",
-        "price": "$7.99 / month",
-        "feature1": "Advanced progress insights and trend views",
-        "feature2": "Smarter reminder cadence for consistency",
-        "feature3": "Priority productivity integrations",
-        "feature4": "Priority support",
-        "note": "Best balance for personal growth and accountability."
+      "finance": {
+        "title": "Advanced Financial Tracking",
+        "desc": "Deeper spending analysis, budget goals, and trend forecasting across expense categories."
       },
-      "family": {
-        "name": "Family Premium",
-        "audience": "For households growing together",
-        "price": "$14.99 / month",
-        "feature1": "Up to 6 family members",
-        "feature2": "Family-level progress snapshots",
-        "feature3": "Shared goals with role-aware visibility",
-        "feature4": "Family planning workflows",
-        "note": "Ideal for parents who want alignment without complexity."
+      "reminders": {
+        "title": "Predictive Reminders & Alerts",
+        "desc": "Smart reminders that adapt to your habits and proactively flag upcoming deadlines."
       },
-      "coach": {
-        "name": "Coach and Team",
-        "audience": "For mentors, coaches, or small guided communities",
-        "price": "$29.99 / month",
-        "feature1": "Multi-profile oversight dashboard",
-        "feature2": "Guided review templates",
-        "feature3": "Structured accountability check-ins",
-        "feature4": "Early access to premium experiments",
-        "note": "Built for people helping others stay on track."
+      "analytics": {
+        "title": "Cross-Life Analytics",
+        "desc": "A unified dashboard offering insights across all life pillars simultaneously."
+      },
+      "mobile": {
+        "title": "Future Mobile App Intelligence",
+        "desc": "Native mobile features including widgets, offline mode, and device-aware notifications."
       }
+    },
+    "earlyAccess": {
+      "title": "Early Access",
+      "subtitle": "Register your interest and we will reach out when these features are ready.",
+      "emailLabel": "Email address",
+      "feedbackLabel": "What feature would you pay for?",
+      "feedbackPlaceholder": "Tell us which feature matters most to you (optional)…",
+      "submit": "Join Early Access",
+      "error": "Something went wrong. Please try again.",
+      "successTitle": "You're on the list!",
+      "successBody": "Thanks. You are on the early access list."
     }
   }
 }
-

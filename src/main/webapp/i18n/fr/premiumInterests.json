@@ -1,0 +1,18 @@
+{
+  "premiumInterests": {
+    "title": "Inscriptions accès anticipé",
+    "refresh": "Actualiser",
+    "total": "total",
+    "filterPlaceholder": "Filtrer par e-mail ou commentaire…",
+    "empty": "Aucune inscription à l'accès anticipé trouvée.",
+    "anonymous": "anonyme",
+    "field": {
+      "email": "E-mail",
+      "source": "Source",
+      "userLogin": "Utilisateur",
+      "createdDate": "Inscrit le",
+      "feedback": "Commentaire"
+    }
+  }
+}
+

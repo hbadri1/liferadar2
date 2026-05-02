@@ -242,148 +242,73 @@
             <div class="spinner-border text-primary" role="status"></div>
             <p class="text-muted mt-3 small" jhiTranslate="family.objectives.loading">Loading objectives…</p>
           </div>
-        } @else if (objectiveGroups().length === 0) {
+        } @else if (managementObjectiveGroups().length === 0) {
           <div class="family-empty text-center py-5">
             <fa-icon icon="bullseye" size="3x" class="text-muted mb-3"></fa-icon>
             <h5 class="text-muted" jhiTranslate="family.objectives.emptyTitle">Kids Objectives</h5>
             <p class="text-muted small" jhiTranslate="family.objectives.emptyDesc">Kids objectives will appear here soon.</p>
           </div>
         } @else {
-          <div class="row g-3">
-            @for (group of objectiveGroups(); track group.kidLogin) {
-              <div class="col-12">
-                <div class="objective-group-card">
-                  <div class="objective-group-header d-flex align-items-center justify-content-between gap-2">
-                    <h5 class="mb-0">{{ group.kidName }}</h5>
-                    <span class="badge bg-primary-subtle text-primary-emphasis">{{ group.objectives.length }}</span>
+          <div class="objective-list">
+            @for (group of managementObjectiveGroups(); track group.key) {
+              @let objective = group.representative;
+              <div class="objective-card">
+                <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-2">
+                  <div>
+                    <h6 class="mb-1">{{ objective.name }}</h6>
+                    @if (objective.description) {
+                      <p class="text-muted small mb-2">{{ objective.description }}</p>
+                    }
+                    <small class="text-muted">{{ 'family.objectives.form.kids' | translate }}: {{ group.kidNames.join(', ') }} · {{ objective.createdAt | date: 'medium' }}</small>
                   </div>
-                  <div class="objective-list mt-3">
-                    @for (objective of group.objectives; track objective.id) {
-                      <div class="objective-card">
-                        <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-2">
-                          <div>
-                            <h6 class="mb-1">{{ objective.name }}</h6>
-                            @if (objective.description) {
-                              <p class="text-muted small mb-2">{{ objective.description }}</p>
-                            }
-                            <small class="text-muted">{{ objective.createdAt | date: 'medium' }}</small>
-                          </div>
-                          <div class="d-flex align-items-center gap-2 flex-wrap justify-content-md-end">
-                            <span class="badge" [ngClass]="objective.active ? 'bg-success' : 'bg-secondary'">
-                              {{ (objective.active ? 'family.objectives.status.active' : 'family.objectives.status.inactive') | translate }}
+                  <div class="d-flex align-items-center gap-2 flex-wrap justify-content-md-end">
+                    <span class="badge" [ngClass]="objective.active ? 'bg-success' : 'bg-secondary'">
+                      {{ (objective.active ? 'family.objectives.status.active' : 'family.objectives.status.inactive') | translate }}
+                    </span>
+                    @if (objective.active) {
+                      <button class="btn btn-outline-primary btn-sm" type="button" (click)="openEditObjectiveModal(objective, group.objectiveIds, group.assignments)">
+                        <span jhiTranslate="family.objectives.actions.edit">Edit</span>
+                      </button>
+                      <button class="btn btn-outline-warning btn-sm" type="button" (click)="deactivateObjective(objective, group.objectiveIds)">
+                        <fa-icon icon="ban" class="me-1"></fa-icon>
+                        <span jhiTranslate="family.objectives.actions.deactivate">Deactivate</span>
+                      </button>
+                    }
+                    <button class="btn btn-outline-danger btn-sm" type="button" (click)="deleteObjective(objective, group.objectiveIds)">
+                      <fa-icon icon="trash-alt" class="me-1"></fa-icon>
+                      <span jhiTranslate="family.objectives.actions.delete">Delete</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="objective-items-list objective-items-list--compact mt-3">
+                  @for (itemDefinition of objective.itemDefinitions; track itemDefinition.id) {
+                    <div class="objective-item-card objective-item-card--compact">
+                      <div class="objective-item-card-header d-flex align-items-start justify-content-between gap-2">
+                        <div class="objective-item-card-title-wrap">
+                          <strong class="objective-item-card-title">{{ itemDefinition.name }}</strong>
+                          <div class="objective-item-card-badges mt-1">
+                            <span class="badge bg-light text-dark">{{ getObjectiveUnitLabel(itemDefinition.unit) }}</span>
+                            <span class="badge text-bg-light border text-body-secondary">
+                              {{ itemDefinition.progressHistory.length }} {{ 'family.objectives.progress.historyTitle' | translate }}
                             </span>
-                            @if (objective.active) {
-                              <button class="btn btn-outline-warning btn-sm" type="button" (click)="deactivateObjective(objective)">
-                                <fa-icon icon="ban" class="me-1"></fa-icon>
-                                <span jhiTranslate="family.objectives.actions.deactivate">Deactivate</span>
-                              </button>
-                            }
-                            <button class="btn btn-outline-danger btn-sm" type="button" (click)="deleteObjective(objective)">
-                              <fa-icon icon="trash-alt" class="me-1"></fa-icon>
-                              <span jhiTranslate="family.objectives.actions.delete">Delete</span>
-                            </button>
-                          </div>
-                        </div>
-
-                        <div class="objective-items-list mt-3">
-                          @for (itemDefinition of objective.itemDefinitions; track itemDefinition.id) {
-                            <div class="objective-item-card">
-                              <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                                <div>
-                                  <strong>{{ itemDefinition.name }}</strong>
-                                  <span class="badge bg-light text-dark ms-2">{{ getObjectiveUnitLabel(itemDefinition.unit) }}</span>
-                                </div>
-                                <small class="text-muted">{{ itemDefinition.progressHistory.length }} {{ 'family.objectives.progress.historyTitle' | translate }}</small>
-                              </div>
-                              @if (itemDefinition.description) {
-                                <p class="text-muted small mb-2 mt-2">{{ itemDefinition.description }}</p>
-                              }
-                              @if (getLatestProgress(itemDefinition); as latestProgress) {
-                                <small class="text-muted">
-                                  {{ 'family.objectives.progress.latest' | translate }}:
-                                  <strong>{{ latestProgress.value }}</strong>
-                                  · {{ latestProgress.createdAt | date: 'medium' }}
-                                </small>
-                              } @else {
-                                <small class="text-muted" jhiTranslate="family.objectives.progress.empty">No progress yet.</small>
-                              }
-                            </div>
-                          }
-                        </div>
-
-                        @let objectiveTrendSeries = getObjectiveTrendSeries(objective);
-                        <div class="objective-progress-trends mt-3">
-                          <div class="objective-progress-trends-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                            <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastEntries' | translate: { count: objectiveRecentEntriesCount } }}</p>
-                            @if (!hasObjectiveProgressInTrendWindow(objective)) {
-                              <small class="text-muted">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
-                            }
-                          </div>
-
-                          <div class="objective-trend-list mt-2">
-                            @for (trend of objectiveTrendSeries; track trend.itemDefinition.id) {
-                              <div class="objective-trend-card">
-                                <div class="objective-trend-card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                                  <div>
-                                    <strong>{{ trend.itemDefinition.name }}</strong>
-                                    <span class="badge bg-light text-dark ms-2">{{ getObjectiveUnitLabel(trend.itemDefinition.unit) }}</span>
-                                  </div>
-                                  @if (trend.latestProgress) {
-                                    <small class="text-muted">
-                                      {{ 'family.objectives.progress.latest' | translate }}:
-                                      <strong>{{ trend.latestProgress.value }}</strong>
-                                    </small>
-                                  }
-                                </div>
-
-                                @if (trend.points.length > 0) {
-                                  <div class="objective-trend-chart-wrapper mt-2">
-                                    <div class="objective-trend-scale">
-                                      <span>{{ trend.maxValue }}</span>
-                                      <span>{{ trend.minValue }}</span>
-                                    </div>
-                                    <svg
-                                      class="objective-trend-chart"
-                                      [attr.viewBox]="'0 0 ' + objectiveTrendChartWidth + ' ' + objectiveTrendChartHeight"
-                                      preserveAspectRatio="none"
-                                      role="img"
-                                      [attr.aria-label]="'family.objectives.progress.trendAriaEntries' | translate: { item: trend.itemDefinition.name, count: objectiveRecentEntriesCount }"
-                                    >
-                                      <line x1="14" y1="14" x2="14" [attr.y2]="objectiveTrendChartHeight - 14" class="objective-trend-axis-line"></line>
-                                      <line
-                                        x1="14"
-                                        [attr.y1]="objectiveTrendChartHeight - 14"
-                                        [attr.x2]="objectiveTrendChartWidth - 14"
-                                        [attr.y2]="objectiveTrendChartHeight - 14"
-                                        class="objective-trend-axis-line"
-                                      ></line>
-                                      <path class="objective-trend-area" [attr.d]="trend.areaPath"></path>
-                                      <path class="objective-trend-line" [attr.d]="trend.path"></path>
-                                      @for (point of trend.points; track point.key) {
-                                        <circle
-                                          class="objective-trend-point"
-                                          [attr.cx]="point.x"
-                                          [attr.cy]="point.y"
-                                          r="3.5"
-                                          [attr.title]="getObjectiveTrendPointTitle(trend.itemDefinition, point)"
-                                        ></circle>
-                                      }
-                                    </svg>
-                                  </div>
-                                  <div class="objective-trend-axis-labels mt-2">
-                                    <span>{{ trend.startLabel }}</span>
-                                    <span>{{ trend.endLabel }}</span>
-                                  </div>
-                                } @else {
-                                  <small class="text-muted mt-2 d-block">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
-                                }
-                              </div>
-                            }
                           </div>
                         </div>
                       </div>
-                    }
-                  </div>
+                      @if (itemDefinition.description) {
+                        <p class="text-muted small mb-2 mt-2 objective-item-card-description">{{ itemDefinition.description }}</p>
+                      }
+                      @if (getLatestProgress(itemDefinition); as latestProgress) {
+                        <small class="text-muted d-block objective-item-card-updated-at">
+                          {{ 'family.objectives.progress.latest' | translate }}:
+                          <strong>{{ latestProgress.value }}</strong>
+                          · {{ latestProgress.createdAt | date: 'medium' }}
+                        </small>
+                      } @else {
+                        <small class="text-muted d-block objective-item-card-updated-at" jhiTranslate="family.objectives.progress.empty">No progress yet.</small>
+                      }
+                    </div>
+                  }
                 </div>
               </div>
             }
@@ -442,18 +367,20 @@
                   </span>
                 </div>
 
-                <div class="objective-items-list mt-3" [class.objective-items-list--compact]="isChild()">
+                <div class="objective-items-list objective-items-list--compact mt-3">
                   @for (itemDefinition of objective.itemDefinitions; track itemDefinition.id) {
-                    <div class="objective-item-card" [class.objective-item-card--compact]="isChild()">
-                      <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-2">
-                        <div>
-                          <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                            <strong>{{ itemDefinition.name }}</strong>
+                    <div class="objective-item-card objective-item-card--compact">
+                      <div class="objective-item-card-header d-flex align-items-start justify-content-between gap-2">
+                        <div class="objective-item-card-title-wrap">
+                          <strong class="objective-item-card-title">{{ itemDefinition.name }}</strong>
+                          <div class="objective-item-card-badges mt-1">
                             <span class="badge bg-light text-dark">{{ getObjectiveUnitLabel(itemDefinition.unit) }}</span>
+                            @if (getLatestProgress(itemDefinition); as latestProgress) {
+                              <span class="badge text-bg-primary-subtle text-primary-emphasis">
+                                {{ 'family.objectives.progress.latest' | translate }}: {{ latestProgress.value }}
+                              </span>
+                            }
                           </div>
-                          @if (itemDefinition.description) {
-                            <p class="text-muted small mb-2">{{ itemDefinition.description }}</p>
-                          }
                         </div>
                         @if (objective.active) {
                           <button
@@ -467,7 +394,14 @@
                           </button>
                         }
                       </div>
-
+                      @if (itemDefinition.description) {
+                        <p class="text-muted small mb-2 mt-2 objective-item-card-description">{{ itemDefinition.description }}</p>
+                      }
+                      @if (getLatestProgress(itemDefinition); as latestProgress) {
+                        <small class="text-muted d-block objective-item-card-updated-at">{{ latestProgress.createdAt | date: 'medium' }}</small>
+                      } @else {
+                        <small class="text-muted d-block objective-item-card-updated-at" jhiTranslate="family.objectives.progress.empty">No progress yet.</small>
+                      }
                     </div>
                   }
                 </div>
