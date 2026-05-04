@@ -175,6 +175,7 @@ echo "[3f] Requesting/refreshing Let's Encrypt certificate"
 ssh "${SSH_OPTS[@]}" "$SSH_USER@$SERVER_HOST" "
 cd $REMOTE_DIR
 docker compose --env-file .env --profile init run --rm certbot-init \
+  certonly --non-interactive --keep-until-expiring \
   && docker compose --env-file .env exec -T nginx nginx -s reload" \
   || echo "WARNING: Let's Encrypt init failed – ensure DNS is pointing to $SERVER_HOST and re-run manually."
 
