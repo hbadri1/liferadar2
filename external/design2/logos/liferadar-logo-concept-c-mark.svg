@@ -1,0 +1,15 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>LifeRadar Logo Concept C Mark</title>
+  <desc>Pulse-wave radar icon using concentric open arcs.</desc>
+
+  <circle cx="512" cy="512" r="352" stroke="#0B1F3B" stroke-width="42" />
+
+  <path d="M512 212C677.685 212 812 346.315 812 512" stroke="#1E3A8A" stroke-width="18" stroke-linecap="round" />
+  <path d="M512 290C634.607 290 734 389.393 734 512" stroke="#00C2FF" stroke-width="16" stroke-linecap="round" />
+  <path d="M512 364C593.739 364 660 430.261 660 512" stroke="#00C2FF" stroke-width="14" stroke-linecap="round" opacity="0.82" />
+
+  <circle cx="512" cy="512" r="38" fill="#00C2FF" />
+  <circle cx="512" cy="512" r="16" fill="#FFFFFF" opacity="0.95" />
+  <circle cx="812" cy="512" r="28" fill="#1E3A8A" />
+</svg>
+

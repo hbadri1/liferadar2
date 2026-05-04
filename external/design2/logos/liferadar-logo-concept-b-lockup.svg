@@ -1,0 +1,20 @@
+<svg width="1800" height="560" viewBox="0 0 1800 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>LifeRadar Logo Concept B Lockup</title>
+  <desc>Concept B geometric orbit mark with modern wordmark.</desc>
+
+  <circle cx="280" cy="280" r="188" stroke="#0B1F3B" stroke-width="28" />
+  <circle cx="280" cy="280" r="138" stroke="#1E3A8A" stroke-width="12" />
+
+  <path d="M280 280L280 110" stroke="#00C2FF" stroke-width="11" stroke-linecap="round" />
+  <path d="M280 280L416 364" stroke="#00C2FF" stroke-width="11" stroke-linecap="round" />
+
+  <circle cx="280" cy="280" r="19" fill="#0B1F3B" />
+  <circle cx="280" cy="280" r="8" fill="#00C2FF" />
+  <circle cx="280" cy="110" r="14" fill="#00C2FF" />
+  <circle cx="416" cy="364" r="14" fill="#00C2FF" />
+
+  <text x="540" y="255" font-size="142" font-family="Space Grotesk, Inter, Arial, sans-serif" font-weight="600" fill="#0B1F3B" letter-spacing="0.5">LifeRadar</text>
+  <rect x="542" y="290" width="430" height="8" rx="4" fill="#00C2FF" />
+  <text x="546" y="346" font-size="43" font-family="Inter, Arial, sans-serif" font-weight="500" fill="#64748B" letter-spacing="3">TRACK • SIGNAL • DECIDE</text>
+</svg>
+

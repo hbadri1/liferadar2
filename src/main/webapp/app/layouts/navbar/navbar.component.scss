@@ -21,20 +21,20 @@ Navbar
   padding: 0.2rem 1rem;
   position: relative;
   z-index: $zindex-sticky + 1;
-  background: linear-gradient(135deg, $lr-neutral 0%, #1d4452 100%);
-  box-shadow: 0 12px 28px rgba($lr-neutral, 0.18);
+  background: linear-gradient(135deg, $lr-primary 0%, $lr-secondary-accent 100%);
+  box-shadow: 0 8px 20px rgba($lr-primary, 0.28);
 
   .dropdown-menu {
     z-index: $zindex-sticky + 2;
-    border: 1px solid rgba($lr-neutral, 0.08);
+    border: 1px solid rgba($lr-neutral-mid, 0.3);
     border-radius: 0.9rem;
-    box-shadow: 0 18px 36px rgba($lr-neutral, 0.12);
+    box-shadow: 0 12px 24px rgba($lr-neutral, 0.14);
   }
 
   .dropdown-item.active,
   .dropdown-item.active:focus,
   .dropdown-item.active:hover {
-    background-color: $lr-primary;
+    background-color: $lr-secondary-accent;
   }
 
   a.nav-link {
@@ -43,7 +43,7 @@ Navbar
 
     &:hover,
     &:focus {
-      color: #fff;
+      color: $lr-primary-accent;
     }
   }
 

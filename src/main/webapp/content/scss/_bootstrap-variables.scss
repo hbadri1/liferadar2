@@ -5,27 +5,38 @@
  * Make sure not to add !default to values here
  */
 
-$lr-primary: #1fb7a6;
-$lr-accent: #ff6b5e;
-$lr-neutral: #142033;
-$lr-surface: #f7f9fc;
-$lr-surface-alt: #eef4f8;
+$lr-primary: #0b1f3b;
+$lr-primary-accent: #00c2ff;
+$lr-primary-accent-hover: #00a8e0;
+$lr-secondary-accent: #1e3a8a;
 
-$primary: $lr-primary;
-$secondary: $lr-neutral;
-$success: $lr-primary;
-$info: $lr-primary;
-$warning: $lr-accent;
-$danger: $lr-accent;
+$lr-success: #22c55e;
+$lr-warning: #f59e0b;
+$lr-error: #ef4444;
+
+$lr-neutral: #0f172a;
+$lr-neutral-mid: #64748b;
+$lr-surface: #ffffff;
+$lr-surface-alt: #f1f5f9;
+
+/* Backward-compat alias used in existing component styles */
+$lr-accent: $lr-primary-accent;
+
+$primary: $lr-primary-accent;
+$secondary: $lr-secondary-accent;
+$success: $lr-success;
+$info: $lr-secondary-accent;
+$warning: $lr-warning;
+$danger: $lr-error;
 $dark: $lr-neutral;
 $body-bg: $lr-surface;
 $body-color: $lr-neutral;
-$link-color: $lr-primary;
-$link-hover-color: $lr-accent;
-$component-active-bg: $lr-primary;
-$dropdown-link-active-bg: $lr-primary;
-$input-focus-border-color: rgba($lr-primary, 0.45);
-$input-btn-focus-color: rgba($lr-primary, 0.2);
+$link-color: $lr-secondary-accent;
+$link-hover-color: $lr-primary-accent;
+$component-active-bg: $lr-primary-accent;
+$dropdown-link-active-bg: $lr-secondary-accent;
+$input-focus-border-color: rgba($lr-primary-accent, 0.55);
+$input-btn-focus-color: rgba($lr-primary-accent, 0.22);
 $navbar-dark-color: rgba(255, 255, 255, 0.88);
 $navbar-dark-hover-color: #fff;
 $navbar-dark-active-color: #fff;
