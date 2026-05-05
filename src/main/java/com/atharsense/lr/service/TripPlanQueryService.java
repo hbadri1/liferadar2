@@ -6,7 +6,7 @@ import com.atharsense.lr.repository.TripPlanRepository;
 import com.atharsense.lr.service.criteria.TripPlanCriteria;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Join;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -91,7 +91,7 @@ public class TripPlanQueryService extends QueryService<TripPlan> {
         if (criteria.getStartDate() != null) {
             spec = spec.and((root, query, cb) -> {
                 var filter = criteria.getStartDate();
-                if (filter.getEquals() != null) return cb.equal(root.<LocalDate>get("startDate"), filter.getEquals());
+                if (filter.getEquals() != null) return cb.equal(root.<LocalDateTime>get("startDate"), filter.getEquals());
                 if (filter.getGreaterThanOrEqual() != null) return cb.greaterThanOrEqualTo(root.get("startDate"), filter.getGreaterThanOrEqual());
                 if (filter.getLessThanOrEqual() != null) return cb.lessThanOrEqualTo(root.get("startDate"), filter.getLessThanOrEqual());
                 return null;
@@ -100,7 +100,7 @@ public class TripPlanQueryService extends QueryService<TripPlan> {
         if (criteria.getEndDate() != null) {
             spec = spec.and((root, query, cb) -> {
                 var filter = criteria.getEndDate();
-                if (filter.getEquals() != null) return cb.equal(root.<LocalDate>get("endDate"), filter.getEquals());
+                if (filter.getEquals() != null) return cb.equal(root.<LocalDateTime>get("endDate"), filter.getEquals());
                 if (filter.getGreaterThanOrEqual() != null) return cb.greaterThanOrEqualTo(root.get("endDate"), filter.getGreaterThanOrEqual());
                 if (filter.getLessThanOrEqual() != null) return cb.lessThanOrEqualTo(root.get("endDate"), filter.getLessThanOrEqual());
                 return null;

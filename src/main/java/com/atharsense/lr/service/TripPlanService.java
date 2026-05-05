@@ -8,7 +8,7 @@ import com.atharsense.lr.repository.TripPlanRepository;
 import com.atharsense.lr.repository.UserRepository;
 import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -61,8 +61,8 @@ public class TripPlanService {
             .findById(tripPlan.getId())
             .orElseThrow(() -> new IllegalArgumentException("Trip not found: " + tripPlan.getId()));
 
-        LocalDate updatedStartDate = tripPlan.getStartDate() != null ? tripPlan.getStartDate() : existing.getStartDate();
-        LocalDate updatedEndDate = tripPlan.getEndDate() != null ? tripPlan.getEndDate() : existing.getEndDate();
+        LocalDateTime updatedStartDate = tripPlan.getStartDate() != null ? tripPlan.getStartDate() : existing.getStartDate();
+        LocalDateTime updatedEndDate = tripPlan.getEndDate() != null ? tripPlan.getEndDate() : existing.getEndDate();
 
         validateTripDates(updatedStartDate, updatedEndDate);
         validateExistingStepsWithinTripDates(existing, updatedStartDate, updatedEndDate);
@@ -83,8 +83,8 @@ public class TripPlanService {
         return tripPlanRepository
             .findById(tripPlan.getId())
             .map(existing -> {
-                LocalDate updatedStartDate = tripPlan.getStartDate() != null ? tripPlan.getStartDate() : existing.getStartDate();
-                LocalDate updatedEndDate = tripPlan.getEndDate() != null ? tripPlan.getEndDate() : existing.getEndDate();
+                LocalDateTime updatedStartDate = tripPlan.getStartDate() != null ? tripPlan.getStartDate() : existing.getStartDate();
+                LocalDateTime updatedEndDate = tripPlan.getEndDate() != null ? tripPlan.getEndDate() : existing.getEndDate();
 
                 validateTripDates(updatedStartDate, updatedEndDate);
                 validateExistingStepsWithinTripDates(existing, updatedStartDate, updatedEndDate);
@@ -119,7 +119,7 @@ public class TripPlanService {
         tripPlanRepository.deleteById(id);
     }
 
-    private void validateExistingStepsWithinTripDates(TripPlan tripPlan, LocalDate startDate, LocalDate endDate) {
+    private void validateExistingStepsWithinTripDates(TripPlan tripPlan, LocalDateTime startDate, LocalDateTime endDate) {
         if (startDate == null || endDate == null) {
             return;
         }
@@ -143,18 +143,18 @@ public class TripPlanService {
         }
     }
 
-    private void validateTripDates(LocalDate startDate, LocalDate endDate) {
+    private void validateTripDates(LocalDateTime startDate, LocalDateTime endDate) {
         if (startDate == null || endDate == null) {
             return;
         }
 
-        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        if (startDate.isBefore(today)) {
+        if (startDate.isBefore(now)) {
             throw new BadRequestAlertException("trips.errors.startDateInPast", "tripPlan", "startDateInPast");
         }
 
-        if (endDate.isBefore(today)) {
+        if (endDate.isBefore(now)) {
             throw new BadRequestAlertException("trips.errors.endDateInPast", "tripPlan", "endDateInPast");
         }
 

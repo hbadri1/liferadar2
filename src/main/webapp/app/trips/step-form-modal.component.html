@@ -32,27 +32,85 @@
              placeholder="{{ 'trips.fields.locationPlaceholder' | translate }}" />
     </div>
 
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold" for="stepStartDate">{{ 'trips.fields.startDate' | translate }} *</label>
-        <input id="stepStartDate" type="date" class="form-control" formControlName="startDate" />
+    <div class="mb-3">
+      <label class="form-label fw-bold">{{ 'trips.map.title' | translate }}</label>
+      <div class="input-group mb-2">
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="searchTerm"
+          [ngModelOptions]="{ standalone: true }"
+          [placeholder]="'trips.map.searchPlaceholder' | translate"
+        />
+        <button type="button" class="btn btn-outline-primary" (click)="searchPlace()" [disabled]="isSearching() || !mapEnabled()">
+          {{ 'trips.map.search' | translate }}
+        </button>
       </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold" for="stepEndDate">{{ 'trips.fields.endDate' | translate }} *</label>
-        <input id="stepEndDate" type="date" class="form-control" formControlName="endDate" />
-      </div>
+
+      @if (searchResults().length > 0) {
+        <div class="list-group mb-2">
+          @for (place of searchResults(); track place.id) {
+            <button type="button" class="list-group-item list-group-item-action" (click)="selectPlace(place)">
+              {{ place.name }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (mapLoading()) {
+        <div class="text-muted small">{{ 'trips.map.loading' | translate }}</div>
+      }
+
+      @if (mapErrorMsg()) {
+        <div class="alert alert-warning py-2">{{ mapErrorMsg()! | translate }}</div>
+      }
+
+      @if (!mapEnabled() && !mapLoading() && !mapErrorMsg()) {
+        <div class="text-muted small mb-2">{{ 'trips.map.disabled' | translate }}</div>
+      }
+
+      <div #mapCanvas class="border rounded" [style.height.px]="260" [class.opacity-50]="!mapEnabled()"></div>
+
+      @if (hasPin()) {
+        <div class="mt-2 d-flex align-items-center justify-content-between gap-2">
+          <span class="badge bg-light text-dark">{{ 'trips.map.pinned' | translate }}: {{ pinLabel() }}</span>
+          <button type="button" class="btn btn-sm btn-outline-danger" (click)="clearPin()">
+            {{ 'trips.map.clearPin' | translate }}
+          </button>
+        </div>
+      }
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold" for="latitude">{{ 'trips.fields.latitude' | translate }}</label>
-        <input id="latitude" type="number" step="0.0000001" class="form-control" formControlName="latitude"
-               placeholder="e.g. 24.7136" />
+        <label class="form-label fw-bold" for="stepStartDate">{{ 'trips.fields.startDate' | translate }} *</label>
+        <div class="row g-2">
+          <div class="col-8">
+            <input id="stepStartDate" type="date" class="form-control" formControlName="startDate" />
+          </div>
+          <div class="col-4">
+            <select class="form-select" formControlName="startHour">
+              @for (hour of hourOptions; track hour) {
+                <option [value]="hour">{{ hour }}:00</option>
+              }
+            </select>
+          </div>
+        </div>
       </div>
       <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold" for="longitude">{{ 'trips.fields.longitude' | translate }}</label>
-        <input id="longitude" type="number" step="0.0000001" class="form-control" formControlName="longitude"
-               placeholder="e.g. 46.6753" />
+        <label class="form-label fw-bold" for="stepEndDate">{{ 'trips.fields.endDate' | translate }} *</label>
+        <div class="row g-2">
+          <div class="col-8">
+            <input id="stepEndDate" type="date" class="form-control" formControlName="endDate" />
+          </div>
+          <div class="col-4">
+            <select class="form-select" formControlName="endHour">
+              @for (hour of hourOptions; track hour) {
+                <option [value]="hour">{{ hour }}:00</option>
+              }
+            </select>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -68,7 +126,7 @@
   <button type="button" class="btn btn-secondary" (click)="cancel()">
     <fa-icon icon="times"></fa-icon> {{ 'entity.action.cancel' | translate }}
   </button>
-  <button type="button" class="btn btn-info text-white" [disabled]="isSaving() || editForm.invalid" (click)="save()">
+  <button type="button" class="btn btn-primary" [disabled]="isSaving() || editForm.invalid" (click)="save()">
     @if (isSaving()) {
       <span class="spinner-border spinner-border-sm me-1"></span>
     } @else {

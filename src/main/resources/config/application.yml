@@ -95,6 +95,8 @@ spring:
       - optional:classpath:config/todoapps/ticktick.yml
       - optional:classpath:config/todoapps/microsoft-todo.yml
       - optional:classpath:config/todoapps/todoist.yml
+      - optional:classpath:config/mapbox/mapbox-dev.yml
+      - optional:classpath:config/mapbox/mapbox-prod.yml
   application:
     name: liferadar
   docker:
@@ -217,7 +219,7 @@ jhipster:
     license: unlicensed
     license-url:
   security:
-    content-security-policy: "default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com data:"
+    content-security-policy: "default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://api.mapbox.com https://*.tiles.mapbox.com; font-src 'self' data:; connect-src 'self' https://api.mapbox.com https://events.mapbox.com; worker-src 'self' blob:"
 
 # jhipster-needle-add-application-yaml-document
 ---

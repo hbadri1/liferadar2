@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -233,14 +233,14 @@ public class TripPlanResource {
      * @param endDate the trip end date
      * @throws BadRequestAlertException if validation fails
      */
-    private void validateTripDates(LocalDate startDate, LocalDate endDate) {
-        LocalDate today = LocalDate.now();
+    private void validateTripDates(LocalDateTime startDate, LocalDateTime endDate) {
+        LocalDateTime now = LocalDateTime.now();
 
-        if (startDate.isBefore(today)) {
+        if (startDate.isBefore(now)) {
             throw new BadRequestAlertException("trips.errors.startDateInPast", ENTITY_NAME, "startDateInPast");
         }
 
-        if (endDate.isBefore(today)) {
+        if (endDate.isBefore(now)) {
             throw new BadRequestAlertException("trips.errors.endDateInPast", ENTITY_NAME, "endDateInPast");
         }
 

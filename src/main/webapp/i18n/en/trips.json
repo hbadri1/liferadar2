@@ -26,6 +26,18 @@
     "stop": "Stop",
     "journeyEnd": "Journey End",
     "currentDate": "Today",
+    "duration": {
+      "daysHours": "{{days}}d {{hours}}h"
+    },
+    "map": {
+      "title": "Pin on Map (Optional)",
+      "search": "Search",
+      "searchPlaceholder": "Search for a place",
+      "loading": "Loading map...",
+      "disabled": "Map is not configured for this environment. You can still save the stop without pinning.",
+      "pinned": "Pinned",
+      "clearPin": "Clear Pin"
+    },
     "fields": {
       "title": "Trip Title",
       "titlePlaceholder": "e.g. Europe Summer 2026",
@@ -49,6 +61,10 @@
     "errors": {
       "loadFailed": "Failed to load trips. Please try again.",
       "saveFailed": "Failed to save. Please check your inputs and try again.",
+      "mapUnavailable": "Map is currently unavailable. Please try again later.",
+      "pinIncomplete": "Please pin both latitude and longitude or clear the pin.",
+      "latitudeOutOfRange": "Latitude must be between -90 and 90.",
+      "longitudeOutOfRange": "Longitude must be between -180 and 180.",
       "startDateInPast": "Start date cannot be in the past. Please select today or a future date.",
       "endDateInPast": "End date cannot be in the past. Please select today or a future date.",
       "startDateAfterEndDate": "Start date must be before or equal to the end date.",

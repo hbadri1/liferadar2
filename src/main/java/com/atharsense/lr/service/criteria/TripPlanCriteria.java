@@ -20,6 +20,7 @@ import tech.jhipster.service.filter.*;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class TripPlanCriteria implements Serializable, Criteria {
 
+
     private static final long serialVersionUID = 1L;
 
     private LongFilter id;
@@ -28,9 +29,9 @@ public class TripPlanCriteria implements Serializable, Criteria {
 
     private StringFilter description;
 
-    private LocalDateFilter startDate;
+    private LocalDateTimeFilter startDate;
 
-    private LocalDateFilter endDate;
+    private LocalDateTimeFilter endDate;
 
     private LongFilter ownerId;
 
@@ -42,8 +43,8 @@ public class TripPlanCriteria implements Serializable, Criteria {
         this.id = other.optionalId().map(LongFilter::copy).orElse(null);
         this.title = other.optionalTitle().map(StringFilter::copy).orElse(null);
         this.description = other.optionalDescription().map(StringFilter::copy).orElse(null);
-        this.startDate = other.optionalStartDate().map(LocalDateFilter::copy).orElse(null);
-        this.endDate = other.optionalEndDate().map(LocalDateFilter::copy).orElse(null);
+        this.startDate = other.optionalStartDate().map(LocalDateTimeFilter::copy).orElse(null);
+        this.endDate = other.optionalEndDate().map(LocalDateTimeFilter::copy).orElse(null);
         this.ownerId = other.optionalOwnerId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
@@ -110,41 +111,41 @@ public class TripPlanCriteria implements Serializable, Criteria {
         this.description = description;
     }
 
-    public LocalDateFilter getStartDate() {
+    public LocalDateTimeFilter getStartDate() {
         return startDate;
     }
 
-    public Optional<LocalDateFilter> optionalStartDate() {
+    public Optional<LocalDateTimeFilter> optionalStartDate() {
         return Optional.ofNullable(startDate);
     }
 
-    public LocalDateFilter startDate() {
+    public LocalDateTimeFilter startDate() {
         if (startDate == null) {
-            setStartDate(new LocalDateFilter());
+            setStartDate(new LocalDateTimeFilter());
         }
         return startDate;
     }
 
-    public void setStartDate(LocalDateFilter startDate) {
+    public void setStartDate(LocalDateTimeFilter startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateFilter getEndDate() {
+    public LocalDateTimeFilter getEndDate() {
         return endDate;
     }
 
-    public Optional<LocalDateFilter> optionalEndDate() {
+    public Optional<LocalDateTimeFilter> optionalEndDate() {
         return Optional.ofNullable(endDate);
     }
 
-    public LocalDateFilter endDate() {
+    public LocalDateTimeFilter endDate() {
         if (endDate == null) {
-            setEndDate(new LocalDateFilter());
+            setEndDate(new LocalDateTimeFilter());
         }
         return endDate;
     }
 
-    public void setEndDate(LocalDateFilter endDate) {
+    public void setEndDate(LocalDateTimeFilter endDate) {
         this.endDate = endDate;
     }
 

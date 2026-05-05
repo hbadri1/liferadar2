@@ -238,14 +238,13 @@ export default class TripsComponent implements OnInit {
 
   formatDate(d?: any): string {
     const parsed = this.toDayjsDate(d);
-    return parsed ? parsed.format('DD MMM YYYY') : '';
+    return parsed ? parsed.format('DD MMM YYYY HH:mm') : '';
   }
 
-  tripDuration(trip: ITripPlan): number {
+  tripDuration(trip: ITripPlan): string {
     const startDate = this.toDayjsDate(trip.startDate);
     const endDate = this.toDayjsDate(trip.endDate);
-    if (!startDate || !endDate) return 0;
-    return endDate.diff(startDate, 'day') + 1;
+    return this.formatDurationDaysHours(startDate, endDate);
   }
 
   timelineEntries(): TimelineEntry[] {
@@ -333,9 +332,15 @@ export default class TripsComponent implements OnInit {
       return '';
     }
     if (!endDate || startDate.isSame(endDate, 'day')) {
-      return startDate.format('DD MMM');
+      return startDate.format('DD MMM HH:mm');
     }
-    return `${startDate.format('DD MMM')} - ${endDate.format('DD MMM')}`;
+    return `${startDate.format('DD MMM HH:mm')} - ${endDate.format('DD MMM HH:mm')}`;
+  }
+
+  stepDurationLabel(step: ITripPlanStep): string {
+    const startDate = this.toDayjsDate(step.startDate);
+    const endDate = this.toDayjsDate(step.endDate) ?? startDate;
+    return this.formatDurationDaysHours(startDate, endDate);
   }
 
   hasStepsInDisplayedMonth(): boolean {
@@ -351,6 +356,17 @@ export default class TripsComponent implements OnInit {
     if (dayjs.isDayjs(value)) return value;
     const parsed = dayjs(value as string | Date);
     return parsed.isValid() ? parsed : null;
+  }
+
+  private formatDurationDaysHours(startDate: dayjs.Dayjs | null, endDate: dayjs.Dayjs | null): string {
+    if (!startDate || !endDate) {
+      return '';
+    }
+
+    const totalHours = Math.max(0, endDate.diff(startDate, 'hour'));
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    return this.translateService.instant('trips.duration.daysHours', { days, hours });
   }
 
   private isDayInSelectedTripRange(date: dayjs.Dayjs): boolean {
