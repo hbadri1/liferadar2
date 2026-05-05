@@ -26,6 +26,18 @@
     "stop": "Étape",
     "journeyEnd": "Fin du Voyage",
     "currentDate": "Aujourd'hui",
+    "duration": {
+      "daysHours": "{{days}}j {{hours}}h"
+    },
+    "map": {
+      "title": "Épingler sur la carte (optionnel)",
+      "search": "Rechercher",
+      "searchPlaceholder": "Rechercher un lieu",
+      "loading": "Chargement de la carte...",
+      "disabled": "La carte n'est pas configurée pour cet environnement. Vous pouvez enregistrer l'étape sans épingle.",
+      "pinned": "Épinglé",
+      "clearPin": "Retirer l'épingle"
+    },
     "fields": {
       "title": "Titre du Voyage",
       "titlePlaceholder": "ex. Europe été 2026",
@@ -49,6 +61,10 @@
     "errors": {
       "loadFailed": "Échec du chargement des voyages. Veuillez réessayer.",
       "saveFailed": "Échec de l'enregistrement. Vérifiez vos données et réessayez.",
+      "mapUnavailable": "La carte est actuellement indisponible. Veuillez réessayer plus tard.",
+      "pinIncomplete": "Veuillez renseigner latitude et longitude ou supprimer l'épingle.",
+      "latitudeOutOfRange": "La latitude doit être comprise entre -90 et 90.",
+      "longitudeOutOfRange": "La longitude doit être comprise entre -180 et 180.",
       "startDateInPast": "La date de début ne peut pas être dans le passé. Veuillez sélectionner aujourd'hui ou une date future.",
       "endDateInPast": "La date de fin ne peut pas être dans le passé. Veuillez sélectionner aujourd'hui ou une date future.",
       "startDateAfterEndDate": "La date de début doit être antérieure ou égale à la date de fin.",

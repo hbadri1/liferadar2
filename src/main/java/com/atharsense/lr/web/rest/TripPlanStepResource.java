@@ -8,9 +8,10 @@ import com.atharsense.lr.service.TripPlanStepService;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
 import java.util.Objects;
@@ -74,6 +75,7 @@ public class TripPlanStepResource {
 
         // Validate step dates
         validateStepDates(tripPlanStep);
+        validateCoordinates(tripPlanStep);
 
         tripPlanStep = tripPlanStepService.save(tripPlanStep);
         return ResponseEntity.created(new URI("/api/trip-plan-steps/" + tripPlanStep.getId()))
@@ -111,6 +113,7 @@ public class TripPlanStepResource {
 
         // Validate step dates
         validateStepDates(tripPlanStep);
+        validateCoordinates(tripPlanStep);
 
         tripPlanStep = tripPlanStepService.update(tripPlanStep);
         return ResponseEntity.ok()
@@ -212,10 +215,10 @@ public class TripPlanStepResource {
         TripPlan trip = tripPlanRepository
             .findById(step.getTripPlan().getId())
             .orElseThrow(() -> new BadRequestAlertException("Associated trip not found", ENTITY_NAME, "tripNotFound"));
-        LocalDate tripStart = trip.getStartDate();
-        LocalDate tripEnd = trip.getEndDate();
-        LocalDate stepStart = step.getStartDate();
-        LocalDate stepEnd = step.getEndDate();
+        LocalDateTime tripStart = trip.getStartDate();
+        LocalDateTime tripEnd = trip.getEndDate();
+        LocalDateTime stepStart = step.getStartDate();
+        LocalDateTime stepEnd = step.getEndDate();
 
         // Check if step start date is before trip start date
         if (stepStart.isBefore(tripStart)) {
@@ -230,6 +233,25 @@ public class TripPlanStepResource {
         // Check if step start date is after step end date
         if (stepStart.isAfter(stepEnd)) {
             throw new BadRequestAlertException("trips.errors.stepStartDateAfterEndDate", ENTITY_NAME, "stepStartDateAfterEndDate");
+        }
+    }
+
+    private void validateCoordinates(TripPlanStep step) {
+        BigDecimal latitude = step.getLatitude();
+        BigDecimal longitude = step.getLongitude();
+
+        if ((latitude == null) != (longitude == null)) {
+            throw new BadRequestAlertException("trips.errors.pinIncomplete", ENTITY_NAME, "pinIncomplete");
+        }
+
+        if (latitude != null) {
+            if (latitude.compareTo(BigDecimal.valueOf(-90)) < 0 || latitude.compareTo(BigDecimal.valueOf(90)) > 0) {
+                throw new BadRequestAlertException("trips.errors.latitudeOutOfRange", ENTITY_NAME, "latitudeOutOfRange");
+            }
+
+            if (longitude.compareTo(BigDecimal.valueOf(-180)) < 0 || longitude.compareTo(BigDecimal.valueOf(180)) > 0) {
+                throw new BadRequestAlertException("trips.errors.longitudeOutOfRange", ENTITY_NAME, "longitudeOutOfRange");
+            }
         }
     }
 }

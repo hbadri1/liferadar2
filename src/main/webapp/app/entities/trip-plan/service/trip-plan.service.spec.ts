@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
-import { DATE_FORMAT } from 'app/config/input.constants';
+import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { ITripPlan } from '../trip-plan.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../trip-plan.test-samples';
 
@@ -10,8 +10,8 @@ import { RestTripPlan, TripPlanService } from './trip-plan.service';
 
 const requireRestSample: RestTripPlan = {
   ...sampleWithRequiredData,
-  startDate: sampleWithRequiredData.startDate?.format(DATE_FORMAT),
-  endDate: sampleWithRequiredData.endDate?.format(DATE_FORMAT),
+  startDate: sampleWithRequiredData.startDate?.format(DATE_TIME_FORMAT),
+  endDate: sampleWithRequiredData.endDate?.format(DATE_TIME_FORMAT),
 };
 
 describe('TripPlan Service', () => {

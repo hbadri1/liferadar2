@@ -54,6 +54,49 @@
 .trip-view-switch {
   display: flex;
   justify-content: flex-end;
+
+  .btn-group {
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.45);
+  }
+}
+
+.trip-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+}
+
+.date-range-arrow,
+.calendar-nav-arrow {
+  display: inline-block;
+}
+
+.date-range-arrow {
+  margin-inline: 0.2rem;
+}
+
+:host-context([dir='rtl']) {
+  .trip-view-switch {
+    justify-content: flex-start;
+  }
+
+  .trip-view-btn {
+    flex-direction: row-reverse;
+  }
+
+  .date-range-arrow,
+  .calendar-nav-arrow {
+    transform: rotate(180deg);
+  }
+}
+
+:host-context([dir='ltr']) {
+  .trip-view-switch {
+    justify-content: flex-end;
+  }
 }
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────

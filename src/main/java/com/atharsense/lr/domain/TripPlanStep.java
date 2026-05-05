@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * A TripPlanStep.
@@ -24,11 +24,11 @@ public class TripPlanStep implements Serializable {
 
     @NotNull
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @NotNull
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @NotNull
     @Size(max = 200)
@@ -65,13 +65,13 @@ public class TripPlanStep implements Serializable {
     public TripPlanStep id(Long id) { this.setId(id); return this; }
     public void setId(Long id) { this.id = id; }
 
-    public LocalDate getStartDate() { return this.startDate; }
-    public TripPlanStep startDate(LocalDate startDate) { this.setStartDate(startDate); return this; }
-    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    public LocalDateTime getStartDate() { return this.startDate; }
+    public TripPlanStep startDate(LocalDateTime startDate) { this.setStartDate(startDate); return this; }
+    public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
 
-    public LocalDate getEndDate() { return this.endDate; }
-    public TripPlanStep endDate(LocalDate endDate) { this.setEndDate(endDate); return this; }
-    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public LocalDateTime getEndDate() { return this.endDate; }
+    public TripPlanStep endDate(LocalDateTime endDate) { this.setEndDate(endDate); return this; }
+    public void setEndDate(LocalDateTime endDate) { this.endDate = endDate; }
 
     public String getActionName() { return this.actionName; }
     public TripPlanStep actionName(String actionName) { this.setActionName(actionName); return this; }

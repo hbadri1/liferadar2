@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,11 +34,11 @@ public class TripPlan implements Serializable {
 
     @NotNull
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @NotNull
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -93,29 +93,29 @@ public class TripPlan implements Serializable {
         this.description = description;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return this.startDate;
     }
 
-    public TripPlan startDate(LocalDate startDate) {
+    public TripPlan startDate(LocalDateTime startDate) {
         this.setStartDate(startDate);
         return this;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return this.endDate;
     }
 
-    public TripPlan endDate(LocalDate endDate) {
+    public TripPlan endDate(LocalDateTime endDate) {
         this.setEndDate(endDate);
         return this;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

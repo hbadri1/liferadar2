@@ -5,7 +5,7 @@ import { Observable, map } from 'rxjs';
 import dayjs from 'dayjs/esm';
 
 import { isPresent } from 'app/core/util/operators';
-import { DATE_FORMAT } from 'app/config/input.constants';
+import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { ITripPlan, NewTripPlan } from '../trip-plan.model';
@@ -102,8 +102,8 @@ export class TripPlanService {
   protected convertDateFromClient<T extends ITripPlan | NewTripPlan | PartialUpdateTripPlan>(tripPlan: T): RestOf<T> {
     return {
       ...tripPlan,
-      startDate: tripPlan.startDate?.format(DATE_FORMAT) ?? null,
-      endDate: tripPlan.endDate?.format(DATE_FORMAT) ?? null,
+      startDate: tripPlan.startDate?.format(DATE_TIME_FORMAT) ?? null,
+      endDate: tripPlan.endDate?.format(DATE_TIME_FORMAT) ?? null,
     };
   }
 

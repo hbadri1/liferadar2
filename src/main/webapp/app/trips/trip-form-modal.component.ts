@@ -5,6 +5,7 @@ import dayjs from 'dayjs/esm';
 import SharedModule from 'app/shared/shared.module';
 import { TripPlanService } from 'app/entities/trip-plan/service/trip-plan.service';
 import { ITripPlan, NewTripPlan } from 'app/entities/trip-plan/trip-plan.model';
+import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 
 @Component({
   selector: 'jhi-trip-form-modal',
@@ -14,6 +15,8 @@ import { ITripPlan, NewTripPlan } from 'app/entities/trip-plan/trip-plan.model';
 })
 export class TripFormModalComponent implements OnInit {
   @Input() trip: ITripPlan | null = null;
+
+  readonly hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
 
   isSaving = signal(false);
   errorMsg = signal<string | null>(null);
@@ -26,7 +29,9 @@ export class TripFormModalComponent implements OnInit {
     title: ['', [Validators.required, Validators.maxLength(160)]],
     description: ['', [Validators.maxLength(800)]],
     startDate: ['', [Validators.required]],
+    startHour: ['00', [Validators.required]],
     endDate: ['', [Validators.required]],
+    endHour: ['00', [Validators.required]],
   });
 
   get isEdit(): boolean {
@@ -39,7 +44,9 @@ export class TripFormModalComponent implements OnInit {
         title: this.trip.title ?? '',
         description: this.trip.description ?? '',
         startDate: this.trip.startDate ? dayjs(this.trip.startDate).format('YYYY-MM-DD') : '',
+        startHour: this.trip.startDate ? dayjs(this.trip.startDate).format('HH') : '00',
         endDate: this.trip.endDate ? dayjs(this.trip.endDate).format('YYYY-MM-DD') : '',
+        endHour: this.trip.endDate ? dayjs(this.trip.endDate).format('HH') : '00',
       });
     }
   }
@@ -54,8 +61,8 @@ export class TripFormModalComponent implements OnInit {
     this.errorMsg.set(null);
 
     const val = this.editForm.getRawValue();
-    const startDate = dayjs(val.startDate!);
-    const endDate = dayjs(val.endDate!);
+    const startDate = dayjs(`${val.startDate!}T${val.startHour!}:00`, DATE_TIME_FORMAT);
+    const endDate = dayjs(`${val.endDate!}T${val.endHour!}:00`, DATE_TIME_FORMAT);
 
     // Validate trip dates
     if (!this.validateTripDates(startDate, endDate)) {
@@ -107,13 +114,13 @@ export class TripFormModalComponent implements OnInit {
     const today = dayjs();
 
     // Check if startDate is in the past
-    if (startDate.isBefore(today, 'day')) {
+    if (startDate.isBefore(today)) {
       this.errorMsg.set('trips.errors.startDateInPast');
       return false;
     }
 
     // Check if endDate is in the past
-    if (endDate.isBefore(today, 'day')) {
+    if (endDate.isBefore(today)) {
       this.errorMsg.set('trips.errors.endDateInPast');
       return false;
     }

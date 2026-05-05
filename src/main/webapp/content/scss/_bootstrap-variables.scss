@@ -22,6 +22,9 @@ $lr-surface-alt: #f1f5f9;
 /* Backward-compat alias used in existing component styles */
 $lr-accent: $lr-primary-accent;
 
+// Prevent Bootswatch themes from importing Google Fonts via CDN.
+$web-font-path: false;
+
 $primary: $lr-primary-accent;
 $secondary: $lr-secondary-accent;
 $success: $lr-success;

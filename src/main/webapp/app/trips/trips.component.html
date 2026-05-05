@@ -58,8 +58,8 @@
                         }
                         <div class="trip-dates small text-muted">
                           <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
-                          {{ formatDate(trip.startDate) }} → {{ formatDate(trip.endDate) }}
-                          <span class="badge bg-light text-dark ms-1">{{ tripDuration(trip) }}d</span>
+                          {{ formatDate(trip.startDate) }} <span class="date-range-arrow" aria-hidden="true">→</span> {{ formatDate(trip.endDate) }}
+                          <span class="badge bg-light text-dark ms-1">{{ tripDuration(trip) }}</span>
                         </div>
                       </div>
                       @if (canEdit()) {
@@ -106,7 +106,7 @@
                 <div class="text-muted small">
                   <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
                   {{ formatDate(selectedTrip()!.startDate) }} — {{ formatDate(selectedTrip()!.endDate) }}
-                  <span class="badge bg-primary ms-2">{{ tripDuration(selectedTrip()!) }} days</span>
+                  <span class="badge bg-primary ms-2">{{ tripDuration(selectedTrip()!) }}</span>
                 </div>
                 @if (selectedTrip()!.description) {
                   <p class="mb-0 mt-1 text-muted small">{{ selectedTrip()!.description }}</p>
@@ -123,18 +123,18 @@
               <div class="btn-group btn-group-sm" role="group" [attr.aria-label]="'trips.viewMode' | translate">
                 <button
                   type="button"
-                  class="btn"
+                  class="btn trip-view-btn"
                   [ngClass]="viewMode() === 'timeline' ? 'btn-primary' : 'btn-outline-primary'"
                   (click)="setViewMode('timeline')">
-                  <fa-icon icon="list" class="me-1"></fa-icon>
+                  <fa-icon icon="list"></fa-icon>
                   <span jhiTranslate="trips.timelineView">Timeline</span>
                 </button>
                 <button
                   type="button"
-                  class="btn"
+                  class="btn trip-view-btn"
                   [ngClass]="viewMode() === 'calendar' ? 'btn-primary' : 'btn-outline-primary'"
                   (click)="setViewMode('calendar')">
-                  <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
+                  <fa-icon icon="calendar-alt"></fa-icon>
                   <span jhiTranslate="trips.calendarView">Calendar</span>
                 </button>
               </div>
@@ -204,8 +204,12 @@
                               <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
                               {{ formatDate(entry.step.startDate) }}
                               @if (entry.step.endDate && formatDate(entry.step.endDate) !== formatDate(entry.step.startDate)) {
-                                <span> → {{ formatDate(entry.step.endDate) }}</span>
+                                <span> <span class="date-range-arrow" aria-hidden="true">→</span> {{ formatDate(entry.step.endDate) }}</span>
                               }
+                            </div>
+                            <div class="step-dates">
+                              <fa-icon icon="clock" class="me-1"></fa-icon>
+                              {{ stepDurationLabel(entry.step) }}
                             </div>
                             @if (entry.step.notes) {
                               <p class="step-notes">{{ entry.step.notes }}</p>
@@ -235,11 +239,11 @@
                 <div class="trip-calendar">
                   <div class="trip-calendar-toolbar">
                     <button class="btn btn-sm btn-outline-primary" type="button" (click)="previousCalendarMonth()">
-                      <span aria-hidden="true">&lt;</span>
+                      <span class="calendar-nav-arrow" aria-hidden="true">&lt;</span>
                     </button>
                     <div class="trip-calendar-title">{{ getCalendarMonthLabel() }}</div>
                     <button class="btn btn-sm btn-outline-primary" type="button" (click)="nextCalendarMonth()">
-                      <span aria-hidden="true">&gt;</span>
+                      <span class="calendar-nav-arrow" aria-hidden="true">&gt;</span>
                     </button>
                     <button class="btn btn-sm btn-outline-secondary" type="button" (click)="jumpToCurrentMonth()" jhiTranslate="trips.currentMonth">
                       Current

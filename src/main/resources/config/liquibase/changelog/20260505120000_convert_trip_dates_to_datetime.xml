@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260505120000-1" author="dev">
+        <modifyDataType tableName="trip_plan" columnName="start_date" newDataType="timestamp"/>
+        <modifyDataType tableName="trip_plan" columnName="end_date" newDataType="timestamp"/>
+    </changeSet>
+
+    <changeSet id="20260505120000-2" author="dev">
+        <modifyDataType tableName="trip_plan_step" columnName="start_date" newDataType="timestamp"/>
+        <modifyDataType tableName="trip_plan_step" columnName="end_date" newDataType="timestamp"/>
+    </changeSet>
+
+</databaseChangeLog>
+

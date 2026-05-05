@@ -29,11 +29,33 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold" for="startDate">{{ 'trips.fields.startDate' | translate }} *</label>
-        <input id="startDate" type="date" class="form-control" formControlName="startDate" />
+        <div class="row g-2">
+          <div class="col-8">
+            <input id="startDate" type="date" class="form-control" formControlName="startDate" />
+          </div>
+          <div class="col-4">
+            <select class="form-select" formControlName="startHour">
+              @for (hour of hourOptions; track hour) {
+                <option [value]="hour">{{ hour }}:00</option>
+              }
+            </select>
+          </div>
+        </div>
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold" for="endDate">{{ 'trips.fields.endDate' | translate }} *</label>
-        <input id="endDate" type="date" class="form-control" formControlName="endDate" />
+        <div class="row g-2">
+          <div class="col-8">
+            <input id="endDate" type="date" class="form-control" formControlName="endDate" />
+          </div>
+          <div class="col-4">
+            <select class="form-select" formControlName="endHour">
+              @for (hour of hourOptions; track hour) {
+                <option [value]="hour">{{ hour }}:00</option>
+              }
+            </select>
+          </div>
+        </div>
       </div>
     </div>
   </form>
