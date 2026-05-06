@@ -141,6 +141,19 @@ Desktop.ini
 # Local dev Spring Boot secrets (mail password etc.)
 /src/main/resources/config/.env/.env.local
 
+/src/main/resources/config/.env.prod
+/src/main/resources/config/.env.local
+
+# Ignore .env files globally (keep examples tracked)
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+!.env.dev.local.example
+
+
 ######################
 # Others
 ######################
