@@ -166,7 +166,7 @@ function Resolve-ImageTag {
 
 # $PSScriptRoot is not available in param() default values in WinPS 5.1
 $ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Definition }
-if (-not $ConfigFile) { $ConfigFile = Join-Path $ScriptDir '.env' }
+if (-not $ConfigFile) { $ConfigFile = [System.IO.Path]::GetFullPath((Join-Path $ScriptDir '..\..\..\\.env.prod')) }
 
 Ensure-Command -Name 'aws'
 $config = Import-DeploymentConfig -Path $ConfigFile

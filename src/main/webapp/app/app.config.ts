@@ -14,6 +14,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import './config/dayjs';
 import { TranslationModule } from 'app/shared/language/translation.module';
@@ -55,6 +56,7 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
     FindLanguageFromKeyPipe,
+    provideCharts(withDefaultRegisterables()),
     httpInterceptorProviders,
     { provide: TitleStrategy, useClass: AppPageTitleStrategy },
     // jhipster-needle-angular-add-module JHipster will add new module here

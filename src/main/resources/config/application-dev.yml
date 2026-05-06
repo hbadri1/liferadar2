@@ -23,8 +23,10 @@ logging:
 spring:
   config:
     import:
-      - optional:file:./src/main/resources/config/.env/.env.local[.properties]
-      - optional:file:./config/.env/.env.local[.properties]
+      # Running from project root (IntelliJ / Maven)
+      - optional:file:./src/main/resources/config/.env.local[.properties]
+      # Running next to an extracted config/ directory (alternative layout)
+      - optional:file:./config/.env.local[.properties]
   devtools:
     restart:
       enabled: true
@@ -147,3 +149,9 @@ application:
       enabled: false
       endpoint: /websocket/notifications
       user-destination: /queue/notifications
+  mapbox:
+    enabled: ${APPLICATION_MAPBOX_ENABLED:false}
+    access-token: ${APPLICATION_MAPBOX_ACCESS_TOKEN:}
+    api-base-url: ${APPLICATION_MAPBOX_API_BASE_URL:https://api.mapbox.com}
+    style-url: ${APPLICATION_MAPBOX_STYLE_URL:mapbox://styles/mapbox/streets-v12}
+    geocoding-limit: ${APPLICATION_MAPBOX_GEOCODING_LIMIT:5}

@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { ChartConfiguration, ChartOptions } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 import { forkJoin } from 'rxjs';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
@@ -39,21 +41,13 @@ interface ObjectiveCalendarRow {
   latestProgress: FamilyObjectiveProgress | null;
 }
 
-interface ObjectiveTrendPoint {
-  key: string;
-  date: Date;
-  label: string;
-  value: number;
-  x: number;
-  y: number;
-}
-
 interface ObjectiveTrendSeries {
   itemDefinition: FamilyObjectiveItemDefinition;
   latestProgress: FamilyObjectiveProgress | null;
-  points: ObjectiveTrendPoint[];
-  path: string;
-  areaPath: string;
+  labels: string[];
+  values: number[];
+  chartData: ChartConfiguration<'bar'>['data'];
+  chartOptions: ChartOptions<'bar'>;
   minValue: number;
   maxValue: number;
   startLabel: string;
@@ -72,15 +66,13 @@ interface ManagementObjectiveGroup {
   selector: 'jhi-family',
   templateUrl: './family.component.html',
   styleUrl: './family.component.scss',
-  imports: [SharedModule, ReactiveFormsModule],
+  imports: [SharedModule, ReactiveFormsModule, BaseChartDirective],
 })
 export default class FamilyComponent implements OnInit {
   readonly objectiveRecentEntriesCount = 7;
   readonly objectiveHistoryDays = 7;
   readonly objectiveTrendMonths = 3;
   readonly objectiveTrendDays = 90;
-  readonly objectiveTrendChartWidth = 320;
-  readonly objectiveTrendChartHeight = 120;
 
   children = signal<ChildUser[]>([]);
   objectives = signal<FamilyObjective[]>([]);
@@ -511,9 +503,6 @@ export default class FamilyComponent implements OnInit {
     return objective.itemDefinitions.map(itemDefinition => this.getObjectiveTrendSeriesForItem(itemDefinition));
   }
 
-  getObjectiveTrendPointTitle(itemDefinition: FamilyObjectiveItemDefinition, point: ObjectiveTrendPoint): string {
-    return `${point.label} • ${point.value} ${this.getObjectiveUnitLabel(itemDefinition.unit)}`;
-  }
 
   getLatestProgress(itemDefinition: FamilyObjectiveItemDefinition): FamilyObjectiveProgress | null {
     return itemDefinition.progressHistory?.[0] ?? null;
@@ -827,18 +816,18 @@ export default class FamilyComponent implements OnInit {
 
     const startLabel = entries[0]?.label ?? '-';
     const endLabel = entries[entries.length - 1]?.label ?? '-';
-    const chartPaddingX = 14;
-    const chartPaddingY = 14;
-    const innerWidth = this.objectiveTrendChartWidth - chartPaddingX * 2;
-    const innerHeight = this.objectiveTrendChartHeight - chartPaddingY * 2;
 
     if (entries.length === 0) {
       return {
         itemDefinition,
         latestProgress: this.getLatestProgress(itemDefinition),
-        points: [],
-        path: '',
-        areaPath: '',
+        labels: [],
+        values: [],
+        chartData: {
+          labels: [],
+          datasets: [{ data: [] }],
+        },
+        chartOptions: {},
         minValue: 0,
         maxValue: 0,
         startLabel,
@@ -859,35 +848,64 @@ export default class FamilyComponent implements OnInit {
     }
 
     const range = Math.max(maxValue - minValue, 1);
-    const totalSteps = Math.max(entries.length - 1, 1);
-    const points: ObjectiveTrendPoint[] = entries.map((entry, index) => {
-      const x = chartPaddingX + (index / totalSteps) * innerWidth;
-      const y = chartPaddingY + (1 - (entry.value - minValue) / range) * innerHeight;
-      return {
-        key: entry.key,
-        date: entry.date,
-        label: entry.label,
-        value: entry.value,
-        x: Number(x.toFixed(2)),
-        y: Number(y.toFixed(2)),
-      };
-    });
-
-    const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
-    const lastPoint = points[points.length - 1];
-    const firstPoint = points[0];
-    const baselineY = chartPaddingY + innerHeight;
-    const areaPath =
-      points.length > 0
-        ? `${path} L ${lastPoint.x} ${baselineY} L ${firstPoint.x} ${baselineY} Z`
-        : '';
+    const labels = entries.map(entry => entry.label);
+    const values = entries.map(entry => entry.value);
+    const unitLabel = this.getObjectiveUnitLabel(itemDefinition.unit);
 
     return {
       itemDefinition,
       latestProgress: this.getLatestProgress(itemDefinition),
-      points,
-      path,
-      areaPath,
+      labels,
+      values,
+      chartData: {
+        labels,
+        datasets: [
+          {
+            data: values,
+            backgroundColor: '#2563eb',
+            borderColor: '#1d4ed8',
+            borderWidth: 1,
+            borderRadius: 6,
+            hoverBackgroundColor: '#1e40af',
+            maxBarThickness: 26,
+          },
+        ],
+      },
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: '#64748b',
+              maxRotation: 0,
+              autoSkip: true,
+            },
+          },
+          y: {
+            beginAtZero: minValue >= 0,
+            suggestedMin: minValue >= 0 ? 0 : minValue - range * 0.15,
+            suggestedMax: maxValue + range * 0.15,
+            ticks: {
+              precision: 0,
+              color: '#64748b',
+            },
+            grid: {
+              color: '#e2e8f0',
+            },
+          },
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: context => `${context.parsed.y} ${unitLabel}`,
+            },
+          },
+        },
+      },
       minValue,
       maxValue,
       startLabel,
@@ -907,4 +925,3 @@ export default class FamilyComponent implements OnInit {
     return normalized >= start && normalized <= today;
   }
 }
-

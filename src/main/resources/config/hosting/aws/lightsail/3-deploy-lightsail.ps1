@@ -30,7 +30,7 @@ function Invoke-NativeChecked {
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $setupScriptFile = Join-Path $scriptDir "0-setup-docker"
 $composeFile = Join-Path $scriptDir "docker-compose.yml"
-$envFile = Join-Path $scriptDir ".env"
+$envFile = [System.IO.Path]::GetFullPath((Join-Path $scriptDir '..\..\..\\.env.prod'))
 $nginxTemplateFile = Join-Path $scriptDir "nginx/default.conf.template"
 
 if (-not (Test-Path -LiteralPath $setupScriptFile)) {

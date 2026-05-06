@@ -317,10 +317,10 @@ describe('FamilyComponent', () => {
 
     const [series] = comp.getObjectiveTrendSeries(objective);
 
-    expect(series.points).toHaveLength(3);
-    expect(series.points.map(point => point.value)).toEqual([4, 6, 5]);
-    expect(series.path.startsWith('M ')).toBe(true);
-    expect(series.areaPath.endsWith('Z')).toBe(true);
+    expect(series.values).toHaveLength(3);
+    expect(series.values).toEqual([4, 6, 5]);
+    expect(series.chartData.labels).toHaveLength(3);
+    expect(series.chartData.datasets[0]?.data).toEqual([4, 6, 5]);
     expect(series.startLabel).toBeTruthy();
     expect(series.endLabel).toBeTruthy();
   });

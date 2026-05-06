@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIGHTSAIL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-ENV_FILE="${ENV_FILE:-$LIGHTSAIL_DIR/.env}"
+ENV_FILE="${ENV_FILE:-$LIGHTSAIL_DIR/../../../.env.prod}"
 COMPOSE_FILE="${COMPOSE_FILE:-$LIGHTSAIL_DIR/docker-compose.yml}"
 NGINX_TEMPLATE="${NGINX_TEMPLATE:-$LIGHTSAIL_DIR/nginx/default.conf.template}"
 SSH_KEY_PATH="${SSH_KEY_PATH:-$LIGHTSAIL_DIR/liferadar-lightsail01.pem}"

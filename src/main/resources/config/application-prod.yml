@@ -26,6 +26,13 @@ management:
         enabled: false
 
 spring:
+  config:
+    import:
+      # Secrets file mounted next to the JAR on the server (e.g. /opt/app/config/.env.prod)
+      # docker-compose uploads this file via the deploy script.
+      - optional:file:./config/.env.prod[.properties]
+      # Also support running the JAR from the project root (e.g. during integration tests)
+      - optional:file:./src/main/resources/config/.env.prod[.properties]
   devtools:
     restart:
       enabled: false
@@ -154,3 +161,9 @@ application:
       enabled: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_ENABLED:false}
       endpoint: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_ENDPOINT:/websocket/notifications}
       user-destination: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_USER_DESTINATION:/queue/notifications}
+  mapbox:
+    enabled: ${APPLICATION_MAPBOX_ENABLED:false}
+    access-token: ${APPLICATION_MAPBOX_ACCESS_TOKEN:}
+    api-base-url: ${APPLICATION_MAPBOX_API_BASE_URL:https://api.mapbox.com}
+    style-url: ${APPLICATION_MAPBOX_STYLE_URL:mapbox://styles/mapbox/streets-v12}
+    geocoding-limit: ${APPLICATION_MAPBOX_GEOCODING_LIMIT:5}

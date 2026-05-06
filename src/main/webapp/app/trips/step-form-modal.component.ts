@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import dayjs from 'dayjs/esm';
+import mapboxgl from 'mapbox-gl';
 import SharedModule from 'app/shared/shared.module';
 import { TripPlanStepService } from 'app/entities/trip-plan-step/service/trip-plan-step.service';
 import { ITripPlanStep, NewTripPlanStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
@@ -40,9 +41,8 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
   private stepService = inject(TripPlanStepService);
   private mapboxService = inject(MapboxIntegrationService);
 
-  private map: any;
-  private marker: any;
-  private mapboxgl: any;
+  private map: mapboxgl.Map | null = null;
+  private marker: mapboxgl.Marker | null = null;
 
   editForm = this.fb.group({
     actionName: ['', [Validators.required, Validators.maxLength(200)]],
@@ -77,7 +77,7 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngAfterViewInit(): void {
-    void this.initMap();
+    this.initMap();
   }
 
   ngOnDestroy(): void {
@@ -254,7 +254,7 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
     return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
   }
 
-  private async initMap(): Promise<void> {
+  private initMap(): void {
     if (!this.mapCanvas) {
       return;
     }
@@ -263,7 +263,7 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
     this.mapErrorMsg.set(null);
 
     this.mapboxService.getConfig().subscribe({
-      next: async cfg => {
+      next: cfg => {
         if (!cfg.enabled || !cfg.publicToken) {
           this.mapEnabled.set(false);
           this.mapLoading.set(false);
@@ -271,9 +271,8 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         try {
-          this.mapboxgl = (await import('mapbox-gl')).default;
-          this.mapboxgl.accessToken = cfg.publicToken;
-          this.map = new this.mapboxgl.Map({
+          mapboxgl.accessToken = cfg.publicToken!;
+          this.map = new mapboxgl.Map({
             container: this.mapCanvas!.nativeElement,
             style: cfg.styleUrl,
             center: [13.405, 52.52],
@@ -298,7 +297,7 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
             const lat = this.editForm.get('latitude')?.value;
             const lon = this.editForm.get('longitude')?.value;
             if (lat != null && lon != null) {
-              this.map.flyTo({ center: [lon, lat], zoom: 11 });
+              this.map!.flyTo({ center: [lon, lat], zoom: 11 });
               this.setMarker(lon, lat);
             }
           });
@@ -320,12 +319,12 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   private setMarker(longitude: number, latitude: number): void {
-    if (!this.map || !this.mapboxgl) {
+    if (!this.map) {
       return;
     }
 
     if (!this.marker) {
-      this.marker = new this.mapboxgl.Marker({ color: '#0d6efd' }).setLngLat([longitude, latitude]).addTo(this.map);
+      this.marker = new mapboxgl.Marker({ color: '#0d6efd' }).setLngLat([longitude, latitude]).addTo(this.map);
       return;
     }
 

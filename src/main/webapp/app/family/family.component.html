@@ -431,39 +431,17 @@
                           }
                         </div>
 
-                        @if (trend.points.length > 0) {
+                        @if (trend.values.length > 0) {
                           <div class="objective-trend-chart-wrapper mt-2">
-                            <div class="objective-trend-scale">
-                              <span>{{ trend.maxValue }}</span>
-                              <span>{{ trend.minValue }}</span>
-                            </div>
-                            <svg
+                            <canvas
+                              baseChart
                               class="objective-trend-chart"
-                              [attr.viewBox]="'0 0 ' + objectiveTrendChartWidth + ' ' + objectiveTrendChartHeight"
-                              preserveAspectRatio="none"
+                              [data]="trend.chartData"
+                              [options]="trend.chartOptions"
+                              [type]="'bar'"
                               role="img"
                               [attr.aria-label]="'family.objectives.progress.trendAriaEntries' | translate: { item: trend.itemDefinition.name, count: objectiveRecentEntriesCount }"
-                            >
-                              <line x1="14" y1="14" x2="14" [attr.y2]="objectiveTrendChartHeight - 14" class="objective-trend-axis-line"></line>
-                              <line
-                                x1="14"
-                                [attr.y1]="objectiveTrendChartHeight - 14"
-                                [attr.x2]="objectiveTrendChartWidth - 14"
-                                [attr.y2]="objectiveTrendChartHeight - 14"
-                                class="objective-trend-axis-line"
-                              ></line>
-                              <path class="objective-trend-area" [attr.d]="trend.areaPath"></path>
-                              <path class="objective-trend-line" [attr.d]="trend.path"></path>
-                              @for (point of trend.points; track point.key) {
-                                <circle
-                                  class="objective-trend-point"
-                                  [attr.cx]="point.x"
-                                  [attr.cy]="point.y"
-                                  r="3.5"
-                                  [attr.title]="getObjectiveTrendPointTitle(trend.itemDefinition, point)"
-                                ></circle>
-                              }
-                            </svg>
+                            ></canvas>
                           </div>
                           <div class="objective-trend-axis-labels mt-2">
                             <span>{{ trend.startLabel }}</span>

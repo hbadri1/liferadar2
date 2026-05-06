@@ -20,7 +20,7 @@ SSH_KEY="${SSH_KEY:-$SCRIPT_DIR/liferadar-lightsail01.pem}"
 REMOTE_DIR="${REMOTE_DIR:-/opt/liferadar}"
 IMAGE_TAG="${IMAGE_TAG:-}"   # may be overridden via env var or loaded from .env below
 
-ENV_FILE="$SCRIPT_DIR/.env"
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/../../../.env.prod}"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
 NGINX_TEMPLATE="$SCRIPT_DIR/nginx/default.conf.template"
 SETUP_SCRIPT="$SCRIPT_DIR/0-setup-docker"

@@ -95,8 +95,6 @@ spring:
       - optional:classpath:config/todoapps/ticktick.yml
       - optional:classpath:config/todoapps/microsoft-todo.yml
       - optional:classpath:config/todoapps/todoist.yml
-      - optional:classpath:config/mapbox/mapbox-dev.yml
-      - optional:classpath:config/mapbox/mapbox-prod.yml
   application:
     name: liferadar
   docker:

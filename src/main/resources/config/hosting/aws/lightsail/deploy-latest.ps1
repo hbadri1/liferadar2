@@ -54,7 +54,7 @@ if (-not $SshKeyPath) {
     $SshKeyPath = Join-Path $ScriptDir 'liferadar-lightsail01.pem'
 }
 
-$envFile            = Join-Path $ScriptDir '.env'
+$envFile            = [System.IO.Path]::GetFullPath((Join-Path $ScriptDir '..\..\..\\.env.prod'))
 $buildScript        = Join-Path $ScriptDir '1-build-push-image.ps1'
 $deployScript       = Join-Path $ScriptDir '3-deploy-lightsail.ps1'
 
