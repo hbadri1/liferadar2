@@ -32,7 +32,7 @@ export default class NavbarComponent implements OnInit {
   currentLanguage = signal('en');
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_FAMILY_ADMIN') && !authorities.includes('ROLE_ADMIN');
+    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_PARENT') && !authorities.includes('ROLE_ADMIN');
   });
   entitiesNavbarItems: NavbarItem[] = [];
 

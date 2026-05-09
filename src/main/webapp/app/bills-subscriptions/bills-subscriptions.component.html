@@ -184,17 +184,24 @@
 
   <div class="card shadow-sm mb-4">
     <div class="card-body row g-3">
-      <div class="col-md-8">
+      <div class="col-md-6">
         <label class="form-label" for="searchTerm" jhiTranslate="billsSubscriptions.search">Search</label>
         <input id="searchTerm" type="search" class="form-control" [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" [placeholder]="'billsSubscriptions.searchExpenses' | translate" />
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label" for="statusFilter" jhiTranslate="billsSubscriptions.status">Status</label>
         <select id="statusFilter" class="form-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
           <option value="ALL" jhiTranslate="billsSubscriptions.all">All</option>
           @for (option of statusOptions; track option) {
             <option [value]="option">{{ ('billsSubscriptions.statusValues.' + option) | translate }}</option>
           }
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="periodFilter" jhiTranslate="billsSubscriptions.groupByPeriod">Group by</label>
+        <select id="periodFilter" class="form-select" [(ngModel)]="periodFilter" (ngModelChange)="onFilterChange()">
+          <option value="CURRENT_MONTH" jhiTranslate="billsSubscriptions.currentMonth">Current month</option>
+          <option value="ALL_MONTHS" jhiTranslate="billsSubscriptions.allMonths">All months</option>
         </select>
       </div>
     </div>
@@ -227,8 +234,8 @@
         </section>
 
         @if (viewMode === 'cards') {
-          <div class="row g-3" id="entities">
-            @for (expense of pagedExpenses; track trackById($index, expense)) {
+           <div class="row g-3" id="card-entities">
+             @for (expense of pagedExpenses; track trackById($index, expense)) {
               <div class="col-12 col-md-6 col-xl-4" data-cy="expenseCard">
                 <article class="card border-0 shadow-sm decision-card h-100" [class.auto-renewal-row]="expense.autoRenewal">
                   <div class="card-body p-2 p-lg-3 d-flex flex-column gap-2">
@@ -296,21 +303,69 @@
               </div>
             }
           </div>
-        } @else {
-          <div class="card border-0 shadow-sm compact-table-shell" id="entities">
-            <div class="table-responsive mb-0">
+         } @else {
+           <div class="card border-0 shadow-sm compact-table-shell" id="table-entities">
+             <div class="table-responsive mb-0">
               <table class="table table-hover table-sm align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th jhiTranslate="billsSubscriptions.serviceName">Name</th>
-                    <th jhiTranslate="billsSubscriptions.amount">Amount</th>
-                    <th jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</th>
-                    <th jhiTranslate="billsSubscriptions.status">Status</th>
-                    <th jhiTranslate="billsSubscriptions.date">Date</th>
-                    <th jhiTranslate="billsSubscriptions.details">Details</th>
-                    <th class="text-end" jhiTranslate="billsSubscriptions.actions">Actions</th>
-                  </tr>
-                </thead>
+                  <thead>
+                    <tr>
+                      <th role="button" (click)="toggleSort('NAME')" class="sortable-header" [class.sort-active]="sortBy === 'NAME'">
+                        <div class="sort-header-content">
+                          <span jhiTranslate="billsSubscriptions.serviceName">Name</span>
+                          @switch(sortBy === 'NAME' ? sortDirection : null) {
+                            @case('ASC') {
+                              <fa-icon icon="sort-up"></fa-icon>
+                            }
+                            @case('DESC') {
+                              <fa-icon icon="sort-down"></fa-icon>
+                            }
+                          }
+                        </div>
+                      </th>
+                      <th role="button" (click)="toggleSort('AMOUNT')" class="sortable-header" [class.sort-active]="sortBy === 'AMOUNT'">
+                        <div class="sort-header-content">
+                          <span jhiTranslate="billsSubscriptions.amount">Amount</span>
+                          @switch(sortBy === 'AMOUNT' ? sortDirection : null) {
+                            @case('ASC') {
+                              <fa-icon icon="sort-up"></fa-icon>
+                            }
+                            @case('DESC') {
+                              <fa-icon icon="sort-down"></fa-icon>
+                            }
+                          }
+                        </div>
+                      </th>
+                      <th jhiTranslate="billsSubscriptions.annualExpense">Annual Expense</th>
+                      <th role="button" (click)="toggleSort('STATUS')" class="sortable-header" [class.sort-active]="sortBy === 'STATUS'">
+                        <div class="sort-header-content">
+                          <span jhiTranslate="billsSubscriptions.status">Status</span>
+                          @switch(sortBy === 'STATUS' ? sortDirection : null) {
+                            @case('ASC') {
+                              <fa-icon icon="sort-up"></fa-icon>
+                            }
+                            @case('DESC') {
+                              <fa-icon icon="sort-down"></fa-icon>
+                            }
+                          }
+                        </div>
+                      </th>
+                      <th role="button" (click)="toggleSort('DATE')" class="sortable-header" [class.sort-active]="sortBy === 'DATE'">
+                        <div class="sort-header-content">
+                          <span jhiTranslate="billsSubscriptions.date">Date</span>
+                          @switch(sortBy === 'DATE' ? sortDirection : null) {
+                            @case('ASC') {
+                              <fa-icon icon="sort-up"></fa-icon>
+                            }
+                            @case('DESC') {
+                              <fa-icon icon="sort-down"></fa-icon>
+                            }
+                          }
+                        </div>
+                      </th>
+                      <th jhiTranslate="billsSubscriptions.details">Details</th>
+                      <th class="text-end" jhiTranslate="billsSubscriptions.actions">Actions</th>
+                    </tr>
+                  </thead>
                 <tbody>
                   @for (expense of pagedExpenses; track trackById($index, expense)) {
                     <tr [class.auto-renewal-row]="expense.autoRenewal">

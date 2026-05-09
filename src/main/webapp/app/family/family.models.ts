@@ -7,6 +7,15 @@ export interface ChildUser {
   activated: boolean;
 }
 
+export interface ParentUser {
+  id: number;
+  login: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  activated: boolean;
+}
+
 export enum ObjectiveUnit {
   REPS = 'REPS',
   NUMBER = 'NUMBER',

@@ -54,7 +54,7 @@ const routes: Routes = [
     data: {
       defaultSort: `date,${ASC}`,
       actionItems: true,
-      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -63,7 +63,7 @@ const routes: Routes = [
     loadComponent: () => import('./family/family.component'),
     title: 'family.title',
     data: {
-      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN, Authority.CHILD],
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT, Authority.CHILD],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -72,7 +72,7 @@ const routes: Routes = [
     loadComponent: () => import('./trips/trips.component'),
     title: 'trips.title',
     data: {
-      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN, Authority.CHILD],
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT, Authority.CHILD],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -81,7 +81,7 @@ const routes: Routes = [
     loadComponent: () => import('./bills-subscriptions/bills-subscriptions.component'),
     title: 'billsSubscriptions.expensesTitle',
     data: {
-      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -90,7 +90,7 @@ const routes: Routes = [
     loadComponent: () => import('./notifications/notifications.component'),
     title: 'notifications.title',
     data: {
-      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN, Authority.CHILD],
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT, Authority.CHILD],
     },
     canActivate: [UserRouteAccessService],
   },
@@ -99,7 +99,7 @@ const routes: Routes = [
     loadComponent: () => import('./entities/saas-subscription/create/saas-subscription-create.component'),
     title: 'billsSubscriptions.newExpense',
     data: {
-      authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT],
     },
     canActivate: [UserRouteAccessService],
   },

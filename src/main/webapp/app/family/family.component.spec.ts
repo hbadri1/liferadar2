@@ -80,7 +80,7 @@ describe('FamilyComponent', () => {
   it('shows family management tab by default for family admin', () => {
     currentAccount.set({
       activated: true,
-      authorities: ['ROLE_FAMILY_ADMIN'],
+      authorities: ['ROLE_PARENT'],
       email: '',
       firstName: null,
       langKey: 'en',
@@ -105,7 +105,7 @@ describe('FamilyComponent', () => {
   it('keeps the management subtitle for family admins', () => {
     currentAccount.set({
       activated: true,
-      authorities: ['ROLE_FAMILY_ADMIN'],
+      authorities: ['ROLE_PARENT'],
       email: '',
       firstName: null,
       langKey: 'en',
@@ -131,7 +131,7 @@ describe('FamilyComponent', () => {
   it('hides add form when switching away from management tab', () => {
     currentAccount.set({
       activated: true,
-      authorities: ['ROLE_FAMILY_ADMIN'],
+      authorities: ['ROLE_PARENT'],
       email: '',
       firstName: null,
       langKey: 'en',
@@ -166,7 +166,7 @@ describe('FamilyComponent', () => {
   it('shows all child tabs in objectives for family admin', () => {
     currentAccount.set({
       activated: true,
-      authorities: ['ROLE_FAMILY_ADMIN'],
+      authorities: ['ROLE_PARENT'],
       email: '',
       firstName: null,
       langKey: 'en',
@@ -232,7 +232,7 @@ describe('FamilyComponent', () => {
   it('groups objectives by child for management view', () => {
     currentAccount.set({
       activated: true,
-      authorities: ['ROLE_FAMILY_ADMIN'],
+      authorities: ['ROLE_PARENT'],
       email: '',
       firstName: null,
       langKey: 'en',
@@ -358,7 +358,7 @@ describe('FamilyComponent', () => {
 
     currentAccount.set({
       activated: true,
-      authorities: ['ROLE_FAMILY_ADMIN'],
+      authorities: ['ROLE_PARENT'],
       email: '',
       firstName: null,
       langKey: 'en',

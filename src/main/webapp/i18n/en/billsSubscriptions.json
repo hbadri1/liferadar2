@@ -15,6 +15,10 @@
     "none": "None",
     "search": "Search",
     "searchExpenses": "Search expenses",
+    "groupByPeriod": "Group by",
+    "currentMonth": "Current month",
+    "allMonths": "All months",
+    "showingCount": "Showing {{ shown }} of {{ total }} expenses",
     "all": "All",
     "loadingExpenses": "Loading expenses...",
     "noExpensesFound": "No expenses found for the current filters.",
@@ -143,6 +147,8 @@
     "groupDetails": "Details",
     "ticktickNotConnected": "TickTick Not Connected",
     "ticktickNotConnectedMessage": "TickTick is not connected to your account. Please go to Account Settings to authorize and connect your TickTick account.",
-    "goToSettings": "Go to Settings"
+    "goToSettings": "Go to Settings",
+    "sortAscending": "Sort ascending",
+    "sortDescending": "Sort descending"
   }
 }

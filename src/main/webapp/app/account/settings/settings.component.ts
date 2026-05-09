@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
 import SharedModule from 'app/shared/shared.module';
@@ -20,6 +21,8 @@ export default class SettingsComponent implements OnInit {
   languages = LANGUAGES;
   timezones = TIMEZONES;
   currencies = CURRENCIES;
+  canManageFamily = signal(false);
+  managingFamily = signal(false);
 
   settingsForm = new FormGroup({
     firstName: new FormControl(initialAccount.firstName, {
@@ -45,6 +48,7 @@ export default class SettingsComponent implements OnInit {
   });
 
   private readonly accountService = inject(AccountService);
+  private readonly http = inject(HttpClient);
   private readonly translateService = inject(TranslateService);
 
   ngOnInit(): void {
@@ -55,8 +59,14 @@ export default class SettingsComponent implements OnInit {
           timezone: account.timezone ?? 'UTC',
           currency: account.currency ?? 'USD',
         });
+        this.checkFamilyManagementStatus(account);
       }
     });
+  }
+
+  private checkFamilyManagementStatus(account: Account): void {
+    const hasParentRole = account.authorities?.includes('ROLE_PARENT') ?? false;
+    this.canManageFamily.set(hasParentRole);
   }
 
   save(): void {
@@ -72,5 +82,37 @@ export default class SettingsComponent implements OnInit {
         this.translateService.use(account.langKey);
       }
     });
+  }
+
+  toggleFamilyManagement(): void {
+    if (this.canManageFamily()) {
+      // Disable family management
+      this.managingFamily.set(true);
+      this.http.post('/api/account/disable-family-management', {}).subscribe({
+        next: () => {
+          this.canManageFamily.set(false);
+          this.managingFamily.set(false);
+          this.success.set(true);
+          this.accountService.identity().subscribe();
+        },
+        error: () => {
+          this.managingFamily.set(false);
+        },
+      });
+    } else {
+      // Enable family management
+      this.managingFamily.set(true);
+      this.http.post('/api/account/enable-family-management', {}).subscribe({
+        next: () => {
+          this.canManageFamily.set(true);
+          this.managingFamily.set(false);
+          this.success.set(true);
+          this.accountService.identity().subscribe();
+        },
+        error: () => {
+          this.managingFamily.set(false);
+        },
+      });
+    }
   }
 }

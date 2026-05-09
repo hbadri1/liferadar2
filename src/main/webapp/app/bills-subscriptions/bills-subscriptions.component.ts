@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, NgZone, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -26,7 +26,7 @@ import { EvaluationDecisionCreateModalComponent } from 'app/home/evaluation-deci
   styleUrl: './bills-subscriptions.component.scss',
   imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
 })
-export default class BillsSubscriptionsComponent implements OnInit {
+export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
   private readonly subscriptionService = inject(SaaSSubscriptionService);
   private readonly account = inject(AccountService).trackCurrentAccount();
   private readonly router = inject(Router);
@@ -35,9 +35,10 @@ export default class BillsSubscriptionsComponent implements OnInit {
   private readonly translateService = inject(TranslateService);
   private readonly ngZone = inject(NgZone);
 
-  @ViewChild('editExpenseModal') editExpenseModal?: TemplateRef<unknown>;
+   @ViewChild('editExpenseModal') editExpenseModal?: TemplateRef<unknown>;
 
-  private editModalRef: NgbModalRef | null = null;
+   private editModalRef: NgbModalRef | null = null;
+   private overdueCheckInterval: ReturnType<typeof setInterval> | null = null;
 
   readonly billingCycleOptions = Object.values(BillingCycle);
   readonly renewalReminderOptions = Object.values(RenewalReminderOption);
@@ -49,6 +50,9 @@ export default class BillsSubscriptionsComponent implements OnInit {
   editingExpenseId: number | null = null;
   searchTerm = '';
   statusFilter = 'ALL';
+  periodFilter: 'CURRENT_MONTH' | 'ALL_MONTHS' = 'CURRENT_MONTH';
+  sortBy: 'DATE' | 'NAME' | 'AMOUNT' | 'STATUS' = 'DATE';
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
   currentPage = 1;
   readonly itemsPerPage = 10;
   viewMode: 'cards' | 'table' = this.restoreViewMode();
@@ -79,6 +83,11 @@ export default class BillsSubscriptionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadExpenses();
+    this.startOverdueCheckInterval();
+  }
+
+  ngOnDestroy(): void {
+    this.stopOverdueCheckInterval();
   }
 
 
@@ -86,7 +95,9 @@ export default class BillsSubscriptionsComponent implements OnInit {
     this.isLoading = true;
     this.subscriptionService.queryMy().subscribe({
       next: res => {
-        this.expenses = [...(res.body ?? [])].sort((a, b) => this.getSortDate(b).valueOf() - this.getSortDate(a).valueOf());
+        this.expenses = [...(res.body ?? [])]
+          .map(expense => this.updateOverdueStatus(expense))
+          .sort((a, b) => this.getSortDate(b).valueOf() - this.getSortDate(a).valueOf());
         this.visibleItems = this.itemsPerPage;
         this.loadCurrentMonthPaidTotal();
         this.isLoading = false;
@@ -99,13 +110,16 @@ export default class BillsSubscriptionsComponent implements OnInit {
   }
 
   get filteredExpenses(): ISaaSSubscription[] {
-    return this.expenses.filter(expense => {
+    const filtered = this.expenses.filter(expense => {
       const matchesSearch =
         !this.searchTerm.trim() ||
         `${expense.serviceName} ${expense.description ?? ''} ${expense.notes ?? ''}`.toLowerCase().includes(this.searchTerm.trim().toLowerCase());
       const matchesStatus = this.statusFilter === 'ALL' || expense.status === this.statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesPeriod = this.periodFilter === 'ALL_MONTHS' || this.isInCurrentMonth(expense);
+      return matchesSearch && matchesStatus && matchesPeriod;
     });
+
+    return [...filtered].sort((a, b) => this.compareExpenses(a, b));
   }
 
   get pagedExpenses(): ISaaSSubscription[] {
@@ -117,7 +131,7 @@ export default class BillsSubscriptionsComponent implements OnInit {
   }
 
   get showingCountLabel(): string {
-    return this.translateService.instant('liferadarApp.evaluationDecision.home.showingCount', {
+    return this.translateService.instant('billsSubscriptions.showingCount', {
       shown: this.pagedExpenses.length,
       total: this.filteredExpenses.length,
     });
@@ -452,6 +466,33 @@ export default class BillsSubscriptionsComponent implements OnInit {
     return expense.dueDate ?? expense.renewalDate ?? expense.subscriptionDate ?? dayjs();
   }
 
+  private isInCurrentMonth(expense: ISaaSSubscription): boolean {
+    const expenseDate = this.getSortDate(expense);
+    const now = dayjs();
+    return expenseDate.year() === now.year() && expenseDate.month() === now.month();
+  }
+
+  private updateOverdueStatus(expense: ISaaSSubscription): ISaaSSubscription {
+    if (expense.status === SubscriptionStatus.PAID || expense.status === SubscriptionStatus.CANCELLED) {
+      return expense;
+    }
+
+    const dueDate = expense.dueDate || expense.renewalDate;
+    if (!dueDate) {
+      return expense;
+    }
+
+    const now = dayjs();
+    if (dueDate.isBefore(now, 'day') && expense.status !== SubscriptionStatus.OVERDUE) {
+      return {
+        ...expense,
+        status: SubscriptionStatus.OVERDUE,
+      };
+    }
+
+    return expense;
+  }
+
   private calculateRenewalDate(subscriptionDate: dayjs.Dayjs, billingCycle: BillingCycle): dayjs.Dayjs {
     switch (billingCycle) {
       case BillingCycle.WEEKLY:
@@ -525,6 +566,53 @@ export default class BillsSubscriptionsComponent implements OnInit {
   }
 
    private roundToTwoDecimals(value: number): number {
-     return Math.round((value + Number.EPSILON) * 100) / 100;
-   }
+      return Math.round((value + Number.EPSILON) * 100) / 100;
+    }
+
+  toggleSort(field: 'DATE' | 'NAME' | 'AMOUNT' | 'STATUS'): void {
+    if (this.sortBy === field) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortBy = field;
+      this.sortDirection = 'DESC';
+    }
+  }
+
+  private startOverdueCheckInterval(): void {
+    this.overdueCheckInterval = setInterval(() => {
+      this.refreshOverdueStatus();
+    }, 60000); // Check every minute
+  }
+
+  private stopOverdueCheckInterval(): void {
+    if (this.overdueCheckInterval) {
+      clearInterval(this.overdueCheckInterval);
+      this.overdueCheckInterval = null;
+    }
+  }
+
+  private refreshOverdueStatus(): void {
+    const updated = this.expenses.map(expense => this.updateOverdueStatus(expense));
+    const hasChanges = updated.some((expense, index) => expense.status !== this.expenses[index].status);
+
+    if (hasChanges) {
+      this.expenses = updated;
+    }
+  }
+
+  private compareExpenses(a: ISaaSSubscription, b: ISaaSSubscription): number {
+    const direction = this.sortDirection === 'ASC' ? 1 : -1;
+
+    switch (this.sortBy) {
+      case 'NAME':
+        return a.serviceName.localeCompare(b.serviceName) * direction;
+      case 'AMOUNT':
+        return (this.getMonthlyEquivalent(a) - this.getMonthlyEquivalent(b)) * direction;
+      case 'STATUS':
+        return a.status.localeCompare(b.status) * direction;
+      case 'DATE':
+      default:
+        return (this.getSortDate(a).valueOf() - this.getSortDate(b).valueOf()) * direction;
+    }
+  }
 }

@@ -44,17 +44,17 @@ public class FamilyResource {
 
     /**
      * GET /api/family/children — list children.
-     * Accessible by FAMILY_ADMIN, ADMIN (their own children) and CHILD (read-only view of siblings).
+     * Accessible by ROLE_PARENT, ADMIN (their own children) and CHILD (read-only view of siblings).
      */
     @GetMapping("/children")
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
     public ResponseEntity<List<AdminUserDTO>> getMyChildren() {
         String currentLogin = SecurityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new BadRequestAlertException("Not authenticated", "family", "notauthenticated"));
 
         // For ROLE_CHILD: find the parent (createdBy) then return siblings
-        // For ROLE_FAMILY_ADMIN / ROLE_ADMIN: return their own children
+        // For ROLE_PARENT / ROLE_ADMIN: return their own children
         List<AdminUserDTO> children = userRepository.findAll().stream()
             .filter(u -> {
                 // include users where current login is the parent
@@ -79,7 +79,7 @@ public class FamilyResource {
      */
     @GetMapping("/objectives")
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
     public ResponseEntity<List<FamilyObjectiveDTO>> getFamilyObjectives() {
         return ResponseEntity.ok(familyObjectiveService.findObjectivesForCurrentScope());
     }
@@ -88,7 +88,7 @@ public class FamilyResource {
      * POST /api/family/objectives — create one objective per selected child.
      */
     @PostMapping("/objectives")
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
     public ResponseEntity<List<FamilyObjectiveDTO>> createFamilyObjectives(@Valid @RequestBody CreateFamilyObjectiveRequest request) {
         return ResponseEntity.ok(familyObjectiveService.createObjectives(request));
     }
@@ -97,7 +97,7 @@ public class FamilyResource {
      * PUT /api/family/objectives/{objectiveId} — update objective and its item definitions.
      */
     @PutMapping("/objectives/{objectiveId}")
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
     public ResponseEntity<FamilyObjectiveDTO> updateFamilyObjective(
         @PathVariable Long objectiveId,
         @Valid @RequestBody UpdateFamilyObjectiveRequest request
@@ -109,7 +109,7 @@ public class FamilyResource {
      * PATCH /api/family/objectives/{objectiveId}/deactivate — deactivate an objective.
      */
     @PatchMapping("/objectives/{objectiveId}/deactivate")
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
     public ResponseEntity<FamilyObjectiveDTO> deactivateFamilyObjective(@PathVariable Long objectiveId) {
         return ResponseEntity.ok(familyObjectiveService.deactivateObjective(objectiveId));
     }
@@ -118,7 +118,7 @@ public class FamilyResource {
      * DELETE /api/family/objectives/{objectiveId} — delete an objective.
      */
     @DeleteMapping("/objectives/{objectiveId}")
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
     public ResponseEntity<Void> deleteFamilyObjective(@PathVariable Long objectiveId) {
         familyObjectiveService.deleteObjective(objectiveId);
         return ResponseEntity.noContent().build();
@@ -128,7 +128,7 @@ public class FamilyResource {
      * POST /api/family/objective-items/{itemDefinitionId}/progress — add a progress entry for an objective item.
      */
     @PostMapping("/objective-items/{itemDefinitionId}/progress")
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
     public ResponseEntity<FamilyObjectiveDTO> addObjectiveProgress(
         @PathVariable Long itemDefinitionId,
         @Valid @RequestBody CreateObjectiveProgressRequest request
@@ -137,10 +137,10 @@ public class FamilyResource {
     }
 
     /**
-     * POST /api/family/children — create a child account. FAMILY_ADMIN and ADMIN only.
+     * POST /api/family/children — create a child account. ROLE_PARENT and ADMIN only.
      */
     @PostMapping("/children")
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
     public ResponseEntity<AdminUserDTO> createChild(@Valid @RequestBody CreateChildRequest request) {
         LOG.debug("REST request to create child account: {}", request.login());
 
@@ -176,10 +176,10 @@ public class FamilyResource {
     }
 
     /**
-     * DELETE /api/family/children/{login} — remove a child account. FAMILY_ADMIN and ADMIN only.
+     * DELETE /api/family/children/{login} — remove a child account. ROLE_PARENT and ADMIN only.
      */
     @DeleteMapping("/children/{login}")
-    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.FAMILY_ADMIN + "', '" + AuthoritiesConstants.ADMIN + "')")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
     public ResponseEntity<Void> deleteChild(@PathVariable String login) {
         String currentLogin = SecurityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new BadRequestAlertException("Not authenticated", "family", "notauthenticated"));

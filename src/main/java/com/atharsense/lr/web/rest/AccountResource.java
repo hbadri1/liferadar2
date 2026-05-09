@@ -176,6 +176,34 @@ public class AccountResource {
         }
     }
 
+    /**
+     * {@code POST  /account/enable-family-management} : Enable family management for the current user (add ROLE_PARENT).
+     */
+    @PostMapping(path = "/account/enable-family-management")
+    public void enableFamilyManagement() {
+        String userLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new AccountResourceException("Current user login not found"));
+        Optional<User> user = userRepository.findOneByLogin(userLogin);
+        if (!user.isPresent()) {
+            throw new AccountResourceException("User could not be found");
+        }
+        userService.addRoleToUser(user.orElseThrow(), "ROLE_PARENT");
+    }
+
+    /**
+     * {@code POST  /account/disable-family-management} : Disable family management for the current user (remove ROLE_PARENT).
+     */
+    @PostMapping(path = "/account/disable-family-management")
+    public void disableFamilyManagement() {
+        String userLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new AccountResourceException("Current user login not found"));
+        Optional<User> user = userRepository.findOneByLogin(userLogin);
+        if (!user.isPresent()) {
+            throw new AccountResourceException("User could not be found");
+        }
+        userService.removeRoleFromUser(user.orElseThrow(), "ROLE_PARENT");
+    }
+
     private static boolean isPasswordLengthInvalid(String password) {
         return (
             StringUtils.isEmpty(password) ||

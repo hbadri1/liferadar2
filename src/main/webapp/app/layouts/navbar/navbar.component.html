@@ -14,7 +14,7 @@
         </a>
       </li>
       @if (account() !== null) {
-        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_FAMILY_ADMIN', 'ROLE_USER', 'ROLE_ADMIN']">
+        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">
           <a class="nav-link" routerLink="/action-items" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
             <span jhiTranslate="global.menu.actionItems">Decisions</span>
           </a>
@@ -24,12 +24,12 @@
             <span jhiTranslate="global.menu.trips">Trips</span>
           </a>
         </li>
-        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_FAMILY_ADMIN', 'ROLE_USER', 'ROLE_ADMIN']">
+        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">
           <a class="nav-link" routerLink="/expenses" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
             <span jhiTranslate="global.menu.expenses">My Finance</span>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT']">
           <a class="nav-link" routerLink="/family" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
             <span jhiTranslate="global.menu.family">My Family Space</span>
           </a>
@@ -80,86 +80,6 @@
         </a>
       }
 
-      <!-- Administration (ROLE_ADMIN) -->
-      <div
-        *jhiHasAnyAuthority="'ROLE_ADMIN'"
-        ngbDropdown
-        class="account-dropdown admin-dropdown"
-        display="dynamic"
-        container="body"
-      >
-        <a class="navbar-account" ngbDropdownToggle href="javascript:void(0);" id="admin-menu" data-cy="adminMenu">
-          <fa-icon icon="users-cog" class="account-icon"></fa-icon>
-          <span jhiTranslate="global.menu.admin.main">Administration</span>
-        </a>
-        <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="admin-menu">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/authority"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: true }"
-              (click)="collapseNavbar()"
-            >
-              <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-              <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" routerLink="/admin/user-management" routerLinkActive="active" (click)="collapseNavbar()">
-              <fa-icon icon="users" [fixedWidth]="true"></fa-icon>
-              <span jhiTranslate="global.menu.admin.userManagement">User management</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
-              <fa-icon icon="tachometer-alt" [fixedWidth]="true"></fa-icon>
-              <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" routerLink="/admin/health" routerLinkActive="active" (click)="collapseNavbar()">
-              <fa-icon icon="heart" [fixedWidth]="true"></fa-icon>
-              <span jhiTranslate="global.menu.admin.health">Health</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-              <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
-              <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" routerLink="/admin/logs" routerLinkActive="active" (click)="collapseNavbar()">
-              <fa-icon icon="tasks" [fixedWidth]="true"></fa-icon>
-              <span jhiTranslate="global.menu.admin.logs">Logs</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" routerLink="/admin/premium-interests" routerLinkActive="active" (click)="collapseNavbar()">
-              <fa-icon icon="gem" [fixedWidth]="true"></fa-icon>
-              <span jhiTranslate="global.menu.admin.premiumInterests">Early Access List</span>
-            </a>
-          </li>
-          @if (openAPIEnabled) {
-            <li>
-              <a class="dropdown-item" routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="book" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.apidocs">API</span>
-              </a>
-            </li>
-          }
-          @if (!inProduction) {
-            <li>
-              <a class="dropdown-item" href="./h2-console/" target="_tab" (click)="collapseNavbar()">
-                <fa-icon icon="database" [fixedWidth]="true"></fa-icon>
-                <span jhiTranslate="global.menu.admin.database">Database</span>
-              </a>
-            </li>
-          }
-        </ul>
-      </div>
-
       <!-- Account Menu / Login Button -->
       @if (account() === null) {
         <button class="btn-login" (click)="login()">
@@ -187,6 +107,49 @@
                 <span jhiTranslate="global.menu.premium">Premium</span>
               </a>
             }
+            <div *jhiHasAnyAuthority="'ROLE_ADMIN'">
+              <hr class="dropdown-divider" />
+              <a ngbDropdownItem routerLink="/authority" (click)="collapseNavbar()">
+                <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
+              </a>
+              <a ngbDropdownItem routerLink="/admin/user-management" (click)="collapseNavbar()">
+                <fa-icon icon="users" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.admin.userManagement">User management</span>
+              </a>
+              <a ngbDropdownItem routerLink="/admin/metrics" (click)="collapseNavbar()">
+                <fa-icon icon="tachometer-alt" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
+              </a>
+              <a ngbDropdownItem routerLink="/admin/health" (click)="collapseNavbar()">
+                <fa-icon icon="heart" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.admin.health">Health</span>
+              </a>
+              <a ngbDropdownItem routerLink="/admin/configuration" (click)="collapseNavbar()">
+                <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
+              </a>
+              <a ngbDropdownItem routerLink="/admin/logs" (click)="collapseNavbar()">
+                <fa-icon icon="tasks" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.admin.logs">Logs</span>
+              </a>
+              <a ngbDropdownItem routerLink="/admin/premium-interests" (click)="collapseNavbar()">
+                <fa-icon icon="gem" [fixedWidth]="true"></fa-icon>
+                <span jhiTranslate="global.menu.admin.premiumInterests">Early Access List</span>
+              </a>
+              @if (openAPIEnabled) {
+                <a ngbDropdownItem routerLink="/admin/docs" (click)="collapseNavbar()">
+                  <fa-icon icon="book" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.admin.apidocs">API</span>
+                </a>
+              }
+              @if (!inProduction) {
+                <a ngbDropdownItem href="./h2-console/" target="_tab" (click)="collapseNavbar()">
+                  <fa-icon icon="database" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.admin.database">Database</span>
+                </a>
+              }
+            </div>
             <hr class="dropdown-divider" />
             <a ngbDropdownItem (click)="logout()">
               <fa-icon icon="sign-out-alt"></fa-icon>
@@ -207,12 +170,144 @@
   @if (!isNavbarCollapsed()) {
     <div class="navbar-mobile-menu">
       <ul class="mobile-nav-items">
-        <li><a routerLink="/" (click)="collapseNavbar()" jhiTranslate="global.menu.home">Home</a></li>
+        <li class="mobile-section-label">Main</li>
+        <li>
+          <a class="mobile-nav-link" routerLink="/" (click)="collapseNavbar()">
+            <fa-icon icon="home"></fa-icon>
+            <span jhiTranslate="global.menu.home">Home</span>
+          </a>
+        </li>
+        @if (account() === null) {
+          <li>
+            <a class="mobile-nav-link" routerLink="/about" (click)="collapseNavbar()">
+              <fa-icon icon="info-circle"></fa-icon>
+              <span jhiTranslate="global.menu.about">About</span>
+            </a>
+          </li>
+          <li>
+            <a class="mobile-nav-link" routerLink="/login" (click)="collapseNavbar()">
+              <fa-icon icon="sign-in-alt"></fa-icon>
+              <span jhiTranslate="global.menu.account.login">Sign in</span>
+            </a>
+          </li>
+        }
         @if (account() !== null) {
-          <li><a routerLink="/action-items" (click)="collapseNavbar()" jhiTranslate="global.menu.actionItems">Decisions</a></li>
-          <li><a routerLink="/trips" (click)="collapseNavbar()" jhiTranslate="global.menu.trips">Trips</a></li>
-          <li><a routerLink="/expenses" (click)="collapseNavbar()" jhiTranslate="global.menu.expenses">My Finance</a></li>
-          <li><a routerLink="/family" (click)="collapseNavbar()" jhiTranslate="global.menu.family">My Family Space</a></li>
+          <li class="mobile-section-label" jhiTranslate="global.menu.account.main">Account</li>
+          <li *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">
+            <a class="mobile-nav-link" routerLink="/action-items" (click)="collapseNavbar()">
+              <fa-icon icon="lightbulb"></fa-icon>
+              <span jhiTranslate="global.menu.actionItems">Decisions</span>
+            </a>
+          </li>
+          <li>
+            <a class="mobile-nav-link" routerLink="/trips" (click)="collapseNavbar()">
+              <fa-icon icon="plane"></fa-icon>
+              <span jhiTranslate="global.menu.trips">Trips</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">
+            <a class="mobile-nav-link" routerLink="/expenses" (click)="collapseNavbar()">
+              <fa-icon icon="chart-bar"></fa-icon>
+              <span jhiTranslate="global.menu.expenses">My Finance</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="['ROLE_PARENT']">
+            <a class="mobile-nav-link" routerLink="/family" (click)="collapseNavbar()">
+              <fa-icon icon="users"></fa-icon>
+              <span jhiTranslate="global.menu.family">My Family Space</span>
+            </a>
+          </li>
+          <li>
+            <a class="mobile-nav-link" routerLink="/notifications" (click)="collapseNavbar()">
+              <span class="mobile-notification-icon-wrap">
+                <fa-icon icon="bell"></fa-icon>
+                @if (unreadNotificationCount() > 0) {
+                  <span class="notification-badge">{{ unreadNotificationCount() }}</span>
+                }
+              </span>
+              <span jhiTranslate="global.menu.notifications">Notifications</span>
+            </a>
+          </li>
+          <li>
+            <a class="mobile-nav-link" routerLink="/account/settings" (click)="collapseNavbar()">
+              <fa-icon icon="wrench"></fa-icon>
+              <span jhiTranslate="global.menu.account.settings">Settings</span>
+            </a>
+          </li>
+          @if (!isChildOnly()) {
+            <li>
+              <a class="mobile-nav-link" routerLink="/premium" (click)="collapseNavbar()">
+                <fa-icon icon="gem"></fa-icon>
+                <span jhiTranslate="global.menu.premium">Premium</span>
+              </a>
+            </li>
+          }
+
+          <li class="mobile-section-label" *jhiHasAnyAuthority="'ROLE_ADMIN'" jhiTranslate="global.menu.admin.main">Administration</li>
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+            <a class="mobile-nav-link" routerLink="/authority" (click)="collapseNavbar()">
+              <fa-icon icon="asterisk"></fa-icon>
+              <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+            <a class="mobile-nav-link" routerLink="/admin/user-management" (click)="collapseNavbar()">
+              <fa-icon icon="users"></fa-icon>
+              <span jhiTranslate="global.menu.admin.userManagement">User management</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+            <a class="mobile-nav-link" routerLink="/admin/metrics" (click)="collapseNavbar()">
+              <fa-icon icon="tachometer-alt"></fa-icon>
+              <span jhiTranslate="global.menu.admin.metrics">Metrics</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+            <a class="mobile-nav-link" routerLink="/admin/health" (click)="collapseNavbar()">
+              <fa-icon icon="heart"></fa-icon>
+              <span jhiTranslate="global.menu.admin.health">Health</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+            <a class="mobile-nav-link" routerLink="/admin/configuration" (click)="collapseNavbar()">
+              <fa-icon icon="cogs"></fa-icon>
+              <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+            <a class="mobile-nav-link" routerLink="/admin/logs" (click)="collapseNavbar()">
+              <fa-icon icon="tasks"></fa-icon>
+              <span jhiTranslate="global.menu.admin.logs">Logs</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+            <a class="mobile-nav-link" routerLink="/admin/premium-interests" (click)="collapseNavbar()">
+              <fa-icon icon="gem"></fa-icon>
+              <span jhiTranslate="global.menu.admin.premiumInterests">Early Access List</span>
+            </a>
+          </li>
+          @if (openAPIEnabled) {
+            <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+              <a class="mobile-nav-link" routerLink="/admin/docs" (click)="collapseNavbar()">
+                <fa-icon icon="book"></fa-icon>
+                <span jhiTranslate="global.menu.admin.apidocs">API</span>
+              </a>
+            </li>
+          }
+          @if (!inProduction) {
+            <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
+              <a class="mobile-nav-link" href="./h2-console/" target="_tab" (click)="collapseNavbar()">
+                <fa-icon icon="database"></fa-icon>
+                <span jhiTranslate="global.menu.admin.database">Database</span>
+              </a>
+            </li>
+          }
+          <li>
+            <a class="mobile-nav-link mobile-signout-link" href="javascript:void(0);" (click)="logout()">
+              <fa-icon icon="sign-out-alt"></fa-icon>
+              <span jhiTranslate="global.menu.account.logout">Sign out</span>
+            </a>
+          </li>
         }
       </ul>
     </div>

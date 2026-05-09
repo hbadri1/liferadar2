@@ -15,6 +15,10 @@
     "none": "لا يوجد",
     "search": "بحث",
     "searchExpenses": "ابحث في المصروفات",
+    "groupByPeriod": "التجميع حسب",
+    "currentMonth": "الشهر الحالي",
+    "allMonths": "كل الشهور",
+    "showingCount": "عرض {{ shown }} من أصل {{ total }} مصروفات",
     "all": "الكل",
     "loadingExpenses": "جاري تحميل المصروفات...",
     "noExpensesFound": "لا توجد مصروفات مطابقة للفلاتر الحالية.",
@@ -143,6 +147,8 @@
     "groupDetails": "التفاصيل",
     "ticktickNotConnected": "TickTick غير مرتبط",
     "ticktickNotConnectedMessage": "لم يتم ربط TickTick بحسابك. يرجى الذهاب إلى إعدادات الحساب للتفويض وربط حساب TickTick الخاص بك.",
-    "goToSettings": "الذهاب إلى الإعدادات"
+    "goToSettings": "الذهاب إلى الإعدادات",
+    "sortAscending": "ترتيب تصاعدي",
+    "sortDescending": "ترتيب تنازلي"
   }
 }

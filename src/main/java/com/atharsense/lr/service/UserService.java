@@ -124,8 +124,8 @@ public class UserService {
         newUser.setActivated(true);
         newUser.setActivationKey(null);
         Set<Authority> authorities = new HashSet<>();
-        // Self-registered users receive ROLE_FAMILY_ADMIN
-        authorityRepository.findById(AuthoritiesConstants.FAMILY_ADMIN).ifPresent(authorities::add);
+        // Self-registered users receive ROLE_USER
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
         ensureExtendedUser(newUser, userDTO);
@@ -375,5 +375,36 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).toList();
+    }
+
+    /**
+     * Add a role to the given user.
+     *
+     * @param user the user to add the role to.
+     * @param roleName the name of the role to add.
+     */
+    public void addRoleToUser(User user, String roleName) {
+        authorityRepository.findById(roleName).ifPresent(authority -> {
+            user.getAuthorities().add(authority);
+            userRepository.save(user);
+            LOG.debug("Added role {} to user: {}", roleName, user.getLogin());
+        });
+    }
+
+    /**
+     * Remove a role from the given user.
+     *
+     * @param user the user to remove the role from.
+     * @param roleName the name of the role to remove.
+     */
+    public void removeRoleFromUser(User user, String roleName) {
+        authorityRepository.findById(roleName).ifPresent(authority -> {
+            // Only remove if the user has other roles
+            if (user.getAuthorities().size() > 1) {
+                user.getAuthorities().remove(authority);
+                userRepository.save(user);
+                LOG.debug("Removed role {} from user: {}", roleName, user.getLogin());
+            }
+        });
     }
 }

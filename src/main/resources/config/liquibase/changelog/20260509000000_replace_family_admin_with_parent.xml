@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260509000000-1" author="system">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM jhi_authority WHERE name = 'ROLE_PARENT'</sqlCheck>
+        </preConditions>
+        <comment>Add ROLE_PARENT authority if it does not exist</comment>
+        <insert tableName="jhi_authority">
+            <column name="name" value="ROLE_PARENT"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20260509000000-2" author="system">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">SELECT CASE WHEN EXISTS (SELECT 1 FROM jhi_user_authority WHERE authority_name = 'ROLE_FAMILY_ADMIN') THEN 1 ELSE 0 END</sqlCheck>
+        </preConditions>
+        <comment>Migrate ROLE_FAMILY_ADMIN user mappings to ROLE_PARENT</comment>
+        <delete tableName="jhi_user_authority">
+            <where>authority_name = 'ROLE_FAMILY_ADMIN' AND user_id IN (SELECT user_id FROM jhi_user_authority WHERE authority_name = 'ROLE_PARENT')</where>
+        </delete>
+
+        <update tableName="jhi_user_authority">
+            <column name="authority_name" value="ROLE_PARENT"/>
+            <where>authority_name = 'ROLE_FAMILY_ADMIN'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="20260509000000-3" author="system">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">SELECT CASE WHEN EXISTS (SELECT 1 FROM jhi_authority WHERE name = 'ROLE_FAMILY_ADMIN') THEN 1 ELSE 0 END</sqlCheck>
+        </preConditions>
+        <comment>Remove legacy ROLE_FAMILY_ADMIN authority row after migration</comment>
+        <delete tableName="jhi_authority">
+            <where>name = 'ROLE_FAMILY_ADMIN'</where>
+        </delete>
+    </changeSet>
+
+</databaseChangeLog>
+

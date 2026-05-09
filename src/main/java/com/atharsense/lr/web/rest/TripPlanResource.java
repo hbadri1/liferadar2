@@ -71,7 +71,7 @@ public class TripPlanResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<TripPlan> createTripPlan(@Valid @RequestBody CreateTripPlanRequest request) throws URISyntaxException {
         // Validate trip dates
         validateTripDates(request.startDate(), request.endDate(), true);
@@ -102,7 +102,7 @@ public class TripPlanResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<TripPlan> updateTripPlan(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody TripPlan tripPlan
@@ -140,7 +140,7 @@ public class TripPlanResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<TripPlan> partialUpdateTripPlan(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody TripPlan tripPlan
@@ -216,7 +216,7 @@ public class TripPlanResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTripPlan(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete TripPlan : {}", id);
         tripPlanService.delete(id);

@@ -51,12 +51,12 @@ export default class HomeComponent implements OnInit, OnDestroy {
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
     return (
-      authorities.includes(Authority.CHILD) && !authorities.includes(Authority.FAMILY_ADMIN) && !authorities.includes(Authority.ADMIN)
+      authorities.includes(Authority.CHILD) && !authorities.includes(Authority.PARENT) && !authorities.includes(Authority.ADMIN)
     );
   });
   isFamilyAdmin = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes(Authority.FAMILY_ADMIN);
+    return authorities.includes(Authority.PARENT);
   });
 
   private readonly WELCOME_DISMISSED_KEY = 'liferadar_welcome_dismissed';

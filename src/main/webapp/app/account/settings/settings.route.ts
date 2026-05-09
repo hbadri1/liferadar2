@@ -9,7 +9,7 @@ const settingsRoute: Route = {
   component: SettingsComponent,
   title: 'global.menu.account.settings',
   data: {
-    authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+    authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT],
   },
   canActivate: [UserRouteAccessService],
 };

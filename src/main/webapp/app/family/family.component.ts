@@ -13,6 +13,7 @@ import { FamilyObjectiveModalComponent } from './family-objective-modal.componen
 import { FamilyProgressModalComponent } from './family-progress-modal.component';
 import {
   ChildUser,
+  ParentUser,
   FamilyObjective,
   FamilyObjectiveGroup,
   FamilyObjectiveItemDefinition,
@@ -75,6 +76,7 @@ export default class FamilyComponent implements OnInit {
   readonly objectiveTrendDays = 90;
 
   children = signal<ChildUser[]>([]);
+  parents = signal<ParentUser[]>([]);
   objectives = signal<FamilyObjective[]>([]);
   isLoading = signal(false);
   isLoadingObjectives = signal(false);
@@ -82,6 +84,7 @@ export default class FamilyComponent implements OnInit {
   errorMsg = signal<string | null>(null);
   successMsg = signal<string | null>(null);
   showAddForm = signal(false);
+  showAddParentForm = signal(false);
   activeTab = signal<string>('management');
 
   account = inject(AccountService).trackCurrentAccount();
@@ -92,14 +95,30 @@ export default class FamilyComponent implements OnInit {
     if (!acc) return false;
     const authorities: string[] = acc.authorities ?? [];
     return authorities.includes('ROLE_CHILD') &&
-      !authorities.includes('ROLE_FAMILY_ADMIN') &&
+      !authorities.includes('ROLE_PARENT') &&
       !authorities.includes('ROLE_ADMIN');
   });
 
-  /** Family management tab is only visible for family admins. */
+  /** Family management tab is only visible for parents (ROLE_PARENT). */
   canManageFamily = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_FAMILY_ADMIN');
+    return authorities.includes('ROLE_PARENT');
+  });
+
+  /** Can add parents only if ROLE_PARENT and ROLE_ADMIN */
+  canManageParents = computed(() => {
+    const authorities: string[] = this.account()?.authorities ?? [];
+    return authorities.includes('ROLE_PARENT') && authorities.includes('ROLE_ADMIN');
+  });
+
+  /** True when the logged-in user has ROLE_PARENT and can view kids' objectives */
+  isParent = computed(() => {
+    const acc = this.account();
+    if (!acc) return false;
+    const authorities: string[] = acc.authorities ?? [];
+    return authorities.includes('ROLE_PARENT') &&
+      !authorities.includes('ROLE_CHILD') &&
+      !authorities.includes('ROLE_ADMIN');
   });
 
   headerSubtitleKey = computed(() => (this.isChild() ? 'family.childSubtitle' : 'family.subtitle'));
@@ -223,6 +242,7 @@ export default class FamilyComponent implements OnInit {
   ngOnInit(): void {
     this.ensureActiveTabSelection();
     this.loadChildren();
+    this.loadParents();
     this.loadObjectives();
   }
 
@@ -250,6 +270,11 @@ export default class FamilyComponent implements OnInit {
     return fullName || child.login;
   }
 
+  getParentDisplayName(parent: ParentUser): string {
+    const fullName = `${parent.firstName ?? ''} ${parent.lastName ?? ''}`.trim();
+    return fullName || parent.login;
+  }
+
   loadChildren(): void {
     this.isLoading.set(true);
     this.http.get<ChildUser[]>('/api/family/children').subscribe({
@@ -274,6 +299,17 @@ export default class FamilyComponent implements OnInit {
       error: err => {
         this.isLoadingObjectives.set(false);
         this.errorMsg.set(err?.error?.detail ?? err?.error?.title ?? 'Unable to load objectives');
+      },
+    });
+  }
+
+  loadParents(): void {
+    this.http.get<ParentUser[]>('/api/family/parents').subscribe({
+      next: parents => {
+        this.parents.set(parents);
+      },
+      error: () => {
+        // Silently fail - parents endpoint may not be available
       },
     });
   }
@@ -320,6 +356,52 @@ export default class FamilyComponent implements OnInit {
         this.children.update(list => list.filter(c => c.login !== login));
         this.ensureActiveTabSelection();
         this.loadObjectives();
+      },
+      error: err => {
+        this.errorMsg.set(err?.error?.detail ?? 'family.error.delete');
+      },
+    });
+  }
+
+  toggleAddParentForm(): void {
+    this.showAddParentForm.update(v => !v);
+    this.addForm.reset();
+    this.errorMsg.set(null);
+    this.successMsg.set(null);
+  }
+
+  saveParent(): void {
+    if (this.addForm.invalid) return;
+    this.isSaving.set(true);
+    this.errorMsg.set(null);
+    this.successMsg.set(null);
+    const val = this.addForm.value;
+    this.http.post<ParentUser>('/api/family/parents', {
+      login: val.login,
+      firstName: val.firstName || null,
+      lastName: val.lastName || null,
+      email: val.email || null,
+      password: val.password,
+    }).subscribe({
+      next: parent => {
+        this.parents.update(list => [...list, parent]);
+        this.isSaving.set(false);
+        this.successMsg.set('family.parentAdded');
+        this.addForm.reset();
+        this.showAddParentForm.set(false);
+      },
+      error: err => {
+        this.isSaving.set(false);
+        this.errorMsg.set(err?.error?.detail ?? err?.error?.title ?? 'family.error.save');
+      },
+    });
+  }
+
+  deleteParent(login: string): void {
+    if (!confirm('Are you sure you want to remove this parent account?')) return;
+    this.http.delete(`/api/family/parents/${login}`).subscribe({
+      next: () => {
+        this.parents.update(list => list.filter(p => p.login !== login));
       },
       error: err => {
         this.errorMsg.set(err?.error?.detail ?? 'family.error.delete');

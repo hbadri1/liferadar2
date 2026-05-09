@@ -9,7 +9,7 @@ const todoAppsRoute: Route = {
   component: TodoAppsComponent,
   title: 'global.menu.account.configuration',
   data: {
-    authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+    authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT],
   },
   canActivate: [UserRouteAccessService],
 };

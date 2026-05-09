@@ -111,10 +111,15 @@
     },
     "loading": "Chargement des membres de la famille…",
     "childAdded": "Compte enfant créé avec succès.",
+    "parentAdded": "Compte parent créé avec succès.",
     "childViewInfo": "Vous visualisez les membres de votre famille. Contactez votre parent pour effectuer des modifications.",
     "removeChild": "Supprimer le compte enfant",
+    "removeParent": "Supprimer le compte parent",
+    "addParent": "Ajouter un parent",
+    "parentsListTitle": "Parents",
     "badge": {
       "child": "Enfant",
+      "parent": "Parent",
       "active": "Actif",
       "inactive": "Inactif"
     },

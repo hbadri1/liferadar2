@@ -9,7 +9,7 @@ const passwordRoute: Route = {
   component: PasswordComponent,
   title: 'global.menu.account.password',
   data: {
-    authorities: [Authority.USER, Authority.ADMIN, Authority.FAMILY_ADMIN],
+    authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT],
   },
   canActivate: [UserRouteAccessService],
 };

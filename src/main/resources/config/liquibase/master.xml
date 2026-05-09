@@ -50,9 +50,9 @@
      <include file="config/liquibase/changelog/20260501120000_make_life_evaluation_nullable_in_evaluation_decision.xml" relativeToChangelogFile="false"/>
      <include file="config/liquibase/changelog/20260501143000_enforce_single_enabled_todoapp_per_user.xml" relativeToChangelogFile="false"/>
      <include file="config/liquibase/changelog/20260502100000_added_entity_PremiumInterest.xml" relativeToChangelogFile="false"/>
-     <include file="config/liquibase/changelog/20260505120000_convert_trip_dates_to_datetime.xml" relativeToChangelogFile="false"/>
-     <include file="config/liquibase/changelog/20260508090000_add_actions_json_to_trip_plan.xml" relativeToChangelogFile="false"/>
-     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+     <include file="config/liquibase/changelog/20260505120000_convert_trip_dates_to_datetime.xml" relativeToChangelogFile="false"/><include file="config/liquibase/changelog/20260508090000_add_actions_json_to_trip_plan.xml" relativeToChangelogFile="false"/>
+      <include file="config/liquibase/changelog/20260509000000_replace_family_admin_with_parent.xml" relativeToChangelogFile="false"/>
+      <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

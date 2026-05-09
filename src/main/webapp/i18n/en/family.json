@@ -111,10 +111,15 @@
     },
     "loading": "Loading family members…",
     "childAdded": "Child account created successfully.",
+    "parentAdded": "Parent account created successfully.",
     "childViewInfo": "You are viewing your family members. Contact your parent to make changes.",
     "removeChild": "Remove child account",
+    "removeParent": "Remove parent account",
+    "addParent": "Add Parent",
+    "parentsListTitle": "Parents",
     "badge": {
       "child": "Child",
+      "parent": "Parent",
       "active": "Active",
       "inactive": "Inactive"
     },

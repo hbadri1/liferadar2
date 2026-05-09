@@ -7,8 +7,10 @@
       "lastname": "اللقب",
       "lastname.placeholder": "لقبك",
       "language": "لغة",
-      "timezone": "المنطقة الزمنية",
+      "timezone": "المنط��ة الزمنية",
       "currency": "العملة",
+      "manageFamilyLabel": "تفعيل إدارة الأسرة",
+      "manageFamilyDesc": "فعّل هذا الخيار لإدارة الأسرة: إضاف الأطفال ودعوة الآباء وتتبع الأهداف.",
       "button": "حفظ"
     },
     "messages": {

@@ -53,7 +53,8 @@ export default class TripsComponent implements OnInit {
       .map(a => (a ?? '').toString().trim().toUpperCase());
     return (
       authorities.includes('ROLE_USER') || authorities.includes('USER') ||
-      authorities.includes('ROLE_FAMILY_ADMIN') || authorities.includes('FAMILY_ADMIN') ||
+
+      authorities.includes('ROLE_PARENT') || authorities.includes('PARENT') ||
       authorities.includes('ROLE_ADMIN') || authorities.includes('ADMIN')
     );
   });

@@ -1,0 +1,71 @@
+version: '3.8'
+
+# This configuration is intended for production on Lightsail
+# All secrets are loaded from .env.prod on the Lightsail instance
+
+services:
+  app:
+    image: ${APP_IMAGE:-682033485934.dkr.ecr.eu-central-1.amazonaws.com/liferadar/apps:latest}
+    container_name: liferadar-app
+    restart: always
+    environment:
+      - _JAVA_OPTIONS=-Xmx1024m -Xms256m
+      - SPRING_PROFILES_ACTIVE=prod,api-docs
+      - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_LIQUIBASE_URL=${SPRING_DATASOURCE_URL}
+      - JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET=${JWT_BASE64_SECRET}
+      - JHIPSTER_MAIL_BASE_URL=https://${DOMAIN_NAME}
+      - SPRING_MAIL_HOST=smtp.gmail.com
+      - SPRING_MAIL_PORT=587
+      - SPRING_MAIL_USERNAME=liferadar@gmail.com
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLED=true
+      - TICKTICK_CLIENT_ID=${TICKTICK_CLIENT_ID}
+      - TICKTICK_SECRET_ID=${TICKTICK_SECRET_ID}
+      - TICKTICK_REDIRECT_URI=${TICKTICK_REDIRECT_URI}
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/log/liferadar:/var/log/liferadar
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/management/health
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
+  postgresql:
+    image: postgres:16-alpine
+    container_name: liferadar-db
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -U
+        - ${POSTGRES_USER}
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
+volumes:
+  postgresql_data:
+

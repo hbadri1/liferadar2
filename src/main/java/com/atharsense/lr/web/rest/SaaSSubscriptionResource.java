@@ -67,7 +67,7 @@ public class SaaSSubscriptionResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<SaaSSubscription> createSubscription(@Valid @RequestBody CreateSaaSSubscriptionRequest request)
         throws URISyntaxException {
         LOG.debug("REST request to save Expense : {}", request);
@@ -126,7 +126,7 @@ public class SaaSSubscriptionResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<SaaSSubscription> updateSubscription(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody SaaSSubscription subscription
@@ -164,7 +164,7 @@ public class SaaSSubscriptionResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<SaaSSubscription> partialUpdateSubscription(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody SaaSSubscription subscription
@@ -243,7 +243,7 @@ public class SaaSSubscriptionResource {
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<Void> deleteSubscription(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete SaaSSubscription : {}", id);
         subscriptionService.delete(id);

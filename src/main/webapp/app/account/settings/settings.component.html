@@ -159,9 +159,35 @@
                  }
                </select>
              </div>
-           }
+            }
 
-          <button
+           <!-- Family Management Toggle -->
+           <div class="mb-3">
+             <div class="form-check form-switch">
+               <input
+                 class="form-check-input"
+                 type="checkbox"
+                 id="manageFamilyCheck"
+                 [checked]="canManageFamily()"
+                 (change)="toggleFamilyManagement()"
+                 [disabled]="managingFamily()"
+               />
+               <label class="form-check-label" for="manageFamilyCheck" jhiTranslate="settings.form.manageFamilyLabel">
+                 Enable Family Management (Manage children and parents)
+               </label>
+             </div>
+             <small class="text-muted" jhiTranslate="settings.form.manageFamilyDesc" *ngIf="!managingFamily()">
+               Enable this to manage a family: add children, invite parents, and track objectives.
+             </small>
+             @if (managingFamily()) {
+               <small class="text-muted d-block">
+                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                 Updating...
+               </small>
+             }
+           </div>
+
+           <button
             type="submit"
             [disabled]="settingsForm.invalid"
             class="btn btn-primary"

@@ -66,7 +66,7 @@ public class FamilyObjectiveService {
         User currentUser = getCurrentUserWithAuthorities();
 
         List<Long> kidExtendedUserIds;
-        if (hasAnyAuthority(currentUser, AuthoritiesConstants.FAMILY_ADMIN, AuthoritiesConstants.ADMIN)) {
+        if (hasAnyAuthority(currentUser, AuthoritiesConstants.PARENT, AuthoritiesConstants.ADMIN)) {
             kidExtendedUserIds = resolveManagedChildren(currentUser.getLogin()).values().stream().map(ExtendedUser::getId).toList();
         } else if (hasAuthority(currentUser, AuthoritiesConstants.CHILD)) {
             kidExtendedUserIds = extendedUserRepository.findOneByUserId(currentUser.getId()).map(ExtendedUser::getId).stream().toList();
@@ -253,7 +253,7 @@ public class FamilyObjectiveService {
     }
 
     private boolean canManageObjectives(User user) {
-        return hasAnyAuthority(user, AuthoritiesConstants.FAMILY_ADMIN, AuthoritiesConstants.ADMIN);
+        return hasAnyAuthority(user, AuthoritiesConstants.PARENT, AuthoritiesConstants.ADMIN);
     }
 
     private boolean hasAnyAuthority(User user, String... authorities) {

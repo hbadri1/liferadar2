@@ -66,7 +66,7 @@ public class TripPlanStepResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<TripPlanStep> createTripPlanStep(@Valid @RequestBody TripPlanStep tripPlanStep) throws URISyntaxException {
         LOG.debug("REST request to save TripPlanStep : {}", tripPlanStep);
         if (tripPlanStep.getId() != null) {
@@ -94,7 +94,7 @@ public class TripPlanStepResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<TripPlanStep> updateTripPlanStep(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody TripPlanStep tripPlanStep
@@ -133,7 +133,7 @@ public class TripPlanStepResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<TripPlanStep> partialUpdateTripPlanStep(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody TripPlanStep tripPlanStep
@@ -189,7 +189,7 @@ public class TripPlanStepResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTripPlanStep(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete TripPlanStep : {}", id);
         tripPlanStepService.delete(id);

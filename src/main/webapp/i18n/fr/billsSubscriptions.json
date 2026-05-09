@@ -15,6 +15,10 @@
     "none": "Aucun",
     "search": "Recherche",
     "searchExpenses": "Rechercher des depenses",
+    "groupByPeriod": "Grouper par",
+    "currentMonth": "Mois en cours",
+    "allMonths": "Tous les mois",
+    "showingCount": "Affichage de {{ shown }} sur {{ total }} dépenses",
     "all": "Tous",
     "loadingExpenses": "Chargement des depenses...",
     "noExpensesFound": "Aucune depense trouvee pour les filtres actuels.",
@@ -142,7 +146,9 @@
     "groupDatesRenewals": "Dates, Renouvellements & Paiement",
     "groupDetails": "Détails",
     "ticktickNotConnected": "TickTick non connecté",
-    "ticktickNotConnectedMessage": "TickTick n'est pas connecté à votre compte. Veuillez aller dans les Paramètres du compte pour autoriser et connecter votre compte TickTick.",
-    "goToSettings": "Aller aux paramètres"
+    "ticktickNotConnectedMessage": "TickTick n'est pas connecté �� votre compte. Veuillez aller dans les Paramètres du compte pour autoriser et connecter votre compte TickTick.",
+    "goToSettings": "Aller aux paramètres",
+    "sortAscending": "Trier par ordre croissant",
+    "sortDescending": "Trier par ordre décroissant"
   }
 }
