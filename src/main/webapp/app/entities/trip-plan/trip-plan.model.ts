@@ -8,6 +8,7 @@ export interface ITripPlan {
   startDate?: dayjs.Dayjs | null;
   endDate?: dayjs.Dayjs | null;
   isActive?: boolean | null;
+  actionsJson?: string | null;
   owner?: IExtendedUser | null;
 }
 

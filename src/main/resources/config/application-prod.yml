@@ -161,9 +161,3 @@ application:
       enabled: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_ENABLED:false}
       endpoint: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_ENDPOINT:/websocket/notifications}
       user-destination: ${APPLICATION_NOTIFICATIONS_WEBSOCKET_USER_DESTINATION:/queue/notifications}
-  mapbox:
-    enabled: ${APPLICATION_MAPBOX_ENABLED:false}
-    access-token: ${APPLICATION_MAPBOX_ACCESS_TOKEN:}
-    api-base-url: ${APPLICATION_MAPBOX_API_BASE_URL:https://api.mapbox.com}
-    style-url: ${APPLICATION_MAPBOX_STYLE_URL:mapbox://styles/mapbox/streets-v12}
-    geocoding-limit: ${APPLICATION_MAPBOX_GEOCODING_LIMIT:5}

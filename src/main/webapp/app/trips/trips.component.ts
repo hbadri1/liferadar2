@@ -4,9 +4,11 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import SharedModule from 'app/shared/shared.module';
+import { TodoActionsModule } from 'app/shared/todo-actions/todo-actions.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
+import { TripPlanService } from 'app/entities/trip-plan/service/trip-plan.service';
 import { TripFormModalComponent } from './trip-form-modal.component';
 import { StepFormModalComponent } from './step-form-modal.component';
 import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
@@ -26,11 +28,12 @@ type CalendarCell = {
   steps: ITripPlanStep[];
 };
 
+
 @Component({
   selector: 'jhi-trips',
   templateUrl: './trips.component.html',
   styleUrl: './trips.component.scss',
-  imports: [SharedModule],
+  imports: [SharedModule, TodoActionsModule],
 })
 export default class TripsComponent implements OnInit {
   trips = signal<ITripPlan[]>([]);
@@ -41,6 +44,7 @@ export default class TripsComponent implements OnInit {
   errorMsg = signal<string | null>(null);
   viewMode = signal<TripViewMode>('timeline');
   calendarMonth = signal(dayjs().startOf('month'));
+  isUpdatingActions = signal(false);
 
   account = inject(AccountService).trackCurrentAccount();
 
@@ -58,6 +62,7 @@ export default class TripsComponent implements OnInit {
   private modalService = inject(NgbModal);
   private appConfig = inject(ApplicationConfigService);
   private translateService = inject(TranslateService);
+  private tripPlanEntityService = inject(TripPlanService);
 
   private readonly tripsUrl = this.appConfig.getEndpointFor('api/trip-plans/my');
   private readonly stepsUrl = (id: number) => this.appConfig.getEndpointFor(`api/trip-plan-steps/by-trip/${id}`);
@@ -343,6 +348,16 @@ export default class TripsComponent implements OnInit {
     return this.formatDurationDaysHours(startDate, endDate);
   }
 
+  onTripActionsChange(trip: ITripPlan, actionsJson: string | null): void {
+    this.updateTripActions(trip, actionsJson);
+  }
+
+  onTripActionsValidationError(errorKey: string | null): void {
+    if (errorKey) {
+      this.errorMsg.set(errorKey);
+    }
+  }
+
   hasStepsInDisplayedMonth(): boolean {
     return this.calendarWeeks().some(week => week.some(cell => cell.inCurrentMonth && cell.steps.length > 0));
   }
@@ -417,6 +432,31 @@ export default class TripsComponent implements OnInit {
 
 
       return (a.id ?? Number.MAX_SAFE_INTEGER) - (b.id ?? Number.MAX_SAFE_INTEGER);
+    });
+  }
+
+  private updateTripActions(trip: ITripPlan, actionsJson: string | null): void {
+    this.isUpdatingActions.set(true);
+    this.errorMsg.set(null);
+
+    const updatedTrip: ITripPlan = {
+      ...trip,
+      actionsJson,
+    };
+
+    this.tripPlanEntityService.update(updatedTrip).subscribe({
+      next: response => {
+        const savedTrip = response.body ?? updatedTrip;
+        this.trips.update(current => current.map(item => (item.id === savedTrip.id ? savedTrip : item)));
+        if (this.selectedTrip()?.id === savedTrip.id) {
+          this.selectedTrip.set(savedTrip);
+        }
+        this.isUpdatingActions.set(false);
+      },
+      error: () => {
+        this.isUpdatingActions.set(false);
+        this.errorMsg.set('trips.errors.saveFailed');
+      },
     });
   }
 }

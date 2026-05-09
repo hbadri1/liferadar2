@@ -1,5 +1,7 @@
 package com.atharsense.lr.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.atharsense.lr.domain.ExtendedUser;
 import com.atharsense.lr.domain.TripPlan;
 import com.atharsense.lr.domain.TripPlanStep;
@@ -24,19 +26,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class TripPlanService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TripPlanService.class);
+    private static final int MAX_ACTIONS_PER_LIST = 30;
+    private static final int MAX_ACTION_TEXT_LENGTH = 200;
 
     private final TripPlanRepository tripPlanRepository;
     private final ExtendedUserRepository extendedUserRepository;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     public TripPlanService(
         TripPlanRepository tripPlanRepository,
         ExtendedUserRepository extendedUserRepository,
-        UserRepository userRepository
+        UserRepository userRepository,
+        ObjectMapper objectMapper
     ) {
         this.tripPlanRepository = tripPlanRepository;
         this.extendedUserRepository = extendedUserRepository;
         this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
     }
 
     /** Save a tripPlan and bind it to the current authenticated user's ExtendedUser owner. */
@@ -52,6 +59,7 @@ public class TripPlanService {
         if (tripPlan.getIsActive() == null) {
             tripPlan.setIsActive(true);
         }
+        validateTripActionsJson(tripPlan.getActionsJson());
         return tripPlanRepository.save(tripPlan);
     }
 
@@ -66,11 +74,13 @@ public class TripPlanService {
 
         validateTripDates(updatedStartDate, updatedEndDate);
         validateExistingStepsWithinTripDates(existing, updatedStartDate, updatedEndDate);
+        validateTripActionsJson(tripPlan.getActionsJson());
 
         existing.setTitle(tripPlan.getTitle());
         existing.setDescription(tripPlan.getDescription());
         existing.setStartDate(updatedStartDate);
         existing.setEndDate(updatedEndDate);
+        existing.setActionsJson(tripPlan.getActionsJson());
         if (tripPlan.getIsActive() != null) {
             existing.setIsActive(tripPlan.getIsActive());
         }
@@ -88,11 +98,15 @@ public class TripPlanService {
 
                 validateTripDates(updatedStartDate, updatedEndDate);
                 validateExistingStepsWithinTripDates(existing, updatedStartDate, updatedEndDate);
+                if (tripPlan.getActionsJson() != null) {
+                    validateTripActionsJson(tripPlan.getActionsJson());
+                }
 
                 if (tripPlan.getTitle() != null) existing.setTitle(tripPlan.getTitle());
                 if (tripPlan.getDescription() != null) existing.setDescription(tripPlan.getDescription());
                 if (tripPlan.getStartDate() != null) existing.setStartDate(updatedStartDate);
                 if (tripPlan.getEndDate() != null) existing.setEndDate(updatedEndDate);
+                if (tripPlan.getActionsJson() != null) existing.setActionsJson(tripPlan.getActionsJson());
                 if (tripPlan.getIsActive() != null) existing.setIsActive(tripPlan.getIsActive());
                 return existing;
             })
@@ -148,18 +162,80 @@ public class TripPlanService {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.now();
-
-        if (startDate.isBefore(now)) {
-            throw new BadRequestAlertException("trips.errors.startDateInPast", "tripPlan", "startDateInPast");
-        }
-
-        if (endDate.isBefore(now)) {
-            throw new BadRequestAlertException("trips.errors.endDateInPast", "tripPlan", "endDateInPast");
-        }
 
         if (startDate.isAfter(endDate)) {
             throw new BadRequestAlertException("trips.errors.startDateAfterEndDate", "tripPlan", "startDateAfterEndDate");
+        }
+    }
+
+    private void validateTripActionsJson(String actionsJson) {
+        if (actionsJson == null || actionsJson.isBlank()) {
+            return;
+        }
+
+        try {
+            JsonNode root = objectMapper.readTree(actionsJson);
+            if (!root.isObject()) {
+                throw new BadRequestAlertException("trips.errors.tripActionsInvalidJson", "tripPlan", "tripActionsInvalidJson");
+            }
+
+            validateActionsList(root.get("preparationActions"), "preparationActions");
+            validateActionsList(root.get("duringTripActions"), "duringTripActions");
+        } catch (BadRequestAlertException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new BadRequestAlertException("trips.errors.tripActionsInvalidJson", "tripPlan", "tripActionsInvalidJson");
+        }
+    }
+
+    private void validateActionsList(JsonNode listNode, String listName) {
+        if (listNode == null || listNode.isNull()) {
+            return;
+        }
+
+        if (!listNode.isArray()) {
+            throw new BadRequestAlertException("trips.errors.tripActionsInvalidJson", "tripPlan", "tripActionsInvalidJson");
+        }
+
+        if (listNode.size() > MAX_ACTIONS_PER_LIST) {
+            throw new BadRequestAlertException("trips.errors.tripActionsListTooLarge", "tripPlan", listName + "TooLarge");
+        }
+
+        for (JsonNode item : listNode) {
+            String text;
+            if (item.isTextual()) {
+                text = item.asText().trim();
+            } else if (item.isObject()) {
+                JsonNode textNode = item.get("actionText");
+                if (textNode == null || !textNode.isTextual()) {
+                    textNode = item.get("text");
+                }
+
+                if (textNode == null || !textNode.isTextual()) {
+                    throw new BadRequestAlertException("trips.errors.tripActionsInvalidJson", "tripPlan", "tripActionsInvalidJson");
+                }
+
+                JsonNode statusNode = item.get("actionStatus");
+                if (statusNode == null || statusNode.isNull()) {
+                    statusNode = item.get("done");
+                }
+
+                if (statusNode != null && !statusNode.isNull() && !statusNode.isBoolean()) {
+                    throw new BadRequestAlertException("trips.errors.tripActionsInvalidJson", "tripPlan", "tripActionsInvalidJson");
+                }
+
+                text = textNode.asText().trim();
+            } else {
+                throw new BadRequestAlertException("trips.errors.tripActionsInvalidJson", "tripPlan", "tripActionsInvalidJson");
+            }
+
+            if (text.isEmpty()) {
+                throw new BadRequestAlertException("trips.errors.tripActionsInvalidJson", "tripPlan", "tripActionsInvalidJson");
+            }
+
+            if (text.length() > MAX_ACTION_TEXT_LENGTH) {
+                throw new BadRequestAlertException("trips.errors.tripActionTextTooLong", "tripPlan", listName + "ActionTooLong");
+            }
         }
     }
 }

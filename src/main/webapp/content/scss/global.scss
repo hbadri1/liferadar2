@@ -246,11 +246,14 @@ Generic styles
 }
 
 .btn-primary,
-.btn-success {
+.btn-success,
+.btn-info {
   box-shadow: 0 6px 16px rgba(var(--lr-primary-accent-rgb), 0.28);
 }
 
-.btn-primary {
+.btn-primary,
+.btn-success,
+.btn-info {
   background-color: var(--lr-primary-accent);
   border-color: var(--lr-primary-accent);
   color: #fff;
@@ -264,39 +267,14 @@ Generic styles
   }
 }
 
-.btn-info {
-  background-color: rgba(var(--lr-primary-rgb), 0.12);
-  border-color: rgba(var(--lr-primary-rgb), 0.22);
-  color: var(--lr-neutral);
-
-  &:hover,
-  &:focus-visible,
-  &:active {
-    background-color: rgba(var(--lr-primary-rgb), 0.2);
-    border-color: rgba(var(--lr-primary-rgb), 0.32);
-    color: var(--lr-neutral);
-  }
-}
-
 .btn-warning,
 .btn-danger {
   box-shadow: 0 10px 22px rgba(var(--lr-accent-rgb), 0.18);
 }
 
-.btn-outline-primary {
-  color: var(--lr-secondary-accent);
-  border-color: var(--lr-secondary-accent);
-
-  &:hover,
-  &:focus-visible,
-  &:active {
-    background-color: var(--lr-secondary-accent);
-    border-color: var(--lr-secondary-accent);
-    color: #fff;
-  }
-}
-
-.btn-outline-success {
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-info {
   color: var(--lr-secondary-accent);
   border-color: var(--lr-secondary-accent);
 

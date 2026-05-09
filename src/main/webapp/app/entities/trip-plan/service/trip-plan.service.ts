@@ -102,9 +102,28 @@ export class TripPlanService {
   protected convertDateFromClient<T extends ITripPlan | NewTripPlan | PartialUpdateTripPlan>(tripPlan: T): RestOf<T> {
     return {
       ...tripPlan,
-      startDate: tripPlan.startDate?.format(DATE_TIME_FORMAT) ?? null,
-      endDate: tripPlan.endDate?.format(DATE_TIME_FORMAT) ?? null,
+      startDate: this.normalizeDateToString(tripPlan.startDate),
+      endDate: this.normalizeDateToString(tripPlan.endDate),
     };
+  }
+
+  private normalizeDateToString(date: any): string | null {
+    if (!date) return null;
+    // If it's already a dayjs object, format it
+    if (typeof date.format === 'function') {
+      return date.format(DATE_TIME_FORMAT);
+    }
+    // If it's a string, return as-is (already formatted)
+    if (typeof date === 'string') {
+      return date;
+    }
+    // If it's a Date object, convert to dayjs first
+    if (date instanceof Date) {
+      return dayjs(date).format(DATE_TIME_FORMAT);
+    }
+    // Otherwise try to parse it as dayjs
+    const parsed = dayjs(date);
+    return parsed.isValid() ? parsed.format(DATE_TIME_FORMAT) : null;
   }
 
   protected convertDateFromServer(restTripPlan: RestTripPlan): ITripPlan {

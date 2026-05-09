@@ -43,6 +43,10 @@ public class TripPlan implements Serializable {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Size(max = 4000)
+    @Column(name = "actions_json", length = 4000)
+    private String actionsJson;
+
     @OneToMany(mappedBy = "tripPlan", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "tripPlan" }, allowSetters = true)
     private Set<TripPlanStep> steps = new HashSet<>();
@@ -132,6 +136,19 @@ public class TripPlan implements Serializable {
         this.isActive = isActive;
     }
 
+    public String getActionsJson() {
+        return this.actionsJson;
+    }
+
+    public TripPlan actionsJson(String actionsJson) {
+        this.setActionsJson(actionsJson);
+        return this;
+    }
+
+    public void setActionsJson(String actionsJson) {
+        this.actionsJson = actionsJson;
+    }
+
     public Set<TripPlanStep> getSteps() {
         return this.steps;
     }
@@ -181,6 +198,7 @@ public class TripPlan implements Serializable {
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             ", isActive=" + getIsActive() +
+            ", actionsJson='" + getActionsJson() + "'" +
             "}";
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "liferadar",
-  "version": "3.2.0",
+  "version": "3.4.0",
   "private": true,
   "description": "Liferadar is a personal/family app that guides your goals and gather your family together.",
   "license": "UNLICENSED",
@@ -86,6 +86,7 @@
     "@fontsource/space-grotesk": "^5.2.6",
     "@fortawesome/angular-fontawesome": "1.0.0",
     "@fortawesome/fontawesome-svg-core": "6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^7.2.0",
     "@fortawesome/free-solid-svg-icons": "6.7.2",
     "@ng-bootstrap/ng-bootstrap": "18.0.0",
     "@ngx-translate/core": "16.0.4",
@@ -96,7 +97,6 @@
     "bootswatch": "5.3.5",
     "chart.js": "^4.5.1",
     "dayjs": "1.11.13",
-    "mapbox-gl": "^3.23.1",
     "ng2-charts": "^8.0.0",
     "ngx-infinite-scroll": "19.0.0",
     "rxjs": "7.8.2",

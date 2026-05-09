@@ -6,24 +6,25 @@
     "newTrip": "New Trip",
     "editTrip": "Edit Trip",
     "deleteTrip": "Delete Trip",
-    "confirmDeleteTrip": "Are you sure you want to delete this trip? All stops will also be deleted.",
+    "confirmDeleteTrip": "Are you sure you want to delete this trip? All steps will also be deleted.",
     "noTrips": "No trips yet. Start planning your first adventure!",
+    "actions": "Actions",
     "selectTripHint": "Select a trip to view its itinerary",
     "selectTripHintSub": "Your journey details and timeline will appear here",
-    "addStep": "Add Stop",
+    "addStep": "Add Step",
     "viewMode": "Trip view mode",
     "timelineView": "Timeline",
     "calendarView": "Calendar",
     "currentMonth": "Current Month",
-    "noStepsInMonth": "No stops in this month.",
+    "noStepsInMonth": "No steps in this month.",
     "moreSteps": "+{{count}} more",
-    "newStep": "New Stop",
-    "editStep": "Edit Stop",
-    "deleteStep": "Delete Stop",
-    "confirmDeleteStep": "Are you sure you want to delete this stop?",
-    "noSteps": "No stops added yet.",
-    "addFirstStop": "Add your first stop",
-    "stop": "Stop",
+    "newStep": "New Step",
+    "editStep": "Edit Step",
+    "deleteStep": "Delete Step",
+    "confirmDeleteStep": "Are you sure you want to delete this step?",
+    "noSteps": "No steps added yet.",
+    "addFirstStop": "Add your first step",
+    "stop": "Step",
     "journeyEnd": "Journey End",
     "currentDate": "Today",
     "duration": {
@@ -34,7 +35,7 @@
       "search": "Search",
       "searchPlaceholder": "Search for a place",
       "loading": "Loading map...",
-      "disabled": "Map is not configured for this environment. You can still save the stop without pinning.",
+      "disabled": "Map is not configured for this environment. You can still save the step without pinning.",
       "pinned": "Pinned",
       "clearPin": "Clear Pin"
     },
@@ -43,9 +44,15 @@
       "titlePlaceholder": "e.g. Europe Summer 2026",
       "description": "Description",
       "descriptionPlaceholder": "A short description of the trip...",
+      "preparationActions": "Get ready",
+      "duringTripActions": "During your trip",
+      "actionInputPlaceholder": "Add an action (max 50 chars)",
+      "noActionsYet": "No actions yet.",
+      "actionsPlaceholder": "One action per line",
+      "actionsHelp": "One action per line (max {{maxItems}} items, {{maxChars}} chars per item).",
       "startDate": "Start Date",
       "endDate": "End Date",
-      "stepName": "Stop Name",
+      "stepName": "Step Name",
       "stepNamePlaceholder": "e.g. Visit the Louvre",
       "location": "Location",
       "locationPlaceholder": "e.g. Paris, France",
@@ -56,7 +63,7 @@
     },
     "validation": {
       "titleRequired": "Trip title is required.",
-      "stepNameRequired": "Stop name is required."
+      "stepNameRequired": "Step name is required."
     },
     "errors": {
       "loadFailed": "Failed to load trips. Please try again.",
@@ -68,13 +75,16 @@
       "startDateInPast": "Start date cannot be in the past. Please select today or a future date.",
       "endDateInPast": "End date cannot be in the past. Please select today or a future date.",
       "startDateAfterEndDate": "Start date must be before or equal to the end date.",
-      "stepStartDateBeforeTripStart": "Stop start date cannot be before the trip start date.",
-      "stepEndDateAfterTripEnd": "Stop end date cannot be after the trip end date.",
-      "stepStartDateAfterEndDate": "Stop start date must be before or equal to the stop end date.",
-      "stepDatesOverlap": "This stop overlaps another existing stop. Please choose a different date range."
+      "tripActionsInvalidJson": "Trip actions format is invalid.",
+      "tripActionsListTooLarge": "Too many actions in one list. Please remove extra items.",
+      "tripActionTextTooLong": "An action is too long. Please shorten it.",
+      "stepStartDateBeforeTripStart": "Step start date cannot be before the trip start date.",
+      "stepEndDateAfterTripEnd": "Step end date cannot be after the trip end date.",
+      "stepStartDateAfterEndDate": "Step start date must be before or equal to the step end date.",
+      "stepDatesOverlap": "This step overlaps another existing step. Please choose a different date range."
     },
     "warnings": {
-      "stepDatesOverlap": "This stop overlaps another existing stop. You can still save it."
+      "stepDatesOverlap": "This step overlaps another existing step. You can still save it."
     }
   }
 }

@@ -1,56 +1,48 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import dayjs from 'dayjs/esm';
-import mapboxgl from 'mapbox-gl';
 import SharedModule from 'app/shared/shared.module';
 import { TripPlanStepService } from 'app/entities/trip-plan-step/service/trip-plan-step.service';
 import { ITripPlanStep, NewTripPlanStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
 import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
-import { IMapboxPlace, MapboxIntegrationService } from './mapbox-integration.service';
 
 @Component({
   selector: 'jhi-step-form-modal',
   templateUrl: './step-form-modal.component.html',
   standalone: true,
-  imports: [SharedModule, ReactiveFormsModule, FormsModule],
+  imports: [SharedModule, ReactiveFormsModule],
 })
-export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StepFormModalComponent implements OnInit {
   @Input() step: ITripPlanStep | null = null;
   @Input() trip!: ITripPlan;
   @Input() nextSequence = 1;
   @Input() existingSteps: ITripPlanStep[] = [];
-  @ViewChild('mapCanvas') mapCanvas?: ElementRef<HTMLDivElement>;
 
-  readonly hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+  readonly timeOptions: string[] = Array.from({ length: 48 }, (_, i) => {
+    const h = Math.floor(i / 2)
+      .toString()
+      .padStart(2, '0');
+    const m = i % 2 === 0 ? '00' : '30';
+    return `${h}:${m}`;
+  });
 
   isSaving = signal(false);
   errorMsg = signal<string | null>(null);
   warningMsg = signal<string | null>(null);
-  mapEnabled = signal(false);
-  mapLoading = signal(false);
-  mapErrorMsg = signal<string | null>(null);
-  searchResults = signal<IMapboxPlace[]>([]);
-  isSearching = signal(false);
-  searchTerm = '';
 
   protected activeModal = inject(NgbActiveModal);
   private fb = inject(FormBuilder);
   private stepService = inject(TripPlanStepService);
-  private mapboxService = inject(MapboxIntegrationService);
-
-  private map: mapboxgl.Map | null = null;
-  private marker: mapboxgl.Marker | null = null;
 
   editForm = this.fb.group({
     actionName: ['', [Validators.required, Validators.maxLength(200)]],
     locationName: ['', [Validators.maxLength(255)]],
     startDate: ['', [Validators.required]],
-    startHour: ['00', [Validators.required]],
+    startTime: ['00:00', [Validators.required]],
     endDate: ['', [Validators.required]],
-    endHour: ['00', [Validators.required]],
+    endTime: ['00:30', [Validators.required]],
     notes: ['', [Validators.maxLength(800)]],
     latitude: [null as number | null],
     longitude: [null as number | null],
@@ -66,24 +58,18 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
         actionName: this.step.actionName ?? '',
         locationName: this.step.locationName ?? '',
         startDate: this.step.startDate ? dayjs(this.step.startDate).format('YYYY-MM-DD') : '',
-        startHour: this.step.startDate ? dayjs(this.step.startDate).format('HH') : '00',
+        startTime: this.step.startDate ? this.roundToHalfHourTime(this.step.startDate) : '00:00',
         endDate: this.step.endDate ? dayjs(this.step.endDate).format('YYYY-MM-DD') : '',
-        endHour: this.step.endDate ? dayjs(this.step.endDate).format('HH') : '00',
+        endTime: this.step.endDate ? this.roundToHalfHourTime(this.step.endDate) : '00:30',
         notes: this.step.notes ?? '',
         latitude: this.step.latitude ?? null,
         longitude: this.step.longitude ?? null,
       });
     }
-  }
 
-  ngAfterViewInit(): void {
-    this.initMap();
-  }
-
-  ngOnDestroy(): void {
-    if (this.map) {
-      this.map.remove();
-    }
+    ['startDate', 'startTime'].forEach(ctrl => {
+      this.editForm.get(ctrl)?.valueChanges.subscribe(() => this.autoFillEndTime());
+    });
   }
 
   cancel(): void {
@@ -97,10 +83,9 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
     this.warningMsg.set(null);
 
     const val = this.editForm.getRawValue();
-    const startDate = dayjs(`${val.startDate!}T${val.startHour!}:00`, DATE_TIME_FORMAT);
-    const endDate = dayjs(`${val.endDate!}T${val.endHour!}:00`, DATE_TIME_FORMAT);
+    const startDate = dayjs(`${val.startDate!}T${val.startTime ?? '00:00'}`, DATE_TIME_FORMAT);
+    const endDate = dayjs(`${val.endDate!}T${val.endTime ?? '00:30'}`, DATE_TIME_FORMAT);
 
-    // Validate step dates
     if (!this.validateStepDates(startDate, endDate)) {
       this.isSaving.set(false);
       return;
@@ -122,7 +107,7 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
           this.isSaving.set(false);
           this.activeModal.close(res.body);
         },
-        error: (err) => {
+        error: err => {
           console.error('Error updating step:', err);
           this.isSaving.set(false);
           this.errorMsg.set('trips.errors.saveFailed');
@@ -146,7 +131,7 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
           this.isSaving.set(false);
           this.activeModal.close(res.body);
         },
-        error: (err) => {
+        error: err => {
           console.error('Error creating step:', err);
           this.isSaving.set(false);
           this.errorMsg.set('trips.errors.saveFailed');
@@ -155,17 +140,38 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  private autoFillEndTime(): void {
+    const val = this.editForm.getRawValue();
+    if (!val.startDate || !val.startTime) return;
+    const endAlreadySet = val.endDate && (val.endDate !== val.startDate || val.endTime !== val.startTime);
+    if (endAlreadySet) return;
+
+    const start = dayjs(`${val.startDate}T${val.startTime}`);
+    const end = start.add(30, 'minute');
+    this.editForm.patchValue(
+      {
+        endDate: end.format('YYYY-MM-DD'),
+        endTime: end.format('HH:mm') as '00:00' | '00:30',
+      },
+      { emitEvent: false },
+    );
+  }
+
+  private roundToHalfHourTime(date: dayjs.Dayjs | string): string {
+    const d = dayjs(date);
+    const m = d.minute() < 30 ? '00' : '30';
+    return `${d.format('HH')}:${m}`;
+  }
+
   private validateStepDates(startDate: dayjs.Dayjs, endDate: dayjs.Dayjs): boolean {
     this.errorMsg.set(null);
     this.warningMsg.set(null);
 
-    // Check if startDate is after endDate
     if (startDate.isAfter(endDate)) {
       this.errorMsg.set('trips.errors.stepStartDateAfterEndDate');
       return false;
     }
 
-    // Check if step dates are within trip date range
     const tripStart = dayjs(this.trip.startDate);
     const tripEnd = dayjs(this.trip.endDate);
 
@@ -196,139 +202,4 @@ export class StepFormModalComponent implements OnInit, AfterViewInit, OnDestroy 
 
     return true;
   }
-
-  searchPlace(): void {
-    const query = this.searchTerm.trim();
-    if (!query || query.length < 2 || !this.mapEnabled()) {
-      this.searchResults.set([]);
-      return;
-    }
-
-    this.isSearching.set(true);
-    this.mapboxService.search(query).subscribe({
-      next: places => {
-        this.searchResults.set(places);
-        this.isSearching.set(false);
-      },
-      error: () => {
-        this.searchResults.set([]);
-        this.isSearching.set(false);
-      },
-    });
-  }
-
-  selectPlace(place: IMapboxPlace): void {
-    this.editForm.patchValue({
-      locationName: place.name,
-      latitude: place.latitude,
-      longitude: place.longitude,
-    });
-    this.searchResults.set([]);
-
-    if (this.map) {
-      this.map.flyTo({ center: [place.longitude, place.latitude], zoom: 12 });
-      this.setMarker(place.longitude, place.latitude);
-    }
-  }
-
-  clearPin(): void {
-    this.editForm.patchValue({ latitude: null, longitude: null });
-    if (this.marker) {
-      this.marker.remove();
-      this.marker = null;
-    }
-  }
-
-  hasPin(): boolean {
-    const lat = this.editForm.get('latitude')?.value;
-    const lon = this.editForm.get('longitude')?.value;
-    return lat != null && lon != null;
-  }
-
-  pinLabel(): string {
-    const lat = this.editForm.get('latitude')?.value;
-    const lon = this.editForm.get('longitude')?.value;
-    if (lat == null || lon == null) {
-      return '';
-    }
-    return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-  }
-
-  private initMap(): void {
-    if (!this.mapCanvas) {
-      return;
-    }
-
-    this.mapLoading.set(true);
-    this.mapErrorMsg.set(null);
-
-    this.mapboxService.getConfig().subscribe({
-      next: cfg => {
-        if (!cfg.enabled || !cfg.publicToken) {
-          this.mapEnabled.set(false);
-          this.mapLoading.set(false);
-          return;
-        }
-
-        try {
-          mapboxgl.accessToken = cfg.publicToken!;
-          this.map = new mapboxgl.Map({
-            container: this.mapCanvas!.nativeElement,
-            style: cfg.styleUrl,
-            center: [13.405, 52.52],
-            zoom: 2.5,
-          });
-
-          this.map.on('click', (event: any) => {
-            const lng = event.lngLat.lng as number;
-            const lat = event.lngLat.lat as number;
-            this.editForm.patchValue({ latitude: lat, longitude: lng });
-            this.setMarker(lng, lat);
-            this.mapboxService.reverse(lng, lat).subscribe({
-              next: place => {
-                if (place?.name) {
-                  this.editForm.patchValue({ locationName: place.name });
-                }
-              },
-            });
-          });
-
-          this.map.on('load', () => {
-            const lat = this.editForm.get('latitude')?.value;
-            const lon = this.editForm.get('longitude')?.value;
-            if (lat != null && lon != null) {
-              this.map!.flyTo({ center: [lon, lat], zoom: 11 });
-              this.setMarker(lon, lat);
-            }
-          });
-
-          this.mapEnabled.set(true);
-        } catch {
-          this.mapEnabled.set(false);
-          this.mapErrorMsg.set('trips.errors.mapUnavailable');
-        } finally {
-          this.mapLoading.set(false);
-        }
-      },
-      error: () => {
-        this.mapEnabled.set(false);
-        this.mapLoading.set(false);
-        this.mapErrorMsg.set('trips.errors.mapUnavailable');
-      },
-    });
-  }
-
-  private setMarker(longitude: number, latitude: number): void {
-    if (!this.map) {
-      return;
-    }
-
-    if (!this.marker) {
-      this.marker = new mapboxgl.Marker({ color: '#0d6efd' }).setLngLat([longitude, latitude]).addTo(this.map);
-      return;
-    }
-
-    this.marker.setLngLat([longitude, latitude]);
-  }
 }
-

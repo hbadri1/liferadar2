@@ -1,5 +1,6 @@
 import {
   faArrowLeft,
+  faArrowRight,
   faAsterisk,
   faBan,
   faBars,
@@ -8,6 +9,7 @@ import {
   faBullseye,
   faCalendarAlt,
   faChartBar,
+  faChartLine,
   faCheck,
   faCheckCircle,
   faChevronDown,
@@ -21,6 +23,7 @@ import {
   faCommentDots,
   faDatabase,
   faDownload,
+  faExclamationCircle,
   faExclamationTriangle,
   faEye,
   faEyeSlash,
@@ -35,6 +38,7 @@ import {
   faLightbulb,
   faList,
   faLock,
+  faMap,
   faMapMarkerAlt,
   faMinus,
   faPaperPlane,
@@ -67,8 +71,15 @@ import {
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
 
+import {
+  faApple,
+  faGoogle,
+  faMicrosoft,
+} from '@fortawesome/free-brands-svg-icons';
+
 export const fontAwesomeIcons = [
   faArrowLeft,
+  faArrowRight,
   faAsterisk,
   faBan,
   faBars,
@@ -77,6 +88,7 @@ export const fontAwesomeIcons = [
   faBullseye,
   faCalendarAlt,
   faChartBar,
+  faChartLine,
   faCheck,
   faCheckCircle,
   faChevronDown,
@@ -90,6 +102,7 @@ export const fontAwesomeIcons = [
   faCommentDots,
   faDatabase,
   faDownload,
+  faExclamationCircle,
   faExclamationTriangle,
   faEye,
   faEyeSlash,
@@ -104,6 +117,7 @@ export const fontAwesomeIcons = [
   faLightbulb,
   faList,
   faLock,
+  faMap,
   faMapMarkerAlt,
   faMinus,
   faPaperPlane,
@@ -133,5 +147,9 @@ export const fontAwesomeIcons = [
   faUsers,
   faUsersCog,
   faWrench,
+  // Brand icons
+  faApple,
+  faGoogle,
+  faMicrosoft,
   // jhipster-needle-add-icon-import
 ];

@@ -29,6 +29,7 @@ export default class NavbarComponent implements OnInit {
   version = '';
   account = inject(AccountService).trackCurrentAccount();
   unreadNotificationCount = inject(NotificationService).unreadCount;
+  currentLanguage = signal('en');
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
     return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_FAMILY_ADMIN') && !authorities.includes('ROLE_ADMIN');
@@ -58,6 +59,7 @@ export default class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.currentLanguage.set(this.translateService.currentLang || this.translateService.getDefaultLang() || 'en');
     this.entitiesNavbarItems = EntityNavbarItems;
     this.profileService.getProfileInfo().subscribe(profileInfo => {
       this.inProduction = profileInfo.inProduction;
@@ -73,6 +75,7 @@ export default class NavbarComponent implements OnInit {
   changeLanguage(languageKey: string): void {
     this.stateStorageService.storeLocale(languageKey);
     this.translateService.use(languageKey);
+    this.currentLanguage.set(languageKey);
   }
 
   login(): void {

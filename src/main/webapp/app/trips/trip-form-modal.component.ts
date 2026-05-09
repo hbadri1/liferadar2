@@ -113,8 +113,8 @@ export class TripFormModalComponent implements OnInit {
   private validateTripDates(startDate: dayjs.Dayjs, endDate: dayjs.Dayjs): boolean {
     const today = dayjs();
 
-    // Check if startDate is in the past
-    if (startDate.isBefore(today)) {
+    // Only block past start date when creating a trip.
+    if (!this.isEdit && startDate.isBefore(today)) {
       this.errorMsg.set('trips.errors.startDateInPast');
       return false;
     }

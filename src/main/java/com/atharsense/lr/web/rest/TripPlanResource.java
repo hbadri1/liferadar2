@@ -74,7 +74,7 @@ public class TripPlanResource {
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_FAMILY_ADMIN','ROLE_ADMIN')")
     public ResponseEntity<TripPlan> createTripPlan(@Valid @RequestBody CreateTripPlanRequest request) throws URISyntaxException {
         // Validate trip dates
-        validateTripDates(request.startDate(), request.endDate());
+        validateTripDates(request.startDate(), request.endDate(), true);
 
         TripPlan tripPlan = new TripPlan();
         tripPlan.setTitle(request.title());
@@ -82,6 +82,7 @@ public class TripPlanResource {
         tripPlan.setStartDate(request.startDate());
         tripPlan.setEndDate(request.endDate());
         tripPlan.setIsActive(request.isActive());
+        tripPlan.setActionsJson(request.actionsJson());
 
         LOG.debug("REST request to save TripPlan : {}", tripPlan);
         tripPlan = tripPlanService.save(tripPlan);
@@ -119,7 +120,7 @@ public class TripPlanResource {
         }
 
         // Validate trip dates
-        validateTripDates(tripPlan.getStartDate(), tripPlan.getEndDate());
+        validateTripDates(tripPlan.getStartDate(), tripPlan.getEndDate(), false);
 
         tripPlan = tripPlanService.update(tripPlan);
         return ResponseEntity.ok()
@@ -233,15 +234,17 @@ public class TripPlanResource {
      * @param endDate the trip end date
      * @throws BadRequestAlertException if validation fails
      */
-    private void validateTripDates(LocalDateTime startDate, LocalDateTime endDate) {
-        LocalDateTime now = LocalDateTime.now();
+    private void validateTripDates(LocalDateTime startDate, LocalDateTime endDate, boolean enforcePastDateChecks) {
+        if (enforcePastDateChecks) {
+            LocalDateTime now = LocalDateTime.now();
 
-        if (startDate.isBefore(now)) {
-            throw new BadRequestAlertException("trips.errors.startDateInPast", ENTITY_NAME, "startDateInPast");
-        }
+            if (startDate.isBefore(now)) {
+                throw new BadRequestAlertException("trips.errors.startDateInPast", ENTITY_NAME, "startDateInPast");
+            }
 
-        if (endDate.isBefore(now)) {
-            throw new BadRequestAlertException("trips.errors.endDateInPast", ENTITY_NAME, "endDateInPast");
+            if (endDate.isBefore(now)) {
+                throw new BadRequestAlertException("trips.errors.endDateInPast", ENTITY_NAME, "endDateInPast");
+            }
         }
 
         if (startDate.isAfter(endDate)) {

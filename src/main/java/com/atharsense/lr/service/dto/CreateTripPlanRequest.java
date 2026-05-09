@@ -10,6 +10,7 @@ public record CreateTripPlanRequest(
     @Size(max = 800) String description,
     @NotNull LocalDateTime startDate,
     @NotNull LocalDateTime endDate,
-    Boolean isActive
+    Boolean isActive,
+    @Size(max = 4000) String actionsJson
 ) {}
 

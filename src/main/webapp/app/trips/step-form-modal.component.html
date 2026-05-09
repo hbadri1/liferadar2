@@ -33,65 +33,24 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label fw-bold">{{ 'trips.map.title' | translate }}</label>
-      <div class="input-group mb-2">
-        <input
-          type="text"
-          class="form-control"
-          [(ngModel)]="searchTerm"
-          [ngModelOptions]="{ standalone: true }"
-          [placeholder]="'trips.map.searchPlaceholder' | translate"
-        />
-        <button type="button" class="btn btn-outline-primary" (click)="searchPlace()" [disabled]="isSearching() || !mapEnabled()">
-          {{ 'trips.map.search' | translate }}
-        </button>
+      <div class="form-label fw-bold">{{ 'trips.map.title' | translate }}</div>
+      <div class="border rounded p-4 bg-light text-center text-muted opacity-75" aria-disabled="true">
+        <fa-icon icon="map" class="me-2"></fa-icon>
+        <span>Coming soon</span>
       </div>
-
-      @if (searchResults().length > 0) {
-        <div class="list-group mb-2">
-          @for (place of searchResults(); track place.id) {
-            <button type="button" class="list-group-item list-group-item-action" (click)="selectPlace(place)">
-              {{ place.name }}
-            </button>
-          }
-        </div>
-      }
-
-      @if (mapLoading()) {
-        <div class="text-muted small">{{ 'trips.map.loading' | translate }}</div>
-      }
-
-      @if (mapErrorMsg()) {
-        <div class="alert alert-warning py-2">{{ mapErrorMsg()! | translate }}</div>
-      }
-
-      @if (!mapEnabled() && !mapLoading() && !mapErrorMsg()) {
-        <div class="text-muted small mb-2">{{ 'trips.map.disabled' | translate }}</div>
-      }
-
-      <div #mapCanvas class="border rounded" [style.height.px]="260" [class.opacity-50]="!mapEnabled()"></div>
-
-      @if (hasPin()) {
-        <div class="mt-2 d-flex align-items-center justify-content-between gap-2">
-          <span class="badge bg-light text-dark">{{ 'trips.map.pinned' | translate }}: {{ pinLabel() }}</span>
-          <button type="button" class="btn btn-sm btn-outline-danger" (click)="clearPin()">
-            {{ 'trips.map.clearPin' | translate }}
-          </button>
-        </div>
-      }
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold" for="stepStartDate">{{ 'trips.fields.startDate' | translate }} *</label>
         <div class="row g-2">
-          <div class="col-8">
+          <div class="col-7">
             <input id="stepStartDate" type="date" class="form-control" formControlName="startDate" />
           </div>
-          <div class="col-4">
-            <select class="form-select" formControlName="startHour">
-              @for (hour of hourOptions; track hour) {
-                <option [value]="hour">{{ hour }}:00</option>
+          <div class="col-5">
+            <select class="form-select" formControlName="startTime">
+              @for (t of timeOptions; track t) {
+                <option [value]="t">{{ t }}</option>
               }
             </select>
           </div>
@@ -100,13 +59,13 @@
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold" for="stepEndDate">{{ 'trips.fields.endDate' | translate }} *</label>
         <div class="row g-2">
-          <div class="col-8">
+          <div class="col-7">
             <input id="stepEndDate" type="date" class="form-control" formControlName="endDate" />
           </div>
-          <div class="col-4">
-            <select class="form-select" formControlName="endHour">
-              @for (hour of hourOptions; track hour) {
-                <option [value]="hour">{{ hour }}:00</option>
+          <div class="col-5">
+            <select class="form-select" formControlName="endTime">
+              @for (t of timeOptions; track t) {
+                <option [value]="t">{{ t }}</option>
               }
             </select>
           </div>

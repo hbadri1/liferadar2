@@ -18,7 +18,6 @@ public class ApplicationProperties {
     private final Liquibase liquibase = new Liquibase();
     private final Notifications notifications = new Notifications();
     private final Todoapps todoapps = new Todoapps();
-    private final Mapbox mapbox = new Mapbox();
 
     // jhipster-needle-application-properties-property
 
@@ -32,10 +31,6 @@ public class ApplicationProperties {
 
     public Todoapps getTodoapps() {
         return todoapps;
-    }
-
-    public Mapbox getMapbox() {
-        return mapbox;
     }
 
     // jhipster-needle-application-properties-property-getter
@@ -66,58 +61,6 @@ public class ApplicationProperties {
         }
     }
 
-    public static class Mapbox {
-
-        private boolean enabled = false;
-
-        private String apiBaseUrl = "https://api.mapbox.com";
-
-        private String accessToken;
-
-        private String styleUrl = "mapbox://styles/mapbox/streets-v12";
-
-        private Integer geocodingLimit = 5;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public String getApiBaseUrl() {
-            return apiBaseUrl;
-        }
-
-        public void setApiBaseUrl(String apiBaseUrl) {
-            this.apiBaseUrl = apiBaseUrl;
-        }
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public void setAccessToken(String accessToken) {
-            this.accessToken = accessToken;
-        }
-
-        public String getStyleUrl() {
-            return styleUrl;
-        }
-
-        public void setStyleUrl(String styleUrl) {
-            this.styleUrl = styleUrl;
-        }
-
-        public Integer getGeocodingLimit() {
-            return geocodingLimit;
-        }
-
-        public void setGeocodingLimit(Integer geocodingLimit) {
-            this.geocodingLimit = geocodingLimit;
-        }
-    }
 
     public static class Notifications {
 

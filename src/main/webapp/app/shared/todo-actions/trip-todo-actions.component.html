@@ -1,0 +1,94 @@
+<div class="trip-todo-actions" [class.trip-todo-actions--compact]="compact" (click)="$event.stopPropagation()">
+  <div class="trip-todo-actions-section">
+    <div class="trip-todo-actions-title">{{ 'trips.fields.preparationActions' | translate }}</div>
+    @if (payload.preparationActions.length === 0) {
+      <div class="text-muted small">{{ 'trips.fields.noActionsYet' | translate }}</div>
+    }
+    @for (action of payload.preparationActions; track $index; let index = $index) {
+      <label class="trip-todo-actions-row">
+        <input
+          type="checkbox"
+          class="form-check-input mt-0"
+          [checked]="action.actionStatus"
+          [disabled]="disabled"
+          (change)="toggleAction('preparationActions', index, $any($event.target).checked)"
+        />
+        <span [class.text-decoration-line-through]="action.actionStatus">{{ action.actionText }}</span>
+        <button
+          type="button"
+          class="btn btn-xs btn-outline-danger"
+          [disabled]="disabled"
+          (click)="removeAction('preparationActions', index)">
+          <fa-icon icon="trash"></fa-icon>
+        </button>
+      </label>
+    }
+    <div class="trip-todo-actions-add">
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        [attr.maxlength]="jsonService.maxActionTextLength"
+        [placeholder]="'trips.fields.actionInputPlaceholder' | translate"
+        [disabled]="disabled"
+        [(ngModel)]="preparationInput"
+        (keyup.enter)="addAction('preparationActions')"
+      />
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-primary"
+        [disabled]="disabled"
+        (click)="addAction('preparationActions')"
+        [attr.title]="'trips.fields.addAction' | translate"
+        [attr.aria-label]="'trips.fields.addAction' | translate">
+        <fa-icon icon="plus"></fa-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="trip-todo-actions-section">
+    <div class="trip-todo-actions-title">{{ 'trips.fields.duringTripActions' | translate }}</div>
+    @if (payload.duringTripActions.length === 0) {
+      <div class="text-muted small">{{ 'trips.fields.noActionsYet' | translate }}</div>
+    }
+    @for (action of payload.duringTripActions; track $index; let index = $index) {
+      <label class="trip-todo-actions-row">
+        <input
+          type="checkbox"
+          class="form-check-input mt-0"
+          [checked]="action.actionStatus"
+          [disabled]="disabled"
+          (change)="toggleAction('duringTripActions', index, $any($event.target).checked)"
+        />
+        <span [class.text-decoration-line-through]="action.actionStatus">{{ action.actionText }}</span>
+        <button
+          type="button"
+          class="btn btn-xs btn-outline-danger"
+          [disabled]="disabled"
+          (click)="removeAction('duringTripActions', index)">
+          <fa-icon icon="trash"></fa-icon>
+        </button>
+      </label>
+    }
+    <div class="trip-todo-actions-add">
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        [attr.maxlength]="jsonService.maxActionTextLength"
+        [placeholder]="'trips.fields.actionInputPlaceholder' | translate"
+        [disabled]="disabled"
+        [(ngModel)]="duringInput"
+        (keyup.enter)="addAction('duringTripActions')"
+      />
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-primary"
+        [disabled]="disabled"
+        (click)="addAction('duringTripActions')"
+        [attr.title]="'trips.fields.addAction' | translate"
+        [attr.aria-label]="'trips.fields.addAction' | translate">
+        <fa-icon icon="plus"></fa-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
