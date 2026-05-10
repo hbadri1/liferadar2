@@ -86,6 +86,7 @@ export default class FamilyComponent implements OnInit {
   showAddForm = signal(false);
   showAddParentForm = signal(false);
   activeTab = signal<string>('management');
+  activeObjectiveChildLogin = signal<string | null>(null);
 
   account = inject(AccountService).trackCurrentAccount();
 
@@ -105,10 +106,10 @@ export default class FamilyComponent implements OnInit {
     return authorities.includes('ROLE_PARENT');
   });
 
-  /** Can add parents only if ROLE_PARENT and ROLE_ADMIN */
+  /** Can add parents for family accounts when user has ROLE_PARENT. */
   canManageParents = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_PARENT') && authorities.includes('ROLE_ADMIN');
+    return authorities.includes('ROLE_PARENT');
   });
 
   /** True when the logged-in user has ROLE_PARENT and can view kids' objectives */
@@ -155,9 +156,15 @@ export default class FamilyComponent implements OnInit {
     ];
   });
 
-  activeObjectiveChild = computed(() =>
-    this.objectiveChildren().find(child => this.getChildTabId(child.login) === this.activeTab()) ?? null,
-  );
+  activeObjectiveChild = computed(() => {
+    const children = this.objectiveChildren();
+    if (this.canManageFamily()) {
+      const selectedLogin = this.activeObjectiveChildLogin();
+      return children.find(child => child.login === selectedLogin) ?? children[0] ?? null;
+    }
+
+    return children.find(child => this.getChildTabId(child.login) === this.activeTab()) ?? null;
+  });
 
   objectiveGroups = computed<FamilyObjectiveGroup[]>(() => {
     const childNameByLogin = new Map(this.children().map(child => [child.login, this.getChildDisplayName(child)]));
@@ -247,18 +254,34 @@ export default class FamilyComponent implements OnInit {
   }
 
   selectTab(tabId: string): void {
-    if (tabId === 'management' && !this.canManageFamily()) {
+    if (this.canManageFamily()) {
+      if (tabId !== 'management' && tabId !== 'kids-objectives') {
+        return;
+      }
+
+      this.activeTab.set(tabId);
+      if (tabId !== 'management') {
+        this.showAddForm.set(false);
+        this.showAddParentForm.set(false);
+      }
+      this.ensureActiveTabSelection();
       return;
     }
 
-    if (tabId !== 'management' && !this.objectiveChildren().some(child => this.getChildTabId(child.login) === tabId)) {
+    if (!this.objectiveChildren().some(child => this.getChildTabId(child.login) === tabId)) {
       return;
     }
 
     this.activeTab.set(tabId);
-    if (tabId !== 'management') {
-      this.showAddForm.set(false);
+    this.showAddForm.set(false);
+  }
+
+  selectObjectiveChild(login: string): void {
+    if (!this.objectiveChildren().some(child => child.login === login)) {
+      return;
     }
+
+    this.activeObjectiveChildLogin.set(login);
   }
 
   getChildTabId(login: string): string {
@@ -783,11 +806,21 @@ export default class FamilyComponent implements OnInit {
   private ensureActiveTabSelection(): void {
     const children = this.objectiveChildren();
     const activeTab = this.activeTab();
-    const hasActiveChildTab = children.some(child => this.getChildTabId(child.login) === activeTab);
 
-    if (activeTab === 'management' && this.canManageFamily()) {
+    if (this.canManageFamily()) {
+      if (activeTab !== 'management' && activeTab !== 'kids-objectives') {
+        this.activeTab.set('management');
+      }
+
+      const selectedLogin = this.activeObjectiveChildLogin();
+      if (!selectedLogin || !children.some(child => child.login === selectedLogin)) {
+        this.activeObjectiveChildLogin.set(children[0]?.login ?? null);
+      }
       return;
     }
+
+    const hasActiveChildTab = children.some(child => this.getChildTabId(child.login) === activeTab);
+
 
     if (hasActiveChildTab) {
       return;

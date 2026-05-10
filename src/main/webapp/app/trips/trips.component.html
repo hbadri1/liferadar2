@@ -66,7 +66,7 @@
                           <span class="badge bg-light text-dark ms-1">{{ tripDuration(trip) }}</span>
                         </div>
                       </div>
-                      @if (canEdit()) {
+                      @if (canEdit() && !isTripFinished(trip)) {
                         <div class="trip-actions ms-2 d-flex gap-1" (click)="$event.stopPropagation()">
                           <button class="btn btn-sm btn-outline-primary p-1" title="Edit" (click)="openEditTrip(trip, $event)">
                             <fa-icon icon="pencil-alt"></fa-icon>
@@ -89,7 +89,7 @@
                         </h6>
                         <jhi-trip-todo-actions
                           [actionsJson]="trip.actionsJson"
-                          [disabled]="isUpdatingActions() || !canEdit()"
+                          [disabled]="isUpdatingActions() || !canEdit() || isTripFinished(trip)"
                           [compact]="false"
                           (actionsJsonChange)="onTripActionsChange(trip, $event)"
                           (validationError)="onTripActionsValidationError($event)">
@@ -135,7 +135,7 @@
                   <p class="mb-0 mt-1 text-muted small">{{ selectedTrip()!.description }}</p>
                 }
               </div>
-              @if (canEdit()) {
+              @if (canEdit() && !selectedTripReadOnly()) {
                 <button class="btn btn-success" (click)="openAddStep()">
                   <fa-icon icon="plus"></fa-icon>
                   <span class="ms-1" jhiTranslate="trips.addStep">Add Stop</span>
@@ -173,7 +173,7 @@
               <div class="text-center py-5 text-muted">
                 <fa-icon icon="map-marker-alt" class="fa-3x mb-3 d-block opacity-50"></fa-icon>
                 <p jhiTranslate="trips.noSteps">No stops added yet.</p>
-                @if (canEdit()) {
+                @if (canEdit() && !selectedTripReadOnly()) {
                   <button class="btn btn-outline-primary" (click)="openAddStep()">
                     <fa-icon icon="plus"></fa-icon>
                     <span jhiTranslate="trips.addFirstStop">Add your first stop</span>
@@ -205,7 +205,7 @@
                           <div class="step-card">
                             <div class="step-card-header">
                               <div class="step-sequence-badge">{{ 'trips.stop' | translate }} {{ entry.step.sequence }}</div>
-                              @if (canEdit()) {
+                              @if (canEdit() && !selectedTripReadOnly()) {
                                 <div class="step-card-actions">
                                   <button class="btn btn-xs btn-outline-primary" (click)="openEditStep(entry.step)" title="Edit step">
                                     <fa-icon icon="pencil-alt"></fa-icon>

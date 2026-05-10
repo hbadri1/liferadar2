@@ -16,12 +16,22 @@
       </p>
     </div>
     @if (canManageFamily() && activeTab() === 'management') {
-      <button class="btn btn-success" (click)="toggleAddForm()">
-        <fa-icon [icon]="showAddForm() ? 'times' : 'user-plus'" class="me-2"></fa-icon>
-        <span jhiTranslate="{{ showAddForm() ? 'family.cancelAdd' : 'family.addChild' }}">
-          {{ showAddForm() ? 'Cancel' : 'Add Child' }}
-        </span>
-      </button>
+      <div class="d-flex flex-wrap gap-2 justify-content-end">
+        <button class="btn btn-success" (click)="toggleAddForm()">
+          <fa-icon [icon]="showAddForm() ? 'times' : 'user-plus'" class="me-2"></fa-icon>
+          <span jhiTranslate="family.addChild">Add Child</span>
+        </button>
+        @if (canManageParents()) {
+          <button class="btn btn-info" (click)="toggleAddParentForm()">
+            <fa-icon [icon]="showAddParentForm() ? 'times' : 'user-check'" class="me-2"></fa-icon>
+            <span jhiTranslate="family.addParent">Add Parent</span>
+          </button>
+        }
+        <button class="btn btn-primary" type="button" (click)="openObjectiveModal()" [disabled]="children().length === 0">
+          <fa-icon icon="plus" class="me-2"></fa-icon>
+          <span jhiTranslate="family.objectives.add">Add Kids Objective</span>
+        </button>
+      </div>
     }
   </div>
 
@@ -38,8 +48,18 @@
           <span jhiTranslate="family.tabs.management">Family Management</span>
         </button>
       </li>
-    }
-    @for (child of objectiveChildren(); track child.login) {
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab() === 'kids-objectives'"
+          (click)="selectTab('kids-objectives')"
+        >
+          <span jhiTranslate="family.tabs.kidsObjectives">Kids' Objectives</span>
+        </button>
+      </li>
+    } @else {
+      @for (child of objectiveChildren(); track child.login) {
       <li class="nav-item" role="presentation">
         <button
           type="button"
@@ -50,6 +70,7 @@
           {{ 'family.tabs.childObjectives' | translate: { name: getChildDisplayName(child) } }}
         </button>
       </li>
+      }
     }
   </ul>
 
@@ -155,6 +176,139 @@
       </div>
     }
 
+
+    <!-- Add Parent Form -->
+    @if (showAddParentForm() && canManageParents()) {
+      <div class="add-parent-card mb-4">
+        <div class="add-parent-card-header">
+          <fa-icon icon="user-check" class="me-2"></fa-icon>
+          <span jhiTranslate="family.addParent">Add Parent Account</span>
+        </div>
+        <div class="add-parent-card-body">
+          <form [formGroup]="addForm" (ngSubmit)="saveParent()">
+            <div class="row g-3">
+              <!-- Login -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" jhiTranslate="family.form.login">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="login"
+                  [class.is-invalid]="addForm.get('login')?.invalid && addForm.get('login')?.touched"
+                  placeholder="parent_username"
+                />
+                @if (addForm.get('login')?.invalid && addForm.get('login')?.touched) {
+                  <div class="invalid-feedback" jhiTranslate="family.form.loginRequired">Username is required</div>
+                }
+              </div>
+
+              <!-- Password -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" jhiTranslate="family.form.password">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  formControlName="password"
+                  [class.is-invalid]="addForm.get('password')?.invalid && addForm.get('password')?.touched"
+                  placeholder="••••••••"
+                />
+                @if (addForm.get('password')?.invalid && addForm.get('password')?.touched) {
+                  <div class="invalid-feedback" jhiTranslate="family.form.passwordRequired">Password required (min 4 chars)</div>
+                }
+              </div>
+
+              <!-- First Name -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" jhiTranslate="family.form.firstName">First Name</label>
+                <input type="text" class="form-control" formControlName="firstName" placeholder="John" />
+              </div>
+
+              <!-- Last Name -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" jhiTranslate="family.form.lastName">Last Name</label>
+                <input type="text" class="form-control" formControlName="lastName" placeholder="Smith" />
+              </div>
+
+              <!-- Email -->
+              <div class="col-md-12">
+                <label class="form-label fw-semibold" jhiTranslate="family.form.email">Email (optional)</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  formControlName="email"
+                  [class.is-invalid]="addForm.get('email')?.invalid && addForm.get('email')?.touched"
+                  placeholder="john@example.com"
+                />
+                @if (addForm.get('email')?.invalid && addForm.get('email')?.touched) {
+                  <div class="invalid-feedback" jhiTranslate="family.form.emailInvalid">Email is invalid</div>
+                }
+              </div>
+
+              <!-- Buttons -->
+              <div class="col-12 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-outline-secondary" (click)="toggleAddParentForm()" jhiTranslate="family.form.cancel">
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-info" [disabled]="addForm.invalid || isSaving()" jhiTranslate="family.form.save">
+                  {{ isSaving() ? 'Saving...' : 'Save' }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
+    <!-- Parents List -->
+    @if (canManageParents() && parents().length > 0) {
+      <div class="parents-section mt-4">
+        <h5 class="mb-3">
+          <fa-icon icon="user-check" class="me-2 text-info"></fa-icon>
+          <span jhiTranslate="family.parentsListTitle">Parents</span>
+        </h5>
+        <div class="row g-3">
+          @for (parent of parents(); track parent.id) {
+            <div class="col-md-6 col-lg-4">
+              <div class="parent-card">
+                <div class="parent-card-avatar">
+                  <fa-icon icon="user-check" size="2x" class="text-info"></fa-icon>
+                </div>
+                <div class="parent-card-info">
+                  <div class="parent-name">
+                    {{ parent.firstName || '' }} {{ parent.lastName || '' }}
+                    @if (!parent.firstName && !parent.lastName) {
+                      <span class="text-muted">{{ parent.login }}</span>
+                    }
+                  </div>
+                  <div class="parent-login text-muted small">
+                    <fa-icon icon="user" class="me-1"></fa-icon>{{ parent.login }}
+                  </div>
+                  @if (parent.email) {
+                    <div class="parent-email text-muted small">
+                      <fa-icon icon="envelope" class="me-1"></fa-icon>{{ parent.email }}
+                    </div>
+                  }
+                  <div class="parent-badge mt-2">
+                    <span class="badge bg-info" jhiTranslate="family.badge.parent">Parent</span>
+                    @if (parent.activated) {
+                      <span class="badge bg-success ms-1" jhiTranslate="family.badge.active">Active</span>
+                    } @else {
+                      <span class="badge bg-warning ms-1" jhiTranslate="family.badge.inactive">Inactive</span>
+                    }
+                  </div>
+                </div>
+                <button class="btn btn-outline-danger btn-sm parent-card-delete"
+                  (click)="deleteParent(parent.login)"
+                  [title]="'family.removeParent' | translate">
+                  <fa-icon icon="trash-alt"></fa-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
     <!-- Children List -->
     @if (isLoading()) {
       <div class="text-center py-5">
@@ -209,149 +363,6 @@
          }
        </div>
 
-       <!-- Add Parent Form Toggle Button -->
-       @if (canManageParents()) {
-         <div class="mt-4 mb-3">
-           <button class="btn btn-info" (click)="toggleAddParentForm()">
-             <fa-icon [icon]="showAddParentForm() ? 'times' : 'user-check'" class="me-2"></fa-icon>
-             <span jhiTranslate="{{ showAddParentForm() ? 'family.cancelAdd' : 'family.addParent' }}">
-               {{ showAddParentForm() ? 'Cancel' : 'Add Parent' }}
-             </span>
-           </button>
-         </div>
-       }
-
-       <!-- Add Parent Form -->
-       @if (showAddParentForm() && canManageParents()) {
-         <div class="add-parent-card mb-4">
-           <div class="add-parent-card-header">
-             <fa-icon icon="user-check" class="me-2"></fa-icon>
-             <span jhiTranslate="family.addParent">Add Parent Account</span>
-           </div>
-           <div class="add-parent-card-body">
-             <form [formGroup]="addForm" (ngSubmit)="saveParent()">
-               <div class="row g-3">
-                 <!-- Login -->
-                 <div class="col-md-6">
-                   <label class="form-label fw-semibold" jhiTranslate="family.form.login">Username</label>
-                   <input
-                     type="text"
-                     class="form-control"
-                     formControlName="login"
-                     [class.is-invalid]="addForm.get('login')?.invalid && addForm.get('login')?.touched"
-                     placeholder="parent_username"
-                   />
-                   @if (addForm.get('login')?.invalid && addForm.get('login')?.touched) {
-                     <div class="invalid-feedback" jhiTranslate="family.form.loginRequired">Username is required</div>
-                   }
-                 </div>
-
-                 <!-- Password -->
-                 <div class="col-md-6">
-                   <label class="form-label fw-semibold" jhiTranslate="family.form.password">Password</label>
-                   <input
-                     type="password"
-                     class="form-control"
-                     formControlName="password"
-                     [class.is-invalid]="addForm.get('password')?.invalid && addForm.get('password')?.touched"
-                     placeholder="••••••••"
-                   />
-                   @if (addForm.get('password')?.invalid && addForm.get('password')?.touched) {
-                     <div class="invalid-feedback" jhiTranslate="family.form.passwordRequired">Password required (min 4 chars)</div>
-                   }
-                 </div>
-
-                 <!-- First Name -->
-                 <div class="col-md-6">
-                   <label class="form-label fw-semibold" jhiTranslate="family.form.firstName">First Name</label>
-                   <input type="text" class="form-control" formControlName="firstName" placeholder="John" />
-                 </div>
-
-                 <!-- Last Name -->
-                 <div class="col-md-6">
-                   <label class="form-label fw-semibold" jhiTranslate="family.form.lastName">Last Name</label>
-                   <input type="text" class="form-control" formControlName="lastName" placeholder="Smith" />
-                 </div>
-
-                 <!-- Email -->
-                 <div class="col-md-12">
-                   <label class="form-label fw-semibold" jhiTranslate="family.form.email">Email (optional)</label>
-                   <input
-                     type="email"
-                     class="form-control"
-                     formControlName="email"
-                     [class.is-invalid]="addForm.get('email')?.invalid && addForm.get('email')?.touched"
-                     placeholder="john@example.com"
-                   />
-                   @if (addForm.get('email')?.invalid && addForm.get('email')?.touched) {
-                     <div class="invalid-feedback" jhiTranslate="family.form.emailInvalid">Email is invalid</div>
-                   }
-                 </div>
-
-                 <!-- Buttons -->
-                 <div class="col-12 d-flex justify-content-end gap-2">
-                   <button type="button" class="btn btn-outline-secondary" (click)="toggleAddParentForm()" jhiTranslate="family.form.cancel">
-                     Cancel
-                   </button>
-                   <button type="submit" class="btn btn-info" [disabled]="addForm.invalid || isSaving()" jhiTranslate="family.form.save">
-                     {{ isSaving() ? 'Saving...' : 'Save' }}
-                   </button>
-                 </div>
-               </div>
-             </form>
-           </div>
-         </div>
-       }
-
-       <!-- Parents List -->
-       @if (canManageParents() && parents().length > 0) {
-         <div class="parents-section mt-4">
-           <h5 class="mb-3">
-             <fa-icon icon="user-check" class="me-2 text-info"></fa-icon>
-             <span jhiTranslate="family.parentsListTitle">Parents</span>
-           </h5>
-           <div class="row g-3">
-             @for (parent of parents(); track parent.id) {
-               <div class="col-md-6 col-lg-4">
-                 <div class="parent-card">
-                   <div class="parent-card-avatar">
-                     <fa-icon icon="user-check" size="2x" class="text-info"></fa-icon>
-                   </div>
-                   <div class="parent-card-info">
-                     <div class="parent-name">
-                       {{ parent.firstName || '' }} {{ parent.lastName || '' }}
-                       @if (!parent.firstName && !parent.lastName) {
-                         <span class="text-muted">{{ parent.login }}</span>
-                       }
-                     </div>
-                     <div class="parent-login text-muted small">
-                       <fa-icon icon="user" class="me-1"></fa-icon>{{ parent.login }}
-                     </div>
-                     @if (parent.email) {
-                       <div class="parent-email text-muted small">
-                         <fa-icon icon="envelope" class="me-1"></fa-icon>{{ parent.email }}
-                       </div>
-                     }
-                     <div class="parent-badge mt-2">
-                       <span class="badge bg-info" jhiTranslate="family.badge.parent">Parent</span>
-                       @if (parent.activated) {
-                         <span class="badge bg-success ms-1" jhiTranslate="family.badge.active">Active</span>
-                       } @else {
-                         <span class="badge bg-warning ms-1" jhiTranslate="family.badge.inactive">Inactive</span>
-                       }
-                     </div>
-                   </div>
-                   <button class="btn btn-outline-danger btn-sm parent-card-delete"
-                     (click)="deleteParent(parent.login)"
-                     [title]="'family.removeParent' | translate">
-                     <fa-icon icon="trash-alt"></fa-icon>
-                   </button>
-                 </div>
-               </div>
-             }
-           </div>
-         </div>
-       }
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
           <div>
             <h4 class="mb-1">
@@ -366,10 +377,6 @@
             <button class="btn btn-outline-primary" type="button" (click)="exportAllKidsProgress()" [disabled]="children().length === 0">
               <fa-icon icon="download" class="me-2"></fa-icon>
               <span jhiTranslate="family.objectives.export.all">Export all kids progress</span>
-            </button>
-            <button class="btn btn-primary" type="button" (click)="openObjectiveModal()" [disabled]="children().length === 0">
-              <fa-icon icon="plus" class="me-2"></fa-icon>
-              <span jhiTranslate="family.objectives.add">Add objective</span>
             </button>
           </div>
         </div>
@@ -458,6 +465,20 @@
         }
     }
   } @else {
+    @if (canManageFamily()) {
+      <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+        @for (child of objectiveChildren(); track child.login) {
+          <button
+            type="button"
+            class="btn btn-sm"
+            [ngClass]="activeObjectiveChild()?.login === child.login ? 'btn-primary' : 'btn-outline-primary'"
+            (click)="selectObjectiveChild(child.login)"
+          >
+            {{ getChildDisplayName(child) }}
+          </button>
+        }
+      </div>
+    }
     @if (isLoading() || isLoadingObjectives()) {
       <div class="text-center py-5">
         <div class="spinner-border text-primary" role="status"></div>

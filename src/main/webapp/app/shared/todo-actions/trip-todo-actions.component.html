@@ -14,35 +14,36 @@
           (change)="toggleAction('preparationActions', index, $any($event.target).checked)"
         />
         <span [class.text-decoration-line-through]="action.actionStatus">{{ action.actionText }}</span>
-        <button
-          type="button"
-          class="btn btn-xs btn-outline-danger"
-          [disabled]="disabled"
-          (click)="removeAction('preparationActions', index)">
-          <fa-icon icon="trash"></fa-icon>
-        </button>
+        @if (!disabled) {
+          <button
+            type="button"
+            class="btn btn-xs btn-outline-danger"
+            (click)="removeAction('preparationActions', index)">
+            <fa-icon icon="trash"></fa-icon>
+          </button>
+        }
       </label>
     }
-    <div class="trip-todo-actions-add">
-      <input
-        type="text"
-        class="form-control form-control-sm"
-        [attr.maxlength]="jsonService.maxActionTextLength"
-        [placeholder]="'trips.fields.actionInputPlaceholder' | translate"
-        [disabled]="disabled"
-        [(ngModel)]="preparationInput"
-        (keyup.enter)="addAction('preparationActions')"
-      />
-      <button
-        type="button"
-        class="btn btn-sm btn-outline-primary"
-        [disabled]="disabled"
-        (click)="addAction('preparationActions')"
-        [attr.title]="'trips.fields.addAction' | translate"
-        [attr.aria-label]="'trips.fields.addAction' | translate">
-        <fa-icon icon="plus"></fa-icon>
-      </button>
-    </div>
+    @if (!disabled) {
+      <div class="trip-todo-actions-add">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          [attr.maxlength]="jsonService.maxActionTextLength"
+          [placeholder]="'trips.fields.actionInputPlaceholder' | translate"
+          [(ngModel)]="preparationInput"
+          (keyup.enter)="addAction('preparationActions')"
+        />
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary"
+          (click)="addAction('preparationActions')"
+          [attr.title]="'trips.fields.addAction' | translate"
+          [attr.aria-label]="'trips.fields.addAction' | translate">
+          <fa-icon icon="plus"></fa-icon>
+        </button>
+      </div>
+    }
   </div>
 
   <div class="trip-todo-actions-section">
@@ -60,35 +61,36 @@
           (change)="toggleAction('duringTripActions', index, $any($event.target).checked)"
         />
         <span [class.text-decoration-line-through]="action.actionStatus">{{ action.actionText }}</span>
-        <button
-          type="button"
-          class="btn btn-xs btn-outline-danger"
-          [disabled]="disabled"
-          (click)="removeAction('duringTripActions', index)">
-          <fa-icon icon="trash"></fa-icon>
-        </button>
+        @if (!disabled) {
+          <button
+            type="button"
+            class="btn btn-xs btn-outline-danger"
+            (click)="removeAction('duringTripActions', index)">
+            <fa-icon icon="trash"></fa-icon>
+          </button>
+        }
       </label>
     }
-    <div class="trip-todo-actions-add">
-      <input
-        type="text"
-        class="form-control form-control-sm"
-        [attr.maxlength]="jsonService.maxActionTextLength"
-        [placeholder]="'trips.fields.actionInputPlaceholder' | translate"
-        [disabled]="disabled"
-        [(ngModel)]="duringInput"
-        (keyup.enter)="addAction('duringTripActions')"
-      />
-      <button
-        type="button"
-        class="btn btn-sm btn-outline-primary"
-        [disabled]="disabled"
-        (click)="addAction('duringTripActions')"
-        [attr.title]="'trips.fields.addAction' | translate"
-        [attr.aria-label]="'trips.fields.addAction' | translate">
-        <fa-icon icon="plus"></fa-icon>
-      </button>
-    </div>
+    @if (!disabled) {
+      <div class="trip-todo-actions-add">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          [attr.maxlength]="jsonService.maxActionTextLength"
+          [placeholder]="'trips.fields.actionInputPlaceholder' | translate"
+          [(ngModel)]="duringInput"
+          (keyup.enter)="addAction('duringTripActions')"
+        />
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary"
+          (click)="addAction('duringTripActions')"
+          [attr.title]="'trips.fields.addAction' | translate"
+          [attr.aria-label]="'trips.fields.addAction' | translate">
+          <fa-icon icon="plus"></fa-icon>
+        </button>
+      </div>
+    }
   </div>
 </div>
 

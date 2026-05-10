@@ -5,6 +5,7 @@ import com.atharsense.lr.repository.UserRepository;
 import com.atharsense.lr.security.AuthoritiesConstants;
 import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.FamilyObjectiveService;
+import com.atharsense.lr.service.MailService;
 import com.atharsense.lr.service.UserService;
 import com.atharsense.lr.service.dto.CreateFamilyObjectiveRequest;
 import com.atharsense.lr.service.dto.CreateObjectiveProgressRequest;
@@ -35,16 +36,18 @@ public class FamilyResource {
     private final UserRepository userRepository;
     private final UserService userService;
     private final FamilyObjectiveService familyObjectiveService;
+    private final MailService mailService;
 
-    public FamilyResource(UserRepository userRepository, UserService userService, FamilyObjectiveService familyObjectiveService) {
+    public FamilyResource(UserRepository userRepository, UserService userService, FamilyObjectiveService familyObjectiveService, MailService mailService) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.familyObjectiveService = familyObjectiveService;
+        this.mailService = mailService;
     }
 
     /**
      * GET /api/family/children — list children.
-     * Accessible by ROLE_PARENT, ADMIN (their own children) and CHILD (read-only view of siblings).
+      * Accessible by ROLE_PARENT, ADMIN (their own children) and CHILD (read-only view of siblings).
      */
     @GetMapping("/children")
     @Transactional(readOnly = true)
@@ -72,6 +75,26 @@ public class FamilyResource {
 
         LOG.debug("Found {} children for user {}", children.size(), currentLogin);
         return ResponseEntity.ok(children);
+    }
+
+    /**
+     * GET /api/family/parents — list parent accounts created by current parent.
+     */
+    @GetMapping("/parents")
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<List<AdminUserDTO>> getMyParents() {
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("Not authenticated", "family", "notauthenticated"));
+
+        List<AdminUserDTO> parents = userRepository.findAll().stream()
+            .filter(u -> currentLogin.equals(u.getCreatedBy()))
+            .filter(u -> u.getAuthorities().stream().anyMatch(a -> AuthoritiesConstants.PARENT.equals(a.getName())))
+            .map(AdminUserDTO::new)
+            .collect(Collectors.toList());
+
+        LOG.debug("Found {} parent accounts for user {}", parents.size(), currentLogin);
+        return ResponseEntity.ok(parents);
     }
 
     /**
@@ -176,6 +199,42 @@ public class FamilyResource {
     }
 
     /**
+     * POST /api/family/parents — create a parent account. ROLE_PARENT and ADMIN only.
+     */
+    @PostMapping("/parents")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<AdminUserDTO> createParent(@Valid @RequestBody CreateChildRequest request) {
+        LOG.debug("REST request to create parent account: {}", request.login());
+
+        if (request.email() == null || request.email().trim().isEmpty()) {
+            throw new BadRequestAlertException("Email is required to send reset password link", "family", "emailrequired");
+        }
+
+        if (userRepository.findOneByLogin(request.login().toLowerCase()).isPresent()) {
+            throw new BadRequestAlertException("Login already in use", "family", "loginalreadyused");
+        }
+
+        if (request.email() != null && userRepository.findOneByEmailIgnoreCase(request.email()).isPresent()) {
+            throw new BadRequestAlertException("Email already in use", "family", "emailalreadyused");
+        }
+
+        AdminUserDTO userDTO = new AdminUserDTO();
+        userDTO.setLogin(request.login());
+        userDTO.setFirstName(request.firstName());
+        userDTO.setLastName(request.lastName());
+        userDTO.setEmail(request.email());
+        userDTO.setLangKey("en");
+        userDTO.setActivated(true);
+        userDTO.setAuthorities(Set.of(AuthoritiesConstants.PARENT));
+
+        User created = userService.createUser(userDTO);
+        // createUser already sets resetKey/resetDate; send reset-link mail to set password.
+        mailService.sendPasswordResetMail(created);
+
+        return ResponseEntity.ok(new AdminUserDTO(created));
+    }
+
+    /**
      * DELETE /api/family/children/{login} — remove a child account. ROLE_PARENT and ADMIN only.
      */
     @DeleteMapping("/children/{login}")
@@ -200,6 +259,32 @@ public class FamilyResource {
 
         userService.deleteUser(login);
         LOG.debug("Deleted child account: {}", login);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * DELETE /api/family/parents/{login} — remove a parent account created by current user.
+     */
+    @DeleteMapping("/parents/{login}")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<Void> deleteParent(@PathVariable String login) {
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("Not authenticated", "family", "notauthenticated"));
+
+        User parent = userRepository.findOneByLogin(login.toLowerCase())
+            .orElseThrow(() -> new BadRequestAlertException("Parent not found", "family", "notfound"));
+
+        if (!currentLogin.equals(parent.getCreatedBy())) {
+            throw new BadRequestAlertException("Not your parent account", "family", "forbidden");
+        }
+
+        boolean isParent = parent.getAuthorities().stream().anyMatch(a -> AuthoritiesConstants.PARENT.equals(a.getName()));
+        if (!isParent) {
+            throw new BadRequestAlertException("User is not a parent account", "family", "notparent");
+        }
+
+        userService.deleteUser(login);
+        LOG.debug("Deleted parent account: {}", login);
         return ResponseEntity.noContent().build();
     }
 

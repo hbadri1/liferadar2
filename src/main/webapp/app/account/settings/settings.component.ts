@@ -1,11 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
+import { LoginService } from 'app/login/login.service';
 import { LANGUAGES } from 'app/config/language.constants';
 import { CURRENCIES, TIMEZONES } from 'app/shared/constants/preferences.constants';
 
@@ -48,6 +50,8 @@ export default class SettingsComponent implements OnInit {
   });
 
   private readonly accountService = inject(AccountService);
+  private readonly loginService = inject(LoginService);
+  private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
   private readonly translateService = inject(TranslateService);
 
@@ -93,7 +97,7 @@ export default class SettingsComponent implements OnInit {
           this.canManageFamily.set(false);
           this.managingFamily.set(false);
           this.success.set(true);
-          this.accountService.identity().subscribe();
+          this.refreshSessionAfterRoleChange();
         },
         error: () => {
           this.managingFamily.set(false);
@@ -107,12 +111,20 @@ export default class SettingsComponent implements OnInit {
           this.canManageFamily.set(true);
           this.managingFamily.set(false);
           this.success.set(true);
-          this.accountService.identity().subscribe();
+          this.refreshSessionAfterRoleChange();
         },
         error: () => {
           this.managingFamily.set(false);
         },
       });
     }
+  }
+
+  private refreshSessionAfterRoleChange(): void {
+    // JWT authorities are embedded in the token; re-login is required after role changes.
+    this.accountService.identity(true).subscribe(() => {
+      this.loginService.logout();
+      this.router.navigate(['/login']);
+    });
   }
 }

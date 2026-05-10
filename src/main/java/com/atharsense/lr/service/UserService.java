@@ -384,10 +384,16 @@ public class UserService {
      * @param roleName the name of the role to add.
      */
     public void addRoleToUser(User user, String roleName) {
+        if (user == null || user.getLogin() == null) {
+            return;
+        }
+
         authorityRepository.findById(roleName).ifPresent(authority -> {
-            user.getAuthorities().add(authority);
-            userRepository.save(user);
-            LOG.debug("Added role {} to user: {}", roleName, user.getLogin());
+            userRepository.findOneWithAuthoritiesByLogin(user.getLogin()).ifPresent(managedUser -> {
+                managedUser.getAuthorities().add(authority);
+                userRepository.save(managedUser);
+                LOG.debug("Added role {} to user: {}", roleName, managedUser.getLogin());
+            });
         });
     }
 
@@ -398,13 +404,19 @@ public class UserService {
      * @param roleName the name of the role to remove.
      */
     public void removeRoleFromUser(User user, String roleName) {
+        if (user == null || user.getLogin() == null) {
+            return;
+        }
+
         authorityRepository.findById(roleName).ifPresent(authority -> {
-            // Only remove if the user has other roles
-            if (user.getAuthorities().size() > 1) {
-                user.getAuthorities().remove(authority);
-                userRepository.save(user);
-                LOG.debug("Removed role {} from user: {}", roleName, user.getLogin());
-            }
+            userRepository.findOneWithAuthoritiesByLogin(user.getLogin()).ifPresent(managedUser -> {
+                // Only remove if the user has other roles
+                if (managedUser.getAuthorities().size() > 1) {
+                    managedUser.getAuthorities().remove(authority);
+                    userRepository.save(managedUser);
+                    LOG.debug("Removed role {} from user: {}", roleName, managedUser.getLogin());
+                }
+            });
         });
     }
 }

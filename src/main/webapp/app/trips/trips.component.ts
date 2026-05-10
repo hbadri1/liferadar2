@@ -59,6 +59,8 @@ export default class TripsComponent implements OnInit {
     );
   });
 
+  selectedTripReadOnly = computed(() => this.isTripFinished(this.selectedTrip()));
+
   private http = inject(HttpClient);
   private modalService = inject(NgbModal);
   private appConfig = inject(ApplicationConfigService);
@@ -365,6 +367,19 @@ export default class TripsComponent implements OnInit {
 
   trackCalendarCell(_index: number, cell: CalendarCell): string {
     return cell.date.format('YYYY-MM-DD');
+  }
+
+  isTripFinished(trip: ITripPlan | null | undefined): boolean {
+    if (!trip) {
+      return false;
+    }
+
+    if (trip.isActive === false) {
+      return true;
+    }
+
+    const endDate = this.toDayjsDate(trip.endDate);
+    return !!endDate && endDate.isBefore(dayjs());
   }
 
   private toDayjsDate(value?: unknown): dayjs.Dayjs | null {

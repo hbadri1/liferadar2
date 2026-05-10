@@ -7,6 +7,7 @@
     "cancelAdd": "Annuler",
     "tabs": {
       "management": "Gestion de la famille",
+      "kidsObjectives": "Objectifs des enfants",
       "objectives": "Objectifs des enfants",
       "childObjectives": "Objectifs de {{name}}"
     },

@@ -1,6 +1,27 @@
 .family-page {
   max-width: 1100px;
   margin: 0 auto;
+
+  .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    gap: 0.35rem;
+
+    .nav-item {
+      flex: 0 0 auto;
+    }
+
+    .nav-link {
+      white-space: nowrap;
+      min-height: 42px;
+      padding: 0.55rem 0.9rem;
+      border-radius: 10px 10px 0 0;
+      font-size: 0.9rem;
+    }
+  }
 }
 
 .family-title {
@@ -591,12 +612,61 @@
 }
 
 @media (max-width: 767.98px) {
+  .family-page {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+
+  .family-title {
+    font-size: 1.35rem;
+  }
+
+  .family-subtitle {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
   .family-header {
     flex-direction: column;
     align-items: flex-start !important;
+    gap: 0.8rem;
 
     .btn {
       width: 100%;
+      min-height: 44px;
+      justify-content: center;
+    }
+  }
+
+  .add-child-card-body,
+  .add-parent-card-body {
+    padding: 0.9rem;
+  }
+
+  .child-card,
+  .parent-card {
+    padding: 0.8rem;
+    gap: 0.75rem;
+  }
+
+  .child-card-delete,
+  .parent-card-delete {
+    position: static;
+    margin-left: auto;
+  }
+
+  .objective-group-card,
+  .objective-card,
+  .objective-item-card,
+  .objective-trend-card {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .objective-group-header {
+    .btn {
+      width: 100%;
+      min-height: 40px;
     }
   }
 
@@ -628,6 +698,10 @@
     gap: 0.6rem;
   }
 
+  .objective-progress-mobile-days {
+    gap: 0.25rem;
+  }
+
   .objective-progress-scroll-hint {
     display: none;
   }
@@ -651,6 +725,43 @@
 
   .objective-trend-chart {
     height: 9rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .family-page {
+    .nav-tabs .nav-link {
+      font-size: 0.82rem;
+      padding: 0.5rem 0.7rem;
+    }
+  }
+
+  .child-card-avatar,
+  .parent-card-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .child-name,
+  .parent-name {
+    font-size: 0.9rem;
+  }
+
+  .objective-progress-mobile-day-cell {
+    min-height: 2.6rem;
+    border-radius: 8px;
+  }
+
+  .objective-progress-mobile-day-cell .weekday {
+    font-size: 0.46rem;
+  }
+
+  .objective-progress-mobile-day-cell .day-number {
+    font-size: 0.62rem;
+  }
+
+  .objective-progress-mobile-day-cell .cell-value {
+    font-size: 0.58rem;
   }
 }
 
