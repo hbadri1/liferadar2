@@ -1,9 +1,9 @@
 package com.atharsense.lr.config;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -46,37 +46,37 @@ public class DevEnvFilePostProcessor implements EnvironmentPostProcessor, Ordere
             return;
         }
 
-        File envFile = resolveEnvFile();
-        if (envFile == null || !envFile.exists()) {
+        Path envPath = resolveEnvFile();
+        if (envPath == null || !Files.exists(envPath)) {
             log.debug("DevEnvFilePostProcessor: {} not found, skipping", ENV_FILE);
             return;
         }
 
-        Map<String, Object> props = parse(envFile);
+        Map<String, Object> props = parse(envPath);
         if (props.isEmpty()) {
             return;
         }
 
         // Add as the LOWEST priority source so real env vars always win.
         environment.getPropertySources().addLast(new MapPropertySource(SOURCE_NAME, props));
-        log.info("DevEnvFilePostProcessor: loaded {} properties from {}", props.size(), envFile.getAbsolutePath());
+        log.info("DevEnvFilePostProcessor: loaded {} properties from {}", props.size(), envPath.toAbsolutePath());
     }
 
-    private File resolveEnvFile() {
+    private Path resolveEnvFile() {
         // 1) current working directory (typical when running via Maven / IntelliJ)
-        File f = new File(ENV_FILE);
-        if (f.exists()) return f;
+        Path p = Path.of(ENV_FILE);
+        if (Files.exists(p)) return p;
 
         // 2) one level up (in case the working dir is a sub-module)
-        f = new File("../" + ENV_FILE);
-        if (f.exists()) return f;
+        p = Path.of("..", ENV_FILE);
+        if (Files.exists(p)) return p;
 
         return null;
     }
 
-    private Map<String, Object> parse(File file) {
+    private Map<String, Object> parse(Path path) {
         Map<String, Object> map = new LinkedHashMap<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.strip();
@@ -96,7 +96,7 @@ public class DevEnvFilePostProcessor implements EnvironmentPostProcessor, Ordere
                 map.put(key, value);
             }
         } catch (IOException e) {
-            log.warn("DevEnvFilePostProcessor: could not read {}: {}", file, e.getMessage());
+            log.warn("DevEnvFilePostProcessor: could not read {}: {}", path, e.getMessage());
         }
         return map;
     }
