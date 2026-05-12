@@ -42,11 +42,11 @@ docker pull ${IMAGE_WITH_TAG}
 
 cd liferadar
 echo "Stopping current container..."
-docker-compose down || true
+docker compose down || true
 
 echo "Starting new container..."
 export IMAGE_TAG=${IMAGE_TAG}
-docker-compose up -d
+docker compose up -d
 
 echo "Waiting for health check..."
 for i in {1..30}; do
