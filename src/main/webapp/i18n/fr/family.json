@@ -63,9 +63,15 @@
         "lastDays": "{{count}} derniers jours",
         "lastMonths": "{{count}} derniers mois",
         "lastEntries": "{{count}} dernières entrées",
+        "periodTitle": "Vue du progrès",
+        "period": {
+          "last7days": "7 derniers jours",
+          "last30days": "30 derniers jours"
+        },
         "last30Days": "30 derniers jours",
         "itemColumn": "Élément",
         "noEntryLastDays": "Aucune entrée au cours des {{count}} derniers jours.",
+        "noEntryLastWeeks": "Aucune entrée au cours des {{count}} dernières semaines.",
         "noEntryLastMonths": "Aucune entrée au cours des {{count}} derniers mois.",
         "noEntryLastEntries": "Aucune entrée pour le moment.",
         "noEntryLast30Days": "Aucune entrée au cours des 30 derniers jours.",
@@ -76,7 +82,8 @@
         "unitLabel": "Unité : {{unit}}",
         "scrollHint": "Balayez vers la gauche ou la droite pour voir tout le tableau hebdomadaire.",
         "trendAria": "Tendance de progression de {{item}} au cours des {{count}} derniers mois",
-        "trendAriaEntries": "Tendance de progression de {{item}} sur les {{count}} dernières entrées"
+        "trendAriaEntries": "Tendance de progression de {{item}} sur les {{count}} dernières entrées",
+        "trendAriaPeriod": "Tendance de progression de {{item}} au cours des {{count}} périodes {{period}}"
       },
       "errors": {
         "deactivate": "Échec de la désactivation de l'objectif.",
@@ -138,7 +145,6 @@
       "password": "Mot de passe",
       "passwordRequired": "Mot de passe requis (4 caractères minimum)",
       "firstName": "Prénom",
-      "lastName": "Nom de famille",
       "email": "Email (optionnel)",
       "emailInvalid": "Format d'email invalide",
       "save": "Créer le compte",

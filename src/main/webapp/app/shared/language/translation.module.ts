@@ -1,7 +1,9 @@
 import { NgModule, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import dayjs from 'dayjs/esm';
 import { missingTranslationHandler, translatePartialLoader } from 'app/config/translation.config';
+import { toDayjsLocale } from 'app/config/language-locale.util';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 
 @NgModule({
@@ -27,6 +29,10 @@ export class TranslationModule {
     this.translateService.setDefaultLang('en');
     // if user have changed language and navigates away from the application and back to the application then use previously chosen language
     const langKey = this.stateStorageService.getLocale() ?? 'en';
+    dayjs.locale(toDayjsLocale(langKey));
     this.translateService.use(langKey);
+    this.translateService.onLangChange.subscribe(({ lang }) => {
+      dayjs.locale(toDayjsLocale(lang));
+    });
   }
 }

@@ -146,6 +146,9 @@ export default class TripsComponent implements OnInit {
 
   openEditTrip(trip: ITripPlan, event: Event): void {
     event.stopPropagation();
+    if (this.isTripFinished(trip)) {
+      return;
+    }
     const ref = this.modalService.open(TripFormModalComponent, { size: 'lg', centered: true });
     ref.componentInstance.trip = trip;
     ref.result.then(
@@ -163,6 +166,9 @@ export default class TripsComponent implements OnInit {
 
   openDeleteTrip(trip: ITripPlan, event: Event): void {
     event.stopPropagation();
+    if (this.isTripFinished(trip)) {
+      return;
+    }
     const ref = this.modalService.open(ConfirmationModalComponent, { centered: true });
     ref.componentInstance.title = 'trips.deleteTrip';
     ref.componentInstance.message = 'trips.confirmDeleteTrip';
@@ -188,6 +194,7 @@ export default class TripsComponent implements OnInit {
   openAddStep(): void {
     const trip = this.selectedTrip();
     if (!trip || !trip.id) return;
+    if (this.isTripFinished(trip)) return;
 
     // Calculate next sequence based on max existing sequence
     const maxSequence = this.steps().length > 0
@@ -211,6 +218,7 @@ export default class TripsComponent implements OnInit {
   openEditStep(step: ITripPlanStep): void {
     const trip = this.selectedTrip();
     if (!trip || !trip.id) return;
+    if (this.isTripFinished(trip)) return;
     const ref = this.modalService.open(StepFormModalComponent, { size: 'lg', centered: true });
     ref.componentInstance.trip = trip;
     ref.componentInstance.step = step;
@@ -228,6 +236,7 @@ export default class TripsComponent implements OnInit {
   openDeleteStep(step: ITripPlanStep): void {
     const trip = this.selectedTrip();
     if (!trip) return;
+    if (this.isTripFinished(trip)) return;
     const ref = this.modalService.open(ConfirmationModalComponent, { centered: true });
     ref.componentInstance.title = this.translateService.instant('trips.deleteStep');
     ref.componentInstance.message = this.translateService.instant('trips.confirmDeleteStep');
@@ -352,6 +361,9 @@ export default class TripsComponent implements OnInit {
   }
 
   onTripActionsChange(trip: ITripPlan, actionsJson: string | null): void {
+    if (this.isTripFinished(trip)) {
+      return;
+    }
     this.updateTripActions(trip, actionsJson);
   }
 

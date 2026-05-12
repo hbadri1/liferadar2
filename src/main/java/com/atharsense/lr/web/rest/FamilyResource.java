@@ -181,7 +181,6 @@ public class FamilyResource {
         AdminUserDTO userDTO = new AdminUserDTO();
         userDTO.setLogin(request.login());
         userDTO.setFirstName(request.firstName());
-        userDTO.setLastName(request.lastName());
         userDTO.setEmail(request.email());
         userDTO.setLangKey("en");
         userDTO.setActivated(true);
@@ -221,7 +220,6 @@ public class FamilyResource {
         AdminUserDTO userDTO = new AdminUserDTO();
         userDTO.setLogin(request.login());
         userDTO.setFirstName(request.firstName());
-        userDTO.setLastName(request.lastName());
         userDTO.setEmail(request.email());
         userDTO.setLangKey("en");
         userDTO.setActivated(true);
@@ -294,7 +292,6 @@ public class FamilyResource {
     public record CreateChildRequest(
         String login,
         String firstName,
-        String lastName,
         String email,
         String password
     ) {}

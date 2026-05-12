@@ -63,9 +63,15 @@
         "lastDays": "Last {{count}} days",
         "lastMonths": "Last {{count}} months",
         "lastEntries": "Last {{count}} entries",
+        "periodTitle": "Progress view",
+        "period": {
+          "last7days": "Last 7 days",
+          "last30days": "Last 30 days"
+        },
         "last30Days": "Last 30 days",
         "itemColumn": "Item",
         "noEntryLastDays": "No entries in the last {{count}} days.",
+        "noEntryLastWeeks": "No entries in the last {{count}} weeks.",
         "noEntryLastMonths": "No entries in the last {{count}} months.",
         "noEntryLastEntries": "No entries yet.",
         "noEntryLast30Days": "No entries in the last 30 days.",
@@ -76,7 +82,8 @@
         "unitLabel": "Unit: {{unit}}",
         "scrollHint": "Swipe left or right to view the full weekly table.",
         "trendAria": "{{item}} progress trend over the last {{count}} months",
-        "trendAriaEntries": "{{item}} progress trend over the last {{count}} entries"
+        "trendAriaEntries": "{{item}} progress trend over the last {{count}} entries",
+        "trendAriaPeriod": "{{item}} progress trend over the last {{count}} {{period}} periods"
       },
       "errors": {
         "deactivate": "Failed to deactivate objective.",
@@ -138,7 +145,6 @@
       "password": "Password",
       "passwordRequired": "Password is required (min 4 characters)",
       "firstName": "First Name",
-      "lastName": "Last Name",
       "email": "Email (optional)",
       "emailInvalid": "Invalid email format",
       "save": "Create Account",

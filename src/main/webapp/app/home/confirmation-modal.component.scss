@@ -23,3 +23,18 @@
   font-weight: 500;
 }
 
+/* RTL Support for Confirmation Modal */
+[dir='rtl'] :host ::ng-deep {
+  .modal-header {
+    flex-direction: row-reverse;
+  }
+
+  .modal-footer {
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+  }
+
+  .modal-footer .btn {
+    flex-direction: row-reverse;
+  }
+}

@@ -149,7 +149,7 @@
                     <div class="decision-metric-value">
                       @if (evaluationDecision.date) {
                         @if (isActionItemsPage) {
-                          {{ evaluationDecision.date.toDate() | date: 'dd-MM-yyyy HH:mm': riyadhTimeZone }}
+                          {{ evaluationDecision.date.toDate() | localizedDate: 'dd-MM-yyyy HH:mm': riyadhTimeZone }}
                         } @else {
                           {{ evaluationDecision.date | formatMediumDatetime }}
                         }
@@ -167,7 +167,7 @@
                       <div class="decision-meta-value">
                         @let creationDate = getLifeEvaluationCreationDate(evaluationDecision);
                         @if (creationDate) {
-                          {{ creationDate | date: 'dd-MM-yyyy HH:mm' : riyadhTimeZone }}
+                          {{ creationDate | localizedDate: 'dd-MM-yyyy HH:mm' : riyadhTimeZone }}
                         } @else {
                           <span class="text-muted">-</span>
                         }
@@ -330,7 +330,7 @@
                   <td class="text-nowrap">
                     @if (evaluationDecision.date) {
                       @if (isActionItemsPage) {
-                        {{ evaluationDecision.date.toDate() | date: 'dd-MM-yyyy HH:mm': riyadhTimeZone }}
+                        {{ evaluationDecision.date.toDate() | localizedDate: 'dd-MM-yyyy HH:mm': riyadhTimeZone }}
                       } @else {
                         {{ evaluationDecision.date | formatMediumDatetime }}
                       }
@@ -342,7 +342,7 @@
                     <td class="text-nowrap">
                       @let creationDate = getLifeEvaluationCreationDate(evaluationDecision);
                       @if (creationDate) {
-                        {{ creationDate | date: 'dd-MM-yyyy HH:mm' : riyadhTimeZone }}
+                        {{ creationDate | localizedDate: 'dd-MM-yyyy HH:mm' : riyadhTimeZone }}
                       } @else {
                         <span class="text-muted">-</span>
                       }

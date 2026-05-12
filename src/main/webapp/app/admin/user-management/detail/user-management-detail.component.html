@@ -34,13 +34,13 @@
           <dd>{{ userRef.createdBy }}</dd>
 
           <dt><span jhiTranslate="userManagement.createdDate">Created date</span></dt>
-          <dd>{{ userRef.createdDate | date: 'dd/MM/yy HH:mm' }}</dd>
+          <dd>{{ userRef.createdDate | localizedDate: 'dd/MM/yy HH:mm' }}</dd>
 
           <dt><span jhiTranslate="userManagement.lastModifiedBy">Modified by</span></dt>
           <dd>{{ userRef.lastModifiedBy }}</dd>
 
           <dt><span jhiTranslate="userManagement.lastModifiedDate">Modified date</span></dt>
-          <dd>{{ userRef.lastModifiedDate | date: 'dd/MM/yy HH:mm' }}</dd>
+          <dd>{{ userRef.lastModifiedDate | localizedDate: 'dd/MM/yy HH:mm' }}</dd>
 
           <dt><span jhiTranslate="userManagement.profiles">Profiles</span></dt>
           <dd>

@@ -1,6 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
@@ -11,6 +10,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ConfirmationModalComponent } from 'app/home/confirmation-modal.component';
 import { FamilyObjectiveModalComponent } from './family-objective-modal.component';
 import { FamilyProgressModalComponent } from './family-progress-modal.component';
+import { FamilyMemberModalComponent } from './family-member-modal.component';
 import {
   ChildUser,
   ParentUser,
@@ -55,6 +55,8 @@ interface ObjectiveTrendSeries {
   endLabel: string;
 }
 
+type ObjectiveProgressPeriod = 'entries' | 'last7days' | 'last30days';
+
 interface ManagementObjectiveGroup {
   key: string;
   representative: FamilyObjective;
@@ -67,12 +69,13 @@ interface ManagementObjectiveGroup {
   selector: 'jhi-family',
   templateUrl: './family.component.html',
   styleUrl: './family.component.scss',
-  imports: [SharedModule, ReactiveFormsModule, BaseChartDirective],
+  imports: [SharedModule, BaseChartDirective],
 })
 export default class FamilyComponent implements OnInit {
   readonly objectiveRecentEntriesCount = 7;
   readonly objectiveHistoryDays = 7;
-  readonly objectiveTrendMonths = 3;
+  readonly objectiveTrendLast7Days = 7;
+  readonly objectiveTrendLast30Days = 30;
   readonly objectiveTrendDays = 90;
 
   children = signal<ChildUser[]>([]);
@@ -80,13 +83,11 @@ export default class FamilyComponent implements OnInit {
   objectives = signal<FamilyObjective[]>([]);
   isLoading = signal(false);
   isLoadingObjectives = signal(false);
-  isSaving = signal(false);
   errorMsg = signal<string | null>(null);
   successMsg = signal<string | null>(null);
-  showAddForm = signal(false);
-  showAddParentForm = signal(false);
   activeTab = signal<string>('management');
   activeObjectiveChildLogin = signal<string | null>(null);
+  objectiveProgressPeriod = signal<ObjectiveProgressPeriod>('last30days');
 
   account = inject(AccountService).trackCurrentAccount();
 
@@ -233,15 +234,6 @@ export default class FamilyComponent implements OnInit {
       });
   });
 
-  addForm = inject(FormBuilder).group({
-    login: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50),
-      Validators.pattern(/^[a-zA-Z0-9!$&*+=?^_`{|}~.-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$|^[_.@A-Za-z0-9-]+$/)]],
-    firstName: ['', [Validators.maxLength(50)]],
-    lastName: ['', [Validators.maxLength(50)]],
-    email: ['', [Validators.email, Validators.minLength(5), Validators.maxLength(254)]],
-    password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(100)]],
-  });
-
   private readonly http = inject(HttpClient);
   private readonly modalService = inject(NgbModal);
   private readonly translateService = inject(TranslateService);
@@ -260,10 +252,6 @@ export default class FamilyComponent implements OnInit {
       }
 
       this.activeTab.set(tabId);
-      if (tabId !== 'management') {
-        this.showAddForm.set(false);
-        this.showAddParentForm.set(false);
-      }
       this.ensureActiveTabSelection();
       return;
     }
@@ -273,7 +261,6 @@ export default class FamilyComponent implements OnInit {
     }
 
     this.activeTab.set(tabId);
-    this.showAddForm.set(false);
   }
 
   selectObjectiveChild(login: string): void {
@@ -337,38 +324,15 @@ export default class FamilyComponent implements OnInit {
     });
   }
 
-  toggleAddForm(): void {
-    this.showAddForm.update(v => !v);
-    this.addForm.reset();
+  openAddChildModal(): void {
     this.errorMsg.set(null);
-    this.successMsg.set(null);
-  }
-
-  save(): void {
-    if (this.addForm.invalid) return;
-    this.isSaving.set(true);
-    this.errorMsg.set(null);
-    this.successMsg.set(null);
-    const val = this.addForm.value;
-    this.http.post<ChildUser>('/api/family/children', {
-      login: val.login,
-      firstName: val.firstName || null,
-      lastName: val.lastName || null,
-      email: val.email || null,
-      password: val.password,
-    }).subscribe({
-      next: child => {
-        this.children.update(list => [...list, child]);
-        this.ensureActiveTabSelection();
-        this.isSaving.set(false);
+    const modalRef = this.modalService.open(FamilyMemberModalComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.mode = 'child';
+    modalRef.closed.subscribe(result => {
+      if (result === 'saved') {
+        this.loadChildren();
         this.successMsg.set('family.childAdded');
-        this.addForm.reset();
-        this.showAddForm.set(false);
-      },
-      error: err => {
-        this.isSaving.set(false);
-        this.errorMsg.set(err?.error?.detail ?? err?.error?.title ?? 'family.error.save');
-      },
+      }
     });
   }
 
@@ -386,37 +350,15 @@ export default class FamilyComponent implements OnInit {
     });
   }
 
-  toggleAddParentForm(): void {
-    this.showAddParentForm.update(v => !v);
-    this.addForm.reset();
+  openAddParentModal(): void {
     this.errorMsg.set(null);
-    this.successMsg.set(null);
-  }
-
-  saveParent(): void {
-    if (this.addForm.invalid) return;
-    this.isSaving.set(true);
-    this.errorMsg.set(null);
-    this.successMsg.set(null);
-    const val = this.addForm.value;
-    this.http.post<ParentUser>('/api/family/parents', {
-      login: val.login,
-      firstName: val.firstName || null,
-      lastName: val.lastName || null,
-      email: val.email || null,
-      password: val.password,
-    }).subscribe({
-      next: parent => {
-        this.parents.update(list => [...list, parent]);
-        this.isSaving.set(false);
+    const modalRef = this.modalService.open(FamilyMemberModalComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.mode = 'parent';
+    modalRef.closed.subscribe(result => {
+      if (result === 'saved') {
+        this.loadParents();
         this.successMsg.set('family.parentAdded');
-        this.addForm.reset();
-        this.showAddParentForm.set(false);
-      },
-      error: err => {
-        this.isSaving.set(false);
-        this.errorMsg.set(err?.error?.detail ?? err?.error?.title ?? 'family.error.save');
-      },
+      }
     });
   }
 
@@ -601,11 +543,16 @@ export default class FamilyComponent implements OnInit {
   }
 
   hasObjectiveProgressInTrendWindow(objective: FamilyObjective): boolean {
-    return objective.itemDefinitions.some(itemDefinition => (itemDefinition.progressHistory?.length ?? 0) > 0);
+    const period = this.objectiveProgressPeriod();
+    return objective.itemDefinitions.some(itemDefinition => this.getObjectiveTrendSeriesForItem(itemDefinition, period).values.length > 0);
   }
 
-  getObjectiveTrendSeries(objective: FamilyObjective): ObjectiveTrendSeries[] {
-    return objective.itemDefinitions.map(itemDefinition => this.getObjectiveTrendSeriesForItem(itemDefinition));
+  getObjectiveTrendSeries(objective: FamilyObjective, period: ObjectiveProgressPeriod = 'entries'): ObjectiveTrendSeries[] {
+    return objective.itemDefinitions.map(itemDefinition => this.getObjectiveTrendSeriesForItem(itemDefinition, period));
+  }
+
+  setObjectiveProgressPeriod(period: ObjectiveProgressPeriod): void {
+    this.objectiveProgressPeriod.set(period);
   }
 
 
@@ -901,14 +848,20 @@ export default class FamilyComponent implements OnInit {
     return latestProgressByDay;
   }
 
-  private getObjectiveTrendSeriesForItem(itemDefinition: FamilyObjectiveItemDefinition): ObjectiveTrendSeries {
+  private getObjectiveTrendSeriesForItem(
+    itemDefinition: FamilyObjectiveItemDefinition,
+    period: ObjectiveProgressPeriod = 'entries',
+  ): ObjectiveTrendSeries {
     const locale = this.translateService.currentLang || 'en';
-    const labelFormatter = new Intl.DateTimeFormat(locale, {
+    const entryLabelFormatter = new Intl.DateTimeFormat(locale, {
       month: 'short',
       day: 'numeric',
     });
+    const windowDays = period === 'last7days' ? this.objectiveTrendLast7Days : period === 'last30days' ? this.objectiveTrendLast30Days : this.objectiveTrendDays;
+    const recentWindowStart = new Date();
+    recentWindowStart.setDate(recentWindowStart.getDate() - windowDays);
 
-    const entries = (itemDefinition.progressHistory ?? [])
+    const parsedEntries = (itemDefinition.progressHistory ?? [])
       .map(progress => {
         const parsed = this.parseDate(progress.createdAt);
         return parsed
@@ -919,15 +872,23 @@ export default class FamilyComponent implements OnInit {
           : null;
       })
       .filter((entry): entry is { date: Date; value: number } => entry !== null)
-      .sort((left, right) => right.date.getTime() - left.date.getTime())
-      .slice(0, this.objectiveRecentEntriesCount)
-      .reverse()
-      .map((entry, index) => ({
-        key: `${index}-${entry.date.toISOString()}`,
-        date: entry.date,
-        label: labelFormatter.format(entry.date),
-        value: entry.value,
-      }));
+      .filter(entry => entry.date >= recentWindowStart)
+      .sort((left, right) => left.date.getTime() - right.date.getTime());
+
+    const entries =
+      period === 'entries'
+        ? parsedEntries.slice(-this.objectiveRecentEntriesCount).map((entry, index) => ({
+            key: `${index}-${entry.date.toISOString()}`,
+            date: entry.date,
+            label: entryLabelFormatter.format(entry.date),
+            value: entry.value,
+          }))
+        : parsedEntries.map((entry, index) => ({
+            key: `${index}-${entry.date.toISOString()}`,
+            date: entry.date,
+            label: entryLabelFormatter.format(entry.date),
+            value: entry.value,
+          }));
 
     const startLabel = entries[0]?.label ?? '-';
     const endLabel = entries[entries.length - 1]?.label ?? '-';
@@ -1027,6 +988,7 @@ export default class FamilyComponent implements OnInit {
       endLabel,
     };
   }
+
 
   private isWithinHistoryWindow(value: string | null | undefined): boolean {
     const parsed = this.parseDate(value);

@@ -336,10 +336,32 @@
     min-height: 120px;
   }
 
-  .contact-success-icon {
-    font-size: 3rem;
-    line-height: 1;
+   .contact-success-icon {
+     font-size: 3rem;
+     line-height: 1;
+   }
+}
+
+/* RTL Modal Support */
+[dir='rtl'] :host ::ng-deep {
+  .modal-footer {
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+  }
+
+  .modal-header {
+    flex-direction: row-reverse;
+  }
+
+  .btn {
+    flex-direction: row-reverse;
+  }
+
+  fa-icon {
+    margin-right: 0 !important;
+    margin-left: 0.3rem !important;
   }
 }
+
 
 

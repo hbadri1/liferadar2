@@ -421,7 +421,7 @@
                                       <li class="evaluation-decision-line">
                                         <span>{{ decision.decision }}</span>
                                         @if (decision.date) {
-                                          <span class="evaluation-decision-date">({{ decision.date.toDate() | date: 'dd-MM-yyyy HH:mm': riyadhTimeZone }})</span>
+                                          <span class="evaluation-decision-date">({{ decision.date.toDate() | localizedDate: 'dd-MM-yyyy HH:mm': riyadhTimeZone }})</span>
                                         }
                                       </li>
                                     }

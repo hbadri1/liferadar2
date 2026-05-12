@@ -87,6 +87,146 @@ body {
   font-family: var(--lr-font-ar);
 }
 
+/* Keep modal close button on the leading side in RTL (Arabic). */
+[dir='rtl'] .modal-header .btn-close {
+  margin-right: auto;
+  margin-left: calc(-0.5 * var(--bs-modal-header-padding-x));
+}
+
+/* Fix modal footer button alignment in RTL (Arabic). */
+[dir='rtl'] .modal-footer {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+
+/* Normalize common Bootstrap directional utilities when running RTL without a full RTL Bootstrap build. */
+[dir='rtl'] {
+  .ms-1 {
+    margin-left: 0 !important;
+    margin-right: 0.25rem !important;
+  }
+
+  .ms-2 {
+    margin-left: 0 !important;
+    margin-right: 0.5rem !important;
+  }
+
+  .ms-3 {
+    margin-left: 0 !important;
+    margin-right: 1rem !important;
+  }
+
+  .ms-4 {
+    margin-left: 0 !important;
+    margin-right: 1.5rem !important;
+  }
+
+  .ms-5 {
+    margin-left: 0 !important;
+    margin-right: 3rem !important;
+  }
+
+  .ms-auto {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+
+  .me-1 {
+    margin-right: 0 !important;
+    margin-left: 0.25rem !important;
+  }
+
+  .me-2 {
+    margin-right: 0 !important;
+    margin-left: 0.5rem !important;
+  }
+
+  .me-3 {
+    margin-right: 0 !important;
+    margin-left: 1rem !important;
+  }
+
+  .me-4 {
+    margin-right: 0 !important;
+    margin-left: 1.5rem !important;
+  }
+
+  .me-5 {
+    margin-right: 0 !important;
+    margin-left: 3rem !important;
+  }
+
+  .me-auto {
+    margin-right: 0 !important;
+    margin-left: auto !important;
+  }
+
+  .ps-1 {
+    padding-left: 0 !important;
+    padding-right: 0.25rem !important;
+  }
+
+  .ps-2 {
+    padding-left: 0 !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .ps-3 {
+    padding-left: 0 !important;
+    padding-right: 1rem !important;
+  }
+
+  .ps-4 {
+    padding-left: 0 !important;
+    padding-right: 1.5rem !important;
+  }
+
+  .ps-5 {
+    padding-left: 0 !important;
+    padding-right: 3rem !important;
+  }
+
+  .pe-1 {
+    padding-right: 0 !important;
+    padding-left: 0.25rem !important;
+  }
+
+  .pe-2 {
+    padding-right: 0 !important;
+    padding-left: 0.5rem !important;
+  }
+
+  .pe-3 {
+    padding-right: 0 !important;
+    padding-left: 1rem !important;
+  }
+
+  .pe-4 {
+    padding-right: 0 !important;
+    padding-left: 1.5rem !important;
+  }
+
+  .pe-5 {
+    padding-right: 0 !important;
+    padding-left: 3rem !important;
+  }
+
+  .text-start {
+    text-align: right !important;
+  }
+
+  .text-end {
+    text-align: left !important;
+  }
+
+  /* Fix button icon margin in RTL */
+  .btn fa-icon {
+    margin-right: 0 !important;
+    margin-left: 0.25rem !important;
+  }
+}
+
+
 h1,
 h2,
 h3,

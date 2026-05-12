@@ -4,6 +4,9 @@
     <a class="navbar-logo" routerLink="/" (click)="collapseNavbar()">
       <img class="logo-img" src="content/images/liferadar-logo-mark.svg" alt="Liferadar logo" />
       <span class="navbar-title">Liferadar</span>
+      @if (version) {
+        <span class="navbar-version-ribbon">{{ version }}</span>
+      }
     </a>
 
     <!-- Center Navigation Links (Desktop) -->

@@ -24,6 +24,7 @@
     "confirmDeleteStep": "هل أنت متأكد من حذف هذه الخطوة؟",
     "noSteps": "لم تُضف أي خطوات بعد.",
     "addFirstStop": "أضف أول خطوة",
+    "readOnlyFinished": "للقراءة فقط (الرحلة منتهية)",
     "stop": "خطوة",
     "journeyEnd": "نهاية الرحلة",
     "currentDate": "اليوم",

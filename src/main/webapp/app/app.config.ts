@@ -25,6 +25,8 @@ import routes from './app.routes';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { AppPageTitleStrategy } from './app-page-title-strategy';
+import { StateStorageService } from './core/auth/state-storage.service';
+import { toAngularLocale } from './config/language-locale.util';
 
 const routerFeatures: RouterFeatures[] = [
   withComponentInputBinding(),
@@ -53,7 +55,13 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(TranslationModule),
     provideHttpClient(withInterceptorsFromDi()),
     Title,
-    { provide: LOCALE_ID, useValue: 'en' },
+    {
+      provide: LOCALE_ID,
+      useFactory() {
+        const stateStorageService = inject(StateStorageService);
+        return toAngularLocale(stateStorageService.getLocale() ?? 'en');
+      },
+    },
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
     FindLanguageFromKeyPipe,
     provideCharts(withDefaultRegisterables()),

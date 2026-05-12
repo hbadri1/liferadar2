@@ -31,6 +31,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/main/webapp/content",
+              "src/main/webapp/i18n",
               "src/main/webapp/favicon.ico",
               "src/main/webapp/favicon.svg",
               "src/main/webapp/apple-touch-icon.png",

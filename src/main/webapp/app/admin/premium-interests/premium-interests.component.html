@@ -88,7 +88,7 @@
                 }
               </td>
               <td>
-                <span class="small">{{ entry.createdDate | date: 'medium' }}</span>
+                <span class="small">{{ entry.createdDate | localizedDate: 'medium' }}</span>
               </td>
               <td>
                 @if (entry.feedback) {

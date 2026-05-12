@@ -17,13 +17,13 @@
     </div>
     @if (canManageFamily() && activeTab() === 'management') {
       <div class="d-flex flex-wrap gap-2 justify-content-end">
-        <button class="btn btn-success" (click)="toggleAddForm()">
-          <fa-icon [icon]="showAddForm() ? 'times' : 'user-plus'" class="me-2"></fa-icon>
+        <button class="btn btn-success" (click)="openAddChildModal()">
+          <fa-icon icon="user-plus" class="me-2"></fa-icon>
           <span jhiTranslate="family.addChild">Add Child</span>
         </button>
         @if (canManageParents()) {
-          <button class="btn btn-info" (click)="toggleAddParentForm()">
-            <fa-icon [icon]="showAddParentForm() ? 'times' : 'user-check'" class="me-2"></fa-icon>
+          <button class="btn btn-info" (click)="openAddParentModal()">
+            <fa-icon icon="user-check" class="me-2"></fa-icon>
             <span jhiTranslate="family.addParent">Add Parent</span>
           </button>
         }
@@ -89,175 +89,6 @@
   }
 
   @if (activeTab() === 'management' && canManageFamily()) {
-    <!-- Add Child Form -->
-    @if (showAddForm()) {
-      <div class="add-child-card mb-4">
-        <div class="add-child-card-header">
-          <fa-icon icon="user-plus" class="me-2"></fa-icon>
-          <span jhiTranslate="family.addChild">Add Child Account</span>
-        </div>
-        <div class="add-child-card-body">
-          <form [formGroup]="addForm" (ngSubmit)="save()">
-            <div class="row g-3">
-              <!-- Login -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.login">Username</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="login"
-                  [class.is-invalid]="addForm.get('login')?.invalid && addForm.get('login')?.touched"
-                  placeholder="child_username"
-                />
-                @if (addForm.get('login')?.invalid && addForm.get('login')?.touched) {
-                  <div class="invalid-feedback" jhiTranslate="family.form.loginRequired">Username is required</div>
-                }
-              </div>
-
-              <!-- Password -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.password">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  formControlName="password"
-                  [class.is-invalid]="addForm.get('password')?.invalid && addForm.get('password')?.touched"
-                  placeholder="••••••••"
-                />
-                @if (addForm.get('password')?.invalid && addForm.get('password')?.touched) {
-                  <div class="invalid-feedback" jhiTranslate="family.form.passwordRequired">Password required (min 4 chars)</div>
-                }
-              </div>
-
-              <!-- First Name -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.firstName">First Name</label>
-                <input type="text" class="form-control" formControlName="firstName" placeholder="Sara" />
-              </div>
-
-              <!-- Last Name -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.lastName">Last Name</label>
-                <input type="text" class="form-control" formControlName="lastName" placeholder="Al-Ahmad" />
-              </div>
-
-              <!-- Email -->
-              <div class="col-md-12">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.email">Email (optional)</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  formControlName="email"
-                  [class.is-invalid]="addForm.get('email')?.invalid && addForm.get('email')?.touched"
-                  placeholder="child@example.com"
-                />
-                @if (addForm.get('email')?.invalid && addForm.get('email')?.touched) {
-                  <div class="invalid-feedback" jhiTranslate="family.form.emailInvalid">Invalid email format</div>
-                }
-              </div>
-            </div>
-
-            <div class="d-flex gap-2 mt-4">
-              <button type="submit" class="btn btn-primary" [disabled]="addForm.invalid || isSaving()">
-                @if (isSaving()) {
-                  <span class="spinner-border spinner-border-sm me-2"></span>
-                } @else {
-                  <fa-icon icon="save" class="me-2"></fa-icon>
-                }
-                <span jhiTranslate="family.form.save">Save</span>
-              </button>
-              <button type="button" class="btn btn-outline-secondary" (click)="toggleAddForm()">
-                <fa-icon icon="times" class="me-2"></fa-icon>
-                <span jhiTranslate="family.form.cancel">Cancel</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    }
-
-
-    <!-- Add Parent Form -->
-    @if (showAddParentForm() && canManageParents()) {
-      <div class="add-parent-card mb-4">
-        <div class="add-parent-card-header">
-          <fa-icon icon="user-check" class="me-2"></fa-icon>
-          <span jhiTranslate="family.addParent">Add Parent Account</span>
-        </div>
-        <div class="add-parent-card-body">
-          <form [formGroup]="addForm" (ngSubmit)="saveParent()">
-            <div class="row g-3">
-              <!-- Login -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.login">Username</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="login"
-                  [class.is-invalid]="addForm.get('login')?.invalid && addForm.get('login')?.touched"
-                  placeholder="parent_username"
-                />
-                @if (addForm.get('login')?.invalid && addForm.get('login')?.touched) {
-                  <div class="invalid-feedback" jhiTranslate="family.form.loginRequired">Username is required</div>
-                }
-              </div>
-
-              <!-- Password -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.password">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  formControlName="password"
-                  [class.is-invalid]="addForm.get('password')?.invalid && addForm.get('password')?.touched"
-                  placeholder="••••••••"
-                />
-                @if (addForm.get('password')?.invalid && addForm.get('password')?.touched) {
-                  <div class="invalid-feedback" jhiTranslate="family.form.passwordRequired">Password required (min 4 chars)</div>
-                }
-              </div>
-
-              <!-- First Name -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.firstName">First Name</label>
-                <input type="text" class="form-control" formControlName="firstName" placeholder="John" />
-              </div>
-
-              <!-- Last Name -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.lastName">Last Name</label>
-                <input type="text" class="form-control" formControlName="lastName" placeholder="Smith" />
-              </div>
-
-              <!-- Email -->
-              <div class="col-md-12">
-                <label class="form-label fw-semibold" jhiTranslate="family.form.email">Email (optional)</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  formControlName="email"
-                  [class.is-invalid]="addForm.get('email')?.invalid && addForm.get('email')?.touched"
-                  placeholder="john@example.com"
-                />
-                @if (addForm.get('email')?.invalid && addForm.get('email')?.touched) {
-                  <div class="invalid-feedback" jhiTranslate="family.form.emailInvalid">Email is invalid</div>
-                }
-              </div>
-
-              <!-- Buttons -->
-              <div class="col-12 d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-outline-secondary" (click)="toggleAddParentForm()" jhiTranslate="family.form.cancel">
-                  Cancel
-                </button>
-                <button type="submit" class="btn btn-info" [disabled]="addForm.invalid || isSaving()" jhiTranslate="family.form.save">
-                  {{ isSaving() ? 'Saving...' : 'Save' }}
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    }
 
     <!-- Parents List -->
     @if (canManageParents() && parents().length > 0) {
@@ -408,7 +239,7 @@
                     @if (objective.description) {
                       <p class="text-muted small mb-2">{{ objective.description }}</p>
                     }
-                    <small class="text-muted">{{ 'family.objectives.form.kids' | translate }}: {{ group.kidNames.join(', ') }} · {{ objective.createdAt | date: 'medium' }}</small>
+                    <small class="text-muted">{{ 'family.objectives.form.kids' | translate }}: {{ group.kidNames.join(', ') }} · {{ objective.createdAt | localizedDate: 'medium' }}</small>
                   </div>
                   <div class="d-flex align-items-center gap-2 flex-wrap justify-content-md-end">
                     <span class="badge" [ngClass]="objective.active ? 'bg-success' : 'bg-secondary'">
@@ -451,7 +282,7 @@
                         <small class="text-muted d-block objective-item-card-updated-at">
                           {{ 'family.objectives.progress.latest' | translate }}:
                           <strong>{{ latestProgress.value }}</strong>
-                          · {{ latestProgress.createdAt | date: 'medium' }}
+                          · {{ latestProgress.createdAt | localizedDate: 'medium' }}
                         </small>
                       } @else {
                         <small class="text-muted d-block objective-item-card-updated-at" jhiTranslate="family.objectives.progress.empty">No progress yet.</small>
@@ -522,7 +353,7 @@
                     @if (objective.description) {
                       <p class="text-muted small mb-2">{{ objective.description }}</p>
                     }
-                    <small class="text-muted">{{ objective.createdAt | date: 'medium' }}</small>
+                    <small class="text-muted">{{ objective.createdAt | localizedDate: 'medium' }}</small>
                   </div>
                   <span class="badge" [ngClass]="objective.active ? 'bg-success' : 'bg-secondary'">
                     {{ (objective.active ? 'family.objectives.status.active' : 'family.objectives.status.inactive') | translate }}
@@ -560,7 +391,7 @@
                         <p class="text-muted small mb-2 mt-2 objective-item-card-description">{{ itemDefinition.description }}</p>
                       }
                       @if (getLatestProgress(itemDefinition); as latestProgress) {
-                        <small class="text-muted d-block objective-item-card-updated-at">{{ latestProgress.createdAt | date: 'medium' }}</small>
+                        <small class="text-muted d-block objective-item-card-updated-at">{{ latestProgress.createdAt | localizedDate: 'medium' }}</small>
                       } @else {
                         <small class="text-muted d-block objective-item-card-updated-at" jhiTranslate="family.objectives.progress.empty">No progress yet.</small>
                       }
@@ -568,12 +399,37 @@
                   }
                 </div>
 
-                @let objectiveTrendSeries = getObjectiveTrendSeries(objective);
+                @let objectiveTrendSeries = getObjectiveTrendSeries(objective, objectiveProgressPeriod());
                 <div class="objective-progress-trends mt-3">
                   <div class="objective-progress-trends-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                    <p class="small fw-semibold mb-0">{{ 'family.objectives.progress.lastEntries' | translate: { count: objectiveRecentEntriesCount } }}</p>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <p class="small fw-semibold mb-0">
+                        {{ 'family.objectives.progress.periodTitle' | translate }}:
+                        {{ (objectiveProgressPeriod() === 'last7days' ? 'family.objectives.progress.period.last7days' : 'family.objectives.progress.period.last30days') | translate }}
+                      </p>
+                      <div class="btn-group btn-group-sm" role="group" [attr.aria-label]="'family.objectives.progress.periodTitle' | translate">
+                        <button
+                          type="button"
+                          class="btn"
+                          [ngClass]="objectiveProgressPeriod() === 'last7days' ? 'btn-primary' : 'btn-outline-primary'"
+                          (click)="setObjectiveProgressPeriod('last7days')"
+                        >
+                          {{ 'family.objectives.progress.period.last7days' | translate }}
+                        </button>
+                        <button
+                          type="button"
+                          class="btn"
+                          [ngClass]="objectiveProgressPeriod() === 'last30days' ? 'btn-primary' : 'btn-outline-primary'"
+                          (click)="setObjectiveProgressPeriod('last30days')"
+                        >
+                          {{ 'family.objectives.progress.period.last30days' | translate }}
+                        </button>
+                      </div>
+                    </div>
                     @if (!hasObjectiveProgressInTrendWindow(objective)) {
-                      <small class="text-muted">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
+                      <small class="text-muted">
+                        {{ (objectiveProgressPeriod() === 'last7days' ? 'family.objectives.progress.noEntryLastDays' : 'family.objectives.progress.noEntryLast30Days') | translate: { count: objectiveProgressPeriod() === 'last7days' ? objectiveTrendLast7Days : objectiveTrendLast30Days } }}
+                      </small>
                     }
                   </div>
 
@@ -602,7 +458,7 @@
                               [options]="trend.chartOptions"
                               [type]="'bar'"
                               role="img"
-                              [attr.aria-label]="'family.objectives.progress.trendAriaEntries' | translate: { item: trend.itemDefinition.name, count: objectiveRecentEntriesCount }"
+                              [attr.aria-label]="'family.objectives.progress.trendAriaPeriod' | translate: { item: trend.itemDefinition.name, period: ((objectiveProgressPeriod() === 'last7days' ? 'family.objectives.progress.period.last7days' : 'family.objectives.progress.period.last30days') | translate), count: objectiveProgressPeriod() === 'last7days' ? objectiveTrendLast7Days : objectiveTrendLast30Days }"
                             ></canvas>
                           </div>
                           <div class="objective-trend-axis-labels mt-2">
@@ -610,7 +466,9 @@
                             <span>{{ trend.endLabel }}</span>
                           </div>
                         } @else {
-                          <small class="text-muted mt-2 d-block">{{ 'family.objectives.progress.noEntryLastEntries' | translate: { count: objectiveRecentEntriesCount } }}</small>
+                          <small class="text-muted mt-2 d-block">
+                            {{ (objectiveProgressPeriod() === 'last7days' ? 'family.objectives.progress.noEntryLastDays' : 'family.objectives.progress.noEntryLast30Days') | translate: { count: objectiveProgressPeriod() === 'last7days' ? objectiveTrendLast7Days : objectiveTrendLast30Days } }}
+                          </small>
                         }
                       </div>
                     }

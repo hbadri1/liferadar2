@@ -1,0 +1,56 @@
+<div class="modal-header py-2">
+  <h5 class="modal-title" [jhiTranslate]="titleKey">Add member</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body py-2">
+  @if (errorMessage()) {
+    <div class="alert alert-danger mb-3">{{ errorMessage() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label" for="family-member-login" jhiTranslate="family.form.login">Username</label>
+        <input id="family-member-login" type="text" class="form-control" formControlName="login" />
+        @if (form.get('login')?.invalid && form.get('login')?.touched) {
+          <small class="text-danger" jhiTranslate="family.form.loginRequired">Username is required</small>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="family-member-password" jhiTranslate="family.form.password">Password</label>
+        <input id="family-member-password" type="password" class="form-control" formControlName="password" />
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <small class="text-danger" jhiTranslate="family.form.passwordRequired">Password is required (min 4 characters)</small>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="family-member-first-name" jhiTranslate="family.form.firstName">First Name</label>
+        <input id="family-member-first-name" type="text" class="form-control" formControlName="firstName" />
+      </div>
+
+
+      <div class="col-12">
+        <label class="form-label" for="family-member-email" jhiTranslate="family.form.email">Email (optional)</label>
+        <input id="family-member-email" type="email" class="form-control" formControlName="email" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <small class="text-danger" jhiTranslate="family.form.emailInvalid">Invalid email format</small>
+        }
+      </div>
+    </div>
+
+    <div class="modal-footer px-0 pt-3 pb-0">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        <span jhiTranslate="family.form.cancel">Cancel</span>
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="isSaving() || form.invalid">
+        @if (isSaving()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+        }
+        <span jhiTranslate="family.form.save">Create Account</span>
+      </button>
+    </div>
+  </form>
+</div>

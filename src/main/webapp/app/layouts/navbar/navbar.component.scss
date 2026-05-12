@@ -67,6 +67,18 @@ Modern Navbar
       color: #1fb7a6;
     }
   }
+
+  .navbar-version-ribbon {
+    background: #000;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    padding: 0.28rem 0.45rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
 }
 
 /* Center Navigation Menu */

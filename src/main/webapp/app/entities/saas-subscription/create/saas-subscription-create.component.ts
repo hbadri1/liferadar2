@@ -44,7 +44,7 @@ import {
               <label for="currency" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.currency">Currency</label>
               <select id="currency" class="form-select form-select-sm" formControlName="currency">
                 @for (option of currencyOptions; track option) {
-                  <option [value]="option">{{ option }}</option>
+                  <option [value]="option">{{ getCurrencyLabel(option) }}</option>
                 }
               </select>
             </div>
@@ -248,6 +248,15 @@ export default class SaaSSubscriptionCreateComponent {
 
   getRenewalReminderLabel(option: RenewalReminderOption): string {
     return this.translateService.instant(`billsSubscriptions.renewalReminderValues.${option}`);
+  }
+
+  getCurrencyLabel(currency: string): string {
+    const lang = (this.translateService.currentLang || this.translateService.defaultLang || 'en').toLowerCase();
+    if (lang.startsWith('ar') && currency === 'SAR') {
+      return this.translateService.instant('billsSubscriptions.currencyValues.SAR');
+    }
+
+    return currency;
   }
 
   convertUsdToSar(): void {

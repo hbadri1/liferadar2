@@ -74,8 +74,8 @@
           <div class="col-md-4">
             <label class="form-label mb-1 small" for="editCurrency" jhiTranslate="billsSubscriptions.currency">Currency</label>
             <select id="editCurrency" class="form-select form-select-sm" formControlName="currency">
-              <option value="SAR">SAR</option>
-              <option value="USD">USD</option>
+              <option value="SAR">{{ getCurrencyLabel('SAR') }}</option>
+              <option value="USD">{{ getCurrencyLabel('USD') }}</option>
             </select>
           </div>
 

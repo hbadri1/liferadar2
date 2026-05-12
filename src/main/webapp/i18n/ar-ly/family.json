@@ -63,9 +63,15 @@
         "lastDays": "آخر {{count}} أيام",
         "lastMonths": "آخر {{count}} أشهر",
         "lastEntries": "آخر {{count}} إدخالات",
+        "periodTitle": "عرض التقدم",
+        "period": {
+          "last7days": "آخر 7 أيام",
+          "last30days": "آخر 30 يومًا"
+        },
         "last30Days": "آخر 30 يومًا",
         "itemColumn": "العنصر",
         "noEntryLastDays": "لا توجد إدخالات خلال آخر {{count}} أيام.",
+        "noEntryLastWeeks": "لا توجد إدخالات خلال آخر {{count}} أسابيع.",
         "noEntryLastMonths": "لا توجد إدخالات خلال آخر {{count}} أشهر.",
         "noEntryLastEntries": "لا توجد إدخالات بعد.",
         "noEntryLast30Days": "لا توجد إدخالات خلال آخر 30 يومًا.",
@@ -76,7 +82,8 @@
         "unitLabel": "الوحدة: {{unit}}",
         "scrollHint": "اسحب لليسار أو لليمين لعرض الجدول الأسبوعي كاملًا.",
         "trendAria": "اتجاه تقدم {{item}} خلال آخر {{count}} أشهر",
-        "trendAriaEntries": "اتجاه تقدم {{item}} خلال آخر {{count}} إدخالات"
+        "trendAriaEntries": "اتجاه تقدم {{item}} خلال آخر {{count}} إدخالات",
+        "trendAriaPeriod": "اتجاه تقدم {{item}} خلال آخر {{count}} فترات {{period}}"
       },
       "errors": {
         "deactivate": "فشل تعطيل الهدف.",
@@ -138,7 +145,6 @@
       "password": "كلمة المرور",
       "passwordRequired": "كلمة المرور مطلوبة (4 أحرف على الأقل)",
       "firstName": "الاسم الأول",
-      "lastName": "اسم العائلة",
       "email": "البريد الإلكتروني (اختياري)",
       "emailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
       "save": "إنشاء الحساب",

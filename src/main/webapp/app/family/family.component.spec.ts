@@ -128,7 +128,7 @@ describe('FamilyComponent', () => {
     expect(comp.activeTab()).toBe(comp.getChildTabId('kid'));
   });
 
-  it('hides add form when switching away from management tab', () => {
+  it('keeps admin tabs constrained to management and objectives', () => {
     currentAccount.set({
       activated: true,
       authorities: ['ROLE_PARENT'],
@@ -144,12 +144,10 @@ describe('FamilyComponent', () => {
     const adminComp = fixture.componentInstance;
     adminComp.ngOnInit();
 
-    adminComp.showAddForm.set(true);
     adminComp.children.set([{ id: 1, login: 'kid', firstName: 'Kid', lastName: 'One', email: null, activated: true }]);
     adminComp.selectTab(adminComp.getChildTabId('kid'));
 
-    expect(adminComp.activeTab()).toBe(adminComp.getChildTabId('kid'));
-    expect(adminComp.showAddForm()).toBe(false);
+    expect(adminComp.activeTab()).toBe('management');
   });
 
   it('shows only current child in objectives tabs for child users', () => {
@@ -323,6 +321,47 @@ describe('FamilyComponent', () => {
     expect(series.chartData.datasets[0]?.data).toEqual([4, 6, 5]);
     expect(series.startLabel).toBeTruthy();
     expect(series.endLabel).toBeTruthy();
+  });
+
+  it('switches objective trend series between last 7 days and last 30 days views', () => {
+    const toIsoDaysAgo = (daysAgo: number): string => {
+      const date = new Date();
+      date.setHours(12, 0, 0, 0);
+      date.setDate(date.getDate() - daysAgo);
+      return date.toISOString();
+    };
+
+    const objective: any = {
+      id: 1,
+      kidId: 1,
+      kidLogin: 'kid',
+      kidName: 'Kid One',
+      name: 'Reading',
+      description: null,
+      active: true,
+      createdAt: toIsoDaysAgo(2),
+      itemDefinitions: [
+        {
+          id: 31,
+          name: 'Pages',
+          description: null,
+          unit: 'NUMBER',
+          progressHistory: [
+            { id: 301, createdAt: toIsoDaysAgo(26), value: 4, notes: null },
+            { id: 302, createdAt: toIsoDaysAgo(6), value: 5, notes: null },
+            { id: 303, createdAt: toIsoDaysAgo(2), value: 7, notes: null },
+          ],
+        },
+      ],
+    };
+
+    comp.setObjectiveProgressPeriod('last7days');
+    const [last7DaysSeries] = comp.getObjectiveTrendSeries(objective, 'last7days');
+    expect(last7DaysSeries.values).toEqual([7]);
+
+    comp.setObjectiveProgressPeriod('last30days');
+    const [last30DaysSeries] = comp.getObjectiveTrendSeries(objective, 'last30days');
+    expect(last30DaysSeries.values).toEqual([5, 7]);
   });
 
   it('exposes trend visibility for both child and family-admin roles', () => {

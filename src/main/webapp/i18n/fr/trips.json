@@ -24,6 +24,7 @@
     "confirmDeleteStep": "Êtes-vous sûr de vouloir supprimer cette étape ?",
     "noSteps": "Aucune étape ajoutée.",
     "addFirstStop": "Ajouter la première étape",
+    "readOnlyFinished": "Lecture seule (voyage terminé)",
     "stop": "Étape",
     "journeyEnd": "Fin du Voyage",
     "currentDate": "Aujourd'hui",

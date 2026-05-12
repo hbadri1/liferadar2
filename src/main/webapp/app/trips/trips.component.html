@@ -125,6 +125,9 @@
                 <h5 class="mb-1">
                   <fa-icon icon="plane" class="me-2 text-primary"></fa-icon>
                   {{ selectedTrip()!.title }}
+                  @if (selectedTripReadOnly()) {
+                    <span class="badge bg-warning text-dark ms-2" jhiTranslate="trips.readOnlyFinished">Read-only (trip finished)</span>
+                  }
                 </h5>
                 <div class="text-muted small">
                   <fa-icon icon="calendar-alt" class="me-1"></fa-icon>

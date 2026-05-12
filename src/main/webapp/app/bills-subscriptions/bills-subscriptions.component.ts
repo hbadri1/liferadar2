@@ -434,15 +434,28 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
   }
 
   formatAmount(expense: ISaaSSubscription): string {
-    return `${this.roundToTwoDecimals(expense.monthlyCost)} ${expense.currency}`;
+    return `${this.roundToTwoDecimals(expense.monthlyCost)} ${this.getCurrencyLabel(expense.currency)}`;
   }
 
   formatMonthlyAmount(expense: ISaaSSubscription): string {
-    return `${this.roundToTwoDecimals(this.getMonthlyEquivalent(expense))} ${expense.currency}`;
+    return `${this.roundToTwoDecimals(this.getMonthlyEquivalent(expense))} ${this.getCurrencyLabel(expense.currency)}`;
   }
 
   formatYearlyAmount(expense: ISaaSSubscription): string {
-    return `${this.roundToTwoDecimals(this.getYearlyEquivalent(expense))} ${expense.currency}`;
+    return `${this.roundToTwoDecimals(this.getYearlyEquivalent(expense))} ${this.getCurrencyLabel(expense.currency)}`;
+  }
+
+  getCurrencyLabel(currency?: string | null): string {
+    if (!currency) {
+      return '';
+    }
+
+    const lang = (this.translateService.currentLang || this.translateService.defaultLang || 'en').toLowerCase();
+    if (lang.startsWith('ar') && currency === 'SAR') {
+      return this.translateService.instant('billsSubscriptions.currencyValues.SAR');
+    }
+
+    return currency;
   }
 
   trackById(_: number, expense: ISaaSSubscription): number | undefined {

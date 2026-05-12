@@ -57,7 +57,7 @@
                 <span class="badge rounded-pill" [ngClass]="notification.status === 'UNREAD' ? 'text-bg-primary' : 'text-bg-secondary'">
                   {{ ('notifications.status.' + notification.status) | translate }}
                 </span>
-                <small class="text-muted" *ngIf="notification.createdDate">{{ notification.createdDate | date: 'medium' }}</small>
+                <small class="text-muted" *ngIf="notification.createdDate">{{ notification.createdDate | localizedDate: 'medium' }}</small>
               </div>
 
               <p class="mb-3 text-body-secondary">{{ notification.message }}</p>
