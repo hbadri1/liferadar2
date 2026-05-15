@@ -53,9 +53,9 @@ aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS 
 echo "✓ Authenticated"
 echo ""
 
-# Build Docker image
+# Build Docker image (target linux/amd64 for Lightsail x86 instances)
 echo "Building Docker image..."
-docker build -t ${IMAGE_WITH_TAG} -t ${IMAGE_LATEST} .
+docker buildx build --platform linux/amd64 -t ${IMAGE_WITH_TAG} -t ${IMAGE_LATEST} --load .
 echo "✓ Image built: ${IMAGE_WITH_TAG}"
 echo ""
 

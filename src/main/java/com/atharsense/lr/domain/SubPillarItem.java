@@ -35,6 +35,10 @@ public class SubPillarItem implements Serializable {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @NotNull
+    @Column(name = "do_not_reevaluate", nullable = false)
+    private Boolean doNotReevaluate = false;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subPillarItem", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "subPillarItem" }, allowSetters = true)
     private Set<SubPillarItemTranslation> translations = new HashSet<>();
@@ -104,6 +108,19 @@ public class SubPillarItem implements Serializable {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public Boolean getDoNotReevaluate() {
+        return this.doNotReevaluate;
+    }
+
+    public SubPillarItem doNotReevaluate(Boolean doNotReevaluate) {
+        this.setDoNotReevaluate(doNotReevaluate);
+        return this;
+    }
+
+    public void setDoNotReevaluate(Boolean doNotReevaluate) {
+        this.doNotReevaluate = doNotReevaluate;
     }
 
     public Set<SubPillarItemTranslation> getTranslations() {
@@ -221,6 +238,7 @@ public class SubPillarItem implements Serializable {
             ", code='" + getCode() + "'" +
             ", sortOrder=" + getSortOrder() +
             ", isActive='" + getIsActive() + "'" +
+            ", doNotReevaluate='" + getDoNotReevaluate() + "'" +
             "}";
     }
 }

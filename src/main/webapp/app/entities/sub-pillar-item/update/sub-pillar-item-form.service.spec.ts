@@ -23,7 +23,8 @@ describe('SubPillarItem Form Service', () => {
             code: expect.any(Object),
             sortOrder: expect.any(Object),
             isActive: expect.any(Object),
-            owner: expect.any(Object),
+            doNotReevaluate: expect.any(Object),
+            subPillar: expect.any(Object),
           }),
         );
       });
@@ -37,7 +38,8 @@ describe('SubPillarItem Form Service', () => {
             code: expect.any(Object),
             sortOrder: expect.any(Object),
             isActive: expect.any(Object),
-            owner: expect.any(Object),
+            doNotReevaluate: expect.any(Object),
+            subPillar: expect.any(Object),
           }),
         );
       });

@@ -84,6 +84,9 @@ public class SubPillarItemService {
                 if (subPillarItem.getIsActive() != null) {
                     existingSubPillarItem.setIsActive(subPillarItem.getIsActive());
                 }
+                if (subPillarItem.getDoNotReevaluate() != null) {
+                    existingSubPillarItem.setDoNotReevaluate(subPillarItem.getDoNotReevaluate());
+                }
 
                 return existingSubPillarItem;
             })

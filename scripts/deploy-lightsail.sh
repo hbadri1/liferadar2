@@ -10,6 +10,7 @@ fi
 IMAGE_TAG=${1:-latest}
 ECR_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}"
 IMAGE_WITH_TAG="${ECR_URI}:${IMAGE_TAG}"
+APP_IMAGE="${IMAGE_WITH_TAG}"
 
 echo "==============================================="
 echo "Liferadar Deploy to Lightsail"
@@ -46,6 +47,7 @@ docker compose down || true
 
 echo "Starting new container..."
 export IMAGE_TAG=${IMAGE_TAG}
+export APP_IMAGE=${APP_IMAGE}
 docker compose up -d
 
 echo "Waiting for health check..."

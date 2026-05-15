@@ -18,7 +18,7 @@ type TimelineEntry =
   | { kind: 'today'; sortDate: dayjs.Dayjs }
   | { kind: 'step'; sortDate: dayjs.Dayjs; step: ITripPlanStep };
 
-type TripViewMode = 'timeline' | 'calendar';
+type TripViewMode = 'timeline' | 'calendar' | 'gantt';
 
 type CalendarCell = {
   date: dayjs.Dayjs;
@@ -26,6 +26,12 @@ type CalendarCell = {
   inTripRange: boolean;
   isToday: boolean;
   steps: ITripPlanStep[];
+};
+
+type GanttRow = {
+  step: ITripPlanStep;
+  offsetPct: number;
+  widthPct: number;
 };
 
 
@@ -377,6 +383,102 @@ export default class TripsComponent implements OnInit {
     return this.calendarWeeks().some(week => week.some(cell => cell.inCurrentMonth && cell.steps.length > 0));
   }
 
+  ganttRows(): GanttRow[] {
+    const range = this.getGanttRange();
+    if (!range) {
+      return [];
+    }
+
+    const rangeDuration = Math.max(1, range.end.valueOf() - range.start.valueOf());
+
+    return this.steps().flatMap(step => {
+      const stepStart = this.toDayjsDate(step.startDate) ?? this.toDayjsDate(step.endDate);
+      const stepEnd = this.toDayjsDate(step.endDate) ?? stepStart;
+      if (!stepStart || !stepEnd) {
+        return [];
+      }
+
+      const clampedStart = stepStart.isBefore(range.start) ? range.start : stepStart;
+      const clampedEnd = stepEnd.isAfter(range.end) ? range.end : stepEnd;
+      const normalizedEnd = clampedEnd.isBefore(clampedStart) ? clampedStart : clampedEnd;
+
+      const offsetPct = ((clampedStart.valueOf() - range.start.valueOf()) / rangeDuration) * 100;
+      const rawWidthPct = ((normalizedEnd.valueOf() - clampedStart.valueOf()) / rangeDuration) * 100;
+
+      return [{
+        step,
+        offsetPct: Math.max(0, Math.min(100, offsetPct)),
+        widthPct: Math.max(1.2, Math.min(100, rawWidthPct)),
+      }];
+    });
+  }
+
+  ganttTodayMarkerPct(): number | null {
+    const range = this.getGanttRange();
+    if (!range) {
+      return null;
+    }
+
+    const now = dayjs();
+    if (now.isBefore(range.start) || now.isAfter(range.end)) {
+      return null;
+    }
+
+    const rangeDuration = Math.max(1, range.end.valueOf() - range.start.valueOf());
+    return ((now.valueOf() - range.start.valueOf()) / rangeDuration) * 100;
+  }
+
+  ganttRangeLabel(): string {
+    const range = this.getGanttRange();
+    if (!range) {
+      return '';
+    }
+
+    return `${range.start.format('DD MMM YYYY HH:mm')} - ${range.end.format('DD MMM YYYY HH:mm')}`;
+  }
+
+  ganttTicks(): { pct: number; label: string }[] {
+    const range = this.getGanttRange();
+    if (!range) {
+      return [];
+    }
+
+    const durationMs = range.end.valueOf() - range.start.valueOf();
+    const durationDays = durationMs / (1000 * 60 * 60 * 24);
+
+    // Choose tick count and format based on range duration
+    let tickCount: number;
+    let fmt: string;
+    if (durationDays <= 1) {
+      tickCount = 5;
+      fmt = 'HH:mm';
+    } else if (durationDays <= 7) {
+      tickCount = 7;
+      fmt = 'DD MMM HH:mm';
+    } else if (durationDays <= 60) {
+      tickCount = 6;
+      fmt = 'DD MMM';
+    } else if (durationDays <= 365) {
+      tickCount = 7;
+      fmt = 'DD MMM';
+    } else {
+      tickCount = 6;
+      fmt = 'MMM YYYY';
+    }
+
+    const ticks: { pct: number; label: string }[] = [];
+    for (let i = 0; i <= tickCount; i++) {
+      const pct = (i / tickCount) * 100;
+      const ts = range.start.valueOf() + (durationMs * i) / tickCount;
+      ticks.push({ pct, label: dayjs(ts).format(fmt) });
+    }
+    return ticks;
+  }
+
+  ganttBarDateLabel(row: GanttRow): string {
+    return this.stepDateRangeLabel(row.step);
+  }
+
   trackCalendarCell(_index: number, cell: CalendarCell): string {
     return cell.date.format('YYYY-MM-DD');
   }
@@ -486,6 +588,32 @@ export default class TripsComponent implements OnInit {
         this.errorMsg.set('trips.errors.saveFailed');
       },
     });
+  }
+
+  private getGanttRange(): { start: dayjs.Dayjs; end: dayjs.Dayjs } | null {
+    const selectedTrip = this.selectedTrip();
+    const tripStart = this.toDayjsDate(selectedTrip?.startDate);
+    const tripEnd = this.toDayjsDate(selectedTrip?.endDate);
+
+    if (tripStart && tripEnd) {
+      const normalizedEnd = tripEnd.isBefore(tripStart) ? tripStart : tripEnd;
+      return { start: tripStart, end: normalizedEnd };
+    }
+
+    const stepsWithDates = this.steps()
+      .map(step => ({
+        start: this.toDayjsDate(step.startDate) ?? this.toDayjsDate(step.endDate),
+        end: this.toDayjsDate(step.endDate) ?? this.toDayjsDate(step.startDate),
+      }))
+      .filter(stepRange => !!stepRange.start && !!stepRange.end) as Array<{ start: dayjs.Dayjs; end: dayjs.Dayjs }>;
+
+    if (stepsWithDates.length === 0) {
+      return null;
+    }
+
+    const start = stepsWithDates.reduce((min, current) => (current.start.isBefore(min) ? current.start : min), stepsWithDates[0].start);
+    const end = stepsWithDates.reduce((max, current) => (current.end.isAfter(max) ? current.end : max), stepsWithDates[0].end);
+    return { start, end };
   }
 }
 

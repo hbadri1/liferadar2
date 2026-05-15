@@ -14,13 +14,14 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type SubPillarItemFormGroupInput = ISubPillarItem | PartialWithRequiredKeyOf<NewSubPillarItem>;
 
-type SubPillarItemFormDefaults = Pick<NewSubPillarItem, 'id' | 'isActive'>;
+type SubPillarItemFormDefaults = Pick<NewSubPillarItem, 'id' | 'isActive' | 'doNotReevaluate'>;
 
 type SubPillarItemFormGroupContent = {
   id: FormControl<ISubPillarItem['id'] | NewSubPillarItem['id']>;
   code: FormControl<ISubPillarItem['code']>;
   sortOrder: FormControl<ISubPillarItem['sortOrder']>;
   isActive: FormControl<ISubPillarItem['isActive']>;
+  doNotReevaluate: FormControl<ISubPillarItem['doNotReevaluate']>;
   subPillar: FormControl<ISubPillarItem['subPillar']>;
 };
 
@@ -50,6 +51,9 @@ export class SubPillarItemFormService {
       isActive: new FormControl(subPillarItemRawValue.isActive, {
         validators: [Validators.required],
       }),
+      doNotReevaluate: new FormControl(subPillarItemRawValue.doNotReevaluate, {
+        validators: [Validators.required],
+      }),
       subPillar: new FormControl(subPillarItemRawValue.subPillar, {
         validators: [Validators.required],
       }),
@@ -74,6 +78,7 @@ export class SubPillarItemFormService {
     return {
       id: null,
       isActive: false,
+      doNotReevaluate: false,
     };
   }
 }

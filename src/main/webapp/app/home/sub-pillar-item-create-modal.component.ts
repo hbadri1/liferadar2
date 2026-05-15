@@ -42,7 +42,7 @@ export class SubPillarItemCreateModalComponent implements OnInit {
   editForm: SubPillarItemFormGroup = this.subPillarItemFormService.createSubPillarItemFormGroup();
 
   ngOnInit(): void {
-    this.editForm.patchValue({ sortOrder: 1, isActive: true });
+    this.editForm.patchValue({ sortOrder: 1, isActive: true, doNotReevaluate: false });
     this.loadParentSubPillar();
   }
 

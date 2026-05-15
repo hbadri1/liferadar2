@@ -79,6 +79,31 @@
   }
 }
 
+.trip-todo-actions-confirm-delete {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+
+  .text-warning {
+    white-space: nowrap;
+  }
+
+  .btn {
+    padding: 0.25rem 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+
+    svg {
+      height: 0.8rem;
+      width: 0.8rem;
+    }
+  }
+}
+
 .trip-todo-actions--compact .trip-todo-actions-section {
   padding: 0.2rem 0.35rem;
 }

@@ -21,6 +21,7 @@ export class TripTodoActionsComponent implements OnChanges {
   payload: TripTodoActionsPayload = { preparationActions: [], duringTripActions: [] };
   preparationInput = '';
   duringInput = '';
+  pendingDelete: { listName: TripTodoActionsListName; index: number } | null = null;
 
   ngOnChanges(): void {
     this.payload = this.jsonService.parse(this.actionsJson);
@@ -72,8 +73,22 @@ export class TripTodoActionsComponent implements OnChanges {
       return;
     }
 
+    this.pendingDelete = { listName, index };
+  }
+
+  confirmRemove(): void {
+    if (!this.pendingDelete) {
+      return;
+    }
+
+    const { listName, index } = this.pendingDelete;
+    this.pendingDelete = null;
     this.payload = this.jsonService.removeAction(this.payload, listName, index);
     this.actionsJsonChange.emit(this.jsonService.serialize(this.payload));
+  }
+
+  cancelRemove(): void {
+    this.pendingDelete = null;
   }
 }
 

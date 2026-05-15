@@ -1,9 +1,11 @@
 package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.LifeEvaluation;
+import com.atharsense.lr.domain.SubPillarItem;
 import com.atharsense.lr.domain.ExtendedUser;
 import com.atharsense.lr.domain.User;
 import com.atharsense.lr.repository.LifeEvaluationRepository;
+import com.atharsense.lr.repository.SubPillarItemRepository;
 import com.atharsense.lr.repository.UserRepository;
 import com.atharsense.lr.repository.ExtendedUserRepository;
 import com.atharsense.lr.security.SecurityUtils;
@@ -52,6 +54,8 @@ public class LifeEvaluationResource {
 
     private final LifeEvaluationQueryService lifeEvaluationQueryService;
 
+    private final SubPillarItemRepository subPillarItemRepository;
+
     private final UserRepository userRepository;
 
     private final ExtendedUserRepository extendedUserRepository;
@@ -60,12 +64,14 @@ public class LifeEvaluationResource {
         LifeEvaluationService lifeEvaluationService,
         LifeEvaluationRepository lifeEvaluationRepository,
         LifeEvaluationQueryService lifeEvaluationQueryService,
+        SubPillarItemRepository subPillarItemRepository,
         UserRepository userRepository,
         ExtendedUserRepository extendedUserRepository
     ) {
         this.lifeEvaluationService = lifeEvaluationService;
         this.lifeEvaluationRepository = lifeEvaluationRepository;
         this.lifeEvaluationQueryService = lifeEvaluationQueryService;
+        this.subPillarItemRepository = subPillarItemRepository;
         this.userRepository = userRepository;
         this.extendedUserRepository = extendedUserRepository;
     }
@@ -92,7 +98,7 @@ public class LifeEvaluationResource {
             .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
 
         // Get or create ExtendedUser if it doesn't exist
-        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUserId(currentUser.getId())
             .orElseGet(() -> {
                 ExtendedUser newExtendedUser = new ExtendedUser();
                 newExtendedUser.setUser(currentUser);
@@ -101,6 +107,18 @@ public class LifeEvaluationResource {
                 return extendedUserRepository.save(newExtendedUser);
             });
         lifeEvaluation.setOwner(extendedUser);
+
+        if (lifeEvaluation.getSubPillarItem() != null && lifeEvaluation.getSubPillarItem().getId() != null) {
+            Optional<SubPillarItem> subPillarItem = subPillarItemRepository.findById(lifeEvaluation.getSubPillarItem().getId());
+            if (subPillarItem.isPresent()) {
+                SubPillarItem item = subPillarItem.orElseThrow();
+                if (!Boolean.TRUE.equals(item.getDoNotReevaluate())) {
+                    item.setDoNotReevaluate(true);
+                    subPillarItemRepository.save(item);
+                }
+                lifeEvaluation.setSubPillarItem(item);
+            }
+        }
 
         lifeEvaluation = lifeEvaluationService.save(lifeEvaluation);
         return ResponseEntity.created(new URI("/api/life-evaluations/" + lifeEvaluation.getId()))
@@ -246,7 +264,7 @@ public class LifeEvaluationResource {
         User currentUser = userRepository.findOneByLogin(currentLogin)
             .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
 
-        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUserId(currentUser.getId())
             .orElseGet(() -> {
                 ExtendedUser newExtendedUser = new ExtendedUser();
                 newExtendedUser.setUser(currentUser);

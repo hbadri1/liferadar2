@@ -139,6 +139,18 @@ jhipster:
 
 # application:
 application:
+  todoapps:
+    providers:
+      ticktick:
+        enabled: true
+        base-url: https://api.ticktick.com
+        create-task-path: /open/v1/task
+        projects-path: /open/v1/project
+        authorize-url: https://ticktick.com/oauth/authorize
+        token-path: /oauth/token
+        client-id: ${TICKTICK_CLIENT_ID:}
+        secret-id: ${TICKTICK_SECRET_ID:}
+        redirect-uri: ${TICKTICK_REDIRECT_URI:}
   notifications:
     enabled: ${APPLICATION_NOTIFICATIONS_ENABLED:true}
     scheduler:

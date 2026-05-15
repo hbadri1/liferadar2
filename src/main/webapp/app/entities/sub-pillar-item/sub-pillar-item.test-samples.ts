@@ -4,12 +4,14 @@ export const sampleWithRequiredData: ISubPillarItem = {
   id: 23765,
   code: 'honestly ah remark',
   isActive: true,
+  doNotReevaluate: false,
 };
 
 export const sampleWithPartialData: ISubPillarItem = {
   id: 20292,
   code: 'aside',
   isActive: true,
+  doNotReevaluate: false,
 };
 
 export const sampleWithFullData: ISubPillarItem = {
@@ -17,11 +19,13 @@ export const sampleWithFullData: ISubPillarItem = {
   code: 'polished until',
   sortOrder: 25553,
   isActive: false,
+  doNotReevaluate: true,
 };
 
 export const sampleWithNewData: NewSubPillarItem = {
   code: 'petal basic knavishly',
   isActive: false,
+  doNotReevaluate: false,
   id: null,
 };
 

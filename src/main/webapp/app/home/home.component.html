@@ -264,11 +264,15 @@
                                     }
                                   </div>
                                   <div class="tree-actions d-flex gap-1 flex-shrink-0">
-                                    @if (hasRecentEvaluationForItem(item.id)) {
+                                    @if (isEvaluationBlocked(item)) {
                                       <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle px-2"
-                                        [title]="'liferadarApp.pillar.home.evaluationLocked24h' | translate">
+                                        [title]="getEvaluationBlockReason(item) | translate">
                                         <fa-icon icon="check" aria-hidden="true"></fa-icon>
-                                        <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.checked">Checked</span>
+                                        @if (item.doNotReevaluate) {
+                                          <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.checkedPermanently">Done</span>
+                                        } @else {
+                                          <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.checked">Checked</span>
+                                        }
                                       </span>
                                     } @else {
                                       <button class="btn btn-outline-success btn-xs" (click)="createLifeEvaluation(item)"
@@ -412,6 +416,12 @@
                                 </button>
                               </div>
                             </div>
+
+                            @if (evaluation.notes) {
+                              <p class="mb-0 mt-1 small text-muted evaluation-compact-notes" [dir]="isArabicLang() ? 'rtl' : 'ltr'">
+                                {{ evaluation.notes }}
+                              </p>
+                            }
 
                             @if (decisions.length > 0) {
                               <div class="evaluation-decisions-list">

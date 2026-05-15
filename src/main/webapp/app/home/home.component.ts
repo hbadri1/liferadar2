@@ -469,12 +469,29 @@ export default class HomeComponent implements OnInit, OnDestroy {
         return false;
       }
 
-      // evaluationDate is date-only on backend, so use end of day for a fair 24h check window.
-      return evaluation.evaluationDate.endOf('day').isAfter(cutoff);
+      // evaluationDate is date-only on backend. Use startOf('day') so only evaluations
+      // whose calendar day begins within the last 24 hours are considered recent.
+      return evaluation.evaluationDate.startOf('day').isAfter(cutoff);
     });
   }
 
+  isEvaluationBlocked(item: ISubPillarItem): boolean {
+    return Boolean(item.doNotReevaluate) || this.hasRecentEvaluationForItem(item.id);
+  }
+
+  getEvaluationBlockReason(item: ISubPillarItem): string {
+    if (item.doNotReevaluate) {
+      return 'liferadarApp.pillar.home.evaluationLockedPermanently';
+    }
+
+    return 'liferadarApp.pillar.home.evaluationLocked24h';
+  }
+
   createLifeEvaluation(item: ISubPillarItem): void {
+    if (this.isEvaluationBlocked(item)) {
+      return;
+    }
+
     const modalRef = this.modalService.open(LifeEvaluationCreateModalComponent, {
       size: 'md',
       backdrop: 'static',
@@ -482,8 +499,9 @@ export default class HomeComponent implements OnInit, OnDestroy {
     });
     modalRef.componentInstance.subPillarItem = item;
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'saved' && item.subPillar?.id) {
-        this.viewSubPillarItems(item.subPillar.id);
+      if (result === 'saved') {
+        item.doNotReevaluate = true;
+        this.loadLifeEvaluations();
       }
     });
   }

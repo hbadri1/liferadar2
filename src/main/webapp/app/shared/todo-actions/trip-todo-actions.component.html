@@ -15,12 +15,24 @@
         />
         <span [class.text-decoration-line-through]="action.actionStatus">{{ action.actionText }}</span>
         @if (!disabled) {
-          <button
-            type="button"
-            class="btn btn-xs btn-outline-danger"
-            (click)="removeAction('preparationActions', index)">
-            <fa-icon icon="trash"></fa-icon>
-          </button>
+          @if (pendingDelete?.listName === 'preparationActions' && pendingDelete?.index === index) {
+            <span class="trip-todo-actions-confirm-delete">
+              <span class="text-warning small">{{ 'trips.fields.confirmDeleteAction' | translate }}</span>
+              <button type="button" class="btn btn-xs btn-danger" (click)="confirmRemove()">
+                <fa-icon icon="check"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-xs btn-secondary" (click)="cancelRemove()">
+                <fa-icon icon="times"></fa-icon>
+              </button>
+            </span>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-xs btn-outline-danger"
+              (click)="removeAction('preparationActions', index)">
+              <fa-icon icon="trash"></fa-icon>
+            </button>
+          }
         }
       </label>
     }
@@ -62,12 +74,24 @@
         />
         <span [class.text-decoration-line-through]="action.actionStatus">{{ action.actionText }}</span>
         @if (!disabled) {
-          <button
-            type="button"
-            class="btn btn-xs btn-outline-danger"
-            (click)="removeAction('duringTripActions', index)">
-            <fa-icon icon="trash"></fa-icon>
-          </button>
+          @if (pendingDelete?.listName === 'duringTripActions' && pendingDelete?.index === index) {
+            <span class="trip-todo-actions-confirm-delete">
+              <span class="text-warning small">{{ 'trips.fields.confirmDeleteAction' | translate }}</span>
+              <button type="button" class="btn btn-xs btn-danger" (click)="confirmRemove()">
+                <fa-icon icon="check"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-xs btn-secondary" (click)="cancelRemove()">
+                <fa-icon icon="times"></fa-icon>
+              </button>
+            </span>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-xs btn-outline-danger"
+              (click)="removeAction('duringTripActions', index)">
+              <fa-icon icon="trash"></fa-icon>
+            </button>
+          }
         }
       </label>
     }

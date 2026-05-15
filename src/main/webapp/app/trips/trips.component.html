@@ -163,6 +163,14 @@
                   <fa-icon icon="calendar-alt"></fa-icon>
                   <span jhiTranslate="trips.calendarView">Calendar</span>
                 </button>
+                <button
+                  type="button"
+                  class="btn trip-view-btn"
+                  [ngClass]="viewMode() === 'gantt' ? 'btn-primary' : 'btn-outline-primary'"
+                  (click)="setViewMode('gantt')">
+                  <fa-icon icon="chart-bar"></fa-icon>
+                  <span jhiTranslate="trips.ganttView">Gantt</span>
+                </button>
               </div>
             </div>
           </div>
@@ -260,7 +268,7 @@
                     <span class="ms-1 text-success fw-bold" jhiTranslate="trips.journeyEnd">Journey End</span>
                   </div>
                 </div>
-              } @else {
+              } @else if (viewMode() === 'calendar') {
                 <!-- MONTHLY CALENDAR -->
                 <div class="trip-calendar">
                   <div class="trip-calendar-toolbar">
@@ -307,6 +315,52 @@
 
                   @if (!hasStepsInDisplayedMonth()) {
                     <div class="trip-calendar-empty" jhiTranslate="trips.noStepsInMonth">No stops this month.</div>
+                  }
+                </div>
+              } @else {
+                <!-- GANTT CHART -->
+                <div class="trip-gantt" [attr.dir]="'ltr'">
+                  <div class="trip-gantt-range text-muted small">
+                    {{ ganttRangeLabel() }}
+                  </div>
+
+                  @if (ganttRows().length === 0) {
+                    <div class="trip-gantt-empty" jhiTranslate="trips.noGanttData">No dated steps available for Gantt chart.</div>
+                  } @else {
+                    <!-- Date/time axis ruler -->
+                    <div class="trip-gantt-row trip-gantt-axis-row">
+                      <div class="trip-gantt-label"></div>
+                      <div class="trip-gantt-axis">
+                        @for (tick of ganttTicks(); track tick.pct) {
+                          <span class="trip-gantt-tick" [style.left.%]="tick.pct">
+                            <span class="trip-gantt-tick-mark"></span>
+                            <span class="trip-gantt-tick-label">{{ tick.label }}</span>
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    @let todayMarker = ganttTodayMarkerPct();
+                    @for (row of ganttRows(); track row.step.id) {
+                      <div class="trip-gantt-row">
+                        <div class="trip-gantt-label" [attr.dir]="'auto'" [title]="row.step.actionName">
+                          #{{ row.step.sequence }} {{ row.step.actionName }}
+                        </div>
+                        <div class="trip-gantt-track-wrap">
+                          <div class="trip-gantt-track">
+                            @if (todayMarker !== null) {
+                              <span class="trip-gantt-today" [style.left.%]="todayMarker"></span>
+                            }
+                            <div class="trip-gantt-bar" [style.left.%]="row.offsetPct" [style.width.%]="row.widthPct"
+                              [title]="(row.step.actionName || '') + ' (' + stepDateRangeLabel(row.step) + ')'">
+                            </div>
+                          </div>
+                          <div class="trip-gantt-bar-dates" [style.left.%]="row.offsetPct">
+                            {{ ganttBarDateLabel(row) }}
+                          </div>
+                        </div>
+                      </div>
+                    }
                   }
                 </div>
               }

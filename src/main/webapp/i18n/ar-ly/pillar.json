@@ -22,7 +22,9 @@
         "addItem": "إضافة عنصر",
         "createEvaluation": "إنشاء تقييم",
         "checked": "تم التقييم",
+        "checkedPermanently": "مكتمل",
         "evaluationLocked24h": "تم تقييم هذا العنصر خلال آخر 24 ساعة",
+        "evaluationLockedPermanently": "تم وضع علامة على هذا العنصر كمُقيَّم ولن يُعاد تقييمه",
         "scoreMatrix": {
           "title": "متوسط التقييم اليومي",
           "last30Days": "آخر 30 يوم"

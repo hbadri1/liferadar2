@@ -7,6 +7,7 @@ export interface ISubPillarItem {
   code?: string | null;
   sortOrder?: number | null;
   isActive?: boolean | null;
+  doNotReevaluate?: boolean | null;
   translations?: ISubPillarItemTranslation[] | null;
   subPillar?: ISubPillar | null;
   owner?: IExtendedUser | null;

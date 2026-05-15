@@ -105,6 +105,12 @@
               <span jhiTranslate="global.menu.account.settings">Settings</span>
             </a>
             @if (!isChildOnly()) {
+              <a ngbDropdownItem routerLink="/account/configuration" (click)="collapseNavbar()">
+                <fa-icon icon="cog"></fa-icon>
+                <span jhiTranslate="global.menu.account.configuration">Configuration</span>
+              </a>
+            }
+            @if (!isChildOnly()) {
               <a ngbDropdownItem routerLink="/premium" (click)="collapseNavbar()">
                 <fa-icon icon="gem"></fa-icon>
                 <span jhiTranslate="global.menu.premium">Premium</span>
@@ -237,6 +243,14 @@
               <span jhiTranslate="global.menu.account.settings">Settings</span>
             </a>
           </li>
+          @if (!isChildOnly()) {
+            <li>
+              <a class="mobile-nav-link" routerLink="/account/configuration" (click)="collapseNavbar()">
+                <fa-icon icon="cog"></fa-icon>
+                <span jhiTranslate="global.menu.account.configuration">Configuration</span>
+              </a>
+            </li>
+          }
           @if (!isChildOnly()) {
             <li>
               <a class="mobile-nav-link" routerLink="/premium" (click)="collapseNavbar()">

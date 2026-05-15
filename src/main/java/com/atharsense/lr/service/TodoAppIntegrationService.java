@@ -342,7 +342,7 @@ public class TodoAppIntegrationService {
 
     private ExtendedUser ensureExtendedUserExists(User user) {
         return extendedUserRepository
-            .findOneByUser(user)
+            .findOneByUserId(user.getId())
             .orElseGet(() -> {
                 ExtendedUser newExtendedUser = new ExtendedUser();
                 newExtendedUser.setUser(user);

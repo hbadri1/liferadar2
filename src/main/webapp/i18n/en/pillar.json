@@ -22,7 +22,9 @@
         "addItem": "Add Item",
         "createEvaluation": "Create Evaluation",
         "checked": "Checked",
+        "checkedPermanently": "Done",
         "evaluationLocked24h": "This item was already evaluated in the last 24 hours",
+        "evaluationLockedPermanently": "This item is tagged as evaluated and will not be re-evaluated",
         "scoreMatrix": {
           "title": "Daily Evaluation Average",
           "last30Days": "Last 30 days"

@@ -91,7 +91,7 @@ public class SubPillarItemResource {
             .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
 
         // Get or create ExtendedUser if it doesn't exist
-        ExtendedUser extendedUser = extendedUserRepository.findOneByUser(currentUser)
+        ExtendedUser extendedUser = extendedUserRepository.findOneByUserId(currentUser.getId())
             .orElseGet(() -> {
                 ExtendedUser newExtendedUser = new ExtendedUser();
                 newExtendedUser.setUser(currentUser);
