@@ -1,6 +1,8 @@
 import dayjs from 'dayjs/esm';
 import { IExtendedUser } from 'app/entities/extended-user/extended-user.model';
 
+export type TripType = 'PERSONAL' | 'FAMILY' | 'BUSINESS';
+
 export interface ITripPlan {
   id: number;
   title?: string | null;
@@ -8,6 +10,7 @@ export interface ITripPlan {
   startDate?: dayjs.Dayjs | null;
   endDate?: dayjs.Dayjs | null;
   isActive?: boolean | null;
+  tripType?: TripType | null;
   actionsJson?: string | null;
   owner?: IExtendedUser | null;
 }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity Family and updated ExtendedUser for family management feature.
+    -->
+    <changeSet id="20260516120000-1" author="jhipster">
+        <createTable tableName="family" remarks="Family entity for family management feature">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(120)">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="modified_at" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20260516120000-2" author="jhipster">
+        <addColumn tableName="extended_user">
+            <column name="is_parent" type="boolean">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260516120000-3" author="jhipster">
+        <addColumn tableName="extended_user">
+            <column name="family_management_enabled" type="boolean" defaultValue="false">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260516120000-4" author="jhipster">
+        <addColumn tableName="extended_user">
+            <column name="family_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260516120000-5" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="family_id"
+                                 baseTableName="extended_user"
+                                 constraintName="fk_extended_user__family_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="family"
+                                 />
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+</databaseChangeLog>
+

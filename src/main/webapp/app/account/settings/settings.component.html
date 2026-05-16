@@ -1,202 +1,203 @@
-<div>
-  <div class="d-flex justify-content-center">
-    <div class="col-md-8">
+<div class="container py-3">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
       @if (settingsForm.value.login) {
-        <h2 jhiTranslate="settings.title" [translateValues]="{ username: settingsForm.value.login }">
-          User settings for [<strong>{{ settingsForm.value.login }}</strong
-          >]
+        <h2 class="h4 mb-3" jhiTranslate="settings.title" [translateValues]="{ username: settingsForm.value.login }">
+          User settings for [<strong>{{ settingsForm.value.login }}</strong>]
         </h2>
-      }
-
-      @if (success()) {
-        <div class="alert alert-success" jhiTranslate="settings.messages.success"><strong>Settings saved!</strong></div>
       }
 
       <jhi-alert-error />
 
       @if (settingsForm.value.login) {
-        <form name="form" (ngSubmit)="save()" [formGroup]="settingsForm" novalidate>
-          <div class="mb-3">
-            <label class="form-label" for="firstName" jhiTranslate="settings.form.firstname">First Name</label>
-            <input
-              type="text"
-              class="form-control"
-              id="firstName"
-              name="firstName"
-              placeholder="{{ 'settings.form.firstname.placeholder' | translate }}"
-              formControlName="firstName"
-              data-cy="firstname"
-            />
+        <section class="card border-0 shadow-sm mb-3">
+          <div class="card-body p-3 p-md-4">
+            @if (success()) {
+              <div class="alert alert-success py-2" jhiTranslate="settings.messages.success"><strong>Settings saved!</strong></div>
+            }
 
-            @let firstNameRef = settingsForm.get('firstName')!;
-            @if (firstNameRef.invalid && (firstNameRef.dirty || firstNameRef.touched)) {
-              <div>
-                @if (firstNameRef?.errors?.required) {
-                  <small class="form-text text-danger" jhiTranslate="settings.messages.validate.firstname.required"
-                    >Your first name is required.</small
-                  >
+            <form name="form" (ngSubmit)="save()" [formGroup]="settingsForm" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="firstName" jhiTranslate="settings.form.firstname">First Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="firstName"
+                    name="firstName"
+                    placeholder="{{ 'settings.form.firstname.placeholder' | translate }}"
+                    formControlName="firstName"
+                    data-cy="firstname"
+                  />
+
+                  @let firstNameRef = settingsForm.get('firstName')!;
+                  @if (firstNameRef.invalid && (firstNameRef.dirty || firstNameRef.touched)) {
+                    <div>
+                      @if (firstNameRef?.errors?.required) {
+                        <small class="form-text text-danger" jhiTranslate="settings.messages.validate.firstname.required">Your first name is required.</small>
+                      }
+                      @if (firstNameRef?.errors?.minlength) {
+                        <small class="form-text text-danger" jhiTranslate="settings.messages.validate.firstname.minlength"
+                          >Your first name is required to be at least 1 character</small
+                        >
+                      }
+                      @if (firstNameRef?.errors?.maxlength) {
+                        <small class="form-text text-danger" jhiTranslate="settings.messages.validate.firstname.maxlength"
+                          >Your first name cannot be longer than 50 characters</small
+                        >
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="lastName" jhiTranslate="settings.form.lastname">Last Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="lastName"
+                    name="lastName"
+                    placeholder="{{ 'settings.form.lastname.placeholder' | translate }}"
+                    formControlName="lastName"
+                    data-cy="lastname"
+                  />
+
+                  @let lastNameRef = settingsForm.get('lastName')!;
+                  @if (lastNameRef.invalid && (lastNameRef.dirty || lastNameRef.touched)) {
+                    <div>
+                      @if (lastNameRef?.errors?.required) {
+                        <small class="form-text text-danger" jhiTranslate="settings.messages.validate.lastname.required">Your last name is required.</small>
+                      }
+                      @if (lastNameRef?.errors?.minlength) {
+                        <small class="form-text text-danger" jhiTranslate="settings.messages.validate.lastname.minlength"
+                          >Your last name is required to be at least 1 character</small
+                        >
+                      }
+                      @if (lastNameRef?.errors?.maxlength) {
+                        <small class="form-text text-danger" jhiTranslate="settings.messages.validate.lastname.maxlength"
+                          >Your last name cannot be longer than 50 characters</small
+                        >
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="email" jhiTranslate="global.form.email.label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    placeholder="{{ 'global.form.email.placeholder' | translate }}"
+                    formControlName="email"
+                    data-cy="email"
+                  />
+
+                  @let emailRef = settingsForm.get('email')!;
+                  @if (emailRef.invalid && (emailRef.dirty || emailRef.touched)) {
+                    <div>
+                      @if (emailRef?.errors?.required) {
+                        <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.required">Your email is required.</small>
+                      }
+                      @if (emailRef?.errors?.email) {
+                        <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.invalid">Your email is invalid.</small>
+                      }
+                      @if (emailRef?.errors?.minlength) {
+                        <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.minlength"
+                          >Your email is required to be at least 5 characters.</small
+                        >
+                      }
+                      @if (emailRef?.errors?.maxlength) {
+                        <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.maxlength"
+                          >Your email cannot be longer than 50 characters.</small
+                        >
+                      }
+                    </div>
+                  }
+                </div>
+
+                @if (languages && languages.length > 0) {
+                  <div class="col-md-6">
+                    <label for="langKey" class="form-label" jhiTranslate="settings.form.language">Language</label>
+                    <select class="form-control" id="langKey" name="langKey" formControlName="langKey" data-cy="langKey">
+                      @for (language of languages; track $index) {
+                        <option [value]="language">{{ language | findLanguageFromKey }}</option>
+                      }
+                    </select>
+                  </div>
                 }
 
-                @if (firstNameRef?.errors?.minlength) {
-                  <small class="form-text text-danger" jhiTranslate="settings.messages.validate.firstname.minlength"
-                    >Your first name is required to be at least 1 character</small
-                  >
+                @if (timezones && timezones.length > 0) {
+                  <div class="col-md-6">
+                    <label for="timezone" class="form-label" jhiTranslate="settings.form.timezone">Timezone</label>
+                    <select class="form-control" id="timezone" name="timezone" formControlName="timezone" data-cy="timezone">
+                      @for (tz of timezones; track tz.value) {
+                        <option [value]="tz.value">{{ tz.label }}</option>
+                      }
+                    </select>
+                  </div>
                 }
 
-                @if (firstNameRef?.errors?.maxlength) {
-                  <small class="form-text text-danger" jhiTranslate="settings.messages.validate.firstname.maxlength"
-                    >Your first name cannot be longer than 50 characters</small
-                  >
+                @if (currencies && currencies.length > 0) {
+                  <div class="col-md-6">
+                    <label for="currency" class="form-label" jhiTranslate="settings.form.currency">Currency</label>
+                    <select class="form-control" id="currency" name="currency" formControlName="currency" data-cy="currency">
+                      @for (curr of currencies; track curr.value) {
+                        <option [value]="curr.value">{{ curr.label }}</option>
+                      }
+                    </select>
+                  </div>
                 }
+
+                <div class="col-12">
+                  <div class="form-check form-switch mt-1">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="manageFamilyCheck"
+                      [checked]="canManageFamily()"
+                      (change)="toggleFamilyManagement()"
+                      [disabled]="canManageFamily() || managingFamily()"
+                    />
+                    <label class="form-check-label" for="manageFamilyCheck" jhiTranslate="settings.form.manageFamilyLabel">
+                      Enable Family Management (Manage children and parents)
+                    </label>
+                  </div>
+                  <small class="text-muted" jhiTranslate="settings.form.manageFamilyDesc" *ngIf="!managingFamily() && !canManageFamily()">
+                    Enable this to manage a family: add children, invite parents, and track objectives.
+                  </small>
+                  @if (managingFamily()) {
+                    <small class="text-muted d-block">
+                      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Updating...
+                    </small>
+                  }
+                  @if (canManageFamily() && !managingFamily()) {
+                    <small class="text-muted d-block" jhiTranslate="settings.form.manageFamilyEnabled">
+                      Family management is enabled and cannot be disabled.
+                    </small>
+                  }
+                </div>
               </div>
-            }
-          </div>
 
-          <div class="mb-3">
-            <label class="form-label" for="lastName" jhiTranslate="settings.form.lastname">Last Name</label>
-            <input
-              type="text"
-              class="form-control"
-              id="lastName"
-              name="lastName"
-              placeholder="{{ 'settings.form.lastname.placeholder' | translate }}"
-              formControlName="lastName"
-              data-cy="lastname"
-            />
-
-            @let lastNameRef = settingsForm.get('lastName')!;
-            @if (lastNameRef.invalid && (lastNameRef.dirty || lastNameRef.touched)) {
-              <div>
-                @if (lastNameRef?.errors?.required) {
-                  <small class="form-text text-danger" jhiTranslate="settings.messages.validate.lastname.required"
-                    >Your last name is required.</small
-                  >
-                }
-
-                @if (lastNameRef?.errors?.minlength) {
-                  <small class="form-text text-danger" jhiTranslate="settings.messages.validate.lastname.minlength"
-                    >Your last name is required to be at least 1 character</small
-                  >
-                }
-
-                @if (lastNameRef?.errors?.maxlength) {
-                  <small class="form-text text-danger" jhiTranslate="settings.messages.validate.lastname.maxlength"
-                    >Your last name cannot be longer than 50 characters</small
-                  >
-                }
+              <div class="mt-3 d-flex justify-content-end">
+                <button type="submit" [disabled]="settingsForm.invalid" class="btn btn-primary" data-cy="submit" jhiTranslate="settings.form.button">
+                  Save
+                </button>
               </div>
-            }
+            </form>
           </div>
+        </section>
 
-          <div class="mb-3">
-            <label class="form-label" for="email" jhiTranslate="global.form.email.label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              name="email"
-              placeholder="{{ 'global.form.email.placeholder' | translate }}"
-              formControlName="email"
-              data-cy="email"
-            />
-
-            @let emailRef = settingsForm.get('email')!;
-            @if (emailRef.invalid && (emailRef.dirty || emailRef.touched)) {
-              <div>
-                @if (emailRef?.errors?.required) {
-                  <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.required"
-                    >Your email is required.</small
-                  >
-                }
-
-                @if (emailRef?.errors?.email) {
-                  <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.invalid">Your email is invalid.</small>
-                }
-
-                @if (emailRef?.errors?.minlength) {
-                  <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.minlength"
-                    >Your email is required to be at least 5 characters.</small
-                  >
-                }
-
-                @if (emailRef?.errors?.maxlength) {
-                  <small class="form-text text-danger" jhiTranslate="global.messages.validate.email.maxlength"
-                    >Your email cannot be longer than 50 characters.</small
-                  >
-                }
-              </div>
-            }
+        <section class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-2">
+            <h3 class="h6 mb-0" jhiTranslate="global.menu.account.configuration">Configuration</h3>
           </div>
-
-           @if (languages && languages.length > 0) {
-             <div class="mb-3">
-               <label for="langKey" jhiTranslate="settings.form.language">Language</label>
-               <select class="form-control" id="langKey" name="langKey" formControlName="langKey" data-cy="langKey">
-                 @for (language of languages; track $index) {
-                   <option [value]="language">{{ language | findLanguageFromKey }}</option>
-                 }
-               </select>
-             </div>
-           }
-
-           @if (timezones && timezones.length > 0) {
-             <div class="mb-3">
-               <label for="timezone" jhiTranslate="settings.form.timezone">Timezone</label>
-               <select class="form-control" id="timezone" name="timezone" formControlName="timezone" data-cy="timezone">
-                 @for (tz of timezones; track tz.value) {
-                   <option [value]="tz.value">{{ tz.label }}</option>
-                 }
-               </select>
-             </div>
-           }
-
-           @if (currencies && currencies.length > 0) {
-             <div class="mb-3">
-               <label for="currency" jhiTranslate="settings.form.currency">Currency</label>
-               <select class="form-control" id="currency" name="currency" formControlName="currency" data-cy="currency">
-                 @for (curr of currencies; track curr.value) {
-                   <option [value]="curr.value">{{ curr.label }}</option>
-                 }
-               </select>
-             </div>
-            }
-
-           <!-- Family Management Toggle -->
-           <div class="mb-3">
-             <div class="form-check form-switch">
-               <input
-                 class="form-check-input"
-                 type="checkbox"
-                 id="manageFamilyCheck"
-                 [checked]="canManageFamily()"
-                 (change)="toggleFamilyManagement()"
-                 [disabled]="managingFamily()"
-               />
-               <label class="form-check-label" for="manageFamilyCheck" jhiTranslate="settings.form.manageFamilyLabel">
-                 Enable Family Management (Manage children and parents)
-               </label>
-             </div>
-             <small class="text-muted" jhiTranslate="settings.form.manageFamilyDesc" *ngIf="!managingFamily()">
-               Enable this to manage a family: add children, invite parents, and track objectives.
-             </small>
-             @if (managingFamily()) {
-               <small class="text-muted d-block">
-                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                 Updating...
-               </small>
-             }
-           </div>
-
-           <button
-            type="submit"
-            [disabled]="settingsForm.invalid"
-            class="btn btn-primary"
-            data-cy="submit"
-            jhiTranslate="settings.form.button"
-          >
-            Save
-          </button>
-        </form>
+          <div class="card-body p-2 p-md-3">
+            <jhi-todoapps-settings [embedded]="true"></jhi-todoapps-settings>
+          </div>
+        </section>
       }
     </div>
   </div>

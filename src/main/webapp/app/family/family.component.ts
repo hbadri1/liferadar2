@@ -19,6 +19,7 @@ import {
   FamilyObjectiveItemDefinition,
   FamilyObjectiveProgress,
   ObjectiveUnit,
+  FamilyInfo,
 } from './family.models';
 
 interface ProgressCalendarCell {
@@ -81,8 +82,12 @@ export default class FamilyComponent implements OnInit {
   children = signal<ChildUser[]>([]);
   parents = signal<ParentUser[]>([]);
   objectives = signal<FamilyObjective[]>([]);
+  familyInfo = signal<FamilyInfo | null>(null);
+  isEditingFamilyName = signal(false);
+  familyNameDraft = signal('');
   isLoading = signal(false);
   isLoadingObjectives = signal(false);
+  isLoadingFamilyInfo = signal(false);
   errorMsg = signal<string | null>(null);
   successMsg = signal<string | null>(null);
   activeTab = signal<string>('management');
@@ -240,6 +245,7 @@ export default class FamilyComponent implements OnInit {
 
   ngOnInit(): void {
     this.ensureActiveTabSelection();
+    this.loadFamilyInfo();
     this.loadChildren();
     this.loadParents();
     this.loadObjectives();
@@ -322,6 +328,71 @@ export default class FamilyComponent implements OnInit {
         // Silently fail - parents endpoint may not be available
       },
     });
+  }
+
+  loadFamilyInfo(): void {
+    this.isLoadingFamilyInfo.set(true);
+    this.http.get<FamilyInfo>('/api/family/info').subscribe({
+      next: info => {
+        this.familyInfo.set(info);
+        this.familyNameDraft.set(info?.name ?? '');
+        this.isLoadingFamilyInfo.set(false);
+      },
+      error: err => {
+        console.error('Error loading family info:', err);
+        this.isLoadingFamilyInfo.set(false);
+      },
+    });
+  }
+
+  saveFamilyInfo(familyName: string): void {
+    const trimmedName = familyName.trim();
+    if (!trimmedName) {
+      this.errorMsg.set(this.translateService.instant('family.familyNameRequired'));
+      return;
+    }
+
+    this.isLoadingFamilyInfo.set(true);
+    this.http.put<FamilyInfo>('/api/family/info', { name: trimmedName }).subscribe({
+      next: info => {
+        this.familyInfo.set(info);
+        this.familyNameDraft.set(info?.name ?? '');
+        this.isEditingFamilyName.set(false);
+        this.successMsg.set('family.familyNameUpdated');
+        this.isLoadingFamilyInfo.set(false);
+      },
+      error: err => {
+        this.errorMsg.set(err?.error?.detail ?? 'family.error.updateFamily');
+        this.isLoadingFamilyInfo.set(false);
+      },
+    });
+  }
+
+  startEditingFamilyName(): void {
+    if (!this.canManageFamily()) {
+      return;
+    }
+    this.errorMsg.set(null);
+    this.successMsg.set(null);
+    this.familyNameDraft.set(this.familyInfo()?.name ?? '');
+    this.isEditingFamilyName.set(true);
+  }
+
+  cancelEditingFamilyName(): void {
+    this.isEditingFamilyName.set(false);
+    this.familyNameDraft.set(this.familyInfo()?.name ?? '');
+  }
+
+  updateFamilyNameDraft(value: string): void {
+    this.familyNameDraft.set(value);
+  }
+
+  editFamilyNameModal(): void {
+    this.startEditingFamilyName();
+  }
+
+  saveEditedFamilyName(): void {
+    this.saveFamilyInfo(this.familyNameDraft());
   }
 
   openAddChildModal(): void {

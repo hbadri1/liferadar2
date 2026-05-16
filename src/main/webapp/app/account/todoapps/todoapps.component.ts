@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import SharedModule from 'app/shared/shared.module';
@@ -8,6 +8,7 @@ import { AlertService } from 'app/core/util/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ITodoAppConfigUpdate, ITodoAppUserConfig } from './todoapps.model';
 import { TodoAppsService } from './todoapps.service';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 type TodoAppFormGroup = FormGroup<{
   accessToken: FormControl<string>;
@@ -22,6 +23,7 @@ type TodoAppFormGroup = FormGroup<{
   templateUrl: './todoapps.component.html',
 })
 export default class TodoAppsComponent implements OnInit, OnDestroy {
+  readonly embedded = input(false);
   readonly account = signal<Account | null>(null);
   readonly todoAppConfigs = signal<ITodoAppUserConfig[]>([]);
   readonly isLoading = signal(false);
@@ -70,9 +72,10 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
         const configs = response.body ?? [];
         this.todoAppConfigs.set(configs);
         this.providerForms.set(this.buildForms(configs));
-        // Set the currently enabled provider
+        // Keep one provider selected so the configuration fields are always accessible.
         const enabledConfig = configs.find(c => c.enabled);
-        this.selectedProvider.set(enabledConfig?.provider ?? null);
+        const fallbackConfig = this.orderedConfigs().find(c => c.available) ?? this.orderedConfigs()[0] ?? null;
+        this.selectedProvider.set(enabledConfig?.provider ?? fallbackConfig?.provider ?? null);
         this.isLoading.set(false);
       },
       error: () => {
@@ -200,16 +203,16 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
     return this.translateService.instant(`todoapps.providers.${provider}`);
   }
 
-  getProviderIcon(provider: string): string {
+  getProviderIcon(provider: string): IconProp {
     switch (provider) {
       case 'ticktick':
-        return 'fa-check-circle';
+        return 'check-circle';
       case 'microsoft-todo':
-        return 'fa-microsoft';
+        return ['fab', 'microsoft'];
       case 'todoist':
-        return 'fa-list-check';
+        return 'list';
       default:
-        return 'fa-circle';
+        return 'circle';
     }
   }
 

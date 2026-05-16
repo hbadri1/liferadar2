@@ -56,6 +56,16 @@ public class ExtendedUser implements Serializable {
     @JoinColumn(unique = true)
     private User user;
 
+    @Column(name = "is_parent")
+    private Boolean isParent;
+
+    @Column(name = "family_management_enabled")
+    private Boolean familyManagementEnabled = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "family_id")
+    private Family family;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -162,6 +172,45 @@ public class ExtendedUser implements Serializable {
         return this;
     }
 
+    public Boolean getIsParent() {
+        return this.isParent;
+    }
+
+    public ExtendedUser isParent(Boolean isParent) {
+        this.setIsParent(isParent);
+        return this;
+    }
+
+    public void setIsParent(Boolean isParent) {
+        this.isParent = isParent;
+    }
+
+    public Boolean getFamilyManagementEnabled() {
+        return this.familyManagementEnabled;
+    }
+
+    public ExtendedUser familyManagementEnabled(Boolean familyManagementEnabled) {
+        this.setFamilyManagementEnabled(familyManagementEnabled);
+        return this;
+    }
+
+    public void setFamilyManagementEnabled(Boolean familyManagementEnabled) {
+        this.familyManagementEnabled = familyManagementEnabled;
+    }
+
+    public Family getFamily() {
+        return this.family;
+    }
+
+    public ExtendedUser family(Family family) {
+        this.setFamily(family);
+        return this;
+    }
+
+    public void setFamily(Family family) {
+        this.family = family;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -192,6 +241,8 @@ public class ExtendedUser implements Serializable {
             ", active='" + getActive() + "'" +
             ", timezone='" + getTimezone() + "'" +
             ", currency='" + getCurrency() + "'" +
+            ", isParent='" + getIsParent() + "'" +
+            ", familyManagementEnabled='" + getFamilyManagementEnabled() + "'" +
             "}";
     }
 }

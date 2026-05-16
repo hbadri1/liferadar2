@@ -150,10 +150,15 @@
       "save": "Créer le compte",
       "cancel": "Annuler"
     },
-    "error": {
-      "save": "Échec de la création du compte enfant. Veuillez réessayer.",
-      "delete": "Échec de la suppression du compte enfant."
-    }
-  }
+     "error": {
+       "save": "Échec de la création du compte enfant. Veuillez réessayer.",
+       "delete": "Échec de la suppression du compte enfant.",
+       "updateFamily": "Échec de la mise à jour des informations de la famille."
+     },
+     "familyName": "Nom de famille",
+     "editFamilyName": "Modifier le nom de famille",
+     "familyNameRequired": "Le nom de famille ne peut pas être vide.",
+     "familyNameUpdated": "Nom de famille mis à jour avec succès."
+   }
 }
 

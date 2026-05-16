@@ -33,6 +33,11 @@
     "duration": {
       "daysHours": "{{days}}d {{hours}}h"
     },
+    "tripType": {
+      "personal": "Personal",
+      "family": "Family",
+      "business": "Business"
+    },
     "map": {
       "title": "Pin on Map (Optional)",
       "search": "Search",
@@ -54,6 +59,7 @@
       "confirmDeleteAction": "Delete this action?",
       "actionsPlaceholder": "One action per line",
       "actionsHelp": "One action per line (max {{maxItems}} items, {{maxChars}} chars per item).",
+      "tripType": "Trip Type",
       "startDate": "Start Date",
       "endDate": "End Date",
       "stepName": "Step Name",
@@ -82,6 +88,7 @@
       "tripActionsInvalidJson": "Trip actions format is invalid.",
       "tripActionsListTooLarge": "Too many actions in one list. Please remove extra items.",
       "tripActionTextTooLong": "An action is too long. Please shorten it.",
+      "familyTypeOnlyParents": "Only parents can create or edit family trips.",
       "stepStartDateBeforeTripStart": "Step start date cannot be before the trip start date.",
       "stepEndDateAfterTripEnd": "Step end date cannot be after the trip end date.",
       "stepStartDateAfterEndDate": "Step start date must be before or equal to the step end date.",

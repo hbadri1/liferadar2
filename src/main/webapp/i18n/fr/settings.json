@@ -10,8 +10,9 @@
       "timezone": "Fuseau horaire",
       "currency": "Devise",
       "manageFamilyLabel": "Activer la gestion familiale",
-      "manageFamilyDesc": "Activez cette option pour gérer une famille : ajouter des enfants, inviter des parents et suivre les objectifs.",
-      "button": "Sauvegarder"
+       "manageFamilyDesc": "Activez cette option pour gérer une famille : ajouter des enfants, inviter des parents et suivre les objectifs.",
+       "manageFamilyEnabled": "La gestion familiale est activée et ne peut pas être désactivée.",
+       "button": "Sauvegarder"
     },
     "messages": {
       "error": {

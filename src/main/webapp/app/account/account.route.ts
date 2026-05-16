@@ -7,7 +7,6 @@ import passwordResetInitRoute from './password-reset/init/password-reset-init.ro
 import registerRoute from './register/register.route';
 import settingsRoute from './settings/settings.route';
 import kidProfileSettingsRoute from './kid-profile-settings/kid-profile-settings.route';
-import todoAppsRoute from './todoapps/todoapps.route';
 
 const accountRoutes: Routes = [
   activateRoute,
@@ -17,7 +16,6 @@ const accountRoutes: Routes = [
   registerRoute,
   settingsRoute,
   kidProfileSettingsRoute,
-  todoAppsRoute,
 ];
 
 export default accountRoutes;

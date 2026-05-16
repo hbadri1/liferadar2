@@ -30,6 +30,25 @@
   color: #1e293b;
 }
 
+.family-name-section {
+  p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-link {
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+
 /* ── Add child card ─────────────────────────────────────────── */
 .add-child-card {
   border: 1px solid #bfdbfe;
@@ -611,6 +630,32 @@
   left: 0.6rem;
 }
 
+:host-context([dir='rtl']) .objective-progress-trends-header {
+  text-align: right;
+}
+
+:host-context([dir='rtl']) .objective-period-controls {
+  direction: rtl;
+  flex-direction: row-reverse;
+}
+
+:host-context([dir='rtl']) .objective-period-toggle {
+  direction: rtl;
+  display: inline-flex;
+  flex-direction: row-reverse;
+}
+
+/* Keep Arabic text with numbers (e.g. "آخر 30 يومًا") in correct RTL visual flow */
+:host-context([dir='rtl']) .objective-period-toggle .btn {
+  direction: rtl;
+  unicode-bidi: plaintext;
+  text-align: center;
+}
+
+:host-context([dir='rtl']) .objective-progress-trends-header .text-muted {
+  text-align: right;
+}
+
 @media (max-width: 767.98px) {
   .family-page {
     padding-left: 0.35rem;
@@ -770,4 +815,3 @@
   left: auto;
   right: 0;
 }
-

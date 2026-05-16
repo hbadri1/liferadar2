@@ -7,6 +7,54 @@
         <fa-icon icon="users" class="me-2 text-primary"></fa-icon>
         <span jhiTranslate="family.title">My Family</span>
       </h2>
+      @if (familyInfo(); as family) {
+        <div class="family-name-section mb-2">
+          <div class="text-muted mb-1 small d-flex flex-wrap align-items-center gap-2">
+            <fa-icon icon="home" class="me-1"></fa-icon>
+            <span jhiTranslate="family.familyName">Family Name:</span>
+
+            @if (!isEditingFamilyName()) {
+              <span class="fw-semibold">{{ family.name }}</span>
+              @if (canManageFamily()) {
+                <button
+                  class="btn btn-link btn-sm ms-1 p-0"
+                  type="button"
+                  (click)="startEditingFamilyName()"
+                  [title]="'family.editFamilyName' | translate"
+                >
+                  <fa-icon icon="pencil-alt" class="text-primary"></fa-icon>
+                </button>
+              }
+            } @else {
+              <input
+                type="text"
+                class="form-control form-control-sm d-inline-block"
+                style="max-width: 280px"
+                [value]="familyNameDraft()"
+                (input)="updateFamilyNameDraft($any($event.target).value)"
+                (keyup.enter)="saveEditedFamilyName()"
+                [disabled]="isLoadingFamilyInfo()"
+              />
+              <button
+                class="btn btn-primary btn-sm"
+                type="button"
+                (click)="saveEditedFamilyName()"
+                [disabled]="isLoadingFamilyInfo() || !familyNameDraft().trim()"
+              >
+                <span jhiTranslate="entity.action.save">Save</span>
+              </button>
+              <button
+                class="btn btn-outline-secondary btn-sm"
+                type="button"
+                (click)="cancelEditingFamilyName()"
+                [disabled]="isLoadingFamilyInfo()"
+              >
+                <span jhiTranslate="entity.action.cancel">Cancel</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
       <p class="text-muted mb-0 small family-subtitle" [jhiTranslate]="headerSubtitleKey()">
         @if (isChild()) {
           👨‍👩‍👧‍👦✨ Together, we grow with love, courage, and smiles every day! 🌈💛
@@ -402,30 +450,30 @@
                 @let objectiveTrendSeries = getObjectiveTrendSeries(objective, objectiveProgressPeriod());
                 <div class="objective-progress-trends mt-3">
                   <div class="objective-progress-trends-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                      <p class="small fw-semibold mb-0">
-                        {{ 'family.objectives.progress.periodTitle' | translate }}:
-                        {{ (objectiveProgressPeriod() === 'last7days' ? 'family.objectives.progress.period.last7days' : 'family.objectives.progress.period.last30days') | translate }}
-                      </p>
-                      <div class="btn-group btn-group-sm" role="group" [attr.aria-label]="'family.objectives.progress.periodTitle' | translate">
-                        <button
-                          type="button"
-                          class="btn"
-                          [ngClass]="objectiveProgressPeriod() === 'last7days' ? 'btn-primary' : 'btn-outline-primary'"
-                          (click)="setObjectiveProgressPeriod('last7days')"
-                        >
-                          {{ 'family.objectives.progress.period.last7days' | translate }}
-                        </button>
-                        <button
-                          type="button"
-                          class="btn"
-                          [ngClass]="objectiveProgressPeriod() === 'last30days' ? 'btn-primary' : 'btn-outline-primary'"
-                          (click)="setObjectiveProgressPeriod('last30days')"
-                        >
-                          {{ 'family.objectives.progress.period.last30days' | translate }}
-                        </button>
-                      </div>
-                    </div>
+                    <div class="objective-period-controls d-flex align-items-center gap-2 flex-wrap">
+                     <p class="small fw-semibold mb-0">
+                       {{ 'family.objectives.progress.periodTitle' | translate }}:
+                       {{ (objectiveProgressPeriod() === 'last7days' ? 'family.objectives.progress.period.last7days' : 'family.objectives.progress.period.last30days') | translate }}
+                     </p>
+                     <div class="objective-period-toggle btn-group btn-group-sm" role="group" [attr.aria-label]="'family.objectives.progress.periodTitle' | translate">
+                       <button
+                         type="button"
+                         class="btn"
+                         [ngClass]="objectiveProgressPeriod() === 'last7days' ? 'btn-primary' : 'btn-outline-primary'"
+                         (click)="setObjectiveProgressPeriod('last7days')"
+                       >
+                         {{ 'family.objectives.progress.period.last7days' | translate }}
+                       </button>
+                       <button
+                         type="button"
+                         class="btn"
+                         [ngClass]="objectiveProgressPeriod() === 'last30days' ? 'btn-primary' : 'btn-outline-primary'"
+                         (click)="setObjectiveProgressPeriod('last30days')"
+                       >
+                         {{ 'family.objectives.progress.period.last30days' | translate }}
+                       </button>
+                     </div>
+                   </div>
                     @if (!hasObjectiveProgressInTrendWindow(objective)) {
                       <small class="text-muted">
                         {{ (objectiveProgressPeriod() === 'last7days' ? 'family.objectives.progress.noEntryLastDays' : 'family.objectives.progress.noEntryLast30Days') | translate: { count: objectiveProgressPeriod() === 'last7days' ? objectiveTrendLast7Days : objectiveTrendLast30Days } }}

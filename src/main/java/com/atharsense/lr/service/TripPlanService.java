@@ -5,14 +5,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.atharsense.lr.domain.ExtendedUser;
 import com.atharsense.lr.domain.TripPlan;
 import com.atharsense.lr.domain.TripPlanStep;
+import com.atharsense.lr.domain.User;
+import com.atharsense.lr.domain.enumeration.TripType;
 import com.atharsense.lr.repository.ExtendedUserRepository;
 import com.atharsense.lr.repository.TripPlanRepository;
 import com.atharsense.lr.repository.UserRepository;
+import com.atharsense.lr.security.AuthoritiesConstants;
 import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -59,6 +67,10 @@ public class TripPlanService {
         if (tripPlan.getIsActive() == null) {
             tripPlan.setIsActive(true);
         }
+        if (tripPlan.getTripType() == null) {
+            tripPlan.setTripType(TripType.PERSONAL);
+        }
+        validateTripTypePermissions(tripPlan.getTripType(), null);
         validateTripActionsJson(tripPlan.getActionsJson());
         return tripPlanRepository.save(tripPlan);
     }
@@ -74,12 +86,15 @@ public class TripPlanService {
 
         validateTripDates(updatedStartDate, updatedEndDate);
         validateExistingStepsWithinTripDates(existing, updatedStartDate, updatedEndDate);
+        TripType updatedTripType = tripPlan.getTripType() != null ? tripPlan.getTripType() : existing.getTripType();
+        validateTripTypePermissions(updatedTripType, existing.getTripType());
         validateTripActionsJson(tripPlan.getActionsJson());
 
         existing.setTitle(tripPlan.getTitle());
         existing.setDescription(tripPlan.getDescription());
         existing.setStartDate(updatedStartDate);
         existing.setEndDate(updatedEndDate);
+        existing.setTripType(updatedTripType);
         existing.setActionsJson(tripPlan.getActionsJson());
         if (tripPlan.getIsActive() != null) {
             existing.setIsActive(tripPlan.getIsActive());
@@ -98,6 +113,8 @@ public class TripPlanService {
 
                 validateTripDates(updatedStartDate, updatedEndDate);
                 validateExistingStepsWithinTripDates(existing, updatedStartDate, updatedEndDate);
+                TripType updatedTripType = tripPlan.getTripType() != null ? tripPlan.getTripType() : existing.getTripType();
+                validateTripTypePermissions(updatedTripType, existing.getTripType());
                 if (tripPlan.getActionsJson() != null) {
                     validateTripActionsJson(tripPlan.getActionsJson());
                 }
@@ -106,6 +123,7 @@ public class TripPlanService {
                 if (tripPlan.getDescription() != null) existing.setDescription(tripPlan.getDescription());
                 if (tripPlan.getStartDate() != null) existing.setStartDate(updatedStartDate);
                 if (tripPlan.getEndDate() != null) existing.setEndDate(updatedEndDate);
+                if (tripPlan.getTripType() != null) existing.setTripType(updatedTripType);
                 if (tripPlan.getActionsJson() != null) existing.setActionsJson(tripPlan.getActionsJson());
                 if (tripPlan.getIsActive() != null) existing.setIsActive(tripPlan.getIsActive());
                 return existing;
@@ -124,7 +142,77 @@ public class TripPlanService {
     public List<TripPlan> findByCurrentUser() {
         String login = SecurityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new IllegalStateException("User not authenticated"));
-        return tripPlanRepository.findByOwnerUserLoginOrderByStartDateAsc(login);
+
+        boolean isChildOnly = SecurityUtils.hasCurrentUserThisAuthority(AuthoritiesConstants.CHILD)
+            && SecurityUtils.hasCurrentUserNoneOfAuthorities(AuthoritiesConstants.PARENT, AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER);
+
+        if (isChildOnly) {
+            User currentUser = userRepository.findOneByLogin(login)
+                .orElseThrow(() -> new IllegalStateException("User not found for login: " + login));
+
+            ExtendedUser me = extendedUserRepository.findOneByUserId(currentUser.getId()).orElse(null);
+
+            Long familyId = null;
+            if (currentUser.getFamily() != null && currentUser.getFamily().getId() != null) {
+                familyId = currentUser.getFamily().getId();
+            } else if (me != null && me.getFamily() != null && me.getFamily().getId() != null) {
+                familyId = me.getFamily().getId();
+            }
+
+            Map<Long, TripPlan> visibleTrips = new LinkedHashMap<>();
+
+            if (familyId != null) {
+                List<TripPlan> byUserFamily = tripPlanRepository.findByTripTypeAndOwnerUserFamilyIdOrderByStartDateAsc(TripType.FAMILY, familyId);
+                for (TripPlan trip : byUserFamily) {
+                    if (trip.getId() != null) {
+                        visibleTrips.put(trip.getId(), trip);
+                    }
+                }
+            }
+
+            String createdBy = currentUser.getCreatedBy();
+            if (createdBy != null && !createdBy.isBlank()) {
+                List<TripPlan> byCreatorParent = tripPlanRepository.findByTripTypeAndOwnerUserLoginOrderByStartDateAsc(TripType.FAMILY, createdBy);
+                for (TripPlan trip : byCreatorParent) {
+                    if (trip.getId() != null) {
+                        visibleTrips.putIfAbsent(trip.getId(), trip);
+                    }
+                }
+            }
+
+            List<TripPlan> childVisibleTrips = new ArrayList<>(visibleTrips.values());
+            childVisibleTrips.sort(Comparator.comparing(TripPlan::getStartDate, Comparator.nullsLast(Comparator.naturalOrder())));
+            return childVisibleTrips;
+        }
+
+        List<TripPlan> ownTrips = tripPlanRepository.findByOwnerUserLoginOrderByStartDateAsc(login);
+
+        if (SecurityUtils.hasCurrentUserAnyOfAuthorities(AuthoritiesConstants.PARENT, AuthoritiesConstants.ADMIN)) {
+            ExtendedUser me = userRepository.findOneByLogin(login)
+                .flatMap(user -> extendedUserRepository.findOneByUserId(user.getId()))
+                .orElse(null);
+
+            if (me != null && me.getFamily() != null && me.getFamily().getId() != null) {
+                List<TripPlan> familyTrips = tripPlanRepository.findByTripTypeAndOwnerFamilyIdOrderByStartDateAsc(TripType.FAMILY, me.getFamily().getId());
+                Map<Long, TripPlan> mergedById = new LinkedHashMap<>();
+                for (TripPlan trip : ownTrips) {
+                    if (trip.getId() != null) {
+                        mergedById.put(trip.getId(), trip);
+                    }
+                }
+                for (TripPlan trip : familyTrips) {
+                    if (trip.getId() != null) {
+                        mergedById.putIfAbsent(trip.getId(), trip);
+                    }
+                }
+
+                List<TripPlan> merged = new ArrayList<>(mergedById.values());
+                merged.sort(Comparator.comparing(TripPlan::getStartDate, Comparator.nullsLast(Comparator.naturalOrder())));
+                return merged;
+            }
+        }
+
+        return ownTrips;
     }
 
     /** Delete a trip and all its steps (cascade). */
@@ -165,6 +253,18 @@ public class TripPlanService {
 
         if (startDate.isAfter(endDate)) {
             throw new BadRequestAlertException("trips.errors.startDateAfterEndDate", "tripPlan", "startDateAfterEndDate");
+        }
+    }
+
+    private void validateTripTypePermissions(TripType updatedTripType, TripType existingTripType) {
+        boolean touchesFamilyType = updatedTripType == TripType.FAMILY || existingTripType == TripType.FAMILY;
+        if (!touchesFamilyType) {
+            return;
+        }
+
+        boolean canManageFamilyTrips = SecurityUtils.hasCurrentUserAnyOfAuthorities(AuthoritiesConstants.PARENT, AuthoritiesConstants.ADMIN);
+        if (!canManageFamilyTrips) {
+            throw new BadRequestAlertException("trips.errors.familyTypeOnlyParents", "tripPlan", "familyTypeOnlyParents");
         }
     }
 

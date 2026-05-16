@@ -16,6 +16,11 @@ export interface ParentUser {
   activated: boolean;
 }
 
+export interface FamilyInfo {
+  id: number;
+  name: string;
+}
+
 export enum ObjectiveUnit {
   REPS = 'REPS',
   NUMBER = 'NUMBER',

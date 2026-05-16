@@ -10,12 +10,13 @@ import { Account } from 'app/core/auth/account.model';
 import { LoginService } from 'app/login/login.service';
 import { LANGUAGES } from 'app/config/language.constants';
 import { CURRENCIES, TIMEZONES } from 'app/shared/constants/preferences.constants';
+import TodoAppsComponent from 'app/account/todoapps/todoapps.component';
 
 const initialAccount: Account = {} as Account;
 
 @Component({
   selector: 'jhi-settings',
-  imports: [SharedModule, FormsModule, ReactiveFormsModule],
+  imports: [SharedModule, FormsModule, ReactiveFormsModule, TodoAppsComponent],
   templateUrl: './settings.component.html',
 })
 export default class SettingsComponent implements OnInit {
@@ -88,37 +89,23 @@ export default class SettingsComponent implements OnInit {
     });
   }
 
-  toggleFamilyManagement(): void {
-    if (this.canManageFamily()) {
-      // Disable family management
-      this.managingFamily.set(true);
-      this.http.post('/api/account/disable-family-management', {}).subscribe({
-        next: () => {
-          this.canManageFamily.set(false);
-          this.managingFamily.set(false);
-          this.success.set(true);
-          this.refreshSessionAfterRoleChange();
-        },
-        error: () => {
-          this.managingFamily.set(false);
-        },
-      });
-    } else {
-      // Enable family management
-      this.managingFamily.set(true);
-      this.http.post('/api/account/enable-family-management', {}).subscribe({
-        next: () => {
-          this.canManageFamily.set(true);
-          this.managingFamily.set(false);
-          this.success.set(true);
-          this.refreshSessionAfterRoleChange();
-        },
-        error: () => {
-          this.managingFamily.set(false);
-        },
-      });
-    }
-  }
+   toggleFamilyManagement(): void {
+     // Family management can only be enabled, never disabled
+     if (!this.canManageFamily()) {
+       this.managingFamily.set(true);
+       this.http.post('/api/account/enable-family-management', {}).subscribe({
+         next: () => {
+           this.canManageFamily.set(true);
+           this.managingFamily.set(false);
+           this.success.set(true);
+           this.refreshSessionAfterRoleChange();
+         },
+         error: () => {
+           this.managingFamily.set(false);
+         },
+       });
+     }
+   }
 
   private refreshSessionAfterRoleChange(): void {
     // JWT authorities are embedded in the token; re-login is required after role changes.

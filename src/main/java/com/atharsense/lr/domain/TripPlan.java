@@ -1,5 +1,6 @@
 package com.atharsense.lr.domain;
 
+import com.atharsense.lr.domain.enumeration.TripType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -42,6 +43,11 @@ public class TripPlan implements Serializable {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trip_type", nullable = false, length = 20)
+    private TripType tripType = TripType.PERSONAL;
 
     @Size(max = 4000)
     @Column(name = "actions_json", length = 4000)
@@ -136,6 +142,19 @@ public class TripPlan implements Serializable {
         this.isActive = isActive;
     }
 
+    public TripType getTripType() {
+        return this.tripType;
+    }
+
+    public TripPlan tripType(TripType tripType) {
+        this.setTripType(tripType);
+        return this;
+    }
+
+    public void setTripType(TripType tripType) {
+        this.tripType = tripType;
+    }
+
     public String getActionsJson() {
         return this.actionsJson;
     }
@@ -198,6 +217,7 @@ public class TripPlan implements Serializable {
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             ", isActive=" + getIsActive() +
+            ", tripType='" + getTripType() + "'" +
             ", actionsJson='" + getActionsJson() + "'" +
             "}";
     }

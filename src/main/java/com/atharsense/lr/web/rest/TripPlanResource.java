@@ -1,6 +1,7 @@
 package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.TripPlan;
+import com.atharsense.lr.domain.enumeration.TripType;
 import com.atharsense.lr.repository.TripPlanRepository;
 import com.atharsense.lr.service.TripPlanQueryService;
 import com.atharsense.lr.service.TripPlanService;
@@ -58,6 +59,7 @@ public class TripPlanResource {
 
     /** GET /api/trip-plans/my – returns trips owned by the current user. */
     @GetMapping("/my")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_PARENT','ROLE_ADMIN','ROLE_CHILD')")
     public ResponseEntity<List<TripPlan>> getMyTripPlans() {
         LOG.debug("REST request to get TripPlans for current user");
         return ResponseEntity.ok(tripPlanService.findByCurrentUser());
@@ -81,6 +83,7 @@ public class TripPlanResource {
         tripPlan.setDescription(request.description());
         tripPlan.setStartDate(request.startDate());
         tripPlan.setEndDate(request.endDate());
+        tripPlan.setTripType(request.tripType() != null ? request.tripType() : TripType.PERSONAL);
         tripPlan.setIsActive(request.isActive());
         tripPlan.setActionsJson(request.actionsJson());
 

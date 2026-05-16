@@ -270,6 +270,18 @@ export default class TripsComponent implements OnInit {
     return this.formatDurationDaysHours(startDate, endDate);
   }
 
+  getTripTypeLabelKey(trip: ITripPlan | null | undefined): string {
+    const type = trip?.tripType ?? 'PERSONAL';
+    switch (type) {
+      case 'FAMILY':
+        return 'trips.tripType.family';
+      case 'BUSINESS':
+        return 'trips.tripType.business';
+      default:
+        return 'trips.tripType.personal';
+    }
+  }
+
   timelineEntries(): TimelineEntry[] {
     const stepEntries: TimelineEntry[] = this.steps()
       .map(step => {

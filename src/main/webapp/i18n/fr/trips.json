@@ -33,6 +33,11 @@
     "duration": {
       "daysHours": "{{days}}j {{hours}}h"
     },
+    "tripType": {
+      "personal": "Personnel",
+      "family": "Familial",
+      "business": "Professionnel"
+    },
     "map": {
       "title": "Épingler sur la carte (optionnel)",
       "search": "Rechercher",
@@ -54,6 +59,7 @@
       "confirmDeleteAction": "Supprimer cette action ?",
       "actionsPlaceholder": "Une action par ligne",
       "actionsHelp": "Une action par ligne (max {{maxItems}} éléments, {{maxChars}} caractères par élément).",
+      "tripType": "Type de voyage",
       "startDate": "Date de Début",
       "endDate": "Date de Fin",
       "stepName": "Nom de l'Étape",
@@ -82,6 +88,7 @@
       "tripActionsInvalidJson": "Le format des actions du voyage est invalide.",
       "tripActionsListTooLarge": "Trop d'actions dans une liste. Veuillez retirer des éléments.",
       "tripActionTextTooLong": "Une action est trop longue. Veuillez la raccourcir.",
+      "familyTypeOnlyParents": "Seuls les parents peuvent créer ou modifier les voyages familiaux.",
       "stepStartDateBeforeTripStart": "La date de début de l'étape ne peut pas être antérieure à la date de début du voyage.",
       "stepEndDateAfterTripEnd": "La date de fin de l'étape ne peut pas être postérieure à la date de fin du voyage.",
       "stepStartDateAfterEndDate": "La date de début de l'étape doit être antérieure ou égale à la date de fin.",

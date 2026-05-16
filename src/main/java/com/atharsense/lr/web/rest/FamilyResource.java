@@ -1,7 +1,9 @@
 package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.User;
+import com.atharsense.lr.domain.Family;
 import com.atharsense.lr.repository.UserRepository;
+import com.atharsense.lr.repository.FamilyRepository;
 import com.atharsense.lr.security.AuthoritiesConstants;
 import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.FamilyObjectiveService;
@@ -37,12 +39,14 @@ public class FamilyResource {
     private final UserService userService;
     private final FamilyObjectiveService familyObjectiveService;
     private final MailService mailService;
+    private final FamilyRepository familyRepository;
 
-    public FamilyResource(UserRepository userRepository, UserService userService, FamilyObjectiveService familyObjectiveService, MailService mailService) {
+    public FamilyResource(UserRepository userRepository, UserService userService, FamilyObjectiveService familyObjectiveService, MailService mailService, FamilyRepository familyRepository) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.familyObjectiveService = familyObjectiveService;
         this.mailService = mailService;
+        this.familyRepository = familyRepository;
     }
 
     /**
@@ -95,6 +99,61 @@ public class FamilyResource {
 
         LOG.debug("Found {} parent accounts for user {}", parents.size(), currentLogin);
         return ResponseEntity.ok(parents);
+    }
+
+    /**
+     * GET /api/family/info — get family information for the current user.
+     */
+    @GetMapping("/info")
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
+    public ResponseEntity<FamilyInfo> getFamilyInfo() {
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("Not authenticated", "family", "notauthenticated"));
+
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", "family", "notfound"));
+
+        Family family = currentUser.getFamily();
+        if (family == null) {
+            // If user doesn't have a family, create one
+            family = new Family();
+            family.setName(currentUser.getFirstName() != null ? currentUser.getFirstName() + "'s Family" : "My Family");
+            family = familyRepository.save(family);
+            currentUser.setFamily(family);
+            userRepository.save(currentUser);
+        }
+
+        return ResponseEntity.ok(new FamilyInfo(family.getId(), family.getName()));
+    }
+
+    /**
+     * PUT /api/family/info — update family information for the current user.
+     */
+    @PutMapping("/info")
+    @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<FamilyInfo> updateFamilyInfo(@Valid @RequestBody UpdateFamilyInfoRequest request) {
+        String currentLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("Not authenticated", "family", "notauthenticated"));
+
+        User currentUser = userRepository.findOneByLogin(currentLogin)
+            .orElseThrow(() -> new BadRequestAlertException("User not found", "family", "notfound"));
+
+        Family family = currentUser.getFamily();
+        if (family == null) {
+            family = new Family();
+            currentUser.setFamily(family);
+        }
+
+        if (request.name() != null && !request.name().trim().isEmpty()) {
+            family.setName(request.name().trim());
+            family.setModifiedAt(java.time.Instant.now());
+            family = familyRepository.save(family);
+            userRepository.save(currentUser);
+            LOG.debug("Updated family name for user {}", currentLogin);
+        }
+
+        return ResponseEntity.ok(new FamilyInfo(family.getId(), family.getName()));
     }
 
     /**
@@ -294,6 +353,21 @@ public class FamilyResource {
         String firstName,
         String email,
         String password
+    ) {}
+
+    /**
+     * Record for family info response.
+     */
+    public record FamilyInfo(
+        Long id,
+        String name
+    ) {}
+
+    /**
+     * Record for updating family info.
+     */
+    public record UpdateFamilyInfoRequest(
+        String name
     ) {}
 }
 

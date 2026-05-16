@@ -48,6 +48,10 @@ export class ExtendedUserService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
+  enableFamilyManagement(id: number, lastname?: string): Observable<EntityResponseType> {
+    return this.http.post<IExtendedUser>(`${this.resourceUrl}/${id}/enable-family-management`, { lastname }, { observe: 'response' });
+  }
+
   getExtendedUserIdentifier(extendedUser: Pick<IExtendedUser, 'id'>): number {
     return extendedUser.id;
   }

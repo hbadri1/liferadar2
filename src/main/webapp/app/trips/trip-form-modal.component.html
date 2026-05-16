@@ -26,6 +26,17 @@
                 placeholder="{{ 'trips.fields.descriptionPlaceholder' | translate }}"></textarea>
     </div>
 
+    <div class="mb-3">
+      <label class="form-label fw-bold" for="tripType">{{ 'trips.fields.tripType' | translate }} *</label>
+      <select id="tripType" class="form-select" formControlName="tripType">
+        <option value="PERSONAL">{{ 'trips.tripType.personal' | translate }}</option>
+        @if (canSelectFamilyType) {
+          <option value="FAMILY">{{ 'trips.tripType.family' | translate }}</option>
+        }
+        <option value="BUSINESS">{{ 'trips.tripType.business' | translate }}</option>
+      </select>
+    </div>
+
 
     <div class="row">
       <div class="col-md-6 mb-3">

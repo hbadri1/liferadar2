@@ -3,8 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import dayjs from 'dayjs/esm';
 import SharedModule from 'app/shared/shared.module';
+import { AccountService } from 'app/core/auth/account.service';
 import { TripPlanService } from 'app/entities/trip-plan/service/trip-plan.service';
-import { ITripPlan, NewTripPlan } from 'app/entities/trip-plan/trip-plan.model';
+import { ITripPlan, NewTripPlan, TripType } from 'app/entities/trip-plan/trip-plan.model';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 
 @Component({
@@ -17,9 +18,11 @@ export class TripFormModalComponent implements OnInit {
   @Input() trip: ITripPlan | null = null;
 
   readonly hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+  readonly tripTypes: TripType[] = ['PERSONAL', 'FAMILY', 'BUSINESS'];
 
   isSaving = signal(false);
   errorMsg = signal<string | null>(null);
+  account = inject(AccountService).trackCurrentAccount();
 
   protected activeModal = inject(NgbActiveModal);
   private fb = inject(FormBuilder);
@@ -32,7 +35,13 @@ export class TripFormModalComponent implements OnInit {
     startHour: ['00', [Validators.required]],
     endDate: ['', [Validators.required]],
     endHour: ['00', [Validators.required]],
+    tripType: ['PERSONAL' as TripType, [Validators.required]],
   });
+
+  get canSelectFamilyType(): boolean {
+    const authorities = (this.account()?.authorities ?? []).map(a => (a ?? '').toString().trim().toUpperCase());
+    return authorities.includes('ROLE_PARENT') || authorities.includes('PARENT') || authorities.includes('ROLE_ADMIN') || authorities.includes('ADMIN');
+  }
 
   get isEdit(): boolean {
     return this.trip !== null;
@@ -47,7 +56,12 @@ export class TripFormModalComponent implements OnInit {
         startHour: this.trip.startDate ? dayjs(this.trip.startDate).format('HH') : '00',
         endDate: this.trip.endDate ? dayjs(this.trip.endDate).format('YYYY-MM-DD') : '',
         endHour: this.trip.endDate ? dayjs(this.trip.endDate).format('HH') : '00',
+        tripType: this.trip.tripType ?? 'PERSONAL',
       });
+    }
+
+    if (!this.canSelectFamilyType && this.editForm.controls.tripType.value === 'FAMILY') {
+      this.editForm.controls.tripType.setValue('PERSONAL');
     }
   }
 
@@ -77,6 +91,7 @@ export class TripFormModalComponent implements OnInit {
         description: val.description ?? null,
         startDate,
         endDate,
+        tripType: (val.tripType as TripType) ?? 'PERSONAL',
       };
       this.tripPlanService.update(updated).subscribe({
         next: res => {
@@ -95,6 +110,7 @@ export class TripFormModalComponent implements OnInit {
         description: val.description ?? null,
         startDate,
         endDate,
+        tripType: (val.tripType as TripType) ?? 'PERSONAL',
         isActive: true,
       };
       this.tripPlanService.create(newTrip).subscribe({

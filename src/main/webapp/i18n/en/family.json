@@ -151,9 +151,14 @@
       "cancel": "Cancel"
     },
     "error": {
-      "save": "Failed to create child account. Please try again.",
-      "delete": "Failed to remove child account."
-    }
-  }
+       "save": "Failed to create child account. Please try again.",
+       "delete": "Failed to remove child account.",
+       "updateFamily": "Failed to update family information."
+     },
+     "familyName": "Family Name",
+     "editFamilyName": "Edit Family Name",
+     "familyNameRequired": "Family name cannot be empty.",
+     "familyNameUpdated": "Family name updated successfully."
+   }
 }
 

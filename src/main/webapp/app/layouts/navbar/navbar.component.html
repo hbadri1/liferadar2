@@ -32,7 +32,7 @@
             <span jhiTranslate="global.menu.expenses">My Finance</span>
           </a>
         </li>
-        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT']">
+        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_CHILD']">
           <a class="nav-link" routerLink="/family" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
             <span jhiTranslate="global.menu.family">My Family Space</span>
           </a>
@@ -104,12 +104,6 @@
               <fa-icon icon="wrench"></fa-icon>
               <span jhiTranslate="global.menu.account.settings">Settings</span>
             </a>
-            @if (!isChildOnly()) {
-              <a ngbDropdownItem routerLink="/account/configuration" (click)="collapseNavbar()">
-                <fa-icon icon="cog"></fa-icon>
-                <span jhiTranslate="global.menu.account.configuration">Configuration</span>
-              </a>
-            }
             @if (!isChildOnly()) {
               <a ngbDropdownItem routerLink="/premium" (click)="collapseNavbar()">
                 <fa-icon icon="gem"></fa-icon>
@@ -220,7 +214,7 @@
               <span jhiTranslate="global.menu.expenses">My Finance</span>
             </a>
           </li>
-          <li *jhiHasAnyAuthority="['ROLE_PARENT']">
+          <li *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_CHILD']">
             <a class="mobile-nav-link" routerLink="/family" (click)="collapseNavbar()">
               <fa-icon icon="users"></fa-icon>
               <span jhiTranslate="global.menu.family">My Family Space</span>
@@ -243,14 +237,6 @@
               <span jhiTranslate="global.menu.account.settings">Settings</span>
             </a>
           </li>
-          @if (!isChildOnly()) {
-            <li>
-              <a class="mobile-nav-link" routerLink="/account/configuration" (click)="collapseNavbar()">
-                <fa-icon icon="cog"></fa-icon>
-                <span jhiTranslate="global.menu.account.configuration">Configuration</span>
-              </a>
-            </li>
-          }
           @if (!isChildOnly()) {
             <li>
               <a class="mobile-nav-link" routerLink="/premium" (click)="collapseNavbar()">

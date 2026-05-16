@@ -57,6 +57,7 @@
                     <div class="d-flex align-items-start justify-content-between">
                       <div class="flex-grow-1 min-w-0">
                         <h6 class="trip-title mb-1">{{ trip.title }}</h6>
+                        <span class="badge bg-light text-dark border mb-1">{{ getTripTypeLabelKey(trip) | translate }}</span>
                         @if (trip.description) {
                           <p class="trip-desc text-muted small mb-1 text-truncate">{{ trip.description }}</p>
                         }
@@ -133,6 +134,7 @@
                   <fa-icon icon="calendar-alt" class="me-1"></fa-icon>
                   {{ formatDate(selectedTrip()!.startDate) }} — {{ formatDate(selectedTrip()!.endDate) }}
                   <span class="badge bg-primary ms-2">{{ tripDuration(selectedTrip()!) }}</span>
+                  <span class="badge bg-light text-dark border ms-2">{{ getTripTypeLabelKey(selectedTrip()) | translate }}</span>
                 </div>
                 @if (selectedTrip()!.description) {
                   <p class="mb-0 mt-1 text-muted small">{{ selectedTrip()!.description }}</p>

@@ -10,8 +10,9 @@
       "timezone": "Timezone",
       "currency": "Currency",
       "manageFamilyLabel": "Enable Family Management",
-      "manageFamilyDesc": "Enable this to manage a family: add children, invite parents, and track objectives.",
-      "button": "Save"
+       "manageFamilyDesc": "Enable this to manage a family: add children, invite parents, and track objectives.",
+       "manageFamilyEnabled": "Family management is enabled and cannot be disabled.",
+       "button": "Save"
     },
     "messages": {
       "error": {

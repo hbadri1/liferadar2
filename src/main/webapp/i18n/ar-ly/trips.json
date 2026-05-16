@@ -33,6 +33,11 @@
     "duration": {
       "daysHours": "{{days}}ي {{hours}}س"
     },
+    "tripType": {
+      "personal": "شخصية",
+      "family": "عائلية",
+      "business": "عمل"
+    },
     "map": {
       "title": "تثبيت على الخريطة (اختياري)",
       "search": "بحث",
@@ -54,6 +59,7 @@
       "confirmDeleteAction": "حذف هذه المهمة؟",
       "actionsPlaceholder": "مهمة واحدة في كل سطر",
       "actionsHelp": "مهمة واحدة في كل سطر (حد أقصى {{maxItems}} عناصر و{{maxChars}} حرفاً لكل عنصر).",
+      "tripType": "نوع الرحلة",
       "startDate": "تاريخ البداية",
       "endDate": "تاريخ النهاية",
       "stepName": "اسم الخطوة",
@@ -82,6 +88,7 @@
       "tripActionsInvalidJson": "صيغة مهام الرحلة غير صالحة.",
       "tripActionsListTooLarge": "عدد المهام في إحدى القوائم كبير جداً. يرجى إزالة بعض العناصر.",
       "tripActionTextTooLong": "إحدى المهام طويلة جداً. يرجى تقصيرها.",
+      "familyTypeOnlyParents": "يمكن للآباء فقط إنشاء أو تعديل الرحلات العائلية.",
       "stepStartDateBeforeTripStart": "لا يمكن أن يكون تاريخ بداية الخطوة قبل تاريخ بداية الرحلة.",
       "stepEndDateAfterTripEnd": "لا يمكن أن يكون تاريخ نهاية الخطوة بعد تاريخ نهاية الرحلة.",
       "stepStartDateAfterEndDate": "يجب أن يكون تاريخ بداية الخطوة قبل أو مساوياً لتاريخ النهاية.",

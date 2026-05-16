@@ -3,12 +3,14 @@ package com.atharsense.lr.web.rest;
 import com.atharsense.lr.domain.ExtendedUser;
 import com.atharsense.lr.repository.ExtendedUserRepository;
 import com.atharsense.lr.service.ExtendedUserService;
+import com.atharsense.lr.service.FamilyService;
 import com.atharsense.lr.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -37,9 +39,12 @@ public class ExtendedUserResource {
 
     private final ExtendedUserRepository extendedUserRepository;
 
-    public ExtendedUserResource(ExtendedUserService extendedUserService, ExtendedUserRepository extendedUserRepository) {
+    private final FamilyService familyService;
+
+    public ExtendedUserResource(ExtendedUserService extendedUserService, ExtendedUserRepository extendedUserRepository, FamilyService familyService) {
         this.extendedUserService = extendedUserService;
         this.extendedUserRepository = extendedUserRepository;
+        this.familyService = familyService;
     }
 
     /**
@@ -167,5 +172,25 @@ public class ExtendedUserResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code POST  /extended-users/:id/enable-family-management} : Enable family management for a user.
+     *
+     * @param id the id of the extendedUser to enable family management for.
+     * @param lastnamesObject object containing the lastname of the user (used for family name).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated extendedUser.
+     */
+    @PostMapping("/{id}/enable-family-management")
+    public ResponseEntity<ExtendedUser> enableFamilyManagement(
+        @PathVariable("id") Long id,
+        @RequestBody(required = false) Map<String, String> lastnamesObject
+    ) {
+        LOG.debug("REST request to enable family management for ExtendedUser : {}", id);
+        String lastname = lastnamesObject != null ? lastnamesObject.get("lastname") : null;
+        ExtendedUser updatedUser = familyService.enableFamilyManagement(id, lastname);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, updatedUser.getId().toString()))
+            .body(updatedUser);
     }
 }
