@@ -51,7 +51,11 @@
         "itemCardTitle": "Élément {{index}}",
         "itemName": "Nom de l'élément",
         "itemDescription": "Description de l'élément",
-        "unit": "Unité"
+        "unit": "Unité",
+        "target": "Cible",
+        "targetPlaceholder": "ex. 10",
+        "milestone": "Jalon",
+        "milestoneNone": "Aucun jalon"
       },
       "progress": {
         "add": "Ajouter un progrès",
@@ -101,6 +105,26 @@
           "confirmButton": "Supprimer"
         }
       },
+      "dashboard": {
+        "title": "Tableau de bord des cibles",
+        "achieved": "Atteint !",
+        "inProgress": "En cours",
+        "notStarted": "Non commencé"
+      },
+      "milestone": {
+        "week": "Hebdomadaire",
+        "month": "Mensuel",
+        "quarter": "Trimestriel",
+        "year": "Annuel"
+      },
+      "milestoneDashboard": {
+        "title": "Tableau de bord des jalons",
+        "items": "éléments",
+        "tracked": "Objectifs atteints",
+        "noTargets": "Aucune cible configurée pour ce jalon.",
+        "daysLogged": "Jours suivis",
+        "noDaysLogged": "Aucun jour enregistré pour ce jalon pour le moment."
+      },
       "export": {
         "all": "Exporter le progrès de tous les enfants",
         "currentKid": "Exporter le progrès",
@@ -111,6 +135,8 @@
           "objectiveStatus": "Statut",
           "itemName": "Élément",
           "unit": "Unité",
+          "target": "Cible",
+          "milestone": "Jalon",
           "progressValue": "Valeur du progrès",
           "progressDate": "Date du progrès",
           "notes": "Notes"

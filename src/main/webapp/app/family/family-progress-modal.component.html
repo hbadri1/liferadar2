@@ -12,12 +12,33 @@
       <p class="text-muted small mb-1">{{ itemDefinition.description }}</p>
     }
     <small class="text-muted">{{ 'family.objectives.progress.unitLabel' | translate:{ unit: getUnitLabel(itemDefinition.unit) } }}</small>
+    @if (itemDefinition.target != null) {
+      <div class="mt-1">
+        <small class="text-info fw-semibold">{{ 'family.objectives.form.target' | translate }}: {{ itemDefinition.target }}</small>
+      </div>
+    }
   </div>
 
   <form [formGroup]="editForm" (ngSubmit)="save()" novalidate>
     <div class="mb-3">
-      <label class="form-label" for="family-progress-value" jhiTranslate="family.objectives.progress.value">Value</label>
-      <input id="family-progress-value" type="number" step="0.01" min="0" class="form-control" formControlName="value" />
+      @if (isCheckboxUnit()) {
+        <label class="form-label" for="family-progress-done">Status</label>
+        <div class="form-check form-switch">
+          <input
+            id="family-progress-done"
+            class="form-check-input"
+            type="checkbox"
+            [checked]="isDoneChecked()"
+            (change)="onDoneToggle($any($event.target).checked)"
+          />
+          <label class="form-check-label" for="family-progress-done">
+            {{ isDoneChecked() ? 'Done' : 'Not done' }}
+          </label>
+        </div>
+      } @else {
+        <label class="form-label" for="family-progress-value" jhiTranslate="family.objectives.progress.value">Value</label>
+        <input id="family-progress-value" type="number" step="0.01" min="0" class="form-control" formControlName="value" />
+      }
     </div>
 
     <div class="mb-3">

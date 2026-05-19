@@ -41,6 +41,29 @@ cd /Users/houssem/Work/1-\ Liferadar/src/main/resources/config/hosting/aws/light
 ./3-ssh-run-containers.sh
 ```
 
+## Centralized Lightsail deploy scripts (recommended)
+
+Use the scripts in `src/main/resources/config/hosting/aws/lightsail`.
+The deploy flow now:
+
+1. uploads `lightsail-backup-postgres.sh` to Lightsail,
+2. runs the backup on Lightsail,
+3. then continues with `docker compose down` and `up -d`.
+
+Run from project root:
+
+```bash
+cd /Users/houssem/Work/1-\ Liferadar
+./src/main/resources/config/hosting/aws/lightsail/build-and-push-ecr.sh 1.15
+./src/main/resources/config/hosting/aws/lightsail/deploy-lightsail.sh 1.15
+```
+
+Backups are stored on Lightsail in:
+
+```bash
+$HOME/liferadar-backups
+```
+
 ## Optional overrides
 
 You can override defaults per run:

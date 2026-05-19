@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260518210000-1" author="copilot">
+        <addColumn tableName="kid_objective_item_definition">
+            <column name="milestone" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260518210000-2" author="copilot">
+        <sql>ALTER TABLE kid_objective_item_definition ADD CONSTRAINT ck_kid_objective_item_definition__milestone CHECK (milestone IS NULL OR milestone IN ('WEEK', 'MONTH', 'QUARTER', 'YEAR'));</sql>
+    </changeSet>
+
+</databaseChangeLog>
+

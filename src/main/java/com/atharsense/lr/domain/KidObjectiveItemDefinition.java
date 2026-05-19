@@ -1,11 +1,13 @@
 package com.atharsense.lr.domain;
 
+import com.atharsense.lr.domain.enumeration.ObjectiveMilestone;
 import com.atharsense.lr.domain.enumeration.ObjectiveUnit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +36,13 @@ public class KidObjectiveItemDefinition implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "unit", nullable = false)
     private ObjectiveUnit unit;
+
+    @Column(name = "target", precision = 21, scale = 2)
+    private BigDecimal target;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "milestone", length = 20)
+    private ObjectiveMilestone milestone;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @NotNull
@@ -93,6 +102,32 @@ public class KidObjectiveItemDefinition implements Serializable {
 
     public KidObjectiveItemDefinition unit(ObjectiveUnit unit) {
         this.setUnit(unit);
+        return this;
+    }
+
+    public BigDecimal getTarget() {
+        return this.target;
+    }
+
+    public void setTarget(BigDecimal target) {
+        this.target = target;
+    }
+
+    public KidObjectiveItemDefinition target(BigDecimal target) {
+        this.setTarget(target);
+        return this;
+    }
+
+    public ObjectiveMilestone getMilestone() {
+        return this.milestone;
+    }
+
+    public void setMilestone(ObjectiveMilestone milestone) {
+        this.milestone = milestone;
+    }
+
+    public KidObjectiveItemDefinition milestone(ObjectiveMilestone milestone) {
+        this.setMilestone(milestone);
         return this;
     }
 

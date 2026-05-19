@@ -51,7 +51,11 @@
         "itemCardTitle": "العنصر {{index}}",
         "itemName": "اسم العنصر",
         "itemDescription": "وصف العنصر",
-        "unit": "الوحدة"
+        "unit": "الوحدة",
+        "target": "الهدف المستهدف",
+        "targetPlaceholder": "مثال: 10",
+        "milestone": "المرحلة",
+        "milestoneNone": "بدون مرحلة"
       },
       "progress": {
         "add": "إضافة تقدم",
@@ -101,6 +105,26 @@
           "confirmButton": "حذف"
         }
       },
+      "dashboard": {
+        "title": "لوحة متابعة الأهداف",
+        "achieved": "تم التحقيق !",
+        "inProgress": "قيد التقدم",
+        "notStarted": "لم يبدأ بعد"
+      },
+      "milestone": {
+        "week": "أسبوعي",
+        "month": "شهري",
+        "quarter": "ربع سنوي",
+        "year": "سنوي"
+      },
+      "milestoneDashboard": {
+        "title": "لوحة المراحل",
+        "items": "عناصر",
+        "tracked": "الأهداف المحققة",
+        "noTargets": "لا توجد أهداف محددة لهذه المرحلة.",
+        "daysLogged": "الأيام المسجلة",
+        "noDaysLogged": "لا توجد أيام مسجلة لهذه المرحلة حتى الآن."
+      },
       "export": {
         "all": "تصدير تقدم جميع الأطفال",
         "currentKid": "تصدير التقدم",
@@ -111,6 +135,8 @@
           "objectiveStatus": "الحالة",
           "itemName": "العنصر",
           "unit": "الوحدة",
+          "target": "الهدف",
+          "milestone": "المرحلة",
           "progressValue": "قيمة التقدم",
           "progressDate": "تاريخ التقدم",
           "notes": "ملاحظات"

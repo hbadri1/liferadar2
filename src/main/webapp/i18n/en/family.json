@@ -51,7 +51,11 @@
         "itemCardTitle": "Item {{index}}",
         "itemName": "Item name",
         "itemDescription": "Item description",
-        "unit": "Unit"
+        "unit": "Unit",
+        "target": "Target",
+        "targetPlaceholder": "e.g. 10",
+        "milestone": "Milestone",
+        "milestoneNone": "No milestone"
       },
       "progress": {
         "add": "Add progress",
@@ -101,6 +105,26 @@
           "confirmButton": "Delete"
         }
       },
+      "dashboard": {
+        "title": "Target Dashboard",
+        "achieved": "Achieved!",
+        "inProgress": "In progress",
+        "notStarted": "Not started"
+      },
+      "milestone": {
+        "week": "Weekly",
+        "month": "Monthly",
+        "quarter": "Quarterly",
+        "year": "Yearly"
+      },
+      "milestoneDashboard": {
+        "title": "Milestone dashboard",
+        "items": "items",
+        "tracked": "Targets achieved",
+        "noTargets": "No targets configured for this milestone.",
+        "daysLogged": "Days logged",
+        "noDaysLogged": "No days logged in this milestone yet."
+      },
       "export": {
         "all": "Export all kids progress",
         "currentKid": "Export progress",
@@ -111,6 +135,8 @@
           "objectiveStatus": "Status",
           "itemName": "Item",
           "unit": "Unit",
+          "target": "Target",
+          "milestone": "Milestone",
           "progressValue": "Progress value",
           "progressDate": "Progress date",
           "notes": "Notes"

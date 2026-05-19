@@ -4,5 +4,6 @@ public enum ObjectiveUnit {
     REPS,
     NUMBER,
     SECONDS,
+    CHECKBOX,
 }
 

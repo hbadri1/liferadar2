@@ -18,6 +18,7 @@ import {
   FamilyObjectiveGroup,
   FamilyObjectiveItemDefinition,
   FamilyObjectiveProgress,
+  ObjectiveMilestone,
   ObjectiveUnit,
   FamilyInfo,
 } from './family.models';
@@ -54,6 +55,15 @@ interface ObjectiveTrendSeries {
   maxValue: number;
   startLabel: string;
   endLabel: string;
+}
+
+interface ObjectiveMilestoneGroup {
+  milestone: ObjectiveMilestone;
+  label: string;
+  items: FamilyObjectiveItemDefinition[];
+  milestoneDays: number;
+  loggedDays: number;
+  coveragePercent: number;
 }
 
 type ObjectiveProgressPeriod = 'entries' | 'last7days' | 'last30days';
@@ -109,13 +119,13 @@ export default class FamilyComponent implements OnInit {
   /** Family management tab is only visible for parents (ROLE_PARENT). */
   canManageFamily = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_PARENT');
+    return authorities.includes('ROLE_PARENT') || authorities.includes('ROLE_ADMIN');
   });
 
   /** Can add parents for family accounts when user has ROLE_PARENT. */
   canManageParents = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_PARENT');
+    return authorities.includes('ROLE_PARENT') || authorities.includes('ROLE_ADMIN');
   });
 
   /** True when the logged-in user has ROLE_PARENT and can view kids' objectives */
@@ -602,7 +612,7 @@ export default class FamilyComponent implements OnInit {
       return `${day.title} • ${this.translateService.instant('family.objectives.progress.noEntryDay')}`;
     }
 
-    const valueLabel = `${progress.value} ${this.getObjectiveUnitLabel(itemDefinition.unit)}`;
+    const valueLabel = this.getProgressValueLabel(itemDefinition.unit, progress.value);
     const notesLabel = progress.notes?.trim() ? ` • ${progress.notes}` : '';
     return `${day.title} • ${valueLabel}${notesLabel}`;
   }
@@ -637,9 +647,130 @@ export default class FamilyComponent implements OnInit {
         return 'Reps';
       case ObjectiveUnit.SECONDS:
         return 'Seconds';
+      case ObjectiveUnit.CHECKBOX:
+        return 'Done / Not done';
       default:
         return 'Number';
     }
+  }
+
+  getMilestoneLabel(milestone: ObjectiveMilestone): string {
+    switch (milestone) {
+      case ObjectiveMilestone.WEEK:    return this.translateService.instant('family.objectives.milestone.week');
+      case ObjectiveMilestone.MONTH:   return this.translateService.instant('family.objectives.milestone.month');
+      case ObjectiveMilestone.QUARTER: return this.translateService.instant('family.objectives.milestone.quarter');
+      case ObjectiveMilestone.YEAR:    return this.translateService.instant('family.objectives.milestone.year');
+      default: return milestone;
+    }
+  }
+
+  getProgressValueLabel(unit: ObjectiveUnit, value: number): string {
+    if (unit === ObjectiveUnit.CHECKBOX) {
+      return value > 0 ? 'Done' : 'Not done';
+    }
+    return `${value} ${this.getObjectiveUnitLabel(unit)}`;
+  }
+
+  readonly circleCircumference = 113.1; // 2 * π * 18
+
+  getTargetProgressPercent(itemDefinition: FamilyObjectiveItemDefinition): number {
+    if (itemDefinition.target == null || itemDefinition.target <= 0) return 0;
+    const latest = this.getLatestProgress(itemDefinition);
+    if (!latest) return 0;
+    if (itemDefinition.unit === ObjectiveUnit.CHECKBOX) {
+      return latest.value > 0 ? 100 : 0;
+    }
+    return Math.min(100, Math.round((latest.value / itemDefinition.target) * 100));
+  }
+
+  getTargetProgressStatusClass(itemDefinition: FamilyObjectiveItemDefinition): string {
+    const percent = this.getTargetProgressPercent(itemDefinition);
+    if (percent >= 100) return 'achieved';
+    if (percent > 0) return 'progressing';
+    return 'not-started';
+  }
+
+  hasAnyTarget(objective: FamilyObjective): boolean {
+    return objective.itemDefinitions.some(item => item.target != null);
+  }
+
+  hasAnyMilestone(objective: FamilyObjective): boolean {
+    return objective.itemDefinitions.some(item => item.milestone != null);
+  }
+
+  getObjectiveMilestoneGroups(objective: FamilyObjective): ObjectiveMilestoneGroup[] {
+    const order: ObjectiveMilestone[] = [ObjectiveMilestone.WEEK, ObjectiveMilestone.MONTH, ObjectiveMilestone.QUARTER, ObjectiveMilestone.YEAR];
+    const groups = new Map<ObjectiveMilestone, FamilyObjectiveItemDefinition[]>();
+
+    for (const item of objective.itemDefinitions ?? []) {
+      if (!item.milestone) {
+        continue;
+      }
+      const existing = groups.get(item.milestone) ?? [];
+      existing.push(item);
+      groups.set(item.milestone, existing);
+    }
+
+    return order
+      .filter(milestone => groups.has(milestone))
+      .map(milestone => {
+        const window = this.getMilestoneWindow(milestone);
+        const items = (groups.get(milestone) ?? []).sort((left, right) => left.name.localeCompare(right.name));
+        const loggedDays = this.getLoggedDaysForItems(items, window.start, window.end);
+        return {
+          milestone,
+          label: this.getMilestoneLabel(milestone),
+          items,
+          milestoneDays: window.days,
+          loggedDays,
+          coveragePercent: Math.round((loggedDays / window.days) * 100),
+        };
+      });
+  }
+
+  getItemMilestoneLoggedDays(itemDefinition: FamilyObjectiveItemDefinition): number {
+    if (!itemDefinition.milestone) {
+      return 0;
+    }
+    const window = this.getMilestoneWindow(itemDefinition.milestone);
+    return this.getLoggedDaysForItems([itemDefinition], window.start, window.end);
+  }
+
+  getItemMilestoneCoveragePercent(itemDefinition: FamilyObjectiveItemDefinition): number {
+    if (!itemDefinition.milestone) {
+      return 0;
+    }
+    const window = this.getMilestoneWindow(itemDefinition.milestone);
+    const loggedDays = this.getLoggedDaysForItems([itemDefinition], window.start, window.end);
+    return Math.round((loggedDays / window.days) * 100);
+  }
+
+  getItemMilestoneCoverageLabel(itemDefinition: FamilyObjectiveItemDefinition): string {
+    if (!itemDefinition.milestone) {
+      return '-';
+    }
+    const window = this.getMilestoneWindow(itemDefinition.milestone);
+    const loggedDays = this.getLoggedDaysForItems([itemDefinition], window.start, window.end);
+    return `${loggedDays}/${window.days}`;
+  }
+
+  isItemTargetAchieved(itemDefinition: FamilyObjectiveItemDefinition): boolean {
+    const target = itemDefinition.target;
+    const latest = this.getLatestProgress(itemDefinition);
+
+    if (target == null || !latest) {
+      return false;
+    }
+
+    if (itemDefinition.unit === ObjectiveUnit.CHECKBOX) {
+      return latest.value > 0;
+    }
+
+    return latest.value >= target;
+  }
+
+  getCircleDashOffset(percent: number): number {
+    return this.circleCircumference * (1 - percent / 100);
   }
 
   exportKidProgress(kidLogin: string): void {
@@ -679,6 +810,8 @@ export default class FamilyComponent implements OnInit {
               ),
               itemName: itemDefinition.name,
               unit: this.getObjectiveUnitLabel(itemDefinition.unit),
+              target: itemDefinition.target != null ? this.getProgressValueLabel(itemDefinition.unit, itemDefinition.target) : '-',
+              milestone: itemDefinition.milestone != null ? this.getMilestoneLabel(itemDefinition.milestone) : '-',
               progressValue: '-',
               progressDate: '-',
               notes: this.translateService.instant('family.objectives.progress.empty'),
@@ -695,7 +828,9 @@ export default class FamilyComponent implements OnInit {
               ),
               itemName: itemDefinition.name,
               unit: this.getObjectiveUnitLabel(itemDefinition.unit),
-              progressValue: `${progress.value ?? '-'}`,
+              target: itemDefinition.target != null ? this.getProgressValueLabel(itemDefinition.unit, itemDefinition.target) : '-',
+              milestone: itemDefinition.milestone != null ? this.getMilestoneLabel(itemDefinition.milestone) : '-',
+              progressValue: this.getProgressValueLabel(itemDefinition.unit, progress.value),
               progressDate: progress.createdAt ? this.formatExportDate(progress.createdAt) : '-',
               notes: progress.notes?.trim() ? progress.notes : '-',
             });
@@ -719,6 +854,8 @@ export default class FamilyComponent implements OnInit {
       objectiveStatus: this.translateService.instant('family.objectives.export.columns.objectiveStatus'),
       itemName: this.translateService.instant('family.objectives.export.columns.itemName'),
       unit: this.translateService.instant('family.objectives.export.columns.unit'),
+      target: this.translateService.instant('family.objectives.export.columns.target'),
+      milestone: this.translateService.instant('family.objectives.export.columns.milestone'),
       progressValue: this.translateService.instant('family.objectives.export.columns.progressValue'),
       progressDate: this.translateService.instant('family.objectives.export.columns.progressDate'),
       notes: this.translateService.instant('family.objectives.export.columns.notes'),
@@ -919,6 +1056,63 @@ export default class FamilyComponent implements OnInit {
     return latestProgressByDay;
   }
 
+  private getMilestoneWindow(milestone: ObjectiveMilestone): { start: Date; end: Date; days: number } {
+    const today = this.startOfDay(new Date());
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    switch (milestone) {
+      case ObjectiveMilestone.WEEK: {
+        const start = new Date(today);
+        start.setDate(today.getDate() - 6);
+        return { start, end: today, days: 7 };
+      }
+      case ObjectiveMilestone.MONTH: {
+        const start = new Date(year, month, 1);
+        const end = new Date(year, month + 1, 0);
+        return { start, end, days: end.getDate() };
+      }
+      case ObjectiveMilestone.QUARTER: {
+        const quarterStartMonth = Math.floor(month / 3) * 3;
+        const start = new Date(year, quarterStartMonth, 1);
+        const end = new Date(year, quarterStartMonth + 3, 0);
+        return { start, end, days: this.getInclusiveDayCount(start, end) };
+      }
+      case ObjectiveMilestone.YEAR: {
+        const start = new Date(year, 0, 1);
+        const end = new Date(year, 11, 31);
+        return { start, end, days: this.getInclusiveDayCount(start, end) };
+      }
+      default:
+        return { start: today, end: today, days: 1 };
+    }
+  }
+
+  private getLoggedDaysForItems(items: FamilyObjectiveItemDefinition[], start: Date, end: Date): number {
+    const days = new Set<string>();
+
+    for (const item of items) {
+      for (const progress of item.progressHistory ?? []) {
+        const parsed = this.parseDate(progress.createdAt);
+        if (!parsed) {
+          continue;
+        }
+        const normalized = this.startOfDay(parsed);
+        if (normalized < start || normalized > end) {
+          continue;
+        }
+        days.add(this.toDateKey(normalized));
+      }
+    }
+
+    return days.size;
+  }
+
+  private getInclusiveDayCount(start: Date, end: Date): number {
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    return Math.floor((this.startOfDay(end).getTime() - this.startOfDay(start).getTime()) / millisecondsPerDay) + 1;
+  }
+
   private getObjectiveTrendSeriesForItem(
     itemDefinition: FamilyObjectiveItemDefinition,
     period: ObjectiveProgressPeriod = 'entries',
@@ -997,7 +1191,6 @@ export default class FamilyComponent implements OnInit {
     const range = Math.max(maxValue - minValue, 1);
     const labels = entries.map(entry => entry.label);
     const values = entries.map(entry => entry.value);
-    const unitLabel = this.getObjectiveUnitLabel(itemDefinition.unit);
 
     return {
       itemDefinition,
@@ -1048,7 +1241,7 @@ export default class FamilyComponent implements OnInit {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: context => `${context.parsed.y} ${unitLabel}`,
+              label: context => this.getProgressValueLabel(itemDefinition.unit, context.parsed.y ?? 0),
             },
           },
         },

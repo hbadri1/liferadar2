@@ -25,6 +25,14 @@ export enum ObjectiveUnit {
   REPS = 'REPS',
   NUMBER = 'NUMBER',
   SECONDS = 'SECONDS',
+  CHECKBOX = 'CHECKBOX',
+}
+
+export enum ObjectiveMilestone {
+  WEEK = 'WEEK',
+  MONTH = 'MONTH',
+  QUARTER = 'QUARTER',
+  YEAR = 'YEAR',
 }
 
 export interface FamilyObjectiveProgress {
@@ -39,6 +47,8 @@ export interface FamilyObjectiveItemDefinition {
   name: string;
   description: string | null;
   unit: ObjectiveUnit;
+  target: number | null;
+  milestone: ObjectiveMilestone | null;
   progressHistory: FamilyObjectiveProgress[];
 }
 

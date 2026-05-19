@@ -1,9 +1,13 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../../../../.." && pwd)"
+ENV_FILE="$PROJECT_ROOT/src/main/resources/config/.env.prod"
+
 # Load environment variables from .env.prod
-if [ -f "src/main/resources/config/.env.prod" ]; then
-    export $(cat src/main/resources/config/.env.prod | grep -v '^#' | xargs)
+if [ -f "$ENV_FILE" ]; then
+    export $(cat "$ENV_FILE" | grep -v '^#' | xargs)
 fi
 
 # Use custom tag if provided, otherwise use from .env
@@ -39,9 +43,11 @@ if ! command -v aws &> /dev/null; then
 fi
 
 # Verify JAR exists
-if [ ! -f "target/liferadar-*.jar" ]; then
+if ls "$PROJECT_ROOT"/target/liferadar-*.jar >/dev/null 2>&1; then
+    :
+else
     echo "Building Maven project..."
-    ./mvnw -DskipTests -Pprod clean package
+    (cd "$PROJECT_ROOT" && ./mvnw -DskipTests -Pprod clean package)
 fi
 
 echo "✓ Prerequisites checked"
@@ -55,7 +61,7 @@ echo ""
 
 # Build Docker image (target linux/amd64 for Lightsail x86 instances)
 echo "Building Docker image..."
-docker buildx build --platform linux/amd64 -t ${IMAGE_WITH_TAG} -t ${IMAGE_LATEST} --load .
+(cd "$PROJECT_ROOT" && docker buildx build --platform linux/amd64 -t ${IMAGE_WITH_TAG} -t ${IMAGE_LATEST} --load .)
 echo "✓ Image built: ${IMAGE_WITH_TAG}"
 echo ""
 
@@ -75,7 +81,7 @@ echo "  ${IMAGE_WITH_TAG}"
 echo "  ${IMAGE_LATEST}"
 echo ""
 echo "Next steps:"
-echo "  1. Deploy using: ./scripts/deploy-lightsail.sh ${IMAGE_TAG}"
+echo "  1. Deploy using: $SCRIPT_DIR/deploy-lightsail.sh ${IMAGE_TAG}"
 echo "  2. Or push to GitHub to trigger automated deployment"
 echo "  3. Or deploy manually to ECS/Lightsail"
 echo ""

@@ -496,6 +496,218 @@
   color: #94a3b8;
 }
 
+/* ── Milestone Dashboard ─────────────────────────────────────── */
+.objective-milestone-dashboard {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 0.9rem;
+}
+
+.objective-milestone-dashboard-header {
+  color: #475569;
+  font-size: 0.82rem;
+}
+
+.objective-milestone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.objective-milestone-card {
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 0.85rem 0.9rem;
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.08);
+}
+
+.objective-milestone-card-title {
+  font-size: 0.88rem;
+  color: #0f172a;
+}
+
+.objective-milestone-card-summary {
+  .progress {
+    height: 0.45rem;
+    background: #e2e8f0;
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+  }
+}
+
+.objective-milestone-progress-bar {
+  margin-top: 0.35rem;
+}
+
+.objective-milestone-item-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.objective-milestone-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 0.6rem 0.65rem;
+}
+
+.objective-milestone-item-name {
+  font-size: 0.82rem;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.objective-milestone-item-meta {
+  font-size: 0.7rem;
+  line-height: 1.25;
+}
+
+/* ── Target Dashboard ────────────────────────────────────────── */
+.objective-dashboard {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 0.9rem;
+}
+
+.objective-dashboard-header {
+  color: #475569;
+  font-size: 0.82rem;
+}
+
+.objective-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.65rem;
+}
+
+.objective-dashboard-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.8rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  text-align: center;
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+  }
+
+  &--achieved {
+    border-color: #bbf7d0;
+    background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+  }
+
+  &--progressing {
+    border-color: #bfdbfe;
+    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+  }
+
+  &--not-started {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+  }
+}
+
+.objective-dashboard-ring-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.objective-dashboard-ring {
+  width: 64px;
+  height: 64px;
+  transform: rotate(-90deg);
+
+  .ring-track {
+    stroke: #e2e8f0;
+  }
+
+  .ring-fill--achieved   { stroke: #22c55e; transition: stroke-dashoffset 0.5s ease; }
+  .ring-fill--progressing { stroke: #2563eb; transition: stroke-dashoffset 0.5s ease; }
+  .ring-fill--not-started { stroke: #cbd5e1; transition: stroke-dashoffset 0.5s ease; }
+}
+
+.objective-dashboard-ring-pct {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.objective-dashboard-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.objective-dashboard-card-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e293b;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.objective-dashboard-card-values {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.objective-dashboard-card-current {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.objective-dashboard-card-divider {
+  color: #94a3b8;
+}
+
+.objective-dashboard-card-target {
+  color: #64748b;
+}
+
+.objective-dashboard-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+
+  &--achieved   { background-color: #bbf7d0; color: #166534; }
+  &--progressing { background-color: #bfdbfe; color: #1e40af; }
+  &--not-started { background-color: #e2e8f0; color: #475569; }
+}
+
+.objective-dashboard-milestone-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+:host-context([dir='rtl']) .objective-dashboard-ring {
+  transform: rotate(90deg) scaleX(-1);
+}
+
+/* ── End Target Dashboard ─────────────────────────────────────── */
+
 .objective-progress-trends {
   border-top: 1px dashed #cbd5e1;
   padding-top: 0.9rem;

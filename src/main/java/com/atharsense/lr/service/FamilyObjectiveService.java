@@ -130,7 +130,9 @@ public class FamilyObjectiveService {
                 objective.addItemDefinitions(new KidObjectiveItemDefinition()
                     .name(itemRequest.name().trim())
                     .description(normalizeOptionalText(itemRequest.description()))
-                    .unit(itemRequest.unit()));
+                    .unit(itemRequest.unit())
+                    .target(itemRequest.target())
+                    .milestone(itemRequest.milestone()));
             }
             objectivesToCreate.add(objective);
         }
@@ -154,14 +156,70 @@ public class FamilyObjectiveService {
 
         objective.setName(request.name().trim());
         objective.setDescription(normalizeOptionalText(request.description()));
-        objective.getItemDefinitions().clear();
 
-        for (CreateFamilyObjectiveItemDefinitionRequest itemRequest : request.itemDefinitions()) {
-            objective.addItemDefinitions(new KidObjectiveItemDefinition()
-                .name(itemRequest.name().trim())
-                .description(normalizeOptionalText(itemRequest.description()))
-                .unit(itemRequest.unit()));
+        // Match incoming items to existing objective items without deleting progress data.
+        // This handles grouped multi-kid edits where item IDs may belong to a sibling objective.
+        Map<Long, KidObjectiveItemDefinition> existingById = objective.getItemDefinitions().stream()
+            .filter(item -> item.getId() != null)
+            .collect(Collectors.toMap(KidObjectiveItemDefinition::getId, item -> item));
+        List<KidObjectiveItemDefinition> existingOrdered = objective.getItemDefinitions().stream()
+            .sorted(Comparator.comparing(KidObjectiveItemDefinition::getId, Comparator.nullsLast(Long::compareTo)))
+            .toList();
+        Set<Long> usedExistingIds = new java.util.HashSet<>();
+
+        for (int index = 0; index < request.itemDefinitions().size(); index++) {
+            CreateFamilyObjectiveItemDefinitionRequest itemRequest = request.itemDefinitions().get(index);
+            KidObjectiveItemDefinition existing = null;
+
+            // 1) Direct ID match when request ID belongs to this objective.
+            if (itemRequest.id() != null) {
+                existing = existingById.get(itemRequest.id());
+            }
+
+            // 2) Fallback by index to preserve progress during grouped multi-kid updates.
+            if (existing == null && index < existingOrdered.size()) {
+                KidObjectiveItemDefinition byIndex = existingOrdered.get(index);
+                if (byIndex.getId() != null && !usedExistingIds.contains(byIndex.getId())) {
+                    existing = byIndex;
+                }
+            }
+
+            // 3) Fallback by normalized item name if still unmatched.
+            if (existing == null) {
+                String normalizedName = itemRequest.name() != null ? itemRequest.name().trim() : "";
+                for (KidObjectiveItemDefinition candidate : existingOrdered) {
+                    if (candidate.getId() == null || usedExistingIds.contains(candidate.getId())) {
+                        continue;
+                    }
+                    String candidateName = candidate.getName() != null ? candidate.getName().trim() : "";
+                    if (normalizedName.equalsIgnoreCase(candidateName)) {
+                        existing = candidate;
+                        break;
+                    }
+                }
+            }
+
+            if (existing != null) {
+                existing.setName(itemRequest.name().trim());
+                existing.setDescription(normalizeOptionalText(itemRequest.description()));
+                existing.setUnit(itemRequest.unit());
+                existing.setTarget(itemRequest.target());
+                existing.setMilestone(itemRequest.milestone());
+                if (existing.getId() != null) {
+                    usedExistingIds.add(existing.getId());
+                }
+            } else {
+                objective.addItemDefinitions(new KidObjectiveItemDefinition()
+                    .name(itemRequest.name().trim())
+                    .description(normalizeOptionalText(itemRequest.description()))
+                    .unit(itemRequest.unit())
+                    .target(itemRequest.target())
+                    .milestone(itemRequest.milestone()));
+            }
         }
+
+        // Remove items deleted by the user from this objective (leftovers not matched above).
+        objective.getItemDefinitions().removeIf(item -> item.getId() != null && !usedExistingIds.contains(item.getId()));
 
         return toDto(kidObjectiveRepository.save(objective));
     }
@@ -309,6 +367,8 @@ public class FamilyObjectiveService {
             itemDefinition.getName(),
             itemDefinition.getDescription(),
             Optional.ofNullable(itemDefinition.getUnit()).orElse(ObjectiveUnit.NUMBER),
+            itemDefinition.getTarget(),
+            itemDefinition.getMilestone(),
             itemDefinition.getProgressEntries().stream()
                 .sorted(Comparator.comparing(KidObjectiveProgress::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())).thenComparing(KidObjectiveProgress::getId, Comparator.reverseOrder()))
                 .map(progress -> new FamilyObjectiveProgressDTO(progress.getId(), progress.getCreatedAt(), progress.getValue(), progress.getNotes()))

@@ -5,7 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
-import { ChildUser, FamilyObjective, ObjectiveUnit } from './family.models';
+import { ChildUser, FamilyObjective, ObjectiveMilestone, ObjectiveUnit } from './family.models';
 
 @Component({
   selector: 'jhi-family-objective-modal',
@@ -23,6 +23,7 @@ export class FamilyObjectiveModalComponent implements OnInit {
   selectionError = signal(false);
   itemsError = signal(false);
   readonly units = Object.values(ObjectiveUnit);
+  readonly milestones = Object.values(ObjectiveMilestone);
 
   protected readonly activeModal = inject(NgbActiveModal);
   private readonly http = inject(HttpClient);
@@ -40,9 +41,12 @@ export class FamilyObjectiveModalComponent implements OnInit {
 
     const itemForms = this.objective.itemDefinitions.map(item =>
       this.formBuilder.group({
+        id: [item.id ?? null],
         name: [item.name, [Validators.required, Validators.maxLength(255)]],
         description: [item.description ?? '', [Validators.maxLength(1000)]],
         unit: [item.unit ?? ObjectiveUnit.NUMBER, [Validators.required]],
+        target: [item.target ?? null],
+        milestone: [item.milestone ?? null],
       }),
     );
 
@@ -96,9 +100,12 @@ export class FamilyObjectiveModalComponent implements OnInit {
       name: formValue.name ?? '',
       description: formValue.description?.trim() ? formValue.description : null,
       itemDefinitions: (formValue.itemDefinitions ?? []).map(item => ({
+        id: item?.id ?? null,
         name: item?.name ?? '',
         description: item?.description?.trim() ? item.description : null,
         unit: item?.unit ?? ObjectiveUnit.NUMBER,
+        target: item?.target != null ? item.target : null,
+        milestone: item?.milestone ?? null,
       })),
     };
 
@@ -166,23 +173,38 @@ export class FamilyObjectiveModalComponent implements OnInit {
         return 'Reps';
       case ObjectiveUnit.SECONDS:
         return 'Seconds';
+      case ObjectiveUnit.CHECKBOX:
+        return 'Done / Not done';
       default:
         return 'Number';
     }
   }
 
+  getMilestoneLabel(milestone: ObjectiveMilestone): string {
+    switch (milestone) {
+      case ObjectiveMilestone.WEEK:   return 'Weekly';
+      case ObjectiveMilestone.MONTH:  return 'Monthly';
+      case ObjectiveMilestone.QUARTER: return 'Quarterly';
+      case ObjectiveMilestone.YEAR:   return 'Yearly';
+      default: return milestone;
+    }
+  }
+
   private createItemDefinitionFormGroup() {
     return this.formBuilder.group({
+      id: [null as number | null],
       name: ['', [Validators.required, Validators.maxLength(255)]],
       description: ['', [Validators.maxLength(1000)]],
       unit: [ObjectiveUnit.NUMBER, [Validators.required]],
+      target: [null as number | null],
+      milestone: [null as ObjectiveMilestone | null],
     });
   }
 
   private buildUpdateRequest(payload: {
     name: string;
     description: string | null;
-    itemDefinitions: Array<{ name: string; description: string | null; unit: ObjectiveUnit }>;
+    itemDefinitions: Array<{ id: number | null; name: string; description: string | null; unit: ObjectiveUnit; target: number | null; milestone: ObjectiveMilestone | null }>;
   }) {
     const selectedLogins = Array.from(this.selectedKidLogins);
     const currentAssignments = this.objectiveAssignments.length > 0
