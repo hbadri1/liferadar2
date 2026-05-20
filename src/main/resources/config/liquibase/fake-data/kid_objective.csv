@@ -1,0 +1,5 @@
+id;name;description;is_active;created_at;kid_id
+1;Healthy Habits;Build daily healthy habits;true;2026-05-01T10:00:00Z;1
+2;Study Routine;Improve study consistency;true;2026-05-02T10:00:00Z;2
+3;Family Responsibilities;Learn household responsibilities;true;2026-05-03T10:00:00Z;3
+

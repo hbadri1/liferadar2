@@ -1,11 +1,66 @@
-﻿id;lang;name;description;sub_pillar_item_id
-1;FR;giving;but;1
-2;FR;till approximate;anti aboard;2
-3;FR;beside depart;inasmuch oof;3
-4;AR;tabletop;athwart reproachfully for;4
-5;AR;phew;whup sans pish;5
-6;FR;merit obediently injunction;entomb individual psst;6
-7;EN;remark though;pro beside thick;7
-8;AR;like story doing;sedately;8
-9;AR;aha recede who;till foolish;9
-10;AR;negative;ah terrible;10
+id;name;description;lang;sub_pillar_item_id
+1;Exercise Routine;Daily exercise for 30 minutes;en;1
+2;Strength Training;Weight lifting 3x per week;en;2
+3;Fruits & Vegetables;Eat 5 servings daily;en;3
+4;Water Intake;Drink 8 glasses of water;en;4
+5;Therapy;Weekly therapy sessions;en;5
+6;Meditation;Daily 10 minute meditation;en;6
+7;Bed Time;Sleep by 10 PM;en;7
+8;Wake Time;Wake up at 6 AM;en;8
+9;Skills Training;Learn new professional skill;en;9
+10;Certifications;Pursue relevant certifications;en;10
+11;Job Performance;Positive feedback from manager;en;11
+12;Projects;Complete key projects;en;12
+13;Salary Review;Annual salary review;en;13
+14;Savings;Save 20% of income;en;14
+15;Budget Tracking;Track monthly budget;en;15
+16;Flexible Hours;Maintain work-life balance;en;16
+17;Family Dinners;Weekly family dinners;en;17
+18;Kids Activities;Attend kids activities;en;18
+19;Friends Meetup;Monthly friends gathering;en;19
+20;Phone Calls;Regular calls with friends;en;20
+21;Date Night;Weekly date with partner;en;21
+22;Communication;Daily meaningful conversation;en;22
+23;Volunteer;Monthly volunteer work;en;23
+24;Community Events;Attend community events;en;24
+25;Read Books;Read 1 book per month;en;25
+26;Online Courses;Take 1 course per quarter;en;26
+27;Creative Project;Work on creative hobby;en;27
+28;Gaming Time;Enjoy gaming time;en;28
+29;Trip Planning;Plan 1-2 trips per year;en;29
+30;Local Exploration;Explore local areas;en;30
+31;Art Projects;Work on art/photography;en;31
+32;Writing;Write journal/blog posts;en;32
+33;Budget Planning;Create monthly budget;en;33
+34;Expense Tracking;Record all expenses;en;34
+35;Emergency Fund;Build 6 month emergency fund;en;35
+36;Investment Plan;Regular investment contributions;en;36
+37;Retirement Plan;Contribute to retirement;en;37
+38;Debt Payment;Pay down debt;en;38
+39;Credit Score;Maintain good credit score;en;39
+40;Loan Review;Review loan terms;en;40
+41;Movie Night;Weekly family movie night;en;41
+42;Board Games;Play games together;en;42
+43;Family Recipes;Cook traditional recipes;en;43
+44;Holiday Celebrations;Plan holiday events;en;44
+45;Family Meetings;Weekly family discussions;en;45
+46;One-on-One Time;Individual time with each member;en;46
+47;Family Support;Be available for family;en;47
+48;Help with Issues;Help resolve family issues;en;48
+49;Movie Watching;Watch favorite movies;en;49
+50;Concert/Events;Attend concerts or events;en;50
+51;Gym Sessions;Regular gym workouts;en;51
+52;Team Sports;Play team sports;en;52
+53;Craft Time;Work on crafts/DIY projects;en;53
+54;Gaming Sessions;Play video games;en;54
+55;Dinner Out;Eat out with friends;en;55
+56;Social Events;Attend social gatherings;en;56
+57;Meditate;Daily meditation practice;en;57
+58;Reflection;Daily reflection practice;en;58
+59;Life Goals;Define personal values;en;59
+60;Mission Statement;Create personal mission;en;60
+61;Purpose Review;Review life purpose;en;61
+62;Goal Setting;Set meaningful goals;en;62
+63;Gratitude Journal;Write 3 daily gratitudes;en;63
+64;Appreciation;Express appreciation;en;64
+

@@ -5,14 +5,14 @@
     <div>
       <h2 class="mb-0">
         <fa-icon icon="plane" class="me-2 text-primary"></fa-icon>
-        <span jhiTranslate="trips.title">Trips Management</span>
+        <span jhiTranslate="trips.title">Journeys Management</span>
       </h2>
       <p class="text-muted mb-0" jhiTranslate="trips.subtitle">Plan and track your journeys</p>
     </div>
     @if (canEdit()) {
       <button class="btn btn-primary btn-lg" (click)="openCreateTrip()">
         <fa-icon icon="plus"></fa-icon>
-        <span class="ms-1" jhiTranslate="trips.newTrip">New Trip</span>
+        <span class="ms-1" jhiTranslate="trips.newTrip">New Journey</span>
       </button>
     }
   </div>
@@ -29,7 +29,7 @@
         <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
           <h5 class="mb-0">
             <fa-icon icon="suitcase" class="me-2 text-primary"></fa-icon>
-            <span jhiTranslate="trips.myTrips">My Trips</span>
+            <span jhiTranslate="trips.myTrips">My Journeys</span>
           </h5>
           <button class="btn btn-sm btn-outline-primary" (click)="loadTrips()" title="Refresh">
             <fa-icon icon="sync"></fa-icon>
@@ -43,7 +43,7 @@
           } @else if (trips().length === 0) {
             <div class="text-center py-5 text-muted">
               <fa-icon icon="globe" class="fa-3x mb-3 d-block"></fa-icon>
-              <p jhiTranslate="trips.noTrips">No trips yet. Start planning your first adventure!</p>
+              <p jhiTranslate="trips.noTrips">No journeys yet. Start planning your first adventure!</p>
             </div>
           } @else {
             <div class="trip-list">
@@ -114,7 +114,7 @@
         <div class="card shadow-sm border-0 h-100">
           <div class="card-body d-flex flex-column align-items-center justify-content-center text-muted py-5">
             <fa-icon icon="road" class="fa-4x mb-3 text-primary opacity-25"></fa-icon>
-            <h5 jhiTranslate="trips.selectTripHint">Select a trip to view its itinerary</h5>
+            <h5 jhiTranslate="trips.selectTripHint">Select a journey to view its itinerary</h5>
             <p jhiTranslate="trips.selectTripHintSub">Your journey details and timeline will appear here</p>
           </div>
         </div>
@@ -127,7 +127,7 @@
                   <fa-icon icon="plane" class="me-2 text-primary"></fa-icon>
                   {{ selectedTrip()!.title }}
                   @if (selectedTripReadOnly()) {
-                    <span class="badge bg-warning text-dark ms-2" jhiTranslate="trips.readOnlyFinished">Read-only (trip finished)</span>
+                    <span class="badge bg-warning text-dark ms-2" jhiTranslate="trips.readOnlyFinished">Read-only (journey finished)</span>
                   }
                 </h5>
                 <div class="text-muted small">
@@ -172,6 +172,14 @@
                   (click)="setViewMode('gantt')">
                   <fa-icon icon="chart-bar"></fa-icon>
                   <span jhiTranslate="trips.ganttView">Gantt</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn trip-view-btn"
+                  [ngClass]="viewMode() === 'vertical' ? 'btn-primary' : 'btn-outline-primary'"
+                  (click)="setViewMode('vertical')">
+                  <span class="vertical-view-icon" aria-hidden="true">↕</span>
+                  <span jhiTranslate="trips.verticalView">Vertical View</span>
                 </button>
               </div>
             </div>
@@ -295,13 +303,19 @@
                   <div class="trip-calendar-grid" [attr.dir]="'ltr'">
                     @for (week of calendarWeeks(); track $index) {
                       @for (cell of week; track trackCalendarCell($index, cell)) {
-                        <div class="trip-calendar-cell" [class.trip-calendar-cell--outside]="!cell.inCurrentMonth" [class.trip-calendar-cell--in-trip]="cell.inTripRange" [class.trip-calendar-cell--today]="cell.isToday">
+                        <div
+                          class="trip-calendar-cell"
+                          [class.trip-calendar-cell--outside]="!cell.inCurrentMonth"
+                          [class.trip-calendar-cell--in-trip]="cell.inTripRange"
+                          [class.trip-calendar-cell--today]="cell.isToday"
+                          [class.cursor-pointer]="cell.inTripRange && canEdit() && !selectedTripReadOnly()"
+                          (click)="onCalendarCellClick(cell)">
                           <div class="trip-calendar-cell-header">
                             <span>{{ cell.date.date() }}</span>
                           </div>
                           <div class="trip-calendar-cell-steps">
                             @for (step of cell.steps | slice: 0 : 2; track step.id) {
-                              <div class="trip-calendar-step-pill" [title]="step.actionName + ' (' + stepDateRangeLabel(step) + ')'">
+                              <div class="trip-calendar-step-pill" [title]="step.actionName + ' (' + stepDateRangeLabel(step) + ')'" (click)="$event.stopPropagation()">
                                 <span class="trip-calendar-step-seq">#{{ step.sequence }}</span>
                                 <span class="text-truncate">{{ step.actionName }}</span>
                               </div>
@@ -319,7 +333,7 @@
                     <div class="trip-calendar-empty" jhiTranslate="trips.noStepsInMonth">No stops this month.</div>
                   }
                 </div>
-              } @else {
+              } @else if (viewMode() === 'gantt') {
                 <!-- GANTT CHART -->
                 <div class="trip-gantt" [attr.dir]="'ltr'">
                   <div class="trip-gantt-range text-muted small">
@@ -362,6 +376,33 @@
                           </div>
                         </div>
                       </div>
+                    }
+                  }
+                </div>
+              } @else {
+                <!-- VERTICAL VIEW -->
+                <div class="trip-vertical">
+                  @if (verticalFlowEntries().length === 0) {
+                    <div class="trip-vertical-empty" jhiTranslate="trips.noVerticalData">No dated steps available for vertical view.</div>
+                  } @else {
+                    @for (entry of verticalFlowEntries(); track entry.kind === 'step' ? entry.step.id ?? $index : 'gap-' + $index; let isLast = $last) {
+                      <div class="trip-vertical-item" [class.trip-vertical-item--gap]="entry.kind === 'gap'">
+                        <div class="trip-vertical-item-title">
+                          @if (entry.kind === 'step') {
+                            <span>#{{ entry.step.sequence }} {{ entry.step.actionName }}</span>
+                          } @else {
+                            <span jhiTranslate="trips.gapLabel">Gap</span>
+                          }
+                        </div>
+                        <div class="trip-vertical-item-meta">
+                          <span><strong jhiTranslate="trips.fields.startDate">Start Date</strong>: {{ formatDate(entry.start) }}</span>
+                          <span><strong jhiTranslate="trips.fields.endDate">End Date</strong>: {{ formatDate(entry.end) }}</span>
+                          <span><strong jhiTranslate="trips.durationLabel">Duration</strong>: {{ entry.durationLabel }}</span>
+                        </div>
+                      </div>
+                      @if (!isLast) {
+                        <div class="trip-vertical-arrow" aria-hidden="true">↓</div>
+                      }
                     }
                   }
                 </div>

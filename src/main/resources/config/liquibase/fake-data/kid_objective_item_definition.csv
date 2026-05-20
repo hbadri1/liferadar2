@@ -1,0 +1,9 @@
+id;objective_id;name;description;unit;target;milestone
+1;1;Brush teeth morning and night;Daily dental hygiene habit;CHECKBOX;;
+2;1;Drink water;Daily water intake;NUMBER;8;
+3;1;Exercise time;Daily exercise;SECONDS;1800;
+4;2;Read chapters;Read assigned chapters;NUMBER;3;
+5;2;Flashcards;Study flashcards;REPS;20;
+6;3;Help at home;Household responsibility checklist;CHECKBOX;;
+7;3;Chores completed;Track chores done;NUMBER;5;
+

@@ -58,8 +58,8 @@
         <include file="config/liquibase/changelog/20260516143000_add_trip_type_to_trip_plan.xml" relativeToChangelogFile="false"/>
          <include file="config/liquibase/changelog/20260518193000_add_checkbox_unit_to_kid_objective_item_definition.xml" relativeToChangelogFile="false"/>
           <include file="config/liquibase/changelog/20260518200000_add_target_to_kid_objective_item_definition.xml" relativeToChangelogFile="false"/>
-          <include file="config/liquibase/changelog/20260518210000_add_milestone_to_kid_objective_item_definition.xml" relativeToChangelogFile="false"/>
-        <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+           <include file="config/liquibase/changelog/20260518210000_add_milestone_to_kid_objective_item_definition.xml" relativeToChangelogFile="false"/>
+         <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

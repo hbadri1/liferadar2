@@ -21,6 +21,7 @@ type TodoAppFormGroup = FormGroup<{
   selector: 'jhi-todoapps-settings',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
   templateUrl: './todoapps.component.html',
+  styleUrl: './todoapps.component.scss',
 })
 export default class TodoAppsComponent implements OnInit, OnDestroy {
   readonly embedded = input(false);
@@ -277,4 +278,3 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
     });
   }
 }
-

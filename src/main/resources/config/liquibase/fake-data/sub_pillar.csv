@@ -1,11 +1,34 @@
-id;code;is_active;owner_id
-1;sniff;true;1
-2;stake amongst;true;2
-3;incline average;false;1
-4;out;false;2
-5;hidden;true;2
-6;ample however ack;true;2
-7;presume taro;false;1
-8;mechanically;false;2
-9;give;true;1
-10;commercial upon opposite;true;2
+id;name;order_index;pillar_id
+1;Fitness;0;1
+2;Nutrition;1;1
+3;Mental Health;2;1
+4;Sleep;3;1
+5;Career Development;0;2
+6;Job Satisfaction;1;2
+7;Income;2;2
+8;Work-Life Balance;3;2
+9;Family Time;0;3
+10;Friendships;1;3
+11;Partner;2;3
+12;Community;3;3
+13;Learning;0;4
+14;Hobbies;1;4
+15;Travel;2;4
+16;Creativity;3;4
+17;Budgeting;0;5
+18;Savings;1;5
+19;Investments;2;5
+20;Debt Management;3;5
+21;Quality Time;0;6
+22;Traditions;1;6
+23;Communication;2;6
+24;Support;3;6
+25;Entertainment;0;7
+26;Sports;1;7
+27;Hobbies;2;7
+28;Socializing;3;7
+29;Meditation;0;8
+30;Values;1;8
+31;Purpose;2;8
+32;Gratitude;3;8
+

@@ -1,11 +1,5 @@
-id;title;description;start_date;end_date;owner_id
-1;neglect;short huzzah if;2026-02-17;2026-02-18;1
-2;toward;CD entry pfft;2026-02-18;2026-02-18;2
-3;entry when;incidentally;2026-02-17;2026-02-17;2
-4;oof;fortunately;2026-02-18;2026-02-18;1
-5;procurement;even that thorough;2026-02-17;2026-02-18;2
-6;knowingly oxygenate;aha righteously shanghai;2026-02-17;2026-02-18;1
-7;meanwhile;unless;2026-02-18;2026-02-17;2
-8;quarrelsomely drat per;since meaningfully;2026-02-18;2026-02-18;1
-9;blissfully difficult beautifully;without insist utilization;2026-02-18;2026-02-18;1
-10;behind more;like;2026-02-17;2026-02-18;2
+id;title;description;start_date;end_date;is_active;trip_type;user_id
+1;Summer Vacation 2026;Family trip to the beach;2026-06-15 09:00:00;2026-06-22 17:00:00;true;FAMILY;1
+2;Business Conference;Annual conference;2026-07-10 08:00:00;2026-07-12 18:00:00;true;BUSINESS;1
+3;Weekend Getaway;Relaxation trip;2026-05-30 14:00:00;2026-06-01 11:00:00;true;PERSONAL;1
+

@@ -2,20 +2,20 @@
   "liferadarApp": {
     "tripPlanStep": {
       "home": {
-        "title": "Trip Plan Steps",
+        "title": "Journey Plan Steps",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Trip Plan Step",
-        "createOrEditLabel": "Create or edit a Trip Plan Step",
-        "notFound": "No Trip Plan Steps found"
+        "createLabel": "Create a new Journey Plan Step",
+        "createOrEditLabel": "Create or edit a Journey Plan Step",
+        "notFound": "No Journey Plan Steps found"
       },
-      "created": "A new Trip Plan Step is created with identifier {{ param }}",
-      "updated": "A Trip Plan Step is updated with identifier {{ param }}",
-      "deleted": "A Trip Plan Step is deleted with identifier {{ param }}",
+      "created": "A new Journey Plan Step is created with identifier {{ param }}",
+      "updated": "A Journey Plan Step is updated with identifier {{ param }}",
+      "deleted": "A Journey Plan Step is deleted with identifier {{ param }}",
       "delete": {
-        "question": "Are you sure you want to delete Trip Plan Step {{ id }}?"
+        "question": "Are you sure you want to delete Journey Plan Step {{ id }}?"
       },
       "detail": {
-        "title": "Trip Plan Step"
+        "title": "Journey Plan Step"
       },
       "id": "ID",
       "startDate": "Start Date",
@@ -23,7 +23,7 @@
       "actionName": "Action Name",
       "sequence": "Sequence",
       "notes": "Notes",
-      "tripPlan": "Trip Plan"
+      "tripPlan": "Journey Plan"
     }
   }
 }

@@ -7,7 +7,14 @@
   </div>
 }
 
-<div [class.container]="!embedded()" [class.container-fluid]="embedded()" [class.py-5]="!embedded()" [class.py-2]="embedded()" [class.px-1]="embedded()">
+<div
+  class="todoapps-settings"
+  [class.container]="!embedded()"
+  [class.container-fluid]="embedded()"
+  [class.py-5]="!embedded()"
+  [class.py-2]="embedded()"
+  [class.px-1]="embedded()"
+>
   <jhi-alert-error />
   <jhi-alert />
 
@@ -15,8 +22,8 @@
   @if (!embedded()) {
     <div class="row mb-4">
       <div class="col-lg-10 mx-auto">
-        <div class="card shadow-lg border-0">
-          <div class="card-body p-4">
+        <div class="card settings-card settings-card--profile shadow-sm border-0">
+          <div class="card-body p-3 p-md-4">
             <h5 class="card-title fw-bold text-dark mb-4">
               <i class="fa fa-user-circle me-2 text-primary"></i>
               <span jhiTranslate="todoapps.profile.title">Profile Summary</span>
@@ -55,7 +62,7 @@
               Select one todo app to use for your Action Items. Only one integration can be active at a time.
             </p>
           </div>
-          <button class="btn btn-outline-primary" type="button" (click)="loadConfigs()" [disabled]="isLoading()">
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="loadConfigs()" [disabled]="isLoading()">
             <fa-icon icon="sync" class="me-2" [animation]="isLoading() ? 'spin' : undefined"></fa-icon>
             <span jhiTranslate="todoapps.actions.refresh">Refresh</span>
           </button>
@@ -70,14 +77,14 @@
           <p class="text-muted mt-3" jhiTranslate="todoapps.actions.loading">Loading...</p>
         </div>
       } @else {
-        <div class="row" [class.g-4]="!embedded()" [class.g-3]="embedded()">
+        <div class="row" [class.g-3]="!embedded()" [class.g-2]="embedded()">
           @for (config of orderedConfigs(); track config.provider) {
             @let form = getForm(config.provider);
             @let isSelected = isProviderSelected(config.provider);
             <div class="col-12">
-              <div class="card shadow transition-all h-100" [class.border-primary]="isSelected" [class.border-3]="isSelected" style="cursor: pointer;">
-                <div class="card-header bg-light border-0 p-3">
-                  <div class="row align-items-center g-3">
+              <div class="card settings-card settings-card--integration h-100" [class.border-primary]="isSelected" [class.border-2]="isSelected">
+                <div class="card-header settings-card__header bg-light border-0 p-2 p-md-3">
+                  <div class="row align-items-center g-2 g-md-3">
                     <div class="col">
                       <div class="d-flex align-items-center gap-3">
                         <div class="form-check">
@@ -96,7 +103,7 @@
                           </label>
                         </div>
                       </div>
-                      <div class="small text-muted mt-1">{{ config.baseUrl || '-' }}</div>
+                      <div class="small text-muted mt-0">{{ config.baseUrl || '-' }}</div>
                     </div>
                     <div class="col-auto">
                       <div class="d-flex gap-2 flex-wrap">
@@ -125,7 +132,7 @@
                 </div>
 
                 @if (isSelected && form) {
-                  <div class="card-body" [class.p-4]="!embedded()" [class.p-3]="embedded()">
+                  <div class="card-body settings-card__body" [class.p-3]="!embedded()" [class.p-2]="embedded()">
                     <form [formGroup]="form" (ngSubmit)="save(config.provider)">
                       @if (showManualCredentialFields(config)) {
                         <div class="mb-4">
@@ -214,8 +221,7 @@
                       <div class="d-flex justify-content-end gap-2">
                         <button
                           type="submit"
-                          class="btn btn-primary"
-                          [class.btn-lg]="!embedded()"
+                          class="btn btn-primary btn-sm"
                           [disabled]="isSaving(config.provider) || !config.available"
                         >
                           @if (isSaving(config.provider)) {
@@ -236,4 +242,3 @@
     </div>
   </div>
 </div>
-

@@ -1,11 +1,13 @@
-id;start_date;end_date;action_name;sequence;notes;trip_plan_id
-1;2026-02-18;2026-02-17;circa likewise;20623;coil;1
-2;2026-02-18;2026-02-18;unfortunately;3002;upon;2
-3;2026-02-17;2026-02-18;failing frantically;26890;highly;3
-4;2026-02-18;2026-02-18;ditch;23407;metal;4
-5;2026-02-18;2026-02-17;since hmph;19433;er given;5
-6;2026-02-17;2026-02-17;aw;28191;geez yahoo;6
-7;2026-02-18;2026-02-18;even;18339;awareness;7
-8;2026-02-18;2026-02-17;likely ha;2480;grouchy instead similar;8
-9;2026-02-17;2026-02-18;yowza given;13314;trustworthy when rebound;9
-10;2026-02-18;2026-02-17;after gadzooks;22461;faithfully consequently because;10
+id;order_index;name;description;notes;trip_plan_id
+1;0;Pack luggage;Prepare and pack all necessary items;Don't forget sunscreen;1
+2;1;Drive to beach;Travel to destination;Gas up before departure;1
+3;2;Check in;Arrive at hotel and check in;Early check-in requested;1
+4;3;Enjoy beach;Relax and enjoy the beach;Bring water and snacks;1
+5;0;Travel to venue;Fly to conference city;Book airport shuttle;2
+6;1;Hotel check-in;Check in at hotel;Conference rate available;2
+7;2;Day 1 Sessions;Attend morning sessions;Bring notebook;2
+8;3;Day 2 Sessions;Attend afternoon sessions;Networking lunch at 12pm;2
+9;0;Prepare car;Check gas and tires;Maintenance check;3
+10;1;Drive to location;Travel to destination;Stop for lunch on the way;3
+11;2;Arrive and relax;Check in and relax;Dinner reservation at 7pm;3
+

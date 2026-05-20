@@ -1,11 +1,66 @@
-id;code;sort_order;is_active;owner_id
-1;scarily;22036;false;1
-2;loyally;20935;true;2
-3;gadzooks behind hmph;13806;false;2
-4;scarily impressive bowling;13982;false;1
-5;whenever orange besides;2054;true;2
-6;after option;5542;true;2
-7;once which readies;26123;true;1
-8;which rich that;23087;false;2
-9;nor;29035;false;1
-10;till;4940;true;1
+id;name;description;order_index;do_not_reevaluate;sub_pillar_id
+1;Exercise Routine;Daily exercise for 30 minutes;0;false;1
+2;Strength Training;Weight lifting 3x per week;1;false;1
+3;Fruits & Vegetables;Eat 5 servings daily;0;false;2
+4;Water Intake;Drink 8 glasses of water;1;false;2
+5;Therapy;Weekly therapy sessions;0;false;3
+6;Meditation;Daily 10 minute meditation;1;false;3
+7;Bed Time;Sleep by 10 PM;0;false;4
+8;Wake Time;Wake up at 6 AM;1;false;4
+9;Skills Training;Learn new professional skill;0;false;5
+10;Certifications;Pursue relevant certifications;1;false;5
+11;Job Performance;Positive feedback from manager;0;false;6
+12;Projects;Complete key projects;1;false;6
+13;Salary Review;Annual salary review;0;false;7
+14;Savings;Save 20% of income;1;false;7
+15;Budget Tracking;Track monthly budget;0;false;8
+16;Flexible Hours;Maintain work-life balance;1;false;8
+17;Family Dinners;Weekly family dinners;0;false;9
+18;Kids Activities;Attend kids activities;1;false;9
+19;Friends Meetup;Monthly friends gathering;0;false;10
+20;Phone Calls;Regular calls with friends;1;false;10
+21;Date Night;Weekly date with partner;0;false;11
+22;Communication;Daily meaningful conversation;1;false;11
+23;Volunteer;Monthly volunteer work;0;false;12
+24;Community Events;Attend community events;1;false;12
+25;Read Books;Read 1 book per month;0;false;13
+26;Online Courses;Take 1 course per quarter;1;false;13
+27;Creative Project;Work on creative hobby;0;false;14
+28;Gaming Time;Enjoy gaming time;1;false;14
+29;Trip Planning;Plan 1-2 trips per year;0;false;15
+30;Local Exploration;Explore local areas;1;false;15
+31;Art Projects;Work on art/photography;0;false;16
+32;Writing;Write journal/blog posts;1;false;16
+33;Budget Planning;Create monthly budget;0;false;17
+34;Expense Tracking;Record all expenses;1;false;17
+35;Emergency Fund;Build 6 month emergency fund;0;false;18
+36;Investment Plan;Regular investment contributions;1;false;18
+37;Retirement Plan;Contribute to retirement;0;false;19
+38;Debt Payment;Pay down debt;1;false;19
+39;Credit Score;Maintain good credit score;0;false;20
+40;Loan Review;Review loan terms;1;false;20
+41;Movie Night;Weekly family movie night;0;false;21
+42;Board Games;Play games together;1;false;21
+43;Family Recipes;Cook traditional recipes;0;false;22
+44;Holiday Celebrations;Plan holiday events;1;false;22
+45;Family Meetings;Weekly family discussions;0;false;23
+46;One-on-One Time;Individual time with each member;1;false;23
+47;Family Support;Be available for family;0;false;24
+48;Help with Issues;Help resolve family issues;1;false;24
+49;Movie Watching;Watch favorite movies;0;false;25
+50;Concert/Events;Attend concerts or events;1;false;25
+51;Gym Sessions;Regular gym workouts;0;false;26
+52;Team Sports;Play team sports;1;false;26
+53;Craft Time;Work on crafts/DIY projects;0;false;27
+54;Gaming Sessions;Play video games;1;false;27
+55;Dinner Out;Eat out with friends;0;false;28
+56;Social Events;Attend social gatherings;1;false;28
+57;Meditate;Daily meditation practice;0;false;29
+58;Reflection;Daily reflection practice;1;false;29
+59;Life Goals;Define personal values;0;false;30
+60;Mission Statement;Create personal mission;1;false;30
+61;Purpose Review;Review life purpose;0;false;31
+62;Goal Setting;Set meaningful goals;1;false;31
+63;Gratitude Journal;Write 3 daily gratitudes;0;false;32
+64;Appreciation;Express appreciation;1;false;32
+

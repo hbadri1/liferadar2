@@ -2,20 +2,20 @@
   "liferadarApp": {
     "tripPlan": {
       "home": {
-        "title": "Trip Plans",
+        "title": "Journey Plans",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Trip Plan",
-        "createOrEditLabel": "Create or edit a Trip Plan",
-        "notFound": "No Trip Plans found"
+        "createLabel": "Create a new Journey Plan",
+        "createOrEditLabel": "Create or edit a Journey Plan",
+        "notFound": "No Journey Plans found"
       },
-      "created": "A new Trip Plan is created with identifier {{ param }}",
-      "updated": "A Trip Plan is updated with identifier {{ param }}",
-      "deleted": "A Trip Plan is deleted with identifier {{ param }}",
+      "created": "A new Journey Plan is created with identifier {{ param }}",
+      "updated": "A Journey Plan is updated with identifier {{ param }}",
+      "deleted": "A Journey Plan is deleted with identifier {{ param }}",
       "delete": {
-        "question": "Are you sure you want to delete Trip Plan {{ id }}?"
+        "question": "Are you sure you want to delete Journey Plan {{ id }}?"
       },
       "detail": {
-        "title": "Trip Plan"
+        "title": "Journey Plan"
       },
       "id": "ID",
       "title": "Title",

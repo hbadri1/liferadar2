@@ -1,11 +1,10 @@
-id;code;is_active;owner_id
-1;an neatly stir-fry;true;1
-2;yum aha;false;2
-3;skyline provided;true;2
-4;from boohoo hepatitis;true;1
-5;part through;false;1
-6;consequently simplistic ouch;false;2
-7;esteemed;true;2
-8;unlike;false;2
-9;reel sate who;false;1
-10;wholly pasta;false;2
+id;name;order_index
+1;Health;0
+2;Career;1
+3;Relationships;2
+4;Personal Growth;3
+5;Finance;4
+6;Family;5
+7;Fun & Recreation;6
+8;Spirituality;7
+

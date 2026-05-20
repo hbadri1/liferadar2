@@ -19,6 +19,7 @@ export class StepFormModalComponent implements OnInit {
   @Input() trip!: ITripPlan;
   @Input() nextSequence = 1;
   @Input() existingSteps: ITripPlanStep[] = [];
+  @Input() initialDate: dayjs.Dayjs | string | null = null;
 
   readonly timeOptions: string[] = Array.from({ length: 48 }, (_, i) => {
     const h = Math.floor(i / 2)
@@ -65,6 +66,15 @@ export class StepFormModalComponent implements OnInit {
         latitude: this.step.latitude ?? null,
         longitude: this.step.longitude ?? null,
       });
+    } else if (this.initialDate) {
+      const parsedInitialDate = dayjs(this.initialDate);
+      if (parsedInitialDate.isValid()) {
+        const initialDay = parsedInitialDate.format('YYYY-MM-DD');
+        this.editForm.patchValue({
+          startDate: initialDay,
+          endDate: initialDay,
+        });
+      }
     }
 
     ['startDate', 'startTime'].forEach(ctrl => {

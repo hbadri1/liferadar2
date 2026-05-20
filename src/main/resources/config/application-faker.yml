@@ -1,0 +1,17 @@
+# ===================================================================
+# Spring Boot configuration for the "faker" profile.
+#
+# This configuration loads sample/fake data via Liquibase faker context.
+# Use this profile for development with seed data.
+#
+# Extend the "dev" profile and add faker context to Liquibase.
+#
+# Usage:
+#   ./mvnw -Pdev,faker
+#   java -jar app.jar --spring.profiles.active=dev,faker
+# ===================================================================
+
+spring:
+  liquibase:
+    contexts: dev,faker
+

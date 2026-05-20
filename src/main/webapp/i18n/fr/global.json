@@ -26,8 +26,8 @@
         "subPillarItemTranslation": "Sub Life Pillar Item Translation",
         "lifeEvaluation": "Life Evaluation",
         "evaluationDecision": "Evaluation Decision",
-        "tripPlan": "Trip Plan",
-        "tripPlanStep": "Trip Plan Step"
+        "tripPlan": "Plan de voyage",
+        "tripPlanStep": "Étape de voyage"
       },
       "account": {
         "main": "Compte",

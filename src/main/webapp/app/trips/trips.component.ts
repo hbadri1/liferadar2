@@ -18,7 +18,7 @@ type TimelineEntry =
   | { kind: 'today'; sortDate: dayjs.Dayjs }
   | { kind: 'step'; sortDate: dayjs.Dayjs; step: ITripPlanStep };
 
-type TripViewMode = 'timeline' | 'calendar' | 'gantt';
+type TripViewMode = 'timeline' | 'calendar' | 'gantt' | 'vertical';
 
 type CalendarCell = {
   date: dayjs.Dayjs;
@@ -33,6 +33,21 @@ type GanttRow = {
   offsetPct: number;
   widthPct: number;
 };
+
+type VerticalFlowEntry =
+  | {
+      kind: 'step';
+      step: ITripPlanStep;
+      start: dayjs.Dayjs;
+      end: dayjs.Dayjs;
+      durationLabel: string;
+    }
+  | {
+      kind: 'gap';
+      start: dayjs.Dayjs;
+      end: dayjs.Dayjs;
+      durationLabel: string;
+    };
 
 
 @Component({
@@ -197,7 +212,7 @@ export default class TripsComponent implements OnInit {
     );
   }
 
-  openAddStep(): void {
+  openAddStep(prefillDate?: dayjs.Dayjs): void {
     const trip = this.selectedTrip();
     if (!trip || !trip.id) return;
     if (this.isTripFinished(trip)) return;
@@ -211,6 +226,9 @@ export default class TripsComponent implements OnInit {
     ref.componentInstance.trip = trip;
     ref.componentInstance.nextSequence = maxSequence + 1;
     ref.componentInstance.existingSteps = this.steps();
+    if (prefillDate) {
+      ref.componentInstance.initialDate = prefillDate.format('YYYY-MM-DD');
+    }
     ref.result.then(
       (result: ITripPlanStep) => {
         if (result && trip.id) {
@@ -219,6 +237,13 @@ export default class TripsComponent implements OnInit {
       },
       () => {},
     );
+  }
+
+  onCalendarCellClick(cell: CalendarCell): void {
+    if (!cell.inTripRange || !this.canEdit() || this.selectedTripReadOnly()) {
+      return;
+    }
+    this.openAddStep(cell.date);
   }
 
   openEditStep(step: ITripPlanStep): void {
@@ -425,6 +450,7 @@ export default class TripsComponent implements OnInit {
     });
   }
 
+
   ganttTodayMarkerPct(): number | null {
     const range = this.getGanttRange();
     if (!range) {
@@ -489,6 +515,67 @@ export default class TripsComponent implements OnInit {
 
   ganttBarDateLabel(row: GanttRow): string {
     return this.stepDateRangeLabel(row.step);
+  }
+
+  verticalFlowEntries(): VerticalFlowEntry[] {
+    const range = this.getGanttRange();
+    if (!range) {
+      return [];
+    }
+
+    const sortedSteps = this.sortSteps(this.steps())
+      .map(step => {
+        const start = this.toDayjsDate(step.startDate) ?? this.toDayjsDate(step.endDate);
+        const end = this.toDayjsDate(step.endDate) ?? start;
+        if (!start || !end) {
+          return null;
+        }
+
+        const normalizedEnd = end.isBefore(start) ? start : end;
+        return { step, start, end: normalizedEnd };
+      })
+      .filter((entry): entry is { step: ITripPlanStep; start: dayjs.Dayjs; end: dayjs.Dayjs } => !!entry);
+
+    if (sortedSteps.length === 0) {
+      return [];
+    }
+
+    const entries: VerticalFlowEntry[] = [];
+    let cursor = range.start;
+
+    for (const stepEntry of sortedSteps) {
+      if (stepEntry.start.isAfter(cursor)) {
+        entries.push({
+          kind: 'gap',
+          start: cursor,
+          end: stepEntry.start,
+          durationLabel: this.formatDurationDaysHours(cursor, stepEntry.start),
+        });
+      }
+
+      entries.push({
+        kind: 'step',
+        step: stepEntry.step,
+        start: stepEntry.start,
+        end: stepEntry.end,
+        durationLabel: this.formatDurationDaysHours(stepEntry.start, stepEntry.end),
+      });
+
+      if (stepEntry.end.isAfter(cursor)) {
+        cursor = stepEntry.end;
+      }
+    }
+
+    if (cursor.isBefore(range.end)) {
+      entries.push({
+        kind: 'gap',
+        start: cursor,
+        end: range.end,
+        durationLabel: this.formatDurationDaysHours(cursor, range.end),
+      });
+    }
+
+    return entries;
   }
 
   trackCalendarCell(_index: number, cell: CalendarCell): string {

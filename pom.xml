@@ -5,7 +5,7 @@
 
     <groupId>com.atharsense.lr</groupId>
     <artifactId>liferadar</artifactId>
-    <version>1.15</version>
+    <version>4.16</version>
     <packaging>jar</packaging>
     <name>Liferadar</name>
     <description>Liferadar is a personal/family app that guides your goals and gather your family together.</description>
@@ -823,7 +823,7 @@
                 <liquibase-plugin.driver>org.h2.Driver</liquibase-plugin.driver>
                 <liquibase-plugin.hibernate-dialect>org.hibernate.dialect.H2Dialect</liquibase-plugin.hibernate-dialect>
                 <liquibase-plugin.password/>
-                <liquibase-plugin.url>jdbc:h2:file:${project.build.directory}/h2db/db/liferadar</liquibase-plugin.url>
+                <liquibase-plugin.url>jdbc:h2:file:~/.liferadar/h2db/db/liferadar;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</liquibase-plugin.url>
                 <liquibase-plugin.username>liferadar</liquibase-plugin.username>
                 <profile.test>test,testdev</profile.test>
                 <spring.profiles.active>dev${profile.tls}${profile.no-liquibase}</spring.profiles.active>
