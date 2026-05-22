@@ -15,4 +15,3 @@ const kidProfileSettingsRoute: Route = {
 };
 
 export default kidProfileSettingsRoute;
-

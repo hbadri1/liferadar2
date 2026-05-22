@@ -63,9 +63,7 @@ export class SubPillarService {
   ): Type[] {
     const subPillars: Type[] = subPillarsToCheck.filter(isPresent);
     if (subPillars.length > 0) {
-      const subPillarCollectionIdentifiers = subPillarCollection.map(subPillarItem =>
-        this.getSubPillarIdentifier(subPillarItem),
-      );
+      const subPillarCollectionIdentifiers = subPillarCollection.map(subPillarItem => this.getSubPillarIdentifier(subPillarItem));
       const subPillarsToAdd = subPillars.filter(subPillarItem => {
         const subPillarIdentifier = this.getSubPillarIdentifier(subPillarItem);
         if (subPillarCollectionIdentifiers.includes(subPillarIdentifier)) {

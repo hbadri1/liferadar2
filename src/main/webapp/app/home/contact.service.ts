@@ -18,4 +18,3 @@ export class ContactService {
     return this.http.post<void>(this.applicationConfigService.getEndpointFor('api/contact'), contact);
   }
 }
-

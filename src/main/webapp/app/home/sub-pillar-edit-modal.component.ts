@@ -140,4 +140,3 @@ export class SubPillarEditModalComponent implements OnInit, OnChanges {
     this.isSaving = false;
   }
 }
-

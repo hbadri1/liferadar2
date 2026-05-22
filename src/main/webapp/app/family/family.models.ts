@@ -17,7 +17,7 @@ export interface ParentUser {
 }
 
 export interface FamilyInfo {
-  id: number;
+  id: number | null;
   name: string;
 }
 
@@ -69,4 +69,3 @@ export interface FamilyObjectiveGroup {
   kidName: string;
   objectives: FamilyObjective[];
 }
-

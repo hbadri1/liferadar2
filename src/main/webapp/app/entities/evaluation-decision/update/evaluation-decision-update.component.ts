@@ -41,7 +41,8 @@ export class EvaluationDecisionUpdateComponent implements OnInit {
   compareLifeEvaluation = (o1: ILifeEvaluation | null, o2: ILifeEvaluation | null): boolean =>
     this.lifeEvaluationService.compareLifeEvaluation(o1, o2);
 
-  compareExpense = (o1: ISaaSSubscription | null, o2: ISaaSSubscription | null): boolean => this.expenseService.compareSaaSSubscription(o1, o2);
+  compareExpense = (o1: ISaaSSubscription | null, o2: ISaaSSubscription | null): boolean =>
+    this.expenseService.compareSaaSSubscription(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ evaluationDecision }) => {

@@ -22,4 +22,3 @@ export interface ITodoAppConfigUpdate {
 export interface ITickTickAuthorizeUrlResponse {
   authorizeUrl: string;
 }
-

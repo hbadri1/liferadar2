@@ -135,6 +135,5 @@ module.exports = async (config, options, targetOptions) => {
     // jhipster-needle-add-webpack-config - JHipster will add custom config
   );
 
-
   return config;
 };

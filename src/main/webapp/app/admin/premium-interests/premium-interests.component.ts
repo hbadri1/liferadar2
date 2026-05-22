@@ -55,4 +55,3 @@ export default class PremiumInterestsComponent implements OnInit {
     return entry.id;
   }
 }
-

@@ -17,8 +17,7 @@ describe('SubPillarTranslation Management Detail Component', () => {
           [
             {
               path: '**',
-              loadComponent: () =>
-                import('./sub-pillar-translation-detail.component').then(m => m.SubPillarTranslationDetailComponent),
+              loadComponent: () => import('./sub-pillar-translation-detail.component').then(m => m.SubPillarTranslationDetailComponent),
               resolve: { subPillarTranslation: () => of({ id: 7484 }) },
             },
           ],

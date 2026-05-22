@@ -15,8 +15,7 @@ const subPillarTranslationRoute: Routes = [
   },
   {
     path: ':id/view',
-    loadComponent: () =>
-      import('./detail/sub-pillar-translation-detail.component').then(m => m.SubPillarTranslationDetailComponent),
+    loadComponent: () => import('./detail/sub-pillar-translation-detail.component').then(m => m.SubPillarTranslationDetailComponent),
     resolve: {
       subPillarTranslation: SubPillarTranslationResolve,
     },
@@ -24,8 +23,7 @@ const subPillarTranslationRoute: Routes = [
   },
   {
     path: 'new',
-    loadComponent: () =>
-      import('./update/sub-pillar-translation-update.component').then(m => m.SubPillarTranslationUpdateComponent),
+    loadComponent: () => import('./update/sub-pillar-translation-update.component').then(m => m.SubPillarTranslationUpdateComponent),
     resolve: {
       subPillarTranslation: SubPillarTranslationResolve,
     },
@@ -33,8 +31,7 @@ const subPillarTranslationRoute: Routes = [
   },
   {
     path: ':id/edit',
-    loadComponent: () =>
-      import('./update/sub-pillar-translation-update.component').then(m => m.SubPillarTranslationUpdateComponent),
+    loadComponent: () => import('./update/sub-pillar-translation-update.component').then(m => m.SubPillarTranslationUpdateComponent),
     resolve: {
       subPillarTranslation: SubPillarTranslationResolve,
     },

@@ -40,7 +40,12 @@ export class TripFormModalComponent implements OnInit {
 
   get canSelectFamilyType(): boolean {
     const authorities = (this.account()?.authorities ?? []).map(a => (a ?? '').toString().trim().toUpperCase());
-    return authorities.includes('ROLE_PARENT') || authorities.includes('PARENT') || authorities.includes('ROLE_ADMIN') || authorities.includes('ADMIN');
+    return (
+      authorities.includes('ROLE_PARENT') ||
+      authorities.includes('PARENT') ||
+      authorities.includes('ROLE_ADMIN') ||
+      authorities.includes('ADMIN')
+    );
   }
 
   get isEdit(): boolean {
@@ -150,4 +155,3 @@ export class TripFormModalComponent implements OnInit {
     return true;
   }
 }
-

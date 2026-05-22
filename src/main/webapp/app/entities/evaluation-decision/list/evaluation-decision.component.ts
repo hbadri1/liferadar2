@@ -109,15 +109,15 @@ export class EvaluationDecisionComponent implements OnInit {
       .getTodoAppConfigs()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: response => {
-        const configs: ITodoAppUserConfig[] = response.body ?? [];
-        const enabledCodes = new Set(configs.filter(config => config.enabled).map(config => config.provider));
-        this.enabledIntegrationProviders.set(this.integrationProviders.filter(provider => enabledCodes.has(provider.code)));
-      },
-      error: () => {
-        this.enabledIntegrationProviders.set([]);
-      },
-    });
+        next: response => {
+          const configs: ITodoAppUserConfig[] = response.body ?? [];
+          const enabledCodes = new Set(configs.filter(config => config.enabled).map(config => config.provider));
+          this.enabledIntegrationProviders.set(this.integrationProviders.filter(provider => enabledCodes.has(provider.code)));
+        },
+        error: () => {
+          this.enabledIntegrationProviders.set([]);
+        },
+      });
   }
 
   delete(evaluationDecision: IEvaluationDecision): void {
@@ -186,7 +186,10 @@ export class EvaluationDecisionComponent implements OnInit {
   }
 
   getCurrentSortLabelKey(): string {
-    return this.sortOptions().find(option => option.predicate === this.sortState().predicate)?.labelKey ?? 'liferadarApp.evaluationDecision.decision';
+    return (
+      this.sortOptions().find(option => option.predicate === this.sortState().predicate)?.labelKey ??
+      'liferadarApp.evaluationDecision.decision'
+    );
   }
 
   currentSortDirectionLabelKey(): string {
@@ -307,7 +310,9 @@ export class EvaluationDecisionComponent implements OnInit {
       provider: providerLabel,
     });
     modalRef.componentInstance.message = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonMessage');
-    modalRef.componentInstance.confirmButtonText = this.translateService.instant('liferadarApp.evaluationDecision.integrations.comingSoonButton');
+    modalRef.componentInstance.confirmButtonText = this.translateService.instant(
+      'liferadarApp.evaluationDecision.integrations.comingSoonButton',
+    );
     modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
     modalRef.componentInstance.confirmButtonClass = 'btn-primary';
   }
@@ -325,35 +330,35 @@ export class EvaluationDecisionComponent implements OnInit {
       .getTickTickProjects()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: res => {
-        this.integrationPushingKeys.delete(key);
-        const projectsResponse = res.body;
-        const projects = projectsResponse?.projects ?? [];
-        const defaultProjectName = (projectsResponse?.defaultProjectName ?? 'Liferadar').trim() || 'Liferadar';
+        next: res => {
+          this.integrationPushingKeys.delete(key);
+          const projectsResponse = res.body;
+          const projects = projectsResponse?.projects ?? [];
+          const defaultProjectName = (projectsResponse?.defaultProjectName ?? 'Liferadar').trim() || 'Liferadar';
 
-        const modalRef = this.modalService.open(TickTickProjectModalComponent, { size: 'lg', backdrop: 'static' });
-        modalRef.componentInstance.projects = projects;
-        modalRef.componentInstance.initialTitle = (evaluationDecision.decision ?? '').trim();
-        modalRef.componentInstance.defaultProjectName = defaultProjectName;
+          const modalRef = this.modalService.open(TickTickProjectModalComponent, { size: 'lg', backdrop: 'static' });
+          modalRef.componentInstance.projects = projects;
+          modalRef.componentInstance.initialTitle = (evaluationDecision.decision ?? '').trim();
+          modalRef.componentInstance.defaultProjectName = defaultProjectName;
 
-        modalRef.closed
-          .pipe(
-            takeUntilDestroyed(this.destroyRef),
-            filter((value): value is ITickTickProjectModalResult => typeof value === 'object' && value !== null && 'title' in value),
-            tap(value =>
-              this.executeIntegrationPush(evaluationDecision, provider, {
-                projectId: value.projectId,
-                title: value.title,
-              }),
-            ),
-          )
-          .subscribe();
-      },
-      error: () => {
-        this.integrationPushingKeys.delete(key);
-        // The global ErrorHandlerInterceptor broadcasts the HTTP error, which AlertErrorComponent handles.
-      },
-    });
+          modalRef.closed
+            .pipe(
+              takeUntilDestroyed(this.destroyRef),
+              filter((value): value is ITickTickProjectModalResult => typeof value === 'object' && value !== null && 'title' in value),
+              tap(value =>
+                this.executeIntegrationPush(evaluationDecision, provider, {
+                  projectId: value.projectId,
+                  title: value.title,
+                }),
+              ),
+            )
+            .subscribe();
+        },
+        error: () => {
+          this.integrationPushingKeys.delete(key);
+          // The global ErrorHandlerInterceptor broadcasts the HTTP error, which AlertErrorComponent handles.
+        },
+      });
   }
 
   private executeIntegrationPush(
@@ -552,12 +557,7 @@ export class EvaluationDecisionComponent implements OnInit {
   }
 
   private escapeHtml(value: string): string {
-    return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   private loadFromRoute(): void {
@@ -577,8 +577,6 @@ export class EvaluationDecisionComponent implements OnInit {
 
     return merged;
   }
-
-
 
   private restoreViewMode(): DecisionListViewMode {
     if (typeof window === 'undefined') {
@@ -659,5 +657,4 @@ export class EvaluationDecisionComponent implements OnInit {
       )
       .subscribe();
   }
-
 }

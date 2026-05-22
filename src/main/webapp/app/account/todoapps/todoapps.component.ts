@@ -52,7 +52,10 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
       this.alertService.addAlert({ type: 'success', translationKey: 'todoapps.messages.ticktickAuthorized' });
       this.loadConfigs();
     } else {
-      this.alertService.addAlert({ type: 'danger', message: event.data?.message || this.translateService.instant('todoapps.messages.ticktickAuthorizeFailed') });
+      this.alertService.addAlert({
+        type: 'danger',
+        message: event.data?.message || this.translateService.instant('todoapps.messages.ticktickAuthorizeFailed'),
+      });
     }
   };
 
@@ -111,10 +114,10 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
     this.setSaving(provider, true);
     const payload: ITodoAppConfigUpdate = {
       enabled: isEnabled,
-      accessToken: isEnabled ? (form.controls.accessToken.getRawValue().trim() || null) : null,
-      externalUserId: isEnabled ? (form.controls.externalUserId.getRawValue().trim() || null) : null,
-      defaultProjectId: isEnabled ? (form.controls.defaultProjectId.getRawValue().trim() || null) : null,
-      defaultProjectName: isEnabled ? (form.controls.defaultProjectName.getRawValue().trim() || null) : null,
+      accessToken: isEnabled ? form.controls.accessToken.getRawValue().trim() || null : null,
+      externalUserId: isEnabled ? form.controls.externalUserId.getRawValue().trim() || null : null,
+      defaultProjectId: isEnabled ? form.controls.defaultProjectId.getRawValue().trim() || null : null,
+      defaultProjectName: isEnabled ? form.controls.defaultProjectName.getRawValue().trim() || null : null,
     };
 
     this.todoAppsService.update(provider, payload).subscribe({
@@ -127,10 +130,9 @@ export default class TodoAppsComponent implements OnInit, OnDestroy {
         this.setSaving(provider, false);
         this.alertService.addAlert({
           type: 'success',
-          message: this.translateService.instant(
-            isEnabled ? 'todoapps.messages.enableSuccess' : 'todoapps.messages.disableSuccess',
-            { provider: this.getProviderLabel(provider) },
-          ),
+          message: this.translateService.instant(isEnabled ? 'todoapps.messages.enableSuccess' : 'todoapps.messages.disableSuccess', {
+            provider: this.getProviderLabel(provider),
+          }),
         });
       },
       error: error => {

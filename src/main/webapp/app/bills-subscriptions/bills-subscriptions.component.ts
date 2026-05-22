@@ -35,10 +35,10 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
   private readonly translateService = inject(TranslateService);
   private readonly ngZone = inject(NgZone);
 
-   @ViewChild('editExpenseModal') editExpenseModal?: TemplateRef<unknown>;
+  @ViewChild('editExpenseModal') editExpenseModal?: TemplateRef<unknown>;
 
-   private editModalRef: NgbModalRef | null = null;
-   private overdueCheckInterval: ReturnType<typeof setInterval> | null = null;
+  private editModalRef: NgbModalRef | null = null;
+  private overdueCheckInterval: ReturnType<typeof setInterval> | null = null;
 
   readonly billingCycleOptions = Object.values(BillingCycle);
   readonly renewalReminderOptions = Object.values(RenewalReminderOption);
@@ -78,8 +78,8 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
     providerUrl: new FormControl<string | null>(null),
     accountEmail: new FormControl<string | null>(null),
     accountUsername: new FormControl<string | null>(null),
-     notes: new FormControl<string | null>(null),
-   });
+    notes: new FormControl<string | null>(null),
+  });
 
   ngOnInit(): void {
     this.loadExpenses();
@@ -89,7 +89,6 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopOverdueCheckInterval();
   }
-
 
   loadExpenses(): void {
     this.isLoading = true;
@@ -113,7 +112,9 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
     const filtered = this.expenses.filter(expense => {
       const matchesSearch =
         !this.searchTerm.trim() ||
-        `${expense.serviceName} ${expense.description ?? ''} ${expense.notes ?? ''}`.toLowerCase().includes(this.searchTerm.trim().toLowerCase());
+        `${expense.serviceName} ${expense.description ?? ''} ${expense.notes ?? ''}`
+          .toLowerCase()
+          .includes(this.searchTerm.trim().toLowerCase());
       const matchesStatus = this.statusFilter === 'ALL' || expense.status === this.statusFilter;
       const matchesPeriod = this.periodFilter === 'ALL_MONTHS' || this.isInCurrentMonth(expense);
       return matchesSearch && matchesStatus && matchesPeriod;
@@ -152,7 +153,10 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
 
   get upcomingRenewals(): number {
     const limit = dayjs().add(30, 'day');
-    return this.expenses.filter(expense => expense.renewalDate && expense.renewalDate.isAfter(dayjs().subtract(1, 'day')) && expense.renewalDate.isBefore(limit.add(1, 'day'))).length;
+    return this.expenses.filter(
+      expense =>
+        expense.renewalDate && expense.renewalDate.isAfter(dayjs().subtract(1, 'day')) && expense.renewalDate.isBefore(limit.add(1, 'day')),
+    ).length;
   }
 
   get monthlyExpensesSar(): number {
@@ -355,11 +359,17 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
         })
         .subscribe({
           next: () => {
-            this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseMarkedPaidSuccess') });
+            this.alertService.addAlert({
+              type: 'success',
+              message: this.translateService.instant('billsSubscriptions.expenseMarkedPaidSuccess'),
+            });
             this.loadExpenses();
           },
           error: () => {
-            this.alertService.addAlert({ type: 'danger', message: this.translateService.instant('billsSubscriptions.expenseStatusUpdateError') });
+            this.alertService.addAlert({
+              type: 'danger',
+              message: this.translateService.instant('billsSubscriptions.expenseStatusUpdateError'),
+            });
           },
         });
     });
@@ -372,7 +382,9 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
 
     const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
     modalRef.componentInstance.title = this.translateService.instant('billsSubscriptions.deleteExpenseTitle');
-    modalRef.componentInstance.message = this.translateService.instant('billsSubscriptions.deleteExpenseConfirm', { serviceName: expense.serviceName });
+    modalRef.componentInstance.message = this.translateService.instant('billsSubscriptions.deleteExpenseConfirm', {
+      serviceName: expense.serviceName,
+    });
     modalRef.componentInstance.confirmButtonText = this.translateService.instant('entity.action.delete');
     modalRef.componentInstance.confirmButtonClass = 'btn-danger';
 
@@ -383,7 +395,10 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
 
       this.subscriptionService.delete(expense.id!).subscribe({
         next: () => {
-          this.alertService.addAlert({ type: 'success', message: this.translateService.instant('billsSubscriptions.expenseDeletedSuccess') });
+          this.alertService.addAlert({
+            type: 'success',
+            message: this.translateService.instant('billsSubscriptions.expenseDeletedSuccess'),
+          });
           this.loadExpenses();
         },
         error: () => {
@@ -549,7 +564,6 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
     return this.getMonthlyEquivalent(expense) * 12;
   }
 
-
   private convertToSar(amount: number, currency?: string | null): number {
     return currency === 'USD' ? amount * 3.75 : amount;
   }
@@ -578,9 +592,9 @@ export default class BillsSubscriptionsComponent implements OnInit, OnDestroy {
     }
   }
 
-   private roundToTwoDecimals(value: number): number {
-      return Math.round((value + Number.EPSILON) * 100) / 100;
-    }
+  private roundToTwoDecimals(value: number): number {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+  }
 
   toggleSort(field: 'DATE' | 'NAME' | 'AMOUNT' | 'STATUS'): void {
     if (this.sortBy === field) {

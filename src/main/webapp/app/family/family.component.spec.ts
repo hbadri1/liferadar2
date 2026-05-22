@@ -413,4 +413,3 @@ describe('FamilyComponent', () => {
     expect(adminComp.hasObjectiveProgressInTrendWindow(objective)).toBe(true);
   });
 });
-

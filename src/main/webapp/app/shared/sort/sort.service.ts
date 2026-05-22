@@ -59,7 +59,12 @@ export class SortService {
     if (value instanceof Date) {
       return value.valueOf();
     }
-    if (typeof value === 'object' && value !== null && 'valueOf' in value && typeof (value as { valueOf: () => unknown }).valueOf === 'function') {
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      'valueOf' in value &&
+      typeof (value as { valueOf: () => unknown }).valueOf === 'function'
+    ) {
       const numericValue = (value as { valueOf: () => unknown }).valueOf();
       if (typeof numericValue === 'number' && Number.isFinite(numericValue)) {
         return numericValue;

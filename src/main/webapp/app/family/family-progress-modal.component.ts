@@ -96,4 +96,3 @@ export class FamilyProgressModalComponent implements OnInit {
     }
   }
 }
-

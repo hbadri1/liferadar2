@@ -31,7 +31,10 @@ export class TodoAppsService {
   }
 
   disconnectTickTick(): Observable<TickTickDisconnectResponseType> {
-    return this.http.post<{ success: boolean; message: string }>(`${this.todoAppsResourceUrl}/ticktick/disconnect`, {}, { observe: 'response' });
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.todoAppsResourceUrl}/ticktick/disconnect`,
+      {},
+      { observe: 'response' },
+    );
   }
 }
-

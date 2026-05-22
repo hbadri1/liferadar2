@@ -126,4 +126,3 @@ export default class NotificationsComponent implements OnInit {
     return this.notifications.some(notification => notification.status === 'UNREAD');
   }
 }
-

@@ -83,4 +83,3 @@ export const CURRENCIES = [
   { value: 'NOK', label: 'NOK (kr) - Norwegian Krone' },
   { value: 'DKK', label: 'DKK (kr) - Danish Krone' },
 ];
-

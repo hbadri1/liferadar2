@@ -34,8 +34,7 @@ export class SubPillarUpdateComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: SubPillarFormGroup = this.subPillarFormService.createSubPillarFormGroup();
 
-  comparePillar = (o1: IPillar | null, o2: IPillar | null): boolean =>
-    this.pillarService.comparePillar(o1, o2);
+  comparePillar = (o1: IPillar | null, o2: IPillar | null): boolean => this.pillarService.comparePillar(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ subPillar }) => {
@@ -96,14 +95,7 @@ export class SubPillarUpdateComponent implements OnInit {
     this.pillarService
       .query()
       .pipe(map((res: HttpResponse<IPillar[]>) => res.body ?? []))
-      .pipe(
-        map((pillars: IPillar[]) =>
-          this.pillarService.addPillarToCollectionIfMissing<IPillar>(
-            pillars,
-            this.subPillar?.pillar,
-          ),
-        ),
-      )
+      .pipe(map((pillars: IPillar[]) => this.pillarService.addPillarToCollectionIfMissing<IPillar>(pillars, this.subPillar?.pillar)))
       .subscribe((pillars: IPillar[]) => (this.pillarsSharedCollection = pillars));
   }
 
@@ -124,10 +116,7 @@ export class SubPillarUpdateComponent implements OnInit {
       }
 
       this.editForm.patchValue({ pillar: body });
-      this.pillarsSharedCollection = this.pillarService.addPillarToCollectionIfMissing<IPillar>(
-        this.pillarsSharedCollection,
-        body,
-      );
+      this.pillarsSharedCollection = this.pillarService.addPillarToCollectionIfMissing<IPillar>(this.pillarsSharedCollection, body);
     });
   }
 }

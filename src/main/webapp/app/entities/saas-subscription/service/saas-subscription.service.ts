@@ -81,22 +81,18 @@ export class SaaSSubscriptionService {
   update(saasSubscription: ISaaSSubscription): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(saasSubscription);
     return this.http
-      .put<RestSaaSSubscription>(
-        `${this.resourceUrl}/${this.getSaaSSubscriptionIdentifier(saasSubscription)}`,
-        copy,
-        { observe: 'response' }
-      )
+      .put<RestSaaSSubscription>(`${this.resourceUrl}/${this.getSaaSSubscriptionIdentifier(saasSubscription)}`, copy, {
+        observe: 'response',
+      })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   partialUpdate(saasSubscription: PartialUpdateSaaSSubscription): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(saasSubscription);
     return this.http
-      .patch<RestSaaSSubscription>(
-        `${this.resourceUrl}/${this.getSaaSSubscriptionIdentifier(saasSubscription)}`,
-        copy,
-        { observe: 'response' }
-      )
+      .patch<RestSaaSSubscription>(`${this.resourceUrl}/${this.getSaaSSubscriptionIdentifier(saasSubscription)}`, copy, {
+        observe: 'response',
+      })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
@@ -132,7 +128,7 @@ export class SaaSSubscriptionService {
     return this.http.get<IMonthlyPaidExpenses>(`${this.resourceUrl}/metrics/monthly-paid-current`, { observe: 'response' });
   }
 
-  getUpcomingRenewals(days: number = 30): Observable<EntityArrayResponseType> {
+  getUpcomingRenewals(days = 30): Observable<EntityArrayResponseType> {
     return this.http
       .get<RestSaaSSubscription[]>(`${this.resourceUrl}/upcoming/renewals`, {
         params: { days },
@@ -153,10 +149,7 @@ export class SaaSSubscriptionService {
     return saasSubscription.id!;
   }
 
-  compareSaaSSubscription(
-    o1: Pick<ISaaSSubscription, 'id'> | null,
-    o2: Pick<ISaaSSubscription, 'id'> | null
-  ): boolean {
+  compareSaaSSubscription(o1: Pick<ISaaSSubscription, 'id'> | null, o2: Pick<ISaaSSubscription, 'id'> | null): boolean {
     return o1 && o2 ? this.getSaaSSubscriptionIdentifier(o1) === this.getSaaSSubscriptionIdentifier(o2) : o1 === o2;
   }
 
@@ -167,7 +160,7 @@ export class SaaSSubscriptionService {
     const saasSubscriptions: Type[] = saasSubscriptionsToCheck.filter(isPresent);
     if (saasSubscriptions.length > 0) {
       const saasSubscriptionCollectionIdentifiers = saasSubscriptionCollection.map(saasSubscriptionItem =>
-        this.getSaaSSubscriptionIdentifier(saasSubscriptionItem)
+        this.getSaaSSubscriptionIdentifier(saasSubscriptionItem),
       );
       const saasSubscriptionsToAdd = saasSubscriptions.filter(saasSubscriptionItem => {
         const saasSubscriptionIdentifier = this.getSaaSSubscriptionIdentifier(saasSubscriptionItem);
@@ -183,7 +176,7 @@ export class SaaSSubscriptionService {
   }
 
   protected convertDateFromClient<T extends ISaaSSubscription | NewSaaSSubscription | PartialUpdateSaaSSubscription>(
-    saasSubscription: T
+    saasSubscription: T,
   ): RestOf<T> {
     const billingItem = saasSubscription as Partial<ISaaSSubscription>;
     return {
@@ -229,4 +222,3 @@ export class SaaSSubscriptionService {
     });
   }
 }
-

@@ -7,10 +7,7 @@ import { forkJoin } from 'rxjs';
 import SharedModule from 'app/shared/shared.module';
 import { ISubPillarItem } from 'app/entities/sub-pillar-item/sub-pillar-item.model';
 import { SubPillarItemService } from 'app/entities/sub-pillar-item/service/sub-pillar-item.service';
-import {
-  SubPillarItemFormService,
-  SubPillarItemFormGroup,
-} from 'app/entities/sub-pillar-item/update/sub-pillar-item-form.service';
+import { SubPillarItemFormService, SubPillarItemFormGroup } from 'app/entities/sub-pillar-item/update/sub-pillar-item-form.service';
 import { ISubPillar } from 'app/entities/sub-pillar/sub-pillar.model';
 import { SubPillarItemTranslationService } from 'app/entities/sub-pillar-item-translation/service/sub-pillar-item-translation.service';
 import { LangCode } from 'app/entities/enumerations/lang-code.model';

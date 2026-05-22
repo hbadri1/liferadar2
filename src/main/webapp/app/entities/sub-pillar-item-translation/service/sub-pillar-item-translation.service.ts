@@ -69,8 +69,8 @@ export class SubPillarItemTranslationService {
   ): Type[] {
     const subPillarItemTranslations: Type[] = subPillarItemTranslationsToCheck.filter(isPresent);
     if (subPillarItemTranslations.length > 0) {
-      const subPillarItemTranslationCollectionIdentifiers = subPillarItemTranslationCollection.map(
-        subPillarItemTranslationItem => this.getSubPillarItemTranslationIdentifier(subPillarItemTranslationItem),
+      const subPillarItemTranslationCollectionIdentifiers = subPillarItemTranslationCollection.map(subPillarItemTranslationItem =>
+        this.getSubPillarItemTranslationIdentifier(subPillarItemTranslationItem),
       );
       const subPillarItemTranslationsToAdd = subPillarItemTranslations.filter(subPillarItemTranslationItem => {
         const subPillarItemTranslationIdentifier = this.getSubPillarItemTranslationIdentifier(subPillarItemTranslationItem);

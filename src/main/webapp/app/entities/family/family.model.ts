@@ -8,4 +8,3 @@ export interface IFamily {
 }
 
 export type NewFamily = Omit<IFamily, 'id'> & { id: null };
-

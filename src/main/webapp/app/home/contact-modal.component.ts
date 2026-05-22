@@ -73,4 +73,3 @@ export class ContactModalComponent implements OnInit {
     this.activeModal.close();
   }
 }
-

@@ -528,58 +528,12 @@
 }
 
 .vertical-view-icon {
-  font-weight: 700;
-  line-height: 1;
-}
+    font-weight: 700;
+    line-height: 1;
+  }
 
-.trip-vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-.trip-vertical-item {
-  border: 1px solid #dbe3f0;
-  border-radius: 10px;
-  background: #f8fbff;
-  padding: 0.6rem 0.75rem;
-}
-
-.trip-vertical-item--gap {
-  border-style: dashed;
-  border-color: #e0c870;
-  background: #fff8dd;
-}
-
-.trip-vertical-item-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #24324a;
-  margin-bottom: 0.2rem;
-}
-
-.trip-vertical-item-meta {
-  display: grid;
-  gap: 0.15rem;
-  font-size: 0.72rem;
-  color: #5a6780;
-}
-
-.trip-vertical-arrow {
-  text-align: center;
-  font-size: 1rem;
-  color: #7c8aa3;
-  line-height: 1;
-}
-
-.trip-vertical-empty {
-  font-size: 0.8rem;
-  color: #6c757d;
-  padding-top: 0.35rem;
-}
-
-// ─── Responsive ───────────────────────────────────────────────────────────────
-@media (max-width: 768px) {
+ // ─── Responsive ───────────────────────────────────────────────────────────────
+ @media (max-width: 768px) {
   .trip-view-switch {
     justify-content: flex-start;
   }

@@ -89,23 +89,23 @@ export default class SettingsComponent implements OnInit {
     });
   }
 
-   toggleFamilyManagement(): void {
-     // Family management can only be enabled, never disabled
-     if (!this.canManageFamily()) {
-       this.managingFamily.set(true);
-       this.http.post('/api/account/enable-family-management', {}).subscribe({
-         next: () => {
-           this.canManageFamily.set(true);
-           this.managingFamily.set(false);
-           this.success.set(true);
-           this.refreshSessionAfterRoleChange();
-         },
-         error: () => {
-           this.managingFamily.set(false);
-         },
-       });
-     }
-   }
+  toggleFamilyManagement(): void {
+    // Family management can only be enabled, never disabled
+    if (!this.canManageFamily()) {
+      this.managingFamily.set(true);
+      this.http.post('/api/account/enable-family-management', {}).subscribe({
+        next: () => {
+          this.canManageFamily.set(true);
+          this.managingFamily.set(false);
+          this.success.set(true);
+          this.refreshSessionAfterRoleChange();
+        },
+        error: () => {
+          this.managingFamily.set(false);
+        },
+      });
+    }
+  }
 
   private refreshSessionAfterRoleChange(): void {
     // JWT authorities are embedded in the token; re-login is required after role changes.

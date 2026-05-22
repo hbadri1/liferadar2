@@ -28,9 +28,7 @@ export type PillarTranslationFormGroup = FormGroup<PillarTranslationFormGroupCon
 
 @Injectable({ providedIn: 'root' })
 export class PillarTranslationFormService {
-  createPillarTranslationFormGroup(
-    pillarTranslation: PillarTranslationFormGroupInput = { id: null },
-  ): PillarTranslationFormGroup {
+  createPillarTranslationFormGroup(pillarTranslation: PillarTranslationFormGroupInput = { id: null }): PillarTranslationFormGroup {
     const pillarTranslationRawValue = {
       ...this.getFormDefaults(),
       ...pillarTranslation,

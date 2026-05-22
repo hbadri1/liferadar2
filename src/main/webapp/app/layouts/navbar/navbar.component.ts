@@ -67,7 +67,6 @@ export default class NavbarComponent implements OnInit {
     });
   }
 
-
   collapseNavbar(): void {
     this.isNavbarCollapsed.set(true);
   }

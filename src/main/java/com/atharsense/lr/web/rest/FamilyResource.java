@@ -103,9 +103,10 @@ public class FamilyResource {
 
     /**
      * GET /api/family/info — get family information for the current user.
+     * For ROLE_CHILD users, returns the parent's family info (family of the user who created them).
      */
     @GetMapping("/info")
-    @Transactional(readOnly = true)
+    @Transactional
     @PreAuthorize("hasAnyAuthority('" + AuthoritiesConstants.PARENT + "', '" + AuthoritiesConstants.ADMIN + "', '" + AuthoritiesConstants.CHILD + "')")
     public ResponseEntity<FamilyInfo> getFamilyInfo() {
         String currentLogin = SecurityUtils.getCurrentUserLogin()
@@ -114,9 +115,25 @@ public class FamilyResource {
         User currentUser = userRepository.findOneByLogin(currentLogin)
             .orElseThrow(() -> new BadRequestAlertException("User not found", "family", "notfound"));
 
+        // For CHILD users: look up their parent's family instead
+        boolean isChildUser = currentUser.getAuthorities().stream()
+            .anyMatch(a -> AuthoritiesConstants.CHILD.equals(a.getName()));
+
+        if (isChildUser && currentUser.getCreatedBy() != null) {
+            return userRepository.findOneByLogin(currentUser.getCreatedBy())
+                .map(parent -> {
+                    Family parentFamily = parent.getFamily();
+                    if (parentFamily == null) {
+                        return ResponseEntity.ok(new FamilyInfo(null, parent.getFirstName() != null ? parent.getFirstName() + "'s Family" : "My Family"));
+                    }
+                    return ResponseEntity.ok(new FamilyInfo(parentFamily.getId(), parentFamily.getName()));
+                })
+                .orElse(ResponseEntity.ok(new FamilyInfo(null, "My Family")));
+        }
+
         Family family = currentUser.getFamily();
         if (family == null) {
-            // If user doesn't have a family, create one
+            // If user doesn't have a family yet, create one automatically
             family = new Family();
             family.setName(currentUser.getFirstName() != null ? currentUser.getFirstName() + "'s Family" : "My Family");
             family = familyRepository.save(family);

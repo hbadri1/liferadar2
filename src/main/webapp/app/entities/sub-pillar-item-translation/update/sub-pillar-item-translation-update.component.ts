@@ -12,10 +12,7 @@ import { SubPillarItemService } from 'app/entities/sub-pillar-item/service/sub-p
 import { LangCode } from 'app/entities/enumerations/lang-code.model';
 import { SubPillarItemTranslationService } from '../service/sub-pillar-item-translation.service';
 import { ISubPillarItemTranslation } from '../sub-pillar-item-translation.model';
-import {
-  SubPillarItemTranslationFormGroup,
-  SubPillarItemTranslationFormService,
-} from './sub-pillar-item-translation-form.service';
+import { SubPillarItemTranslationFormGroup, SubPillarItemTranslationFormService } from './sub-pillar-item-translation-form.service';
 
 @Component({
   selector: 'jhi-sub-pillar-item-translation-update',
@@ -35,8 +32,7 @@ export class SubPillarItemTranslationUpdateComponent implements OnInit {
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: SubPillarItemTranslationFormGroup =
-    this.subPillarItemTranslationFormService.createSubPillarItemTranslationFormGroup();
+  editForm: SubPillarItemTranslationFormGroup = this.subPillarItemTranslationFormService.createSubPillarItemTranslationFormGroup();
 
   compareSubPillarItem = (o1: ISubPillarItem | null, o2: ISubPillarItem | null): boolean =>
     this.subPillarItemService.compareSubPillarItem(o1, o2);

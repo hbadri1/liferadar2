@@ -29,4 +29,3 @@ export default class AboutComponent {
     { number: 4, key: 'grow' },
   ];
 }
-

@@ -17,7 +17,7 @@ export class FamilyObjectiveModalComponent implements OnInit {
   @Input() children: ChildUser[] = [];
   @Input() objective: FamilyObjective | null = null;
   @Input() objectiveIds: number[] = [];
-  @Input() objectiveAssignments: Array<{ objectiveId: number; kidLogin: string }> = [];
+  @Input() objectiveAssignments: { objectiveId: number; kidLogin: string }[] = [];
 
   isSaving = signal(false);
   selectionError = signal(false);
@@ -182,11 +182,16 @@ export class FamilyObjectiveModalComponent implements OnInit {
 
   getMilestoneLabel(milestone: ObjectiveMilestone): string {
     switch (milestone) {
-      case ObjectiveMilestone.WEEK:   return 'Weekly';
-      case ObjectiveMilestone.MONTH:  return 'Monthly';
-      case ObjectiveMilestone.QUARTER: return 'Quarterly';
-      case ObjectiveMilestone.YEAR:   return 'Yearly';
-      default: return milestone;
+      case ObjectiveMilestone.WEEK:
+        return 'Weekly';
+      case ObjectiveMilestone.MONTH:
+        return 'Monthly';
+      case ObjectiveMilestone.QUARTER:
+        return 'Quarterly';
+      case ObjectiveMilestone.YEAR:
+        return 'Yearly';
+      default:
+        return milestone;
     }
   }
 
@@ -204,14 +209,22 @@ export class FamilyObjectiveModalComponent implements OnInit {
   private buildUpdateRequest(payload: {
     name: string;
     description: string | null;
-    itemDefinitions: Array<{ id: number | null; name: string; description: string | null; unit: ObjectiveUnit; target: number | null; milestone: ObjectiveMilestone | null }>;
+    itemDefinitions: {
+      id: number | null;
+      name: string;
+      description: string | null;
+      unit: ObjectiveUnit;
+      target: number | null;
+      milestone: ObjectiveMilestone | null;
+    }[];
   }) {
     const selectedLogins = Array.from(this.selectedKidLogins);
-    const currentAssignments = this.objectiveAssignments.length > 0
-      ? this.objectiveAssignments
-      : this.objective?.id && this.objective?.kidLogin
-        ? [{ objectiveId: this.objective.id, kidLogin: this.objective.kidLogin }]
-        : [];
+    const currentAssignments =
+      this.objectiveAssignments.length > 0
+        ? this.objectiveAssignments
+        : this.objective?.id && this.objective?.kidLogin
+          ? [{ objectiveId: this.objective.id, kidLogin: this.objective.kidLogin }]
+          : [];
 
     const assignmentByLogin = new Map<string, number[]>();
     for (const assignment of currentAssignments) {
@@ -250,4 +263,3 @@ export class FamilyObjectiveModalComponent implements OnInit {
     return forkJoin(requests);
   }
 }
-

@@ -9,4 +9,3 @@ export interface TripTodoActionsPayload {
 }
 
 export type TripTodoActionsListName = keyof TripTodoActionsPayload;
-

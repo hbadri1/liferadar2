@@ -14,11 +14,9 @@ import { StepFormModalComponent } from './step-form-modal.component';
 import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
 import { ITripPlanStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
 
-type TimelineEntry =
-  | { kind: 'today'; sortDate: dayjs.Dayjs }
-  | { kind: 'step'; sortDate: dayjs.Dayjs; step: ITripPlanStep };
+type TimelineEntry = { kind: 'today'; sortDate: dayjs.Dayjs } | { kind: 'step'; sortDate: dayjs.Dayjs; step: ITripPlanStep };
 
-type TripViewMode = 'timeline' | 'calendar' | 'gantt' | 'vertical';
+type TripViewMode = 'timeline' | 'calendar' | 'gantt';
 
 type CalendarCell = {
   date: dayjs.Dayjs;
@@ -34,21 +32,6 @@ type GanttRow = {
   widthPct: number;
 };
 
-type VerticalFlowEntry =
-  | {
-      kind: 'step';
-      step: ITripPlanStep;
-      start: dayjs.Dayjs;
-      end: dayjs.Dayjs;
-      durationLabel: string;
-    }
-  | {
-      kind: 'gap';
-      start: dayjs.Dayjs;
-      end: dayjs.Dayjs;
-      durationLabel: string;
-    };
-
 
 @Component({
   selector: 'jhi-trips',
@@ -58,6 +41,7 @@ type VerticalFlowEntry =
 })
 export default class TripsComponent implements OnInit {
   trips = signal<ITripPlan[]>([]);
+  orderedTrips = computed(() => this.sortTripsForDisplay(this.trips()));
   selectedTrip = signal<ITripPlan | null>(null);
   steps = signal<ITripPlanStep[]>([]);
   isLoadingTrips = signal(false);
@@ -70,13 +54,14 @@ export default class TripsComponent implements OnInit {
   account = inject(AccountService).trackCurrentAccount();
 
   canEdit = computed(() => {
-    const authorities = (this.account()?.authorities ?? [])
-      .map(a => (a ?? '').toString().trim().toUpperCase());
+    const authorities = (this.account()?.authorities ?? []).map(a => (a ?? '').toString().trim().toUpperCase());
     return (
-      authorities.includes('ROLE_USER') || authorities.includes('USER') ||
-
-      authorities.includes('ROLE_PARENT') || authorities.includes('PARENT') ||
-      authorities.includes('ROLE_ADMIN') || authorities.includes('ADMIN')
+      authorities.includes('ROLE_USER') ||
+      authorities.includes('USER') ||
+      authorities.includes('ROLE_PARENT') ||
+      authorities.includes('PARENT') ||
+      authorities.includes('ROLE_ADMIN') ||
+      authorities.includes('ADMIN')
     );
   });
 
@@ -160,7 +145,9 @@ export default class TripsComponent implements OnInit {
   openCreateTrip(): void {
     const ref = this.modalService.open(TripFormModalComponent, { size: 'lg', centered: true });
     ref.result.then(
-      (result: ITripPlan) => { if (result) this.loadTrips(); },
+      (result: ITripPlan) => {
+        if (result) this.loadTrips();
+      },
       () => {},
     );
   }
@@ -214,13 +201,11 @@ export default class TripsComponent implements OnInit {
 
   openAddStep(prefillDate?: dayjs.Dayjs): void {
     const trip = this.selectedTrip();
-    if (!trip || !trip.id) return;
+    if (!trip?.id) return;
     if (this.isTripFinished(trip)) return;
 
     // Calculate next sequence based on max existing sequence
-    const maxSequence = this.steps().length > 0
-      ? Math.max(...this.steps().map(s => s.sequence ?? 0))
-      : 0;
+    const maxSequence = this.steps().length > 0 ? Math.max(...this.steps().map(s => s.sequence ?? 0)) : 0;
 
     const ref = this.modalService.open(StepFormModalComponent, { size: 'lg', centered: true });
     ref.componentInstance.trip = trip;
@@ -248,7 +233,7 @@ export default class TripsComponent implements OnInit {
 
   openEditStep(step: ITripPlanStep): void {
     const trip = this.selectedTrip();
-    if (!trip || !trip.id) return;
+    if (!trip?.id) return;
     if (this.isTripFinished(trip)) return;
     const ref = this.modalService.open(StepFormModalComponent, { size: 'lg', centered: true });
     ref.componentInstance.trip = trip;
@@ -308,11 +293,10 @@ export default class TripsComponent implements OnInit {
   }
 
   timelineEntries(): TimelineEntry[] {
-    const stepEntries: TimelineEntry[] = this.steps()
-      .map(step => {
-        const sortDate = this.toDayjsDate(step.startDate) ?? this.toDayjsDate(step.endDate) ?? dayjs();
-        return { kind: 'step' as const, sortDate, step };
-      });
+    const stepEntries: TimelineEntry[] = this.steps().map(step => {
+      const sortDate = this.toDayjsDate(step.startDate) ?? this.toDayjsDate(step.endDate) ?? dayjs();
+      return { kind: 'step' as const, sortDate, step };
+    });
 
     const todayEntry: TimelineEntry = {
       kind: 'today',
@@ -342,6 +326,10 @@ export default class TripsComponent implements OnInit {
 
       return 0;
     });
+  }
+
+  stepIndexAt(i: number): number {
+    return this.timelineEntries().slice(0, i + 1).filter(e => e.kind === 'step').length;
   }
 
   getCurrentDate(): dayjs.Dayjs {
@@ -442,14 +430,15 @@ export default class TripsComponent implements OnInit {
       const offsetPct = ((clampedStart.valueOf() - range.start.valueOf()) / rangeDuration) * 100;
       const rawWidthPct = ((normalizedEnd.valueOf() - clampedStart.valueOf()) / rangeDuration) * 100;
 
-      return [{
-        step,
-        offsetPct: Math.max(0, Math.min(100, offsetPct)),
-        widthPct: Math.max(1.2, Math.min(100, rawWidthPct)),
-      }];
+      return [
+        {
+          step,
+          offsetPct: Math.max(0, Math.min(100, offsetPct)),
+          widthPct: Math.max(1.2, Math.min(100, rawWidthPct)),
+        },
+      ];
     });
   }
-
 
   ganttTodayMarkerPct(): number | null {
     const range = this.getGanttRange();
@@ -513,76 +502,34 @@ export default class TripsComponent implements OnInit {
     return ticks;
   }
 
-  ganttBarDateLabel(row: GanttRow): string {
-    return this.stepDateRangeLabel(row.step);
+   ganttBarDateLabel(row: GanttRow): string {
+     return this.stepDateRangeLabel(row.step);
+   }
+
+   isStepActiveOnDay(step: ITripPlanStep, day: dayjs.Dayjs): boolean {
+    const stepStart = this.toDayjsDate(step.startDate);
+    const stepEnd = this.toDayjsDate(step.endDate) ?? stepStart;
+    if (!stepStart || !stepEnd) return false;
+    const startsBeforeOrOn = stepStart.isSame(day, 'day') || stepStart.isBefore(day, 'day');
+    const endsAfterOrOn = stepEnd.isSame(day, 'day') || stepEnd.isAfter(day, 'day');
+    return startsBeforeOrOn && endsAfterOrOn;
   }
 
-  verticalFlowEntries(): VerticalFlowEntry[] {
-    const range = this.getGanttRange();
-    if (!range) {
-      return [];
-    }
+  isStepStartOnDay(step: ITripPlanStep, day: dayjs.Dayjs): boolean {
+    const stepStart = this.toDayjsDate(step.startDate);
+    return !!stepStart && stepStart.isSame(day, 'day');
+  }
 
-    const sortedSteps = this.sortSteps(this.steps())
-      .map(step => {
-        const start = this.toDayjsDate(step.startDate) ?? this.toDayjsDate(step.endDate);
-        const end = this.toDayjsDate(step.endDate) ?? start;
-        if (!start || !end) {
-          return null;
-        }
-
-        const normalizedEnd = end.isBefore(start) ? start : end;
-        return { step, start, end: normalizedEnd };
-      })
-      .filter((entry): entry is { step: ITripPlanStep; start: dayjs.Dayjs; end: dayjs.Dayjs } => !!entry);
-
-    if (sortedSteps.length === 0) {
-      return [];
-    }
-
-    const entries: VerticalFlowEntry[] = [];
-    let cursor = range.start;
-
-    for (const stepEntry of sortedSteps) {
-      if (stepEntry.start.isAfter(cursor)) {
-        entries.push({
-          kind: 'gap',
-          start: cursor,
-          end: stepEntry.start,
-          durationLabel: this.formatDurationDaysHours(cursor, stepEntry.start),
-        });
+     isStepEndOnDay(step: ITripPlanStep, day: dayjs.Dayjs): boolean {
+        const stepEnd = this.toDayjsDate(step.endDate);
+        return !!stepEnd && stepEnd.isSame(day, 'day');
       }
 
-      entries.push({
-        kind: 'step',
-        step: stepEntry.step,
-        start: stepEntry.start,
-        end: stepEntry.end,
-        durationLabel: this.formatDurationDaysHours(stepEntry.start, stepEntry.end),
-      });
+   trackCalendarCell(_index: number, cell: CalendarCell): string {
+     return cell.date.format('YYYY-MM-DD');
+   }
 
-      if (stepEntry.end.isAfter(cursor)) {
-        cursor = stepEntry.end;
-      }
-    }
-
-    if (cursor.isBefore(range.end)) {
-      entries.push({
-        kind: 'gap',
-        start: cursor,
-        end: range.end,
-        durationLabel: this.formatDurationDaysHours(cursor, range.end),
-      });
-    }
-
-    return entries;
-  }
-
-  trackCalendarCell(_index: number, cell: CalendarCell): string {
-    return cell.date.format('YYYY-MM-DD');
-  }
-
-  isTripFinished(trip: ITripPlan | null | undefined): boolean {
+   isTripFinished(trip: ITripPlan | null | undefined): boolean {
     if (!trip) {
       return false;
     }
@@ -623,7 +570,9 @@ export default class TripsComponent implements OnInit {
     if (!tripStart || !tripEnd) {
       return false;
     }
-    return (date.isSame(tripStart, 'day') || date.isAfter(tripStart, 'day')) && (date.isSame(tripEnd, 'day') || date.isBefore(tripEnd, 'day'));
+    return (
+      (date.isSame(tripStart, 'day') || date.isAfter(tripStart, 'day')) && (date.isSame(tripEnd, 'day') || date.isBefore(tripEnd, 'day'))
+    );
   }
 
   private stepsForDate(date: dayjs.Dayjs): ITripPlanStep[] {
@@ -659,9 +608,35 @@ export default class TripsComponent implements OnInit {
         return sequenceA - sequenceB;
       }
 
-
       return (a.id ?? Number.MAX_SAFE_INTEGER) - (b.id ?? Number.MAX_SAFE_INTEGER);
     });
+  }
+
+  private sortTripsForDisplay(trips: ITripPlan[]): ITripPlan[] {
+    return [...trips].sort((a, b) => {
+      const aClosed = this.isTripFinished(a);
+      const bClosed = this.isTripFinished(b);
+      if (aClosed !== bClosed) {
+        return aClosed ? 1 : -1;
+      }
+
+      const createdA = this.getTripCreationSortValue(a);
+      const createdB = this.getTripCreationSortValue(b);
+      if (createdA !== createdB) {
+        return createdB - createdA;
+      }
+
+      return (b.id ?? 0) - (a.id ?? 0);
+    });
+  }
+
+  private getTripCreationSortValue(trip: ITripPlan): number {
+    const createdDate = (trip as ITripPlan & { createdDate?: unknown }).createdDate;
+    const createdTimestamp = this.toDayjsDate(createdDate)?.valueOf();
+    if (createdTimestamp !== undefined) {
+      return createdTimestamp;
+    }
+    return trip.id ?? 0;
   }
 
   private updateTripActions(trip: ITripPlan, actionsJson: string | null): void {
@@ -704,7 +679,7 @@ export default class TripsComponent implements OnInit {
         start: this.toDayjsDate(step.startDate) ?? this.toDayjsDate(step.endDate),
         end: this.toDayjsDate(step.endDate) ?? this.toDayjsDate(step.startDate),
       }))
-      .filter(stepRange => !!stepRange.start && !!stepRange.end) as Array<{ start: dayjs.Dayjs; end: dayjs.Dayjs }>;
+      .filter(stepRange => !!stepRange.start && !!stepRange.end) as { start: dayjs.Dayjs; end: dayjs.Dayjs }[];
 
     if (stepsWithDates.length === 0) {
       return null;
@@ -715,4 +690,3 @@ export default class TripsComponent implements OnInit {
     return { start, end };
   }
 }
-

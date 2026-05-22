@@ -25,10 +25,11 @@ import {
       </header>
 
       <form [formGroup]="form" (ngSubmit)="save()" novalidate>
-
         <!-- Group 1: Name, Amount & Currency -->
         <div class="card mb-3">
-          <div class="card-header py-2 fw-semibold small text-muted" jhiTranslate="billsSubscriptions.groupBasicInfo">Name &amp; Amount</div>
+          <div class="card-header py-2 fw-semibold small text-muted" jhiTranslate="billsSubscriptions.groupBasicInfo">
+            Name &amp; Amount
+          </div>
           <div class="card-body row g-2">
             <div class="col-md-6">
               <label for="serviceName" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.serviceName">Name</label>
@@ -51,7 +52,14 @@ import {
 
             <div class="col-md-1 d-flex align-items-end pb-1">
               @if (form.controls.currency.value === 'USD') {
-                <button type="button" class="btn btn-outline-success btn-sm w-100" (click)="convertUsdToSar()" title="{{ 'billsSubscriptions.convertUsdToSar' | translate }}">⇄</button>
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm w-100"
+                  (click)="convertUsdToSar()"
+                  title="{{ 'billsSubscriptions.convertUsdToSar' | translate }}"
+                >
+                  ⇄
+                </button>
               }
             </div>
           </div>
@@ -59,10 +67,14 @@ import {
 
         <!-- Group 2: Dates, Renewals & Payment Method -->
         <div class="card mb-3">
-          <div class="card-header py-2 fw-semibold small text-muted" jhiTranslate="billsSubscriptions.groupDatesRenewals">Dates, Renewals &amp; Payment</div>
+          <div class="card-header py-2 fw-semibold small text-muted" jhiTranslate="billsSubscriptions.groupDatesRenewals">
+            Dates, Renewals &amp; Payment
+          </div>
           <div class="card-body row g-2">
             <div class="col-md-4">
-              <label for="subscriptionDate" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.startDate">Start Date</label>
+              <label for="subscriptionDate" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.startDate"
+                >Start Date</label
+              >
               <input id="subscriptionDate" type="date" class="form-control form-control-sm" formControlName="subscriptionDate" />
             </div>
 
@@ -72,20 +84,24 @@ import {
             </div>
 
             <div class="col-md-4">
-              <label for="billingCycle" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.billingCycle">Billing Cycle</label>
+              <label for="billingCycle" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.billingCycle"
+                >Billing Cycle</label
+              >
               <select id="billingCycle" class="form-select form-select-sm" formControlName="billingCycle">
                 @for (option of billingCycleOptions; track option) {
-                  <option [value]="option">{{ ('billsSubscriptions.billingCycleValues.' + option) | translate }}</option>
+                  <option [value]="option">{{ 'billsSubscriptions.billingCycleValues.' + option | translate }}</option>
                 }
               </select>
             </div>
 
             <div class="col-md-4">
-              <label for="paymentMethod" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.paymentMethod">Payment Method</label>
+              <label for="paymentMethod" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.paymentMethod"
+                >Payment Method</label
+              >
               <select id="paymentMethod" class="form-select form-select-sm" formControlName="paymentMethod">
                 <option [ngValue]="null" jhiTranslate="billsSubscriptions.none">None</option>
                 @for (option of paymentMethodOptions; track option) {
-                  <option [ngValue]="option">{{ ('billsSubscriptions.paymentMethodValues.' + option) | translate }}</option>
+                  <option [ngValue]="option">{{ 'billsSubscriptions.paymentMethodValues.' + option | translate }}</option>
                 }
               </select>
             </div>
@@ -112,7 +128,9 @@ import {
               </div>
               <div class="form-check">
                 <input id="manualRenewal" class="form-check-input" type="checkbox" formControlName="manualRenewal" />
-                <label class="form-check-label small" for="manualRenewal" jhiTranslate="billsSubscriptions.manualRenewal">Manual-renewal</label>
+                <label class="form-check-label small" for="manualRenewal" jhiTranslate="billsSubscriptions.manualRenewal"
+                  >Manual-renewal</label
+                >
               </div>
             </div>
           </div>
@@ -123,22 +141,30 @@ import {
           <div class="card-header py-2 fw-semibold small text-muted" jhiTranslate="billsSubscriptions.groupDetails">Details</div>
           <div class="card-body row g-2">
             <div class="col-md-5">
-              <label for="providerUrl" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.providerUrl">Provider URL</label>
+              <label for="providerUrl" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.providerUrl"
+                >Provider URL</label
+              >
               <input id="providerUrl" type="url" class="form-control form-control-sm" formControlName="providerUrl" />
             </div>
 
             <div class="col-md-4">
-              <label for="accountEmail" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.accountEmail">Account Email</label>
+              <label for="accountEmail" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.accountEmail"
+                >Account Email</label
+              >
               <input id="accountEmail" type="email" class="form-control form-control-sm" formControlName="accountEmail" />
             </div>
 
             <div class="col-md-3">
-              <label for="accountUsername" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.accountUsername">Account Username</label>
+              <label for="accountUsername" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.accountUsername"
+                >Account Username</label
+              >
               <input id="accountUsername" type="text" class="form-control form-control-sm" formControlName="accountUsername" />
             </div>
 
             <div class="col-12">
-              <label for="description" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.description">Description</label>
+              <label for="description" class="form-label form-label-sm mb-1" jhiTranslate="billsSubscriptions.description"
+                >Description</label
+              >
               <textarea id="description" rows="2" class="form-control form-control-sm" formControlName="description"></textarea>
             </div>
 
@@ -154,8 +180,23 @@ import {
         }
 
         <div class="d-flex gap-2">
-          <button class="btn btn-primary" type="submit" [disabled]="form.invalid || isSaving()" jhiTranslate="billsSubscriptions.saveExpense">Save Expense</button>
-          <button class="btn btn-outline-secondary" type="button" (click)="cancel()" [disabled]="isSaving()" jhiTranslate="entity.action.cancel">Cancel</button>
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="form.invalid || isSaving()"
+            jhiTranslate="billsSubscriptions.saveExpense"
+          >
+            Save Expense
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="cancel()"
+            [disabled]="isSaving()"
+            jhiTranslate="entity.action.cancel"
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </section>
@@ -174,7 +215,10 @@ export default class SaaSSubscriptionCreateComponent {
   readonly form = new FormGroup({
     serviceName: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(255)] }),
     amount: new FormControl(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
-    currency: new FormControl('SAR', { nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(3)] }),
+    currency: new FormControl('SAR', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(3)],
+    }),
     subscriptionDate: new FormControl(dayjs().format('YYYY-MM-DD'), { nonNullable: true, validators: [Validators.required] }),
     billingCycle: new FormControl(BillingCycle.MONTHLY, { nonNullable: true, validators: [Validators.required] }),
     dueDate: new FormControl<string | null>(null),
@@ -289,4 +333,3 @@ export default class SaaSSubscriptionCreateComponent {
     }
   }
 }
-

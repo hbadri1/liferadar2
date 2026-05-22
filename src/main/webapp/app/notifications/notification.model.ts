@@ -28,4 +28,3 @@ export interface IUnreadNotificationCount {
 export interface IReadAllNotificationsResponse {
   updated: number;
 }
-

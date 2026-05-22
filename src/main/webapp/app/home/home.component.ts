@@ -50,9 +50,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   ];
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return (
-      authorities.includes(Authority.CHILD) && !authorities.includes(Authority.PARENT) && !authorities.includes(Authority.ADMIN)
-    );
+    return authorities.includes(Authority.CHILD) && !authorities.includes(Authority.PARENT) && !authorities.includes(Authority.ADMIN);
   });
   isFamilyAdmin = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
@@ -109,16 +107,14 @@ export default class HomeComponent implements OnInit, OnDestroy {
       });
 
     // Listen for language changes and refresh translations
-    this.translateService.onLangChange
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        console.log('Language changed, refreshing all data with new translations');
-        // Clear cached data and reload everything with new language
-        this.subPillarsMap.set(new Map());
-        this.subPillarItemsMap.set(new Map());
-        this.evaluationDecisionsMap.set(new Map());
-        this.loadDashboardDataForCurrentUser();
-      });
+    this.translateService.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      console.log('Language changed, refreshing all data with new translations');
+      // Clear cached data and reload everything with new language
+      this.subPillarsMap.set(new Map());
+      this.subPillarItemsMap.set(new Map());
+      this.evaluationDecisionsMap.set(new Map());
+      this.loadDashboardDataForCurrentUser();
+    });
   }
 
   private loadDashboardDataForCurrentUser(): void {
@@ -150,7 +146,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
           this.pillars.set(deduplicatedPillars);
           this.isLoading.set(false);
         },
-        error: (error) => {
+        error: error => {
           console.error('Error loading pillars:', error);
           this.isLoading.set(false);
         },
@@ -174,8 +170,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     const currentLang = this.getNormalizedLanguageKey();
 
     // Try to find translation for current language
-    let translation: IPillarTranslation | null =
-      pillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
+    let translation: IPillarTranslation | null = pillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
 
     // Fallback to English if current language not found
     translation ??= pillar.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
@@ -280,15 +275,18 @@ export default class HomeComponent implements OnInit, OnDestroy {
       }
 
       this.isLoading.set(true);
-      this.pillarService.loadSuggested().pipe(takeUntil(this.destroy$)).subscribe({
-        next: () => {
-          this.loadPillars();
-        },
-        error: error => {
-          console.error('Error loading suggested pillars:', error);
-          this.isLoading.set(false);
-        },
-      });
+      this.pillarService
+        .loadSuggested()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.loadPillars();
+          },
+          error: error => {
+            console.error('Error loading suggested pillars:', error);
+            this.isLoading.set(false);
+          },
+        });
     });
   }
 
@@ -388,7 +386,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
             });
           }
         },
-        error: () => {
+        error() {
           console.error('Failed to load pillar with translations');
         },
       });
@@ -420,7 +418,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
             });
           }
         },
-        error: () => {
+        error() {
           console.error('Failed to load sub-pillar with translations');
         },
       });
@@ -452,7 +450,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
             });
           }
         },
-        error: () => {
+        error() {
           console.error('Failed to load item with translations');
         },
       });
@@ -517,18 +515,21 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.subPillarItemService.delete(item.id).pipe(takeUntil(this.destroy$)).subscribe({
-          next: () => {
-            console.log('Item deleted successfully');
-            // Reload items for the parent sub-pillar
-            if (item.subPillar?.id) {
-              this.viewSubPillarItems(item.subPillar.id);
-            }
-          },
-          error: (error) => {
-            console.error('Error deleting item:', error);
-          },
-        });
+        this.subPillarItemService
+          .delete(item.id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              console.log('Item deleted successfully');
+              // Reload items for the parent sub-pillar
+              if (item.subPillar?.id) {
+                this.viewSubPillarItems(item.subPillar.id);
+              }
+            },
+            error(error) {
+              console.error('Error deleting item:', error);
+            },
+          });
       }
     });
   }
@@ -545,15 +546,18 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.pillarService.delete(pillar.id).pipe(takeUntil(this.destroy$)).subscribe({
-          next: () => {
-            console.log('Pillar deleted successfully');
-            this.loadPillars();
-          },
-          error: (error) => {
-            console.error('Error deleting pillar:', error);
-          },
-        });
+        this.pillarService
+          .delete(pillar.id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              console.log('Pillar deleted successfully');
+              this.loadPillars();
+            },
+            error(error) {
+              console.error('Error deleting pillar:', error);
+            },
+          });
       }
     });
   }
@@ -570,18 +574,21 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.subPillarService.delete(subPillar.id).pipe(takeUntil(this.destroy$)).subscribe({
-          next: () => {
-            console.log('SubPillar deleted successfully');
-            // Reload sub-pillars for the parent pillar
-            if (subPillar.pillar?.id) {
-              this.viewSubPillars(subPillar.pillar.id);
-            }
-          },
-          error: (error) => {
-            console.error('Error deleting sub-pillar:', error);
-          },
-        });
+        this.subPillarService
+          .delete(subPillar.id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              console.log('SubPillar deleted successfully');
+              // Reload sub-pillars for the parent pillar
+              if (subPillar.pillar?.id) {
+                this.viewSubPillars(subPillar.pillar.id);
+              }
+            },
+            error(error) {
+              console.error('Error deleting sub-pillar:', error);
+            },
+          });
       }
     });
   }
@@ -642,8 +649,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     const currentLang = this.getNormalizedLanguageKey();
 
     // Try to find translation for current language
-    let translation: ISubPillarTranslation | null =
-      subPillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
+    let translation: ISubPillarTranslation | null = subPillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
 
     // Fallback to English if current language not found
     translation ??= subPillar.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
@@ -670,8 +676,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     const currentLang = this.getNormalizedLanguageKey();
 
     // Try to find translation for current language
-    let translation: ISubPillarItemTranslation | null =
-      item.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
+    let translation: ISubPillarItemTranslation | null = item.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
 
     // Fallback to English if current language not found
     translation ??= item.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
@@ -692,7 +697,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     return this.getNormalizedLanguageKey() === 'ar';
   }
 
-  getEvaluationDailyAverageMatrix(): Array<{ dateKey: string; label: string; average: number | null; count: number }> {
+  getEvaluationDailyAverageMatrix(): { dateKey: string; label: string; average: number | null; count: number }[] {
     const scoreBuckets = new Map<string, { sum: number; count: number }>();
 
     for (const evaluation of this.lifeEvaluations()) {
@@ -798,9 +803,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
           const evaluations = res.body ?? [];
           const itemIds = [
             ...new Set(
-              evaluations
-                .map(evaluation => evaluation.subPillarItem?.id)
-                .filter((id): id is number => id !== undefined && id !== null),
+              evaluations.map(evaluation => evaluation.subPillarItem?.id).filter((id): id is number => id !== undefined && id !== null),
             ),
           ];
 
@@ -843,7 +846,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
               },
             });
         },
-        error: (error) => {
+        error: error => {
           console.error('Error loading life evaluations:', error);
           this.isLoadingEvaluations.set(false);
         },
@@ -926,7 +929,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     return this.getSubPillarItemTranslation(item) ?? item.code ?? 'N/A';
   }
 
-  getGroupedLifeEvaluations(): Array<{ itemId: string; itemName: string; evaluations: ILifeEvaluation[] }> {
+  getGroupedLifeEvaluations(): { itemId: string; itemName: string; evaluations: ILifeEvaluation[] }[] {
     const grouped = new Map<string, { itemId: string; itemName: string; evaluations: ILifeEvaluation[] }>();
 
     this.lifeEvaluations().forEach(evaluation => {
@@ -983,10 +986,13 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.lifeEvaluationService.delete(evaluation.id).pipe(takeUntil(this.destroy$)).subscribe({
-          next: () => this.loadLifeEvaluations(),
-          error: error => console.error('Error deleting life evaluation:', error),
-        });
+        this.lifeEvaluationService
+          .delete(evaluation.id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => this.loadLifeEvaluations(),
+            error: error => console.error('Error deleting life evaluation:', error),
+          });
       }
     });
   }
@@ -1018,10 +1024,13 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'confirmed') {
-        this.evaluationDecisionService.delete(decision.id).pipe(takeUntil(this.destroy$)).subscribe({
-          next: () => this.loadLifeEvaluations(),
-          error: error => console.error('Error deleting evaluation decision:', error),
-        });
+        this.evaluationDecisionService
+          .delete(decision.id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => this.loadLifeEvaluations(),
+            error: error => console.error('Error deleting evaluation decision:', error),
+          });
       }
     });
   }

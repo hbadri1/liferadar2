@@ -157,9 +157,11 @@ describe('EvaluationDecision Management Component', () => {
 
     it('should show integration error translation key when projects loading fails', () => {
       const alertSpy = jest.spyOn(alertService, 'addAlert');
-      jest.spyOn(service, 'getTickTickProjects').mockReturnValue(
-        throwError(() => ({ error: { message: 'error.integrationerror', title: 'TickTick is not connected to your account.' } })),
-      );
+      jest
+        .spyOn(service, 'getTickTickProjects')
+        .mockReturnValue(
+          throwError(() => ({ error: { message: 'error.integrationerror', title: 'TickTick is not connected to your account.' } })),
+        );
 
       comp.pushToIntegration(sampleWithRequiredData, 'ticktick');
 

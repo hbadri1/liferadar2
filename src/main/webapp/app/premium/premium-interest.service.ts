@@ -34,4 +34,3 @@ export class PremiumInterestService {
     return this.http.get<PremiumInterestResponse[]>('/api/admin/premium-interests');
   }
 }
-

@@ -30,8 +30,7 @@ export class SubPillarItemTranslationComponent implements OnInit {
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
-  trackId = (item: ISubPillarItemTranslation): number =>
-    this.subPillarItemTranslationService.getSubPillarItemTranslationIdentifier(item);
+  trackId = (item: ISubPillarItemTranslation): number => this.subPillarItemTranslationService.getSubPillarItemTranslationIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])

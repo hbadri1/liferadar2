@@ -47,13 +47,12 @@ export class NotificationService {
   }
 
   markAllAsRead(): Observable<IReadAllNotificationsResponse> {
-    return this.http.patch<IReadAllNotificationsResponse>(`${this.resourceUrl}/my/read-all`, {}).pipe(
-      tap(() => this.unreadCountSignal.set(0)),
-    );
+    return this.http
+      .patch<IReadAllNotificationsResponse>(`${this.resourceUrl}/my/read-all`, {})
+      .pipe(tap(() => this.unreadCountSignal.set(0)));
   }
 
   resetUnreadCount(): void {
     this.unreadCountSignal.set(0);
   }
 }
-

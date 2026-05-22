@@ -18,4 +18,3 @@ export class PremiumAnalyticsService {
     console.log('[PremiumAnalytics]', payload);
   }
 }
-

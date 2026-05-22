@@ -1,4 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import SharedModule from 'app/shared/shared.module';
 import { TodoActionsJsonService } from './todo-actions-json.service';
 import { TripTodoActionsListName, TripTodoActionsPayload } from './todo-actions.types';
 
@@ -6,7 +9,8 @@ import { TripTodoActionsListName, TripTodoActionsPayload } from './todo-actions.
   selector: 'jhi-trip-todo-actions',
   templateUrl: './trip-todo-actions.component.html',
   styleUrl: './trip-todo-actions.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule, SharedModule],
 })
 export class TripTodoActionsComponent implements OnChanges {
   @Input() actionsJson?: string | null;
@@ -91,4 +95,3 @@ export class TripTodoActionsComponent implements OnChanges {
     this.pendingDelete = null;
   }
 }
-

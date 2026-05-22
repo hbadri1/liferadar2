@@ -24,19 +24,15 @@ export class SubPillarItemService {
   }
 
   update(subPillarItem: ISubPillarItem): Observable<EntityResponseType> {
-    return this.http.put<ISubPillarItem>(
-      `${this.resourceUrl}/${this.getSubPillarItemIdentifier(subPillarItem)}`,
-      subPillarItem,
-      { observe: 'response' },
-    );
+    return this.http.put<ISubPillarItem>(`${this.resourceUrl}/${this.getSubPillarItemIdentifier(subPillarItem)}`, subPillarItem, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(subPillarItem: PartialUpdateSubPillarItem): Observable<EntityResponseType> {
-    return this.http.patch<ISubPillarItem>(
-      `${this.resourceUrl}/${this.getSubPillarItemIdentifier(subPillarItem)}`,
-      subPillarItem,
-      { observe: 'response' },
-    );
+    return this.http.patch<ISubPillarItem>(`${this.resourceUrl}/${this.getSubPillarItemIdentifier(subPillarItem)}`, subPillarItem, {
+      observe: 'response',
+    });
   }
 
   find(id: number, req?: any): Observable<EntityResponseType> {

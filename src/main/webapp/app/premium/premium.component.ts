@@ -36,11 +36,11 @@ export default class PremiumComponent {
 
   // ─── Planned Premium Areas ───────────────────────────────────────────────
   readonly plannedAreas: PlannedArea[] = [
-    { icon: '🧠', titleKey: 'premium.areas.ai.title',        descKey: 'premium.areas.ai.desc' },
-    { icon: '💰', titleKey: 'premium.areas.finance.title',   descKey: 'premium.areas.finance.desc' },
+    { icon: '🧠', titleKey: 'premium.areas.ai.title', descKey: 'premium.areas.ai.desc' },
+    { icon: '💰', titleKey: 'premium.areas.finance.title', descKey: 'premium.areas.finance.desc' },
     { icon: '🔔', titleKey: 'premium.areas.reminders.title', descKey: 'premium.areas.reminders.desc' },
     { icon: '📊', titleKey: 'premium.areas.analytics.title', descKey: 'premium.areas.analytics.desc' },
-    { icon: '📱', titleKey: 'premium.areas.mobile.title',    descKey: 'premium.areas.mobile.desc' },
+    { icon: '📱', titleKey: 'premium.areas.mobile.title', descKey: 'premium.areas.mobile.desc' },
   ];
 
   submitInterest(): void {
@@ -53,20 +53,17 @@ export default class PremiumComponent {
 
     this.analytics.trackPremiumEvent('early_access_form_submitted', { source });
 
-    this.interestService
-      .submit({ email: this.email, feedback: this.feedback || undefined, source })
-      .subscribe({
-        next: () => {
-          this.submitted.set(true);
-          this.submitting.set(false);
-          this.analytics.trackPremiumEvent('early_access_success', { email: this.email });
-        },
-        error: () => {
-          this.errorMessage.set('premium.earlyAccess.error');
-          this.submitting.set(false);
-          this.analytics.trackPremiumEvent('early_access_error', { email: this.email });
-        },
-      });
+    this.interestService.submit({ email: this.email, feedback: this.feedback || undefined, source }).subscribe({
+      next: () => {
+        this.submitted.set(true);
+        this.submitting.set(false);
+        this.analytics.trackPremiumEvent('early_access_success', { email: this.email });
+      },
+      error: () => {
+        this.errorMessage.set('premium.earlyAccess.error');
+        this.submitting.set(false);
+        this.analytics.trackPremiumEvent('early_access_error', { email: this.email });
+      },
+    });
   }
 }
-

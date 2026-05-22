@@ -34,8 +34,7 @@ export class SubPillarTranslationUpdateComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: SubPillarTranslationFormGroup = this.subPillarTranslationFormService.createSubPillarTranslationFormGroup();
 
-  compareSubPillar = (o1: ISubPillar | null, o2: ISubPillar | null): boolean =>
-    this.subPillarService.compareSubPillar(o1, o2);
+  compareSubPillar = (o1: ISubPillar | null, o2: ISubPillar | null): boolean => this.subPillarService.compareSubPillar(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ subPillarTranslation }) => {
@@ -97,10 +96,7 @@ export class SubPillarTranslationUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<ISubPillar[]>) => res.body ?? []))
       .pipe(
         map((subPillars: ISubPillar[]) =>
-          this.subPillarService.addSubPillarToCollectionIfMissing<ISubPillar>(
-            subPillars,
-            this.subPillarTranslation?.subPillar,
-          ),
+          this.subPillarService.addSubPillarToCollectionIfMissing<ISubPillar>(subPillars, this.subPillarTranslation?.subPillar),
         ),
       )
       .subscribe((subPillars: ISubPillar[]) => (this.subPillarsSharedCollection = subPillars));

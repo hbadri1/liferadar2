@@ -289,7 +289,6 @@ describe('Home Component', () => {
     });
   });
 
-
   describe('loadSuggestedPillars', () => {
     it('should import suggested pillars after confirmation and reload the list', () => {
       const modalRef = {
@@ -304,8 +303,8 @@ describe('Home Component', () => {
             body: {
               pillarsCreated: 4,
               subPillarsCreated: 19,
-                subPillarItemsCreated: 56,
-                translationsCreated: 237,
+              subPillarItemsCreated: 56,
+              translationsCreated: 237,
             },
           }),
         ),

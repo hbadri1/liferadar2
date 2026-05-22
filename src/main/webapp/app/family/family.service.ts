@@ -22,4 +22,3 @@ export class FamilyService {
     return this.http.put<FamilyInfo>(`${this.apiUrl}/info`, request);
   }
 }
-

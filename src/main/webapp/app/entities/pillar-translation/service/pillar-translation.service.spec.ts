@@ -3,12 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideHttpClient } from '@angular/common/http';
 
 import { IPillarTranslation } from '../pillar-translation.model';
-import {
-  sampleWithFullData,
-  sampleWithNewData,
-  sampleWithPartialData,
-  sampleWithRequiredData,
-} from '../pillar-translation.test-samples';
+import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../pillar-translation.test-samples';
 
 import { PillarTranslationService } from './pillar-translation.service';
 
@@ -132,10 +127,7 @@ describe('PillarTranslation Service', () => {
       it('should add only unique PillarTranslation to an array', () => {
         const pillarTranslationArray: IPillarTranslation[] = [sampleWithRequiredData, sampleWithPartialData, sampleWithFullData];
         const pillarTranslationCollection: IPillarTranslation[] = [sampleWithRequiredData];
-        expectedResult = service.addPillarTranslationToCollectionIfMissing(
-          pillarTranslationCollection,
-          ...pillarTranslationArray,
-        );
+        expectedResult = service.addPillarTranslationToCollectionIfMissing(pillarTranslationCollection, ...pillarTranslationArray);
         expect(expectedResult).toHaveLength(3);
       });
 

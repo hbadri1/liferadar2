@@ -81,9 +81,10 @@ export class EvaluationDecisionCreateModalComponent implements OnInit {
     this.isSaving = true;
     const evaluationDecision = this.evaluationDecisionFormService.getEvaluationDecision(this.editForm);
 
-    const saveRequest: any = evaluationDecision.id !== null
-      ? this.evaluationDecisionService.update(evaluationDecision)
-      : this.evaluationDecisionService.create(evaluationDecision);
+    const saveRequest: any =
+      evaluationDecision.id !== null
+        ? this.evaluationDecisionService.update(evaluationDecision)
+        : this.evaluationDecisionService.create(evaluationDecision);
 
     saveRequest.subscribe({
       next: () => this.onSaveSuccess(),

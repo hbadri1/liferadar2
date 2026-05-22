@@ -117,35 +117,22 @@ describe('SubPillarTranslation Service', () => {
           },
           sampleWithPartialData,
         ];
-        expectedResult = service.addSubPillarTranslationToCollectionIfMissing(
-          subPillarTranslationCollection,
-          subPillarTranslation,
-        );
+        expectedResult = service.addSubPillarTranslationToCollectionIfMissing(subPillarTranslationCollection, subPillarTranslation);
         expect(expectedResult).toHaveLength(2);
       });
 
       it("should add a SubPillarTranslation to an array that doesn't contain it", () => {
         const subPillarTranslation: ISubPillarTranslation = sampleWithRequiredData;
         const subPillarTranslationCollection: ISubPillarTranslation[] = [sampleWithPartialData];
-        expectedResult = service.addSubPillarTranslationToCollectionIfMissing(
-          subPillarTranslationCollection,
-          subPillarTranslation,
-        );
+        expectedResult = service.addSubPillarTranslationToCollectionIfMissing(subPillarTranslationCollection, subPillarTranslation);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(subPillarTranslation);
       });
 
       it('should add only unique SubPillarTranslation to an array', () => {
-        const subPillarTranslationArray: ISubPillarTranslation[] = [
-          sampleWithRequiredData,
-          sampleWithPartialData,
-          sampleWithFullData,
-        ];
+        const subPillarTranslationArray: ISubPillarTranslation[] = [sampleWithRequiredData, sampleWithPartialData, sampleWithFullData];
         const subPillarTranslationCollection: ISubPillarTranslation[] = [sampleWithRequiredData];
-        expectedResult = service.addSubPillarTranslationToCollectionIfMissing(
-          subPillarTranslationCollection,
-          ...subPillarTranslationArray,
-        );
+        expectedResult = service.addSubPillarTranslationToCollectionIfMissing(subPillarTranslationCollection, ...subPillarTranslationArray);
         expect(expectedResult).toHaveLength(3);
       });
 

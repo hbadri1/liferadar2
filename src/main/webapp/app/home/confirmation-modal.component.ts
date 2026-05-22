@@ -26,4 +26,3 @@ export class ConfirmationModalComponent {
     this.activeModal.close('confirmed');
   }
 }
-

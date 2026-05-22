@@ -43,9 +43,7 @@ export class TodoActionsJsonService {
     index: number,
     actionStatus: boolean,
   ): TripTodoActionsPayload {
-    const nextList = payload[listName].map((item, itemIndex) =>
-      itemIndex === index ? { ...item, actionStatus } : item,
-    );
+    const nextList = payload[listName].map((item, itemIndex) => (itemIndex === index ? { ...item, actionStatus } : item));
     return {
       ...payload,
       [listName]: nextList,
@@ -75,12 +73,7 @@ export class TodoActionsJsonService {
         }
 
         const rec = item as { actionText?: unknown; actionStatus?: unknown; text?: unknown; done?: unknown };
-        const textCandidate =
-          typeof rec.actionText === 'string'
-            ? rec.actionText
-            : typeof rec.text === 'string'
-              ? rec.text
-              : null;
+        const textCandidate = typeof rec.actionText === 'string' ? rec.actionText : typeof rec.text === 'string' ? rec.text : null;
 
         if (!textCandidate) {
           return null;
@@ -100,4 +93,3 @@ export class TodoActionsJsonService {
       .filter((item): item is TripTodoActionItem => item !== null);
   }
 }
-

@@ -58,9 +58,7 @@ export class SubPillarItemTranslationFormService {
     });
   }
 
-  getSubPillarItemTranslation(
-    form: SubPillarItemTranslationFormGroup,
-  ): ISubPillarItemTranslation | NewSubPillarItemTranslation {
+  getSubPillarItemTranslation(form: SubPillarItemTranslationFormGroup): ISubPillarItemTranslation | NewSubPillarItemTranslation {
     return form.getRawValue() as ISubPillarItemTranslation | NewSubPillarItemTranslation;
   }
 

@@ -95,9 +95,7 @@ export class PillarTranslationUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IPillar[]>) => res.body ?? []))
       .pipe(
-        map((pillars: IPillar[]) =>
-          this.pillarService.addPillarToCollectionIfMissing<IPillar>(pillars, this.pillarTranslation?.pillar),
-        ),
+        map((pillars: IPillar[]) => this.pillarService.addPillarToCollectionIfMissing<IPillar>(pillars, this.pillarTranslation?.pillar)),
       )
       .subscribe((pillars: IPillar[]) => (this.pillarsSharedCollection = pillars));
   }

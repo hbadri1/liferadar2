@@ -152,11 +152,7 @@ describe('SubPillarItemTranslation Service', () => {
       it('should accept varargs', () => {
         const subPillarItemTranslation: ISubPillarItemTranslation = sampleWithRequiredData;
         const subPillarItemTranslation2: ISubPillarItemTranslation = sampleWithPartialData;
-        expectedResult = service.addSubPillarItemTranslationToCollectionIfMissing(
-          [],
-          subPillarItemTranslation,
-          subPillarItemTranslation2,
-        );
+        expectedResult = service.addSubPillarItemTranslationToCollectionIfMissing([], subPillarItemTranslation, subPillarItemTranslation2);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(subPillarItemTranslation);
         expect(expectedResult).toContain(subPillarItemTranslation2);
@@ -171,11 +167,7 @@ describe('SubPillarItemTranslation Service', () => {
 
       it('should return initial array if no SubPillarItemTranslation is added', () => {
         const subPillarItemTranslationCollection: ISubPillarItemTranslation[] = [sampleWithRequiredData];
-        expectedResult = service.addSubPillarItemTranslationToCollectionIfMissing(
-          subPillarItemTranslationCollection,
-          undefined,
-          null,
-        );
+        expectedResult = service.addSubPillarItemTranslationToCollectionIfMissing(subPillarItemTranslationCollection, undefined, null);
         expect(expectedResult).toEqual(subPillarItemTranslationCollection);
       });
     });

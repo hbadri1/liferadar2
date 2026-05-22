@@ -73,7 +73,7 @@ interface ManagementObjectiveGroup {
   representative: FamilyObjective;
   objectiveIds: number[];
   kidNames: string[];
-  assignments: Array<{ objectiveId: number; kidLogin: string }>;
+  assignments: { objectiveId: number; kidLogin: string }[];
 }
 
 @Component({
@@ -111,9 +111,7 @@ export default class FamilyComponent implements OnInit {
     const acc = this.account();
     if (!acc) return false;
     const authorities: string[] = acc.authorities ?? [];
-    return authorities.includes('ROLE_CHILD') &&
-      !authorities.includes('ROLE_PARENT') &&
-      !authorities.includes('ROLE_ADMIN');
+    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_PARENT') && !authorities.includes('ROLE_ADMIN');
   });
 
   /** Family management tab is only visible for parents (ROLE_PARENT). */
@@ -133,9 +131,7 @@ export default class FamilyComponent implements OnInit {
     const acc = this.account();
     if (!acc) return false;
     const authorities: string[] = acc.authorities ?? [];
-    return authorities.includes('ROLE_PARENT') &&
-      !authorities.includes('ROLE_CHILD') &&
-      !authorities.includes('ROLE_ADMIN');
+    return authorities.includes('ROLE_PARENT') && !authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_ADMIN');
   });
 
   headerSubtitleKey = computed(() => (this.isChild() ? 'family.childSubtitle' : 'family.subtitle'));
@@ -334,7 +330,7 @@ export default class FamilyComponent implements OnInit {
       next: parents => {
         this.parents.set(parents);
       },
-      error: () => {
+      error() {
         // Silently fail - parents endpoint may not be available
       },
     });
@@ -473,7 +469,7 @@ export default class FamilyComponent implements OnInit {
   openEditObjectiveModal(
     objective: FamilyObjective,
     objectiveIds: number[] = [],
-    assignments: Array<{ objectiveId: number; kidLogin: string }> = [],
+    assignments: { objectiveId: number; kidLogin: string }[] = [],
   ): void {
     const modalRef = this.modalService.open(FamilyObjectiveModalComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.children = this.children();
@@ -591,7 +587,11 @@ export default class FamilyComponent implements OnInit {
   getObjectiveCalendarRows(objective: FamilyObjective): ObjectiveCalendarRow[] {
     const days = this.getObjectiveCalendarDays();
     return objective.itemDefinitions.map(itemDefinition => {
-      const latestProgressByDay = this.getLatestProgressByDay(itemDefinition, days[0]?.date ?? new Date(), days[days.length - 1]?.date ?? new Date());
+      const latestProgressByDay = this.getLatestProgressByDay(
+        itemDefinition,
+        days[0]?.date ?? new Date(),
+        days[days.length - 1]?.date ?? new Date(),
+      );
       return {
         itemDefinition,
         latestProgress: this.getLatestProgress(itemDefinition),
@@ -636,7 +636,6 @@ export default class FamilyComponent implements OnInit {
     this.objectiveProgressPeriod.set(period);
   }
 
-
   getLatestProgress(itemDefinition: FamilyObjectiveItemDefinition): FamilyObjectiveProgress | null {
     return itemDefinition.progressHistory?.[0] ?? null;
   }
@@ -656,11 +655,16 @@ export default class FamilyComponent implements OnInit {
 
   getMilestoneLabel(milestone: ObjectiveMilestone): string {
     switch (milestone) {
-      case ObjectiveMilestone.WEEK:    return this.translateService.instant('family.objectives.milestone.week');
-      case ObjectiveMilestone.MONTH:   return this.translateService.instant('family.objectives.milestone.month');
-      case ObjectiveMilestone.QUARTER: return this.translateService.instant('family.objectives.milestone.quarter');
-      case ObjectiveMilestone.YEAR:    return this.translateService.instant('family.objectives.milestone.year');
-      default: return milestone;
+      case ObjectiveMilestone.WEEK:
+        return this.translateService.instant('family.objectives.milestone.week');
+      case ObjectiveMilestone.MONTH:
+        return this.translateService.instant('family.objectives.milestone.month');
+      case ObjectiveMilestone.QUARTER:
+        return this.translateService.instant('family.objectives.milestone.quarter');
+      case ObjectiveMilestone.YEAR:
+        return this.translateService.instant('family.objectives.milestone.year');
+      default:
+        return milestone;
     }
   }
 
@@ -699,7 +703,12 @@ export default class FamilyComponent implements OnInit {
   }
 
   getObjectiveMilestoneGroups(objective: FamilyObjective): ObjectiveMilestoneGroup[] {
-    const order: ObjectiveMilestone[] = [ObjectiveMilestone.WEEK, ObjectiveMilestone.MONTH, ObjectiveMilestone.QUARTER, ObjectiveMilestone.YEAR];
+    const order: ObjectiveMilestone[] = [
+      ObjectiveMilestone.WEEK,
+      ObjectiveMilestone.MONTH,
+      ObjectiveMilestone.QUARTER,
+      ObjectiveMilestone.YEAR,
+    ];
     const groups = new Map<ObjectiveMilestone, FamilyObjectiveItemDefinition[]>();
 
     for (const item of objective.itemDefinitions ?? []) {
@@ -789,9 +798,9 @@ export default class FamilyComponent implements OnInit {
     this.exportProgressRowsToExcel(rows, 'kids-progress');
   }
 
-  private buildKidProgressExportRows(kidLogins: string[]): Array<Record<string, string>> {
+  private buildKidProgressExportRows(kidLogins: string[]): Record<string, string>[] {
     const kidLookup = new Map(this.objectiveChildren().map(child => [child.login, this.getChildDisplayName(child)]));
-    const rows: Array<Record<string, string>> = [];
+    const rows: Record<string, string>[] = [];
 
     for (const kidLogin of kidLogins) {
       const kidName = kidLookup.get(kidLogin) ?? kidLogin;
@@ -842,7 +851,7 @@ export default class FamilyComponent implements OnInit {
     return rows;
   }
 
-  private exportProgressRowsToExcel(rows: Array<Record<string, string>>, filePrefix: string): void {
+  private exportProgressRowsToExcel(rows: Record<string, string>[], filePrefix: string): void {
     if (rows.length === 0) {
       this.errorMsg.set('family.objectives.export.noData');
       return;
@@ -861,19 +870,14 @@ export default class FamilyComponent implements OnInit {
       notes: this.translateService.instant('family.objectives.export.columns.notes'),
     };
 
-    const keys = Object.keys(headers) as Array<keyof typeof headers>;
+    const keys = Object.keys(headers) as (keyof typeof headers)[];
     const htmlTable = [
       '<table>',
       '<thead><tr>',
       ...keys.map(key => `<th>${this.escapeHtml(headers[key])}</th>`),
       '</tr></thead>',
       '<tbody>',
-      ...rows.map(
-        row =>
-          `<tr>${keys
-            .map(key => `<td>${this.escapeHtml(row[key] ?? '-')}</td>`)
-            .join('')}</tr>`,
-      ),
+      ...rows.map(row => `<tr>${keys.map(key => `<td>${this.escapeHtml(row[key] ?? '-')}</td>`).join('')}</tr>`),
       '</tbody>',
       '</table>',
     ].join('');
@@ -905,12 +909,7 @@ export default class FamilyComponent implements OnInit {
   }
 
   private escapeHtml(value: string): string {
-    return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   private sortObjectives(objectives: FamilyObjective[]): FamilyObjective[] {
@@ -948,14 +947,14 @@ export default class FamilyComponent implements OnInit {
     const modalRef = this.modalService.open(ConfirmationModalComponent, { size: 'md', backdrop: 'static' });
 
     modalRef.componentInstance.title = this.translateService.instant(`family.objectives.confirm.${action}.title`);
-    modalRef.componentInstance.message = this.translateService.instant(`family.objectives.confirm.${action}.message`, { objective: objectiveName });
+    modalRef.componentInstance.message = this.translateService.instant(`family.objectives.confirm.${action}.message`, {
+      objective: objectiveName,
+    });
     modalRef.componentInstance.confirmButtonText = this.translateService.instant(`family.objectives.confirm.${action}.confirmButton`);
     modalRef.componentInstance.cancelButtonText = this.translateService.instant('entity.action.cancel');
     modalRef.componentInstance.confirmButtonClass = action === 'delete' ? 'btn-danger' : 'btn-warning';
 
-    return modalRef.result
-      .then(result => result === 'confirmed')
-      .catch(() => false);
+    return modalRef.result.then(result => result === 'confirmed').catch(() => false);
   }
 
   private ensureActiveTabSelection(): void {
@@ -975,7 +974,6 @@ export default class FamilyComponent implements OnInit {
     }
 
     const hasActiveChildTab = children.some(child => this.getChildTabId(child.login) === activeTab);
-
 
     if (hasActiveChildTab) {
       return;
@@ -1122,7 +1120,12 @@ export default class FamilyComponent implements OnInit {
       month: 'short',
       day: 'numeric',
     });
-    const windowDays = period === 'last7days' ? this.objectiveTrendLast7Days : period === 'last30days' ? this.objectiveTrendLast30Days : this.objectiveTrendDays;
+    const windowDays =
+      period === 'last7days'
+        ? this.objectiveTrendLast7Days
+        : period === 'last30days'
+          ? this.objectiveTrendLast30Days
+          : this.objectiveTrendDays;
     const recentWindowStart = new Date();
     recentWindowStart.setDate(recentWindowStart.getDate() - windowDays);
 
@@ -1252,7 +1255,6 @@ export default class FamilyComponent implements OnInit {
       endLabel,
     };
   }
-
 
   private isWithinHistoryWindow(value: string | null | undefined): boolean {
     const parsed = this.parseDate(value);

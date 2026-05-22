@@ -47,7 +47,7 @@
             </div>
           } @else {
             <div class="trip-list">
-              @for (trip of trips(); track trip.id) {
+              @for (trip of orderedTrips(); track trip.id) {
 
                 <!-- Trip Card -->
                 <div class="trip-card" [class.active]="selectedTrip()?.id === trip.id" (click)="selectTrip(trip)">
@@ -172,18 +172,10 @@
                   (click)="setViewMode('gantt')">
                   <fa-icon icon="chart-bar"></fa-icon>
                   <span jhiTranslate="trips.ganttView">Gantt</span>
-                </button>
-                <button
-                  type="button"
-                  class="btn trip-view-btn"
-                  [ngClass]="viewMode() === 'vertical' ? 'btn-primary' : 'btn-outline-primary'"
-                  (click)="setViewMode('vertical')">
-                  <span class="vertical-view-icon" aria-hidden="true">↕</span>
-                  <span jhiTranslate="trips.verticalView">Vertical View</span>
-                </button>
-              </div>
-            </div>
-          </div>
+                 </button>
+               </div>
+             </div>
+           </div>
 
           <div class="card-body">
             @if (isLoadingSteps()) {
@@ -211,7 +203,7 @@
                         @if (entry.kind === 'today') {
                           <span class="dot-number">T</span>
                         } @else {
-                          <span class="dot-number">{{ entry.step.sequence }}</span>
+                          <span class="dot-number">{{ stepIndexAt(i) }}</span>
                         }
                       </div>
                       <div class="timeline-content">
@@ -225,7 +217,6 @@
                         } @else {
                           <div class="step-card">
                             <div class="step-card-header">
-                              <div class="step-sequence-badge">{{ 'trips.stop' | translate }} {{ entry.step.sequence }}</div>
                               @if (canEdit() && !selectedTripReadOnly()) {
                                 <div class="step-card-actions">
                                   <button class="btn btn-xs btn-outline-primary" (click)="openEditStep(entry.step)" title="Edit step">
@@ -316,7 +307,6 @@
                           <div class="trip-calendar-cell-steps">
                             @for (step of cell.steps | slice: 0 : 2; track step.id) {
                               <div class="trip-calendar-step-pill" [title]="step.actionName + ' (' + stepDateRangeLabel(step) + ')'" (click)="$event.stopPropagation()">
-                                <span class="trip-calendar-step-seq">#{{ step.sequence }}</span>
                                 <span class="text-truncate">{{ step.actionName }}</span>
                               </div>
                             }
@@ -360,7 +350,7 @@
                     @for (row of ganttRows(); track row.step.id) {
                       <div class="trip-gantt-row">
                         <div class="trip-gantt-label" [attr.dir]="'auto'" [title]="row.step.actionName">
-                          #{{ row.step.sequence }} {{ row.step.actionName }}
+                          {{ row.step.actionName }}
                         </div>
                         <div class="trip-gantt-track-wrap">
                           <div class="trip-gantt-track">
@@ -379,40 +369,13 @@
                     }
                   }
                 </div>
-              } @else {
-                <!-- VERTICAL VIEW -->
-                <div class="trip-vertical">
-                  @if (verticalFlowEntries().length === 0) {
-                    <div class="trip-vertical-empty" jhiTranslate="trips.noVerticalData">No dated steps available for vertical view.</div>
-                  } @else {
-                    @for (entry of verticalFlowEntries(); track entry.kind === 'step' ? entry.step.id ?? $index : 'gap-' + $index; let isLast = $last) {
-                      <div class="trip-vertical-item" [class.trip-vertical-item--gap]="entry.kind === 'gap'">
-                        <div class="trip-vertical-item-title">
-                          @if (entry.kind === 'step') {
-                            <span>#{{ entry.step.sequence }} {{ entry.step.actionName }}</span>
-                          } @else {
-                            <span jhiTranslate="trips.gapLabel">Gap</span>
-                          }
-                        </div>
-                        <div class="trip-vertical-item-meta">
-                          <span><strong jhiTranslate="trips.fields.startDate">Start Date</strong>: {{ formatDate(entry.start) }}</span>
-                          <span><strong jhiTranslate="trips.fields.endDate">End Date</strong>: {{ formatDate(entry.end) }}</span>
-                          <span><strong jhiTranslate="trips.durationLabel">Duration</strong>: {{ entry.durationLabel }}</span>
-                        </div>
-                      </div>
-                      @if (!isLast) {
-                        <div class="trip-vertical-arrow" aria-hidden="true">↓</div>
-                      }
-                    }
-                  }
-                </div>
-              }
-            }
-          </div>
-        </div>
-      }
-    </div>
+               }
+             }
+           </div>
+         </div>
+       }
+     </div>
 
-  </div>
-</div>
+   </div>
+ </div>
 

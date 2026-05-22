@@ -56,10 +56,7 @@ export class SubPillarTranslationService {
     return subPillarTranslation.id;
   }
 
-  compareSubPillarTranslation(
-    o1: Pick<ISubPillarTranslation, 'id'> | null,
-    o2: Pick<ISubPillarTranslation, 'id'> | null,
-  ): boolean {
+  compareSubPillarTranslation(o1: Pick<ISubPillarTranslation, 'id'> | null, o2: Pick<ISubPillarTranslation, 'id'> | null): boolean {
     return o1 && o2 ? this.getSubPillarTranslationIdentifier(o1) === this.getSubPillarTranslationIdentifier(o2) : o1 === o2;
   }
 
