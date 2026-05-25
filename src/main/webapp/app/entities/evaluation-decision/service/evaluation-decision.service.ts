@@ -152,8 +152,27 @@ export class EvaluationDecisionService {
   ): RestOf<T> {
     return {
       ...evaluationDecision,
-      date: evaluationDecision.date?.toJSON() ?? null,
+      date: this.normalizeDateTimeToString(evaluationDecision.date),
     };
+  }
+
+  private normalizeDateTimeToString(date: any): string | null {
+    if (!date) return null;
+    // If it's a dayjs object, call toJSON
+    if (typeof date.toJSON === 'function') {
+      return date.toJSON();
+    }
+    // If it's a string, return as-is
+    if (typeof date === 'string') {
+      return date;
+    }
+    // If it's a Date object, call toISOString directly
+    if (date instanceof Date) {
+      return date.toISOString();
+    }
+    // Otherwise try to parse it as dayjs
+    const parsed = dayjs(date);
+    return parsed.isValid() ? parsed.toJSON() : null;
   }
 
   protected convertDateFromServer(restEvaluationDecision: RestEvaluationDecision): IEvaluationDecision {

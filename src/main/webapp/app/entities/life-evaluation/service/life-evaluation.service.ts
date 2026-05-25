@@ -106,9 +106,47 @@ export class LifeEvaluationService {
   ): RestOf<T> {
     return {
       ...lifeEvaluation,
-      evaluationDate: lifeEvaluation.evaluationDate?.format(DATE_FORMAT) ?? null,
-      reminderAt: lifeEvaluation.reminderAt?.toJSON() ?? null,
+      evaluationDate: this.normalizeDateToString(lifeEvaluation.evaluationDate, DATE_FORMAT),
+      reminderAt: this.normalizeDateTimeToString(lifeEvaluation.reminderAt),
     };
+  }
+
+  private normalizeDateToString(date: any, format: string = DATE_FORMAT): string | null {
+    if (!date) return null;
+    // If it's already a dayjs object, format it
+    if (typeof date.format === 'function') {
+      return date.format(format);
+    }
+    // If it's a string, return as-is (already formatted)
+    if (typeof date === 'string') {
+      return date;
+    }
+    // If it's a Date object, convert to dayjs first
+    if (date instanceof Date) {
+      return dayjs(date).format(format);
+    }
+    // Otherwise try to parse it as dayjs
+    const parsed = dayjs(date);
+    return parsed.isValid() ? parsed.format(format) : null;
+  }
+
+  private normalizeDateTimeToString(date: any): string | null {
+    if (!date) return null;
+    // If it's a dayjs object, call toJSON
+    if (typeof date.toJSON === 'function') {
+      return date.toJSON();
+    }
+    // If it's a string, return as-is
+    if (typeof date === 'string') {
+      return date;
+    }
+    // If it's a Date object, call toISOString directly
+    if (date instanceof Date) {
+      return date.toISOString();
+    }
+    // Otherwise try to parse it as dayjs
+    const parsed = dayjs(date);
+    return parsed.isValid() ? parsed.toJSON() : null;
   }
 
   protected convertDateFromServer(restLifeEvaluation: RestLifeEvaluation): ILifeEvaluation {

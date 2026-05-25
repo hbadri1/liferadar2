@@ -29,10 +29,14 @@
     "durationLabel": "Duration",
     "moreSteps": "+{{count}} more",
     "newStep": "New Step",
+    "newSubStep": "New Substep",
+    "addSubStep": "Add Substep",
+    "subStep": "Substep",
     "editStep": "Edit Step",
     "deleteStep": "Delete Step",
     "confirmDeleteStep": "Are you sure you want to delete this step?",
     "noSteps": "No steps added yet.",
+    "noSubSteps": "No substeps added yet.",
     "addFirstStop": "Add your first step",
     "readOnlyFinished": "Read-only (journey finished)",
     "stop": "Step",
@@ -72,6 +76,9 @@
       "endDate": "End Date",
       "stepName": "Step Name",
       "stepNamePlaceholder": "e.g. Visit the Louvre",
+      "subStepName": "Substep Name",
+      "subSteps": "Substeps",
+      "subStepNamePlaceholder": "e.g. Buy train tickets",
       "location": "Location",
       "locationPlaceholder": "e.g. Paris, France",
       "notes": "Notes",
@@ -100,7 +107,8 @@
       "stepStartDateBeforeTripStart": "Step start date cannot be before the journey start date.",
       "stepEndDateAfterTripEnd": "Step end date cannot be after the journey end date.",
       "stepStartDateAfterEndDate": "Step start date must be before or equal to the step end date.",
-      "stepDatesOverlap": "This step overlaps another existing step. Please choose a different date range."
+      "stepDatesOverlap": "This step overlaps another existing step. Please choose a different date range.",
+      "subStepOutsideStepRange": "Substep start/end must be inside the parent step time range."
     },
     "warnings": {
       "stepDatesOverlap": "This step overlaps another existing step. You can still save it."

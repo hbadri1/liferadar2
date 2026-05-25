@@ -1,0 +1,209 @@
+<div class="modal-header goals-detail-header">
+  <div class="flex-grow-1">
+    <h5 class="modal-title mb-1">{{ goal.title }}</h5>
+    <div class="d-flex flex-wrap gap-1 align-items-center">
+      <span class="badge goal-type-badge">{{ ('goals.goalType.' + goal.goalType.toLowerCase()) | translate }}</span>
+      @if (goal.category) {
+        <span class="badge bg-light text-dark border">{{ ('goals.category.' + goal.category.toLowerCase()) | translate }}</span>
+      }
+      <span class="badge" [ngClass]="'goal-status-' + goal.status.toLowerCase()">
+        {{ ('goals.status.' + goal.status.toLowerCase()) | translate }}
+      </span>
+      <span class="badge" [ngClass]="'goal-priority-' + goal.priority.toLowerCase()">
+        {{ ('goals.priority.' + goal.priority.toLowerCase()) | translate }}
+      </span>
+    </div>
+  </div>
+  <button type="button" class="btn-close ms-2" (click)="dismiss()"></button>
+</div>
+
+<div class="modal-body pt-2">
+  <!-- Progress Bar -->
+  <div class="mb-3">
+    <div class="d-flex justify-content-between small text-muted mb-1">
+      <span jhiTranslate="goals.fields.progress">Progress</span>
+      <span class="fw-semibold">{{ goal.progressPercentage ?? 0 }}%</span>
+    </div>
+    <div class="progress" style="height:10px">
+      <div class="progress-bar" [class.bg-success]="(goal.progressPercentage ?? 0) >= 100"
+           [style.width.%]="goal.progressPercentage ?? 0" role="progressbar"></div>
+    </div>
+  </div>
+
+  <!-- Key Info Row -->
+  <div class="row g-2 mb-3">
+    @if (goal.targetDate) {
+      <div class="col-auto">
+        <span class="text-muted small"><fa-icon icon="calendar-alt" class="me-1"></fa-icon>
+        <span jhiTranslate="goals.fields.targetDate">Target</span>: {{ goal.targetDate }}</span>
+      </div>
+    }
+    @if (goal.nextReviewDate) {
+      <div class="col-auto">
+        <span class="text-muted small"><fa-icon icon="sync" class="me-1"></fa-icon>
+        <span jhiTranslate="goals.fields.nextReview">Next Review</span>: {{ goal.nextReviewDate }}</span>
+      </div>
+    }
+    @if (goal.pillar) {
+      <div class="col-auto">
+        <span class="text-muted small"><fa-icon icon="th-list" class="me-1"></fa-icon>{{ goal.pillar.code }}</span>
+      </div>
+    }
+  </div>
+
+  @if (goal.description) {
+    <p class="text-muted small mb-3">{{ goal.description }}</p>
+  }
+
+  @if (goal.motivation) {
+    <div class="alert alert-light py-2 mb-3">
+      <fa-icon icon="heart" class="me-1 text-danger small"></fa-icon>
+      <span class="small">{{ goal.motivation }}</span>
+    </div>
+  }
+
+  <!-- Review Button -->
+  @if (canManageGoal()) {
+    <div class="mb-3">
+      <button class="btn btn-outline-primary btn-sm" (click)="openReview()">
+        <fa-icon icon="clipboard-check" class="me-1"></fa-icon>
+        <span jhiTranslate="goals.reviewGoal">Review Goal</span>
+      </button>
+    </div>
+  }
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'milestones'" (click)="activeTab = 'milestones'">
+        <fa-icon icon="flag" class="me-1"></fa-icon>
+        <span jhiTranslate="goals.milestones">Milestones</span>
+        @if (milestones().length > 0) {
+          <span class="badge bg-secondary ms-1">{{ milestoneCompletedCount() }}/{{ milestones().length }}</span>
+        }
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'updates'" (click)="activeTab = 'updates'">
+        <fa-icon icon="list" class="me-1"></fa-icon>
+        <span jhiTranslate="goals.updates">Updates</span>
+        @if (updates().length > 0) {
+          <span class="badge bg-secondary ms-1">{{ updates().length }}</span>
+        }
+      </button>
+    </li>
+  </ul>
+
+  <!-- Milestones Tab -->
+  @if (activeTab === 'milestones') {
+    @if (isLoadingMilestones()) {
+      <div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div></div>
+    } @else if (milestones().length === 0) {
+      <div class="text-center py-3 text-muted small">
+        <fa-icon icon="flag" class="fa-2x d-block mb-2 opacity-50"></fa-icon>
+        <span jhiTranslate="goals.noMilestones">No milestones yet. Add milestones to break this goal into clear checkpoints.</span>
+      </div>
+    } @else {
+      <ul class="list-group list-group-flush mb-3">
+        @for (milestone of milestones(); track milestone.id) {
+          <li class="list-group-item d-flex align-items-center gap-2 px-0">
+            @if (!isChild() && canManageGoal()) {
+              <button class="btn btn-sm p-0 border-0"
+                      [title]="milestone.status === 'COMPLETED' ? 'Mark incomplete' : 'Mark complete'"
+                      (click)="toggleMilestoneStatus(milestone)">
+                @if (milestone.status === 'COMPLETED') {
+                  <fa-icon icon="check-circle" class="text-success"></fa-icon>
+                } @else {
+                  <fa-icon icon="circle" class="text-muted"></fa-icon>
+                }
+              </button>
+            } @else {
+              <!-- Read-only status indicator for children -->
+              <span class="btn btn-sm p-0 border-0" style="cursor:default">
+                @if (milestone.status === 'COMPLETED') {
+                  <fa-icon icon="check-circle" class="text-success"></fa-icon>
+                } @else {
+                  <fa-icon icon="circle" class="text-muted opacity-50"></fa-icon>
+                }
+              </span>
+            }
+            <span class="flex-grow-1" [class.text-decoration-line-through]="milestone.status === 'COMPLETED'">
+              {{ milestone.title }}
+            </span>
+            @if (milestone.dueDate) {
+              <span class="text-muted small">{{ milestone.dueDate }}</span>
+            }
+            <span class="badge small" [ngClass]="statusClass(milestone.status)">
+              {{ ('goals.milestoneStatus.' + milestone.status.toLowerCase()) | translate }}
+            </span>
+            @if (!isChild() && canManageGoal()) {
+              <button class="btn btn-xs p-0 border-0 text-danger ms-1" (click)="deleteMilestone(milestone)" title="Delete">
+                <fa-icon icon="trash"></fa-icon>
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+    @if (!showAddMilestone && !isChild() && canManageGoal()) {
+      <button class="btn btn-outline-secondary btn-sm" (click)="showAddMilestone = true">
+        <fa-icon icon="plus" class="me-1"></fa-icon>
+        <span jhiTranslate="goals.addMilestone">Add Milestone</span>
+      </button>
+    } @else if (!isChild() && canManageGoal()) {
+      <div class="input-group input-group-sm">
+        <input type="text" class="form-control" [(ngModel)]="newMilestoneTitle"
+               [placeholder]="'goals.fields.milestoneTitlePlaceholder' | translate" maxlength="200" />
+        <button class="btn btn-primary" (click)="addMilestone()" [disabled]="isSavingMilestone">
+          <span jhiTranslate="entity.action.save">Save</span>
+        </button>
+        <button class="btn btn-outline-secondary" (click)="showAddMilestone = false; newMilestoneTitle = ''">
+          <span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+      </div>
+    }
+  }
+
+  <!-- Updates Tab -->
+  @if (activeTab === 'updates') {
+    @if (isLoadingUpdates()) {
+      <div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div></div>
+    } @else if (updates().length === 0) {
+      <div class="text-center py-3 text-muted small">
+        <fa-icon icon="history" class="fa-2x d-block mb-2 opacity-50"></fa-icon>
+        <span jhiTranslate="goals.noUpdates">No updates yet. Review this goal to start tracking your progress history.</span>
+      </div>
+    } @else {
+      <div class="goal-updates-list">
+        @for (update of updates(); track update.id) {
+          <div class="goal-update-card mb-2 p-3 border rounded">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <span class="fw-semibold small">{{ update.updateDate }}</span>
+              @if (update.progressPercentage != null) {
+                <span class="badge bg-primary">{{ update.progressPercentage }}%</span>
+              }
+            </div>
+            @if (update.summary) {
+              <p class="mb-1 small">{{ update.summary }}</p>
+            }
+            @if (update.nextStep) {
+              <div class="text-success small">
+                <fa-icon icon="arrow-right" class="me-1"></fa-icon>{{ update.nextStep }}
+              </div>
+            }
+            @if (update.blockers) {
+              <div class="text-danger small">
+                <fa-icon icon="exclamation-triangle" class="me-1"></fa-icon>{{ update.blockers }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="dismiss()" jhiTranslate="entity.action.cancel">Close</button>
+</div>
+

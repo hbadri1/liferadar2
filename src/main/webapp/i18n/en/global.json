@@ -12,6 +12,7 @@
       "notifications": "Notifications",
       "family": "My Family Space",
       "trips": "Journeys",
+      "goals": "Goals & Projects",
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entities",

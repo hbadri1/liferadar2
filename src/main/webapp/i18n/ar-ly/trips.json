@@ -28,10 +28,14 @@
     "gapLabel": "فجوة",
     "durationLabel": "المدة",
     "newStep": "خطوة جديدة",
+    "newSubStep": "خطوة فرعية جديدة",
+    "addSubStep": "إضافة خطوة فرعية",
+    "subStep": "خطوة فرعية",
     "editStep": "تعديل الخطوة",
     "deleteStep": "حذف الخطوة",
     "confirmDeleteStep": "هل أنت متأكد من حذف هذه الخطوة؟",
     "noSteps": "لم تُضف أي خطوات بعد.",
+    "noSubSteps": "لم تُضف أي خطوات فرعية بعد.",
     "addFirstStop": "أضف أول خطوة",
     "readOnlyFinished": "للقراءة فقط (الرحلة منتهية)",
     "stop": "خطوة",
@@ -71,6 +75,9 @@
       "endDate": "تاريخ النهاية",
       "stepName": "اسم الخطوة",
       "stepNamePlaceholder": "مثال: زيارة برج إيفل",
+      "subStepName": "اسم الخطوة الفرعية",
+      "subSteps": "الخطوات الفرعية",
+      "subStepNamePlaceholder": "مثال: شراء تذاكر القطار",
       "location": "الموقع",
       "locationPlaceholder": "مثال: باريس، فرنسا",
       "notes": "ملاحظات",
@@ -99,7 +106,8 @@
       "stepStartDateBeforeTripStart": "لا يمكن أن يكون تاريخ بداية الخطوة قبل تاريخ بداية الرحلة.",
       "stepEndDateAfterTripEnd": "لا يمكن أن يكون تاريخ نهاية الخطوة بعد تاريخ نهاية الرحلة.",
       "stepStartDateAfterEndDate": "يجب أن يكون تاريخ بداية الخطوة قبل أو مساوياً لتاريخ النهاية.",
-      "stepDatesOverlap": "هذه الخطوة تتداخل مع خطوة أخرى موجودة. يرجى اختيار نطاق تاريخ مختلف."
+      "stepDatesOverlap": "هذه الخطوة تتداخل مع خطوة أخرى موجودة. يرجى اختيار نطاق تاريخ مختلف.",
+      "subStepOutsideStepRange": "يجب أن تكون أوقات الخطوة الفرعية ضمن النطاق الزمني للخطوة الرئيسية."
     },
     "warnings": {
       "stepDatesOverlap": "هذه الخطوة تتداخل مع خطوة أخرى موجودة. يمكنك حفظها مع ذلك."

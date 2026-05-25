@@ -94,7 +94,7 @@ public class TripPlanStepService {
     @Transactional(readOnly = true)
     public List<TripPlanStep> findByTripPlanId(Long tripPlanId) {
         LOG.debug("Request to get TripPlanSteps for TripPlan : {}", tripPlanId);
-        return tripPlanStepRepository.findByTripPlanIdOrderBySequenceAsc(tripPlanId);
+        return tripPlanStepRepository.findByTripPlanIdWithSubStepsOrderBySequenceAsc(tripPlanId);
     }
 
     /**
@@ -105,7 +105,7 @@ public class TripPlanStepService {
     @Transactional(readOnly = true)
     public List<TripPlanStep> findAll() {
         LOG.debug("Request to get all TripPlanSteps");
-        return tripPlanStepRepository.findAll();
+        return tripPlanStepRepository.findAllWithSubSteps();
     }
 
     /**
@@ -117,7 +117,7 @@ public class TripPlanStepService {
     @Transactional(readOnly = true)
     public Optional<TripPlanStep> findOne(Long id) {
         LOG.debug("Request to get TripPlanStep : {}", id);
-        return tripPlanStepRepository.findById(id);
+        return tripPlanStepRepository.findOneWithSubStepsById(id);
     }
 
     /**

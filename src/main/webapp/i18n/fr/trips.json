@@ -29,10 +29,14 @@
     "durationLabel": "Durée",
     "moreSteps": "+{{count}} de plus",
     "newStep": "Nouvelle Étape",
+    "newSubStep": "Nouvelle Sous-étape",
+    "addSubStep": "Ajouter une sous-étape",
+    "subStep": "Sous-étape",
     "editStep": "Modifier l'Étape",
     "deleteStep": "Supprimer l'Étape",
     "confirmDeleteStep": "Êtes-vous sûr de vouloir supprimer cette étape ?",
     "noSteps": "Aucune étape ajoutée.",
+    "noSubSteps": "Aucune sous-étape ajoutée.",
     "addFirstStop": "Ajouter la première étape",
     "readOnlyFinished": "Lecture seule (voyage terminé)",
     "stop": "Étape",
@@ -72,6 +76,9 @@
       "endDate": "Date de Fin",
       "stepName": "Nom de l'Étape",
       "stepNamePlaceholder": "ex. Visite du Louvre",
+      "subStepName": "Nom de la sous-étape",
+      "subSteps": "Sous-étapes",
+      "subStepNamePlaceholder": "ex. Acheter les billets de train",
       "location": "Lieu",
       "locationPlaceholder": "ex. Paris, France",
       "notes": "Notes",
@@ -100,7 +107,8 @@
       "stepStartDateBeforeTripStart": "La date de début de l'étape ne peut pas être antérieure à la date de début du voyage.",
       "stepEndDateAfterTripEnd": "La date de fin de l'étape ne peut pas être postérieure à la date de fin du voyage.",
       "stepStartDateAfterEndDate": "La date de début de l'étape doit être antérieure ou égale à la date de fin.",
-      "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Veuillez choisir une plage de dates différente."
+      "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Veuillez choisir une plage de dates différente.",
+      "subStepOutsideStepRange": "Les dates de la sous-étape doivent être comprises dans la plage horaire de l'étape parent."
     },
     "warnings": {
       "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Vous pouvez quand même l'enregistrer."

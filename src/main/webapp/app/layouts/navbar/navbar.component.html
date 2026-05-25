@@ -27,6 +27,11 @@
             <span jhiTranslate="global.menu.trips">Trips</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/goals" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+            <span jhiTranslate="global.menu.goals">Goals</span>
+          </a>
+        </li>
         <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">
           <a class="nav-link" routerLink="/expenses" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
             <span jhiTranslate="global.menu.expenses">My Finance</span>
@@ -206,6 +211,12 @@
             <a class="mobile-nav-link" routerLink="/trips" (click)="collapseNavbar()">
               <fa-icon icon="plane"></fa-icon>
               <span jhiTranslate="global.menu.trips">Trips</span>
+            </a>
+          </li>
+          <li>
+            <a class="mobile-nav-link" routerLink="/goals" (click)="collapseNavbar()">
+              <fa-icon icon="bullseye"></fa-icon>
+              <span jhiTranslate="global.menu.goals">Goals</span>
             </a>
           </li>
           <li *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">

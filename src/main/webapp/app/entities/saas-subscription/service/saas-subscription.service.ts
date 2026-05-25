@@ -181,14 +181,52 @@ export class SaaSSubscriptionService {
     const billingItem = saasSubscription as Partial<ISaaSSubscription>;
     return {
       ...saasSubscription,
-      billDate: billingItem.billDate?.format(DATE_FORMAT) ?? null,
-      dueDate: billingItem.dueDate?.format(DATE_FORMAT) ?? null,
-      paidDate: billingItem.paidDate?.format(DATE_FORMAT) ?? null,
-      subscriptionDate: billingItem.subscriptionDate?.format(DATE_FORMAT) ?? null,
-      renewalDate: billingItem.renewalDate?.format(DATE_FORMAT) ?? null,
-      createdDate: billingItem.createdDate?.toISOString() ?? null,
-      lastModifiedDate: billingItem.lastModifiedDate?.toISOString() ?? null,
+      billDate: this.normalizeDateToString(billingItem.billDate, DATE_FORMAT),
+      dueDate: this.normalizeDateToString(billingItem.dueDate, DATE_FORMAT),
+      paidDate: this.normalizeDateToString(billingItem.paidDate, DATE_FORMAT),
+      subscriptionDate: this.normalizeDateToString(billingItem.subscriptionDate, DATE_FORMAT),
+      renewalDate: this.normalizeDateToString(billingItem.renewalDate, DATE_FORMAT),
+      createdDate: this.normalizeDateTimeToString(billingItem.createdDate),
+      lastModifiedDate: this.normalizeDateTimeToString(billingItem.lastModifiedDate),
     };
+  }
+
+  private normalizeDateToString(date: any, format: string = DATE_FORMAT): string | null {
+    if (!date) return null;
+    // If it's already a dayjs object, format it
+    if (typeof date.format === 'function') {
+      return date.format(format);
+    }
+    // If it's a string, return as-is (already formatted)
+    if (typeof date === 'string') {
+      return date;
+    }
+    // If it's a Date object, convert to dayjs first
+    if (date instanceof Date) {
+      return dayjs(date).format(format);
+    }
+    // Otherwise try to parse it as dayjs
+    const parsed = dayjs(date);
+    return parsed.isValid() ? parsed.format(format) : null;
+  }
+
+  private normalizeDateTimeToString(date: any): string | null {
+    if (!date) return null;
+    // If it's a dayjs object, call toISOString
+    if (typeof date.toISOString === 'function') {
+      return date.toISOString();
+    }
+    // If it's a string, return as-is
+    if (typeof date === 'string') {
+      return date;
+    }
+    // If it's a Date object, call toISOString directly
+    if (date instanceof Date) {
+      return date.toISOString();
+    }
+    // Otherwise try to parse it as dayjs
+    const parsed = dayjs(date);
+    return parsed.isValid() ? parsed.toISOString() : null;
   }
 
   protected convertDateFromServer(restSaaSSubscription: RestSaaSSubscription): ISaaSSubscription {

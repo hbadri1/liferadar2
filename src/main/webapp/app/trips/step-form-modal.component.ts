@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import dayjs from 'dayjs/esm';
 import SharedModule from 'app/shared/shared.module';
 import { TripPlanStepService } from 'app/entities/trip-plan-step/service/trip-plan-step.service';
-import { ITripPlanStep, NewTripPlanStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
+import { ITripPlanStep, ITripPlanSubStep, NewTripPlanStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
 import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 
@@ -47,7 +47,12 @@ export class StepFormModalComponent implements OnInit {
     notes: ['', [Validators.maxLength(800)]],
     latitude: [null as number | null],
     longitude: [null as number | null],
+    subSteps: this.fb.array<FormGroup>([]),
   });
+
+  get subSteps(): FormArray<FormGroup> {
+    return this.editForm.get('subSteps') as FormArray<FormGroup>;
+  }
 
   get isEdit(): boolean {
     return this.step !== null;
@@ -66,6 +71,7 @@ export class StepFormModalComponent implements OnInit {
         latitude: this.step.latitude ?? null,
         longitude: this.step.longitude ?? null,
       });
+      (this.step.subSteps ?? []).forEach(subStep => this.subSteps.push(this.createSubStepGroup(subStep)));
     } else if (this.initialDate) {
       const parsedInitialDate = dayjs(this.initialDate);
       if (parsedInitialDate.isValid()) {
@@ -79,6 +85,18 @@ export class StepFormModalComponent implements OnInit {
 
     ['startDate', 'startTime'].forEach(ctrl => {
       this.editForm.get(ctrl)?.valueChanges.subscribe(() => this.autoFillEndTime());
+    });
+  }
+
+  addSubStep(): void {
+    const sequence = this.subSteps.length + 1;
+    this.subSteps.push(this.createSubStepGroup({ sequence }));
+  }
+
+  removeSubStep(index: number): void {
+    this.subSteps.removeAt(index);
+    this.subSteps.controls.forEach((group, idx) => {
+      group.patchValue({ sequence: idx + 1 }, { emitEvent: false });
     });
   }
 
@@ -101,6 +119,12 @@ export class StepFormModalComponent implements OnInit {
       return;
     }
 
+    const subSteps = this.buildSubSteps();
+    if (subSteps === null) {
+      this.isSaving.set(false);
+      return;
+    }
+
     if (this.step) {
       const updated: ITripPlanStep = {
         ...this.step,
@@ -111,6 +135,7 @@ export class StepFormModalComponent implements OnInit {
         notes: val.notes ?? null,
         latitude: val.latitude ?? null,
         longitude: val.longitude ?? null,
+        subSteps,
       };
       this.stepService.update(updated).subscribe({
         next: res => {
@@ -135,6 +160,7 @@ export class StepFormModalComponent implements OnInit {
         longitude: val.longitude ?? null,
         sequence: this.nextSequence,
         tripPlan: { id: this.trip.id } as ITripPlan,
+        subSteps,
       };
       this.stepService.create(newStep).subscribe({
         next: res => {
@@ -211,5 +237,54 @@ export class StepFormModalComponent implements OnInit {
     }
 
     return true;
+  }
+
+  private createSubStepGroup(subStep?: ITripPlanSubStep): FormGroup {
+    return this.fb.group({
+      id: [subStep?.id ?? null],
+      actionName: [subStep?.actionName ?? '', [Validators.required, Validators.maxLength(200)]],
+      startDate: [subStep?.startDate ? dayjs(subStep.startDate).format('YYYY-MM-DD') : '', [Validators.required]],
+      startTime: [subStep?.startDate ? this.roundToHalfHourTime(subStep.startDate) : '00:00', [Validators.required]],
+      endDate: [subStep?.endDate ? dayjs(subStep.endDate).format('YYYY-MM-DD') : '', [Validators.required]],
+      endTime: [subStep?.endDate ? this.roundToHalfHourTime(subStep.endDate) : '00:30', [Validators.required]],
+      notes: [subStep?.notes ?? '', [Validators.maxLength(800)]],
+      sequence: [subStep?.sequence ?? this.subSteps.length + 1],
+    });
+  }
+
+  private buildSubSteps(): ITripPlanSubStep[] | null {
+    const stepStart = dayjs(`${this.editForm.getRawValue().startDate!}T${this.editForm.getRawValue().startTime ?? '00:00'}`, DATE_TIME_FORMAT);
+    const stepEnd = dayjs(`${this.editForm.getRawValue().endDate!}T${this.editForm.getRawValue().endTime ?? '00:30'}`, DATE_TIME_FORMAT);
+
+    const result: ITripPlanSubStep[] = [];
+    for (let i = 0; i < this.subSteps.controls.length; i++) {
+      const row = this.subSteps.at(i).getRawValue();
+      const startDate = dayjs(`${row.startDate}T${row.startTime ?? '00:00'}`, DATE_TIME_FORMAT);
+      const endDate = dayjs(`${row.endDate}T${row.endTime ?? '00:30'}`, DATE_TIME_FORMAT);
+
+      if (!row.actionName?.trim()) {
+        this.errorMsg.set('trips.validation.stepNameRequired');
+        return null;
+      }
+      if (startDate.isAfter(endDate)) {
+        this.errorMsg.set('trips.errors.stepStartDateAfterEndDate');
+        return null;
+      }
+      if (startDate.isBefore(stepStart) || endDate.isAfter(stepEnd)) {
+        this.errorMsg.set('trips.errors.subStepOutsideStepRange');
+        return null;
+      }
+
+      result.push({
+        id: row.id,
+        actionName: row.actionName.trim(),
+        startDate,
+        endDate,
+        notes: row.notes ?? null,
+        sequence: row.sequence ?? i + 1,
+      });
+    }
+
+    return result;
   }
 }

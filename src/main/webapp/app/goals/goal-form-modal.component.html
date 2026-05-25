@@ -1,0 +1,193 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    <fa-icon icon="bullseye" class="me-2 text-primary"></fa-icon>
+    <span>{{ (goal ? 'goals.editGoal' : 'goals.newGoal') | translate }}</span>
+  </h5>
+  <button type="button" class="btn-close" (click)="dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  @if (errorMsg) {
+    <div class="alert alert-danger">{{ errorMsg | translate }}</div>
+  }
+
+  <form #goalForm="ngForm">
+    <!-- Title -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold" jhiTranslate="goals.fields.title">Title <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" [(ngModel)]="form.title" name="title"
+             [placeholder]="'goals.fields.titlePlaceholder' | translate" maxlength="150" required />
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label" jhiTranslate="goals.fields.description">Description</label>
+      <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2" maxlength="2000"
+                [placeholder]="'goals.fields.descriptionPlaceholder' | translate"></textarea>
+    </div>
+
+    <div class="row">
+      <!-- Goal Type -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold" jhiTranslate="goals.fields.goalType">Goal Type <span class="text-danger">*</span></label>
+        <select class="form-select" [(ngModel)]="form.goalType" name="goalType" required>
+          @for (type of goalTypes; track type) {
+            <option [value]="type">{{ ('goals.goalType.' + type.toLowerCase()) | translate }}</option>
+          }
+        </select>
+      </div>
+      <!-- Category -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label" jhiTranslate="goals.fields.category">Category</label>
+        <select class="form-select" [(ngModel)]="form.category" name="category">
+          <option [ngValue]="null">—</option>
+          @for (cat of goalCategories; track cat) {
+            <option [value]="cat">{{ ('goals.category.' + cat.toLowerCase()) | translate }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Status -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label fw-semibold" jhiTranslate="goals.fields.status">Status</label>
+        <select class="form-select" [(ngModel)]="form.status" name="status">
+          @for (s of goalStatuses; track s) {
+            <option [value]="s">{{ ('goals.status.' + s.toLowerCase()) | translate }}</option>
+          }
+        </select>
+      </div>
+      <!-- Priority -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label fw-semibold" jhiTranslate="goals.fields.priority">Priority</label>
+        <select class="form-select" [(ngModel)]="form.priority" name="priority">
+          @for (p of priorities; track p) {
+            <option [value]="p">{{ ('goals.priority.' + p.toLowerCase()) | translate }}</option>
+          }
+        </select>
+      </div>
+       <!-- Visibility -->
+       @if (!isChild()) {
+         <div class="col-md-4 mb-3">
+           <label class="form-label" jhiTranslate="goals.fields.visibility">Visibility</label>
+           <select class="form-select" [(ngModel)]="form.visibility" name="visibility">
+             @for (v of visibilities; track v) {
+               <option [value]="v">{{ ('goals.visibility.' + v.toLowerCase()) | translate }}</option>
+             }
+           </select>
+         </div>
+       } @else {
+         <!-- Read-only visibility for children: always FAMILY_SHARED -->
+         <div class="col-md-4 mb-3">
+           <label class="form-label" jhiTranslate="goals.fields.visibility">Visibility</label>
+           <div class="input-group">
+             <span class="input-group-text" style="width:100%; border-radius:0.375rem;">
+               <fa-icon icon="share-alt" class="me-2 text-info"></fa-icon>
+               <span jhiTranslate="goals.visibility.family_shared">Family Shared</span>
+             </span>
+           </div>
+           <small class="text-muted">({{ 'goals.childOnlyFamilyShared' | translate }})</small>
+         </div>
+       }
+    </div>
+
+    <div class="row">
+      <!-- Start Date -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label" jhiTranslate="goals.fields.startDate">Start Date</label>
+        <input type="date" class="form-control" [(ngModel)]="form.startDate" name="startDate" />
+      </div>
+      <!-- Target Date -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label" jhiTranslate="goals.fields.targetDate">Target Date</label>
+        <input type="date" class="form-control" [(ngModel)]="form.targetDate" name="targetDate" />
+      </div>
+    </div>
+
+    <!-- Progress Mode -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold" jhiTranslate="goals.fields.progressMode">Progress Mode</label>
+      <select class="form-select" [(ngModel)]="form.progressMode" name="progressMode">
+        @for (mode of progressModes; track mode) {
+          <option [value]="mode">{{ ('goals.progressMode.' + mode.toLowerCase()) | translate }}</option>
+        }
+      </select>
+    </div>
+
+    @if (isManualMode) {
+      <div class="mb-3">
+        <label class="form-label" jhiTranslate="goals.fields.progressPercentage">Progress %</label>
+        <input type="number" class="form-control" [(ngModel)]="form.progressPercentage" name="progressPercentage" min="0" max="100" />
+      </div>
+    }
+
+    @if (isNumericMode) {
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label" jhiTranslate="goals.fields.targetValue">Target Value</label>
+          <input type="number" class="form-control" [(ngModel)]="form.targetValue" name="targetValue" />
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label" jhiTranslate="goals.fields.currentValue">Current Value</label>
+          <input type="number" class="form-control" [(ngModel)]="form.currentValue" name="currentValue" />
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label" jhiTranslate="goals.fields.baselineValue">Baseline</label>
+          <input type="number" class="form-control" [(ngModel)]="form.baselineValue" name="baselineValue" />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" jhiTranslate="goals.fields.unit">Unit</label>
+        <input type="text" class="form-control" [(ngModel)]="form.unit" name="unit" maxlength="50"
+               [placeholder]="'goals.fields.unitPlaceholder' | translate" />
+      </div>
+    }
+
+    <div class="row">
+      <!-- Confidence -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label" jhiTranslate="goals.fields.confidenceLevel">Confidence</label>
+        <select class="form-select" [(ngModel)]="form.confidenceLevel" name="confidenceLevel">
+          <option [ngValue]="null">—</option>
+          @for (p of priorities; track p) {
+            <option [value]="p">{{ ('goals.priority.' + p.toLowerCase()) | translate }}</option>
+          }
+        </select>
+      </div>
+      <!-- Review Frequency -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label" jhiTranslate="goals.fields.reviewFrequency">Review Frequency</label>
+        <select class="form-select" [(ngModel)]="form.reviewFrequency" name="reviewFrequency">
+          <option [ngValue]="null">—</option>
+          @for (f of reviewFrequencies; track f) {
+            <option [value]="f">{{ ('goals.reviewFrequency.' + f.toLowerCase()) | translate }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Motivation -->
+    <div class="mb-3">
+      <label class="form-label" jhiTranslate="goals.fields.motivation">Why does this goal matter?</label>
+      <textarea class="form-control" [(ngModel)]="form.motivation" name="motivation" rows="2" maxlength="2000"></textarea>
+    </div>
+
+    <!-- Success Criteria -->
+    <div class="mb-3">
+      <label class="form-label" jhiTranslate="goals.fields.successCriteria">Success Criteria</label>
+      <textarea class="form-control" [(ngModel)]="form.successCriteria" name="successCriteria" rows="2" maxlength="2000"></textarea>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="dismiss()" jhiTranslate="entity.action.cancel">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()" [disabled]="isSaving">
+    @if (isSaving) {
+      <span class="spinner-border spinner-border-sm me-1"></span>
+    }
+    <span jhiTranslate="entity.action.save">Save</span>
+  </button>
+</div>
+

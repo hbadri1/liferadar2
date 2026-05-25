@@ -78,6 +78,65 @@
       <textarea id="notes" class="form-control" rows="3" formControlName="notes"
                 placeholder="{{ 'trips.fields.notesPlaceholder' | translate }}"></textarea>
     </div>
+
+    <div class="mb-2 d-flex align-items-center justify-content-between">
+      <label class="form-label fw-bold mb-0">{{ 'trips.fields.subSteps' | translate }}</label>
+      <button type="button" class="btn btn-sm btn-outline-primary" (click)="addSubStep()">
+        <fa-icon icon="plus" class="me-1"></fa-icon>
+        {{ 'trips.addSubStep' | translate }}
+      </button>
+    </div>
+
+    @if (subSteps.length === 0) {
+      <div class="text-muted small mb-3">{{ 'trips.noSubSteps' | translate }}</div>
+    }
+
+    <div formArrayName="subSteps" class="d-flex flex-column gap-2">
+      @for (group of subSteps.controls; track $index) {
+        <div class="border rounded p-2" [formGroupName]="$index">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <strong>{{ 'trips.subStep' | translate }} {{$index + 1}}</strong>
+            <button type="button" class="btn btn-xs btn-outline-danger" (click)="removeSubStep($index)">
+              <fa-icon icon="trash"></fa-icon>
+            </button>
+          </div>
+          <div class="mb-2">
+            <input type="text" class="form-control" formControlName="actionName" placeholder="{{ 'trips.fields.subStepNamePlaceholder' | translate }}" />
+          </div>
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label small mb-1">{{ 'trips.fields.startDate' | translate }}</label>
+              <div class="row g-2">
+                <div class="col-7"><input type="date" class="form-control" formControlName="startDate" /></div>
+                <div class="col-5">
+                  <select class="form-select" formControlName="startTime">
+                    @for (t of timeOptions; track t) {
+                      <option [value]="t">{{ t }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small mb-1">{{ 'trips.fields.endDate' | translate }}</label>
+              <div class="row g-2">
+                <div class="col-7"><input type="date" class="form-control" formControlName="endDate" /></div>
+                <div class="col-5">
+                  <select class="form-select" formControlName="endTime">
+                    @for (t of timeOptions; track t) {
+                      <option [value]="t">{{ t }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-2">
+            <textarea class="form-control" rows="2" formControlName="notes" placeholder="{{ 'trips.fields.notesPlaceholder' | translate }}"></textarea>
+          </div>
+        </div>
+      }
+    </div>
   </form>
 </div>
 

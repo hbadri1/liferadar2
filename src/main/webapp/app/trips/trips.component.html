@@ -219,6 +219,9 @@
                             <div class="step-card-header">
                               @if (canEdit() && !selectedTripReadOnly()) {
                                 <div class="step-card-actions">
+                                  <button class="btn btn-xs btn-outline-success" (click)="openAddSubStep(entry.step, $event)" title="Add substep">
+                                    <fa-icon icon="plus"></fa-icon>
+                                  </button>
                                   <button class="btn btn-xs btn-outline-primary" (click)="openEditStep(entry.step)" title="Edit step">
                                     <fa-icon icon="pencil-alt"></fa-icon>
                                   </button>
@@ -246,6 +249,19 @@
                               <fa-icon icon="clock" class="me-1"></fa-icon>
                               {{ stepDurationLabel(entry.step) }}
                             </div>
+                            @if (sortedSubSteps(entry.step).length > 0) {
+                              <div class="mt-2 pt-2 border-top">
+                                <div class="small fw-semibold text-muted mb-1" jhiTranslate="trips.fields.subSteps">Substeps</div>
+                                <div class="d-flex flex-column gap-1">
+                                  @for (subStep of sortedSubSteps(entry.step); track subStep.id ?? $index) {
+                                    <div class="small">
+                                      <span class="fw-semibold">{{ subStep.actionName }}</span>
+                                      <span class="text-muted">: {{ subStepDateRangeLabel(subStep) }} ({{ subStepDurationLabel(subStep) }})</span>
+                                    </div>
+                                  }
+                                </div>
+                              </div>
+                            }
                             @if (entry.step.notes) {
                               <p class="step-notes">{{ entry.step.notes }}</p>
                             }

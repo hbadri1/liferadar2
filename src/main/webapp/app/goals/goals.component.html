@@ -1,0 +1,229 @@
+<div class="goals-page container-fluid py-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="mb-0">
+        <fa-icon icon="bullseye" class="me-2 text-primary"></fa-icon>
+        <span jhiTranslate="goals.title">Goals & Projects</span>
+      </h2>
+      <p class="text-muted mb-0" jhiTranslate="goals.subtitle">Define goals, track milestones, and measure progress</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-sm" (click)="toggleArchived()">
+        <fa-icon icon="ban" class="me-1"></fa-icon>
+        <span>{{ (showArchived() ? 'goals.hideArchived' : 'goals.showArchived') | translate }}</span>
+      </button>
+      @if (canEdit()) {
+        <button class="btn btn-primary" (click)="openCreateGoal()">
+          <fa-icon icon="plus"></fa-icon>
+          <span class="ms-1" jhiTranslate="goals.newGoal">New Goal</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (errorMsg()) {
+    <div class="alert alert-danger">{{ errorMsg()! | translate }}</div>
+  }
+
+  <!-- Dashboard Summary -->
+  @if (summary()) {
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-2">
+        <div class="goals-stat-card">
+          <div class="stat-number text-primary">{{ summary()!.activeGoalsCount }}</div>
+          <div class="stat-label" jhiTranslate="goals.summary.active">Active</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="goals-stat-card">
+          <div class="stat-number text-danger">{{ summary()!.atRiskGoalsCount }}</div>
+          <div class="stat-label" jhiTranslate="goals.summary.atRisk">At Risk</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="goals-stat-card">
+          <div class="stat-number text-warning">{{ summary()!.goalsNeedingReviewCount }}</div>
+          <div class="stat-label" jhiTranslate="goals.summary.needReview">Need Review</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="goals-stat-card">
+          <div class="stat-number text-info">{{ summary()!.goalsDueThisMonthCount }}</div>
+          <div class="stat-label" jhiTranslate="goals.summary.dueThisMonth">Due This Month</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="goals-stat-card">
+          <div class="stat-number text-success">{{ summary()!.completedGoalsCount }}</div>
+          <div class="stat-label" jhiTranslate="goals.summary.completed">Completed</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="goals-stat-card">
+          <div class="stat-number text-primary">{{ summary()!.averageProgressPercentage | number:'1.0-0' }}%</div>
+          <div class="stat-label" jhiTranslate="goals.summary.avgProgress">Avg Progress</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Filters -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body py-2">
+      <div class="row g-2 align-items-center">
+        <div class="col-auto">
+          <label class="form-label mb-0 small fw-semibold" jhiTranslate="goals.filter.status">Status</label>
+          <select class="form-select form-select-sm" [(ngModel)]="filterStatusValue" [ngModelOptions]="{standalone: true}">
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ s === 'ALL' ? ('goals.filter.all' | translate) : (('goals.status.' + s.toLowerCase()) | translate) }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-auto">
+          <label class="form-label mb-0 small fw-semibold" jhiTranslate="goals.filter.priority">Priority</label>
+          <select class="form-select form-select-sm" [(ngModel)]="filterPriorityValue" [ngModelOptions]="{standalone: true}">
+            @for (p of priorities; track p) {
+              <option [value]="p">{{ p === 'ALL' ? ('goals.filter.all' | translate) : (('goals.priority.' + p.toLowerCase()) | translate) }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-auto">
+          <label class="form-label mb-0 small fw-semibold" jhiTranslate="goals.filter.type">Type</label>
+          <select class="form-select form-select-sm" [(ngModel)]="filterTypeValue" [ngModelOptions]="{standalone: true}">
+            @for (t of goalTypes; track t) {
+              <option [value]="t">{{ t === 'ALL' ? ('goals.filter.all' | translate) : (('goals.goalType.' + t.toLowerCase()) | translate) }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-auto ms-auto">
+          <button class="btn btn-sm btn-outline-secondary" (click)="loadGoals()">
+            <fa-icon icon="sync"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goals List -->
+  @if (isLoading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (filteredGoalsList.length === 0) {
+    <div class="text-center py-5 text-muted">
+      <fa-icon icon="bullseye" class="fa-4x mb-3 d-block opacity-25 text-primary"></fa-icon>
+      <h5 jhiTranslate="goals.noGoals">No goals yet.</h5>
+      <p jhiTranslate="goals.noGoalsHint">Create your first goal to start turning life evaluations into progress.</p>
+      @if (canEdit()) {
+        <button class="btn btn-primary mt-2" (click)="openCreateGoal()">
+          <fa-icon icon="plus" class="me-1"></fa-icon>
+          <span jhiTranslate="goals.newGoal">New Goal</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="row g-3">
+      @for (goal of filteredGoalsList; track goal.id) {
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="goal-card" [class.goal-card--at-risk]="isAtRisk(goal)" [class.goal-card--completed]="goal.status === 'COMPLETED'"
+               (click)="openGoalDetail(goal)">
+
+            <!-- Card Header -->
+            <div class="goal-card-header">
+              <div class="flex-grow-1 min-w-0">
+                <h6 class="goal-title mb-1">{{ goal.title }}</h6>
+                <div class="d-flex flex-wrap gap-1 mb-1">
+                  <span class="badge goal-type-badge">{{ ('goals.goalType.' + goal.goalType.toLowerCase()) | translate }}</span>
+                  @if (goal.category) {
+                    <span class="badge bg-light text-dark border small">{{ ('goals.category.' + goal.category.toLowerCase()) | translate }}</span>
+                  }
+                  <span class="badge" [ngClass]="statusBadgeClass(goal.status)">
+                    {{ ('goals.status.' + goal.status.toLowerCase()) | translate }}
+                  </span>
+                  <span class="badge" [ngClass]="priorityBadgeClass(goal.priority)">
+                    {{ ('goals.priority.' + goal.priority.toLowerCase()) | translate }}
+                  </span>
+                  @if (isAtRisk(goal)) {
+                    <span class="badge bg-danger">⚠ <span jhiTranslate="goals.atRisk">At Risk</span></span>
+                  }
+                  @if (needsReview(goal)) {
+                    <span class="badge bg-warning text-dark">🔔 <span jhiTranslate="goals.needsReview">Review Due</span></span>
+                  }
+                  @if (goal.sharedWithMe) {
+                    <span class="badge bg-info text-dark">
+                      <fa-icon icon="share-alt" class="me-1"></fa-icon>
+                      <span jhiTranslate="goals.sharedWithMe">Shared</span>
+                    </span>
+                  }
+                </div>
+              </div>
+              @if (canEditGoal(goal)) {
+                <div class="goal-card-actions ms-2" (click)="$event.stopPropagation()">
+                  @if (canManageGoal(goal)) {
+                    <button class="btn btn-xs btn-outline-primary" (click)="openEditGoal(goal, $event)" title="Edit">
+                      <fa-icon icon="pencil-alt"></fa-icon>
+                    </button>
+                  }
+                  <button class="btn btn-xs btn-outline-success" (click)="openReviewGoal(goal, $event)" title="Review">
+                    <fa-icon icon="clipboard-check"></fa-icon>
+                  </button>
+                  @if (canManageGoal(goal) && goal.status !== 'COMPLETED' && goal.status !== 'ARCHIVED') {
+                    <button class="btn btn-xs btn-outline-secondary" (click)="archiveGoal(goal, $event)" title="Archive">
+                      <fa-icon icon="ban"></fa-icon>
+                    </button>
+                  }
+                  @if (canManageGoal(goal)) {
+                    <button class="btn btn-xs btn-outline-danger" (click)="deleteGoal(goal, $event)" title="Delete">
+                      <fa-icon icon="trash"></fa-icon>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="goal-progress mb-2">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted"><fa-icon icon="chart-line" class="me-1"></fa-icon><span jhiTranslate="goals.fields.progress">Progress</span></span>
+                <span class="fw-semibold">{{ goal.progressPercentage ?? 0 }}%</span>
+              </div>
+              <div class="progress" style="height: 8px">
+                <div class="progress-bar" [ngClass]="progressBarClass(goal)"
+                     [style.width.%]="goal.progressPercentage ?? 0" role="progressbar"></div>
+              </div>
+            </div>
+
+            <!-- Meta info -->
+            <div class="goal-meta small text-muted d-flex flex-wrap gap-2">
+              @if (goal.targetDate) {
+                <span [class.text-danger]="isOverdue(goal)">
+                  <fa-icon icon="calendar-alt" class="me-1"></fa-icon>{{ goal.targetDate }}
+                </span>
+              }
+              @if (goal.nextReviewDate) {
+                <span [class.text-warning]="needsReview(goal)">
+                  <fa-icon icon="sync" class="me-1"></fa-icon>{{ goal.nextReviewDate }}
+                </span>
+              }
+              @if (goal.pillar) {
+                <span>
+                  <fa-icon icon="th-list" class="me-1"></fa-icon>{{ goal.pillar.code }}
+                </span>
+              }
+              @if (goal.unit && goal.currentValue != null && goal.targetValue != null) {
+                <span>
+                  <fa-icon icon="bullseye" class="me-1"></fa-icon>
+                  {{ goal.currentValue }} / {{ goal.targetValue }} {{ goal.unit }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
+
