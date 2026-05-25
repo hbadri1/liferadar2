@@ -8,13 +8,19 @@ import { isPresent } from 'app/core/util/operators';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { ITripPlanStep, NewTripPlanStep } from '../trip-plan-step.model';
+import { ITripPlanStep, ITripPlanSubStep, NewTripPlanStep } from '../trip-plan-step.model';
 
 export type PartialUpdateTripPlanStep = Partial<ITripPlanStep> & Pick<ITripPlanStep, 'id'>;
 
-type RestOf<T extends ITripPlanStep | NewTripPlanStep> = Omit<T, 'startDate' | 'endDate'> & {
+type RestSubStep = Omit<ITripPlanSubStep, 'startDate' | 'endDate'> & {
   startDate?: string | null;
   endDate?: string | null;
+};
+
+type RestOf<T extends ITripPlanStep | NewTripPlanStep> = Omit<T, 'startDate' | 'endDate' | 'subSteps'> & {
+  startDate?: string | null;
+  endDate?: string | null;
+  subSteps?: RestSubStep[] | null;
 };
 
 export type RestTripPlanStep = RestOf<ITripPlanStep>;
@@ -104,9 +110,33 @@ export class TripPlanStepService {
   protected convertDateFromClient<T extends ITripPlanStep | NewTripPlanStep | PartialUpdateTripPlanStep>(tripPlanStep: T): RestOf<T> {
     return {
       ...tripPlanStep,
-      startDate: tripPlanStep.startDate?.format(DATE_TIME_FORMAT) ?? null,
-      endDate: tripPlanStep.endDate?.format(DATE_TIME_FORMAT) ?? null,
+      startDate: this.normalizeDateToString(tripPlanStep.startDate),
+      endDate: this.normalizeDateToString(tripPlanStep.endDate),
+      subSteps: tripPlanStep.subSteps?.map(subStep => ({
+        ...subStep,
+        startDate: this.normalizeDateToString(subStep.startDate),
+        endDate: this.normalizeDateToString(subStep.endDate),
+      })) ?? null,
     };
+  }
+
+  private normalizeDateToString(date: any): string | null {
+    if (!date) return null;
+    // If it's already a dayjs object, format it
+    if (typeof date.format === 'function') {
+      return date.format(DATE_TIME_FORMAT);
+    }
+    // If it's a string, return as-is (already formatted)
+    if (typeof date === 'string') {
+      return date;
+    }
+    // If it's a Date object, convert to dayjs first
+    if (date instanceof Date) {
+      return dayjs(date).format(DATE_TIME_FORMAT);
+    }
+    // Otherwise try to parse it as dayjs
+    const parsed = dayjs(date);
+    return parsed.isValid() ? parsed.format(DATE_TIME_FORMAT) : null;
   }
 
   protected convertDateFromServer(restTripPlanStep: RestTripPlanStep): ITripPlanStep {
@@ -114,6 +144,11 @@ export class TripPlanStepService {
       ...restTripPlanStep,
       startDate: restTripPlanStep.startDate ? dayjs(restTripPlanStep.startDate) : undefined,
       endDate: restTripPlanStep.endDate ? dayjs(restTripPlanStep.endDate) : undefined,
+      subSteps: restTripPlanStep.subSteps?.map(subStep => ({
+        ...subStep,
+        startDate: subStep.startDate ? dayjs(subStep.startDate) : undefined,
+        endDate: subStep.endDate ? dayjs(subStep.endDate) : undefined,
+      })) ?? null,
     };
   }
 

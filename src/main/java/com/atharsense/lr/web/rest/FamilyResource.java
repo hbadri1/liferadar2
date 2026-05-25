@@ -4,9 +4,11 @@ import com.atharsense.lr.domain.User;
 import com.atharsense.lr.domain.Family;
 import com.atharsense.lr.repository.UserRepository;
 import com.atharsense.lr.repository.FamilyRepository;
+import com.atharsense.lr.repository.ExtendedUserRepository;
 import com.atharsense.lr.security.AuthoritiesConstants;
 import com.atharsense.lr.security.SecurityUtils;
 import com.atharsense.lr.service.FamilyObjectiveService;
+import com.atharsense.lr.service.GoalService;
 import com.atharsense.lr.service.MailService;
 import com.atharsense.lr.service.UserService;
 import com.atharsense.lr.service.dto.CreateFamilyObjectiveRequest;
@@ -40,13 +42,17 @@ public class FamilyResource {
     private final FamilyObjectiveService familyObjectiveService;
     private final MailService mailService;
     private final FamilyRepository familyRepository;
+    private final ExtendedUserRepository extendedUserRepository;
+    private final GoalService goalService;
 
-    public FamilyResource(UserRepository userRepository, UserService userService, FamilyObjectiveService familyObjectiveService, MailService mailService, FamilyRepository familyRepository) {
+    public FamilyResource(UserRepository userRepository, UserService userService, FamilyObjectiveService familyObjectiveService, MailService mailService, FamilyRepository familyRepository, ExtendedUserRepository extendedUserRepository, GoalService goalService) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.familyObjectiveService = familyObjectiveService;
         this.mailService = mailService;
         this.familyRepository = familyRepository;
+        this.extendedUserRepository = extendedUserRepository;
+        this.goalService = goalService;
     }
 
     /**
@@ -141,6 +147,17 @@ public class FamilyResource {
             userRepository.save(currentUser);
         }
 
+        // Ensure the parent's ExtendedUser is also linked to the family
+        // This is necessary for syncFamilyShares() to find the parent when children create goals
+        final Family finalFamily = family;
+        extendedUserRepository.findOneByUserId(currentUser.getId()).ifPresent(eu -> {
+            if (eu.getFamily() == null || !eu.getFamily().getId().equals(finalFamily.getId())) {
+                eu.setFamily(finalFamily);
+                extendedUserRepository.save(eu);
+                LOG.debug("Linked parent's ExtendedUser to family {}", finalFamily.getId());
+            }
+        });
+
         return ResponseEntity.ok(new FamilyInfo(family.getId(), family.getName()));
     }
 
@@ -166,7 +183,18 @@ public class FamilyResource {
             family.setName(request.name().trim());
             family.setModifiedAt(java.time.Instant.now());
             family = familyRepository.save(family);
+            currentUser.setFamily(family);
             userRepository.save(currentUser);
+
+            // Ensure the parent's ExtendedUser is also linked to the family
+            final Family finalFamily = family;
+            extendedUserRepository.findOneByUserId(currentUser.getId()).ifPresent(eu -> {
+                if (eu.getFamily() == null || !eu.getFamily().getId().equals(finalFamily.getId())) {
+                    eu.setFamily(finalFamily);
+                    extendedUserRepository.save(eu);
+                }
+            });
+
             LOG.debug("Updated family name for user {}", currentLogin);
         }
 
@@ -269,6 +297,51 @@ public class FamilyResource {
             u.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(request.password()));
             userRepository.save(u);
         });
+
+        // ── Link child to the parent's family ─────────────────────────────
+        String parentLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
+        if (parentLogin != null) {
+            userRepository.findOneByLogin(parentLogin).ifPresent(parentUser -> {
+                Family parentFamily = parentUser.getFamily();
+                if (parentFamily == null) {
+                    // Auto-create family for parent if not yet created
+                    parentFamily = new Family();
+                    parentFamily.setName(parentUser.getFirstName() != null
+                        ? parentUser.getFirstName() + "'s Family" : "My Family");
+                    parentFamily = familyRepository.save(parentFamily);
+                    parentUser.setFamily(parentFamily);
+                    userRepository.save(parentUser);
+                }
+
+                // Link parent's ExtendedUser to the family as well (must be done before using in nested lambda)
+                final Family finalParentFamily = parentFamily;
+                extendedUserRepository.findOneByUserId(parentUser.getId()).ifPresent(parentEU -> {
+                    if (parentEU.getFamily() == null || !parentEU.getFamily().getId().equals(finalParentFamily.getId())) {
+                        parentEU.setFamily(finalParentFamily);
+                        extendedUserRepository.save(parentEU);
+                        LOG.debug("Linked parent's ExtendedUser to newly created family {}", finalParentFamily.getId());
+                    }
+                });
+
+                final Family family = finalParentFamily;
+
+                // Set child's User.family_id so the direct-family query works
+                userRepository.findOneByLogin(created.getLogin()).ifPresent(childUser -> {
+                    childUser.setFamily(family);
+                    userRepository.save(childUser);
+                });
+
+                // Set child's ExtendedUser.family for share-record lookups
+                extendedUserRepository.findOneByUserId(created.getId()).ifPresent(childEU -> {
+                    childEU.setFamily(family);
+                    extendedUserRepository.save(childEU);
+                });
+
+                // Backdate shares for all FAMILY_SHARED goals already in this family
+                goalService.backdateSharesForNewMember(created.getId(), family.getId());
+                LOG.debug("Linked child {} to family {} and backdated goal shares", created.getLogin(), family.getId());
+            });
+        }
 
         return ResponseEntity.ok(new AdminUserDTO(created));
     }

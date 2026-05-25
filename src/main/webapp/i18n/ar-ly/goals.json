@@ -1,0 +1,156 @@
+{
+  "goals": {
+    "title": "الأهداف والمشاريع",
+    "subtitle": "حدد الأهداف وتتبع المراحل وقس التقدم",
+    "newGoal": "هدف جديد",
+    "editGoal": "تعديل الهدف",
+    "deleteGoal": "حذف الهدف",
+    "archiveGoal": "أرشفة الهدف",
+    "confirmDeleteGoal": "هل أنت متأكد من حذف هذا الهدف؟ ستُحذف جميع المراحل والتحديثات أيضاً.",
+    "confirmArchiveGoal": "هل أنت متأكد من أرشفة هذا الهدف؟",
+    "noGoals": "لا توجد أهداف بعد.",
+    "noGoalsHint": "أنشئ هدفك الأول لتحويل تقييمات الحياة إلى تقدم فعلي.",
+    "noMilestones": "لا توجد مراحل بعد. أضف مراحل لتقسيم هذا الهدف إلى نقاط واضحة.",
+    "noUpdates": "لا يوجد تحديثات بعد. راجع هذا الهدف لبدء تتبع سجل التقدم.",
+    "milestones": "المراحل",
+    "updates": "التحديثات",
+    "addMilestone": "إضافة مرحلة",
+    "deleteMilestone": "حذف المرحلة",
+    "confirmDeleteMilestone": "هل أنت متأكد من حذف هذه المرحلة؟",
+    "reviewGoal": "مراجعة الهدف",
+    "submitReview": "إرسال المراجعة",
+    "showArchived": "عرض المؤرشف",
+    "hideArchived": "إخفاء المؤرشف",
+    "atRisk": "في خطر",
+    "needsReview": "تحتاج مراجعة",
+    "sharedWithMe": "مشترك",
+    "childOnlyFamilyShared": "يمكن للأطفال إنشاء أهداف عائلية مشتركة فقط",
+    "summary": {
+      "active": "نشط",
+      "atRisk": "في خطر",
+      "needReview": "تحتاج مراجعة",
+      "dueThisMonth": "مستحق هذا الشهر",
+      "completed": "مكتمل",
+      "avgProgress": "متوسط التقدم"
+    },
+    "filter": {
+      "all": "الكل",
+      "status": "الحالة",
+      "priority": "الأولوية",
+      "type": "النوع"
+    },
+    "goalType": {
+      "personal": "شخصي",
+      "family": "عائلي",
+      "career": "مهني",
+      "health": "صحي",
+      "financial": "مالي",
+      "spiritual": "روحي",
+      "learning": "تعلم",
+      "relationship": "علاقات",
+      "travel": "سفر",
+      "project": "مشروع",
+      "custom": "مخصص"
+    },
+    "category": {
+      "life_improvement": "تحسين الحياة",
+      "project_delivery": "تسليم مشروع",
+      "skill_building": "بناء مهارة",
+      "habit_based": "عادة",
+      "financial_target": "هدف مالي",
+      "health_target": "هدف صحي",
+      "relationship_target": "علاقات",
+      "spiritual_target": "روحي",
+      "event_preparation": "تحضير لحدث",
+      "other": "أخرى"
+    },
+    "status": {
+      "draft": "مسودة",
+      "not_started": "لم يبدأ",
+      "in_progress": "جاري",
+      "on_hold": "متوقف مؤقتاً",
+      "blocked": "محظور",
+      "at_risk": "في خطر",
+      "completed": "مكتمل",
+      "cancelled": "ملغى",
+      "archived": "مؤرشف"
+    },
+    "priority": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "critical": "حرجة"
+    },
+    "visibility": {
+      "private": "خاص",
+      "family_shared": "مشترك عائلي"
+    },
+    "progressMode": {
+      "manual_percentage": "نسبة يدوية",
+      "numeric_target": "هدف رقمي",
+      "milestone_based": "حسب المراحل",
+      "action_item_based": "حسب المهام",
+      "hybrid": "هجين"
+    },
+    "reviewFrequency": {
+      "daily": "يومياً",
+      "weekly": "أسبوعياً",
+      "bi_weekly": "كل أسبوعين",
+      "monthly": "شهرياً",
+      "quarterly": "ربع سنوي",
+      "custom": "مخصص",
+      "none": "لا شيء"
+    },
+    "milestoneStatus": {
+      "not_started": "لم يبدأ",
+      "in_progress": "جاري",
+      "completed": "مكتمل",
+      "skipped": "تم تخطيه",
+      "blocked": "محظور"
+    },
+    "fields": {
+      "title": "العنوان",
+      "titlePlaceholder": "مثال: إنقاص 8 كيلو، إطلاق MVP",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف مختصر للهدف...",
+      "goalType": "نوع الهدف",
+      "category": "الفئة",
+      "status": "الحالة",
+      "priority": "الأولوية",
+      "visibility": "الخصوصية",
+      "startDate": "تاريخ البدء",
+      "targetDate": "تاريخ الهدف",
+      "progressMode": "طريقة قياس التقدم",
+      "progress": "التقدم",
+      "progressPercentage": "نسبة التقدم %",
+      "targetValue": "القيمة المستهدفة",
+      "currentValue": "القيمة الحالية",
+      "baselineValue": "القيمة الأساسية",
+      "unit": "الوحدة",
+      "unitPlaceholder": "مثال: كجم، ريال، صفحة",
+      "confidenceLevel": "مستوى الثقة",
+      "reviewFrequency": "تكرار المراجعة",
+      "motivation": "الدافع",
+      "successCriteria": "معايير النجاح",
+      "nextReview": "المراجعة التالية",
+      "reviewDate": "تاريخ المراجعة",
+      "summary": "ملخص",
+      "summaryPlaceholder": "ماذا حدث منذ آخر مراجعة؟",
+      "blockers": "العوائق الحالية",
+      "blockersPlaceholder": "هل توجد عوائق أو عقبات؟",
+      "nextStep": "الخطوة التالية",
+      "nextStepPlaceholder": "على ماذا ستركز بعد ذلك؟",
+      "mood": "الحالة المزاجية",
+      "moodPlaceholder": "مثال: متحفز، قلق، واثق",
+      "milestoneTitlePlaceholder": "مثال: إتمام دورة AWS"
+    },
+    "validation": {
+      "titleRequired": "عنوان الهدف مطلوب."
+    },
+    "errors": {
+      "loadFailed": "فشل في تحميل الأهداف. يرجى المحاولة مجدداً.",
+      "saveFailed": "فشل في الحفظ. يرجى التحقق من المدخلات والمحاولة مجدداً."
+    }
+  }
+}
+

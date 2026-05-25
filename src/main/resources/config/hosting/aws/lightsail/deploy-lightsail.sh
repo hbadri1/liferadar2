@@ -15,6 +15,7 @@ IMAGE_TAG=${1:-latest}
 ECR_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}"
 IMAGE_WITH_TAG="${ECR_URI}:${IMAGE_TAG}"
 APP_IMAGE="${IMAGE_WITH_TAG}"
+DB_CONTAINER_NAME="${DB_CONTAINER_NAME:-liferadar-postgres}"
 LOCAL_BACKUP_SCRIPT="$SCRIPT_DIR/lightsail-backup-postgres.sh"
 REMOTE_BACKUP_SCRIPT="/tmp/lightsail-backup-postgres.sh"
 
@@ -26,6 +27,7 @@ echo "Deployment Configuration:"
 echo "  Lightsail IP: ${LIGHTSAIL_IP}"
 echo "  Image Tag: ${IMAGE_TAG}"
 echo "  Image URI: ${IMAGE_WITH_TAG}"
+echo "  DB Container: ${DB_CONTAINER_NAME}"
 echo ""
 
 # Verify prerequisites
@@ -58,7 +60,7 @@ docker pull ${IMAGE_WITH_TAG}
 
 cd liferadar
 echo "Creating database backup before deployment..."
-BACKUP_DIR="\$HOME/liferadar-backups" ${REMOTE_BACKUP_SCRIPT} liferadar-db
+BACKUP_DIR="\$HOME/liferadar-backups" ${REMOTE_BACKUP_SCRIPT} ${DB_CONTAINER_NAME}
 
 echo "Stopping current container..."
 docker compose down || true

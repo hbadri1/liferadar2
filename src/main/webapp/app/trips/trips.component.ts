@@ -11,8 +11,9 @@ import { ConfirmationModalComponent } from 'app/home/confirmation-modal.componen
 import { TripPlanService } from 'app/entities/trip-plan/service/trip-plan.service';
 import { TripFormModalComponent } from './trip-form-modal.component';
 import { StepFormModalComponent } from './step-form-modal.component';
+import { SubStepFormModalComponent } from './substep-form-modal.component';
 import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
-import { ITripPlanStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
+import { ITripPlanStep, ITripPlanSubStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
 
 type TimelineEntry = { kind: 'today'; sortDate: dayjs.Dayjs } | { kind: 'step'; sortDate: dayjs.Dayjs; step: ITripPlanStep };
 
@@ -269,6 +270,25 @@ export default class TripsComponent implements OnInit {
     );
   }
 
+  openAddSubStep(step: ITripPlanStep, event: Event): void {
+    event.stopPropagation();
+    const trip = this.selectedTrip();
+    if (!trip || !this.canEdit() || this.selectedTripReadOnly()) {
+      return;
+    }
+
+    const ref = this.modalService.open(SubStepFormModalComponent, { size: 'lg', centered: true });
+    ref.componentInstance.step = step;
+    ref.result.then(
+      (result: ITripPlanStep) => {
+        if (result && trip.id) {
+          this.loadSteps(trip.id);
+        }
+      },
+      () => {},
+    );
+  }
+
   formatDate(d?: any): string {
     const parsed = this.toDayjsDate(d);
     return parsed ? parsed.format('DD MMM YYYY HH:mm') : '';
@@ -389,6 +409,36 @@ export default class TripsComponent implements OnInit {
     const startDate = this.toDayjsDate(step.startDate);
     const endDate = this.toDayjsDate(step.endDate) ?? startDate;
     return this.formatDurationDaysHours(startDate, endDate);
+  }
+
+  sortedSubSteps(step: ITripPlanStep): ITripPlanSubStep[] {
+    const subSteps = step.subSteps ?? [];
+    return [...subSteps].sort((a, b) => {
+      const startA = this.toDayjsDate(a.startDate)?.valueOf() ?? Number.MAX_SAFE_INTEGER;
+      const startB = this.toDayjsDate(b.startDate)?.valueOf() ?? Number.MAX_SAFE_INTEGER;
+      if (startA !== startB) {
+        return startA - startB;
+      }
+      const sequenceA = a.sequence ?? Number.MAX_SAFE_INTEGER;
+      const sequenceB = b.sequence ?? Number.MAX_SAFE_INTEGER;
+      if (sequenceA !== sequenceB) {
+        return sequenceA - sequenceB;
+      }
+      return (a.id ?? Number.MAX_SAFE_INTEGER) - (b.id ?? Number.MAX_SAFE_INTEGER);
+    });
+  }
+
+  subStepDateRangeLabel(subStep: ITripPlanSubStep): string {
+    const startDate = this.toDayjsDate(subStep.startDate);
+    const endDate = this.toDayjsDate(subStep.endDate);
+    if (!startDate || !endDate) {
+      return '';
+    }
+    return `${startDate.format('DD MMM HH:mm')} -> ${endDate.format('DD MMM HH:mm')}`;
+  }
+
+  subStepDurationLabel(subStep: ITripPlanSubStep): string {
+    return this.formatDurationDaysHours(this.toDayjsDate(subStep.startDate), this.toDayjsDate(subStep.endDate));
   }
 
   onTripActionsChange(trip: ITripPlan, actionsJson: string | null): void {

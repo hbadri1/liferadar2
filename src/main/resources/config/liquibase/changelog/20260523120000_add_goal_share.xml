@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Create goal_share table: links a Goal to a family ExtendedUser with optional edit rights -->
+    <changeSet id="20260523120000-1" author="liferadar">
+        <createTable tableName="goal_share">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="goal_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shared_with_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="can_edit" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Unique constraint: one share record per (goal, member) pair -->
+    <changeSet id="20260523120000-2" author="liferadar">
+        <addUniqueConstraint
+            tableName="goal_share"
+            columnNames="goal_id, shared_with_id"
+            constraintName="uc_goal_share__goal_shared_with"/>
+    </changeSet>
+
+    <!-- FK: goal_share → goal -->
+    <changeSet id="20260523120000-3" author="liferadar">
+        <addForeignKeyConstraint
+            baseTableName="goal_share" baseColumnNames="goal_id"
+            constraintName="fk_goal_share__goal_id"
+            referencedTableName="goal" referencedColumnNames="id"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+    <!-- FK: goal_share → extended_user -->
+    <changeSet id="20260523120000-4" author="liferadar">
+        <addForeignKeyConstraint
+            baseTableName="goal_share" baseColumnNames="shared_with_id"
+            constraintName="fk_goal_share__shared_with_id"
+            referencedTableName="extended_user" referencedColumnNames="id"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
+

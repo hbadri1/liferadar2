@@ -77,6 +77,15 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    path: 'goals',
+    loadComponent: () => import('./goals/goals.component'),
+    title: 'goals.title',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT, Authority.CHILD],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: 'expenses',
     loadComponent: () => import('./bills-subscriptions/bills-subscriptions.component'),
     title: 'billsSubscriptions.expensesTitle',

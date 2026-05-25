@@ -6,6 +6,8 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A TripPlanStep.
@@ -59,6 +61,11 @@ public class TripPlanStep implements Serializable {
     @JsonIgnoreProperties(value = { "steps", "owner" }, allowSetters = true)
     private TripPlan tripPlan;
 
+    @OneToMany(mappedBy = "step", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sequence ASC, startDate ASC, id ASC")
+    @JsonIgnoreProperties(value = { "step" }, allowSetters = true)
+    private List<TripPlanSubStep> subSteps = new ArrayList<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() { return this.id; }
@@ -101,6 +108,9 @@ public class TripPlanStep implements Serializable {
     public void setTripPlan(TripPlan tripPlan) { this.tripPlan = tripPlan; }
     public TripPlanStep tripPlan(TripPlan tripPlan) { this.setTripPlan(tripPlan); return this; }
 
+    public List<TripPlanSubStep> getSubSteps() { return this.subSteps; }
+    public void setSubSteps(List<TripPlanSubStep> subSteps) { this.subSteps = subSteps; }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -122,6 +132,7 @@ public class TripPlanStep implements Serializable {
             ", actionName='" + getActionName() + "'" +
             ", sequence=" + getSequence() +
             ", locationName='" + getLocationName() + "'" +
+            ", subStepsCount=" + (getSubSteps() != null ? getSubSteps().size() : 0) +
             "}";
     }
 }

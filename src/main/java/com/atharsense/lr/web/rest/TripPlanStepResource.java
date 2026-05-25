@@ -2,6 +2,7 @@ package com.atharsense.lr.web.rest;
 
 import com.atharsense.lr.domain.TripPlan;
 import com.atharsense.lr.domain.TripPlanStep;
+import com.atharsense.lr.domain.TripPlanSubStep;
 import com.atharsense.lr.repository.TripPlanRepository;
 import com.atharsense.lr.repository.TripPlanStepRepository;
 import com.atharsense.lr.service.TripPlanStepService;
@@ -74,6 +75,7 @@ public class TripPlanStepResource {
         }
 
         // Validate step dates
+        normalizeSubSteps(tripPlanStep);
         validateStepDates(tripPlanStep);
         validateCoordinates(tripPlanStep);
 
@@ -112,6 +114,7 @@ public class TripPlanStepResource {
         }
 
         // Validate step dates
+        normalizeSubSteps(tripPlanStep);
         validateStepDates(tripPlanStep);
         validateCoordinates(tripPlanStep);
 
@@ -198,15 +201,39 @@ public class TripPlanStepResource {
             .build();
     }
 
-    /**
-     * Validates trip plan step dates:
-     * 1. Step start date must be after or equal to trip start date
-     * 2. Step end date must be before or equal to trip end date
-     * 3. Step start date must be before or equal to step end date
-     *
-     * @param step the trip plan step to validate
-     * @throws BadRequestAlertException if validation fails
-     */
+
+    private void validateCoordinates(TripPlanStep step) {
+        BigDecimal latitude = step.getLatitude();
+        BigDecimal longitude = step.getLongitude();
+
+        if ((latitude == null) != (longitude == null)) {
+            throw new BadRequestAlertException("trips.errors.pinIncomplete", ENTITY_NAME, "pinIncomplete");
+        }
+
+        if (latitude != null) {
+            if (latitude.compareTo(BigDecimal.valueOf(-90)) < 0 || latitude.compareTo(BigDecimal.valueOf(90)) > 0) {
+                throw new BadRequestAlertException("trips.errors.latitudeOutOfRange", ENTITY_NAME, "latitudeOutOfRange");
+            }
+
+            if (longitude.compareTo(BigDecimal.valueOf(-180)) < 0 || longitude.compareTo(BigDecimal.valueOf(180)) > 0) {
+                throw new BadRequestAlertException("trips.errors.longitudeOutOfRange", ENTITY_NAME, "longitudeOutOfRange");
+            }
+        }
+    }
+
+    private void normalizeSubSteps(TripPlanStep step) {
+        if (step.getSubSteps() == null) {
+            return;
+        }
+        for (int i = 0; i < step.getSubSteps().size(); i++) {
+            TripPlanSubStep subStep = step.getSubSteps().get(i);
+            subStep.setStep(step);
+            if (subStep.getSequence() == null || subStep.getSequence() < 1) {
+                subStep.setSequence(i + 1);
+            }
+        }
+    }
+
     private void validateStepDates(TripPlanStep step) {
         if (step.getTripPlan() == null || step.getTripPlan().getId() == null) {
             throw new BadRequestAlertException("Step must be associated with a trip", ENTITY_NAME, "stepMissingTrip");
@@ -234,23 +261,23 @@ public class TripPlanStepResource {
         if (stepStart.isAfter(stepEnd)) {
             throw new BadRequestAlertException("trips.errors.stepStartDateAfterEndDate", ENTITY_NAME, "stepStartDateAfterEndDate");
         }
-    }
 
-    private void validateCoordinates(TripPlanStep step) {
-        BigDecimal latitude = step.getLatitude();
-        BigDecimal longitude = step.getLongitude();
-
-        if ((latitude == null) != (longitude == null)) {
-            throw new BadRequestAlertException("trips.errors.pinIncomplete", ENTITY_NAME, "pinIncomplete");
+        if (step.getSubSteps() == null) {
+            return;
         }
 
-        if (latitude != null) {
-            if (latitude.compareTo(BigDecimal.valueOf(-90)) < 0 || latitude.compareTo(BigDecimal.valueOf(90)) > 0) {
-                throw new BadRequestAlertException("trips.errors.latitudeOutOfRange", ENTITY_NAME, "latitudeOutOfRange");
+        for (TripPlanSubStep subStep : step.getSubSteps()) {
+            if (subStep.getActionName() == null || subStep.getActionName().isBlank()) {
+                throw new BadRequestAlertException("Sub-step name is required", ENTITY_NAME, "subStepNameRequired");
             }
-
-            if (longitude.compareTo(BigDecimal.valueOf(-180)) < 0 || longitude.compareTo(BigDecimal.valueOf(180)) > 0) {
-                throw new BadRequestAlertException("trips.errors.longitudeOutOfRange", ENTITY_NAME, "longitudeOutOfRange");
+            if (subStep.getStartDate() == null || subStep.getEndDate() == null) {
+                throw new BadRequestAlertException("Sub-step start/end dates are required", ENTITY_NAME, "subStepDateRequired");
+            }
+            if (subStep.getStartDate().isAfter(subStep.getEndDate())) {
+                throw new BadRequestAlertException("Sub-step start date must be before or equal to end date", ENTITY_NAME, "subStepDateOrderInvalid");
+            }
+            if (subStep.getStartDate().isBefore(stepStart) || subStep.getEndDate().isAfter(stepEnd)) {
+                throw new BadRequestAlertException("Sub-step dates must be inside the parent step dates", ENTITY_NAME, "subStepOutsideStepRange");
             }
         }
     }

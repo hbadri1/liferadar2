@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Create goal table -->
+    <changeSet id="20260522100000-1" author="liferadar">
+        <createTable tableName="goal">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(2000)"/>
+            <column name="goal_type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="varchar(40)"/>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="visibility" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="date"/>
+            <column name="target_date" type="date"/>
+            <column name="completed_date" type="date"/>
+            <column name="progress_mode" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_percentage" type="integer" defaultValueNumeric="0"/>
+            <column name="target_value" type="decimal(15,2)"/>
+            <column name="current_value" type="decimal(15,2)"/>
+            <column name="baseline_value" type="decimal(15,2)"/>
+            <column name="unit" type="varchar(50)"/>
+            <column name="confidence_level" type="varchar(20)"/>
+            <column name="difficulty_level" type="varchar(20)"/>
+            <column name="motivation" type="varchar(2000)"/>
+            <column name="success_criteria" type="varchar(2000)"/>
+            <column name="risk_notes" type="varchar(1000)"/>
+            <column name="blocker_notes" type="varchar(1000)"/>
+            <column name="review_frequency" type="varchar(20)"/>
+            <column name="last_review_date" type="date"/>
+            <column name="next_review_date" type="date"/>
+            <column name="is_archived" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pillar_id" type="bigint"/>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20260522100000-2" author="liferadar">
+        <addForeignKeyConstraint
+            baseTableName="goal" baseColumnNames="owner_id"
+            constraintName="fk_goal__owner_id"
+            referencedTableName="extended_user" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20260522100000-3" author="liferadar">
+        <addForeignKeyConstraint
+            baseTableName="goal" baseColumnNames="pillar_id"
+            constraintName="fk_goal__pillar_id"
+            referencedTableName="pillar" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- Create goal_milestone table -->
+    <changeSet id="20260522100001-1" author="liferadar">
+        <createTable tableName="goal_milestone">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="goal_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="due_date" type="date"/>
+            <column name="completed_date" type="date"/>
+            <column name="sort_order" type="integer"/>
+            <column name="progress_weight" type="integer"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20260522100001-2" author="liferadar">
+        <addForeignKeyConstraint
+            baseTableName="goal_milestone" baseColumnNames="goal_id"
+            constraintName="fk_goal_milestone__goal_id"
+            referencedTableName="goal" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- Create goal_update table -->
+    <changeSet id="20260522100002-1" author="liferadar">
+        <createTable tableName="goal_update">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="goal_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="summary" type="varchar(2000)"/>
+            <column name="progress_percentage" type="integer"/>
+            <column name="current_value" type="decimal(15,2)"/>
+            <column name="confidence_level" type="varchar(20)"/>
+            <column name="status" type="varchar(20)"/>
+            <column name="mood" type="varchar(50)"/>
+            <column name="blockers" type="varchar(1000)"/>
+            <column name="next_step" type="varchar(1000)"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by_login" type="varchar(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20260522100002-2" author="liferadar">
+        <addForeignKeyConstraint
+            baseTableName="goal_update" baseColumnNames="goal_id"
+            constraintName="fk_goal_update__goal_id"
+            referencedTableName="goal" referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>
+
