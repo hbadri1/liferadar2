@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
-import { BaseChartDirective } from 'ng2-charts';
 import { forkJoin } from 'rxjs';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
@@ -80,7 +79,7 @@ interface ManagementObjectiveGroup {
   selector: 'jhi-family',
   templateUrl: './family.component.html',
   styleUrl: './family.component.scss',
-  imports: [SharedModule, BaseChartDirective],
+  imports: [SharedModule],
 })
 export default class FamilyComponent implements OnInit {
   readonly objectiveRecentEntriesCount = 7;
@@ -101,7 +100,9 @@ export default class FamilyComponent implements OnInit {
   errorMsg = signal<string | null>(null);
   successMsg = signal<string | null>(null);
   activeTab = signal<string>('management');
+  managementObjectiveChildLogin = signal<string | null>(null);
   activeObjectiveChildLogin = signal<string | null>(null);
+  activeObjectiveId = signal<number | null>(null);
   objectiveProgressPeriod = signal<ObjectiveProgressPeriod>('last30days');
 
   account = inject(AccountService).trackCurrentAccount();
@@ -245,6 +246,19 @@ export default class FamilyComponent implements OnInit {
       });
   });
 
+  managementObjectiveChildren = computed(() =>
+    [...this.children()].sort((left, right) => this.getChildDisplayName(left).localeCompare(this.getChildDisplayName(right))),
+  );
+
+  filteredManagementObjectiveGroups = computed<ManagementObjectiveGroup[]>(() => {
+    const selectedKidLogin = this.managementObjectiveChildLogin();
+    if (!selectedKidLogin) {
+      return this.managementObjectiveGroups();
+    }
+
+    return this.managementObjectiveGroups().filter(group => group.assignments.some(assignment => assignment.kidLogin === selectedKidLogin));
+  });
+
   private readonly http = inject(HttpClient);
   private readonly modalService = inject(NgbModal);
   private readonly translateService = inject(TranslateService);
@@ -273,6 +287,7 @@ export default class FamilyComponent implements OnInit {
     }
 
     this.activeTab.set(tabId);
+    this.ensureActiveObjectiveSelection();
   }
 
   selectObjectiveChild(login: string): void {
@@ -281,6 +296,42 @@ export default class FamilyComponent implements OnInit {
     }
 
     this.activeObjectiveChildLogin.set(login);
+    this.ensureActiveObjectiveSelection();
+  }
+
+  selectObjectiveForChild(login: string, objectiveId: number): void {
+    if (!this.getObjectivesForChild(login).some(objective => objective.id === objectiveId)) {
+      return;
+    }
+
+    this.activeObjectiveId.set(objectiveId);
+  }
+
+  getActiveObjectiveForChild(login: string): FamilyObjective | null {
+    const objectives = this.getObjectivesForChild(login);
+    if (objectives.length === 0) {
+      return null;
+    }
+
+    const selectedObjectiveId = this.activeObjectiveId();
+    if (!selectedObjectiveId) {
+      return objectives[0];
+    }
+
+    return objectives.find(objective => objective.id === selectedObjectiveId) ?? objectives[0];
+  }
+
+  selectManagementObjectiveChild(login: string | null): void {
+    if (!login) {
+      this.managementObjectiveChildLogin.set(null);
+      return;
+    }
+
+    if (!this.managementObjectiveChildren().some(child => child.login === login)) {
+      return;
+    }
+
+    this.managementObjectiveChildLogin.set(login);
   }
 
   getChildTabId(login: string): string {
@@ -316,6 +367,7 @@ export default class FamilyComponent implements OnInit {
     this.http.get<FamilyObjective[]>('/api/family/objectives').subscribe({
       next: objectives => {
         this.objectives.set(this.sortObjectives(objectives ?? []));
+        this.ensureActiveObjectiveSelection();
         this.isLoadingObjectives.set(false);
       },
       error: err => {
@@ -970,27 +1022,66 @@ export default class FamilyComponent implements OnInit {
       if (!selectedLogin || !children.some(child => child.login === selectedLogin)) {
         this.activeObjectiveChildLogin.set(children[0]?.login ?? null);
       }
+      this.ensureManagementObjectiveSelection();
+      this.ensureActiveObjectiveSelection();
       return;
     }
 
     const hasActiveChildTab = children.some(child => this.getChildTabId(child.login) === activeTab);
 
     if (hasActiveChildTab) {
+      this.ensureActiveObjectiveSelection();
       return;
     }
 
     if (!this.canManageFamily() && children.length > 0) {
       this.activeTab.set(this.getChildTabId(children[0].login));
+      this.ensureActiveObjectiveSelection();
       return;
     }
 
     if (this.canManageFamily()) {
       this.activeTab.set('management');
+      this.ensureActiveObjectiveSelection();
       return;
     }
 
     if (children.length > 0) {
       this.activeTab.set(this.getChildTabId(children[0].login));
+      this.ensureActiveObjectiveSelection();
+      return;
+    }
+
+    this.activeObjectiveId.set(null);
+  }
+
+  private ensureActiveObjectiveSelection(): void {
+    const activeChild = this.activeObjectiveChild();
+    if (!activeChild) {
+      this.activeObjectiveId.set(null);
+      return;
+    }
+
+    const objectives = this.getObjectivesForChild(activeChild.login);
+    if (objectives.length === 0) {
+      this.activeObjectiveId.set(null);
+      return;
+    }
+
+    const selectedObjectiveId = this.activeObjectiveId();
+    if (!selectedObjectiveId || !objectives.some(objective => objective.id === selectedObjectiveId)) {
+      this.activeObjectiveId.set(objectives[0].id);
+    }
+  }
+
+  private ensureManagementObjectiveSelection(): void {
+    const selectedLogin = this.managementObjectiveChildLogin();
+    if (!selectedLogin) {
+      return;
+    }
+
+    if (!this.managementObjectiveChildren().some(child => child.login === selectedLogin)) {
+      this.managementObjectiveChildLogin.set(null);
     }
   }
 
