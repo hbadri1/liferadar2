@@ -62,6 +62,7 @@
          <include file="config/liquibase/changelog/20260522100000_added_entity_Goal.xml" relativeToChangelogFile="false"/>
          <include file="config/liquibase/changelog/20260523120000_add_goal_share.xml" relativeToChangelogFile="false"/>
          <include file="config/liquibase/changelog/20260523150000_add_trip_plan_sub_step.xml" relativeToChangelogFile="false"/>
+         <include file="config/liquibase/changelog/20260701195000_add_my_document_module.xml" relativeToChangelogFile="false"/>
          <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->

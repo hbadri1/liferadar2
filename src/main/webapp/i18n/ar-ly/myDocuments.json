@@ -1,0 +1,37 @@
+{
+  "myDocuments": {
+    "title": "مستنداتي",
+    "subtitle": "تابع التجديدات والتذكيرات في مكان واحد.",
+    "add": "إضافة مستند",
+    "addTitle": "إضافة مستند",
+    "editTitle": "تعديل المستند",
+    "name": "الاسم",
+    "type": "النوع",
+    "issuer": "الجهة المصدرة",
+    "issueDate": "تاريخ الإصدار",
+    "renewalDate": "تاريخ التجديد",
+    "status": "الحالة",
+    "daysToRenewal": "الأيام حتى التجديد",
+    "reminder": "التذكير",
+    "noReminder": "بدون تذكير",
+    "notes": "ملاحظات",
+    "loading": "جاري تحميل المستندات…",
+    "empty": "لا توجد مستندات بعد. أضف أول مستند لك.",
+    "notSpecified": "غير محدد",
+    "daysLeft": "متبقي {{ days }} يوم",
+    "totalDocuments": "إجمالي المستندات",
+    "upcomingRenewals": "تجديدات خلال 30 يوم",
+    "expiredDocuments": "المستندات المنتهية",
+    "deleteTitle": "حذف المستند",
+    "deleteMessage": "هل تريد حذف \"{{ name }}\"؟",
+    "statusValues": {
+      "ACTIVE": "نشط",
+      "RENEWED": "مجدد",
+      "EXPIRED": "منتهي"
+    },
+    "reminderValues": {
+      "ONE_WEEK": "قبل أسبوع",
+      "TWENTY_FOUR_HOURS": "قبل 24 ساعة"
+    }
+  }
+}

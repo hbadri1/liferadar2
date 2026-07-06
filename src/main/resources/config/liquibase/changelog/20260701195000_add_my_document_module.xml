@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260701195000-1" author="copilot">
+        <validCheckSum>9:e3fb1a0830a87c71271d7bd669463605</validCheckSum>
+        <createTable tableName="my_document">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_type" type="VARCHAR(120)"/>
+            <column name="issuer" type="VARCHAR(200)"/>
+            <column name="issue_date" type="DATE"/>
+            <column name="renewal_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="renewal_reminder" type="VARCHAR(32)"/>
+            <column name="notes" type="VARCHAR(1000)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="last_modified_date" type="TIMESTAMP"/>
+            <column name="owner_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="my_document"
+            baseColumnNames="owner_id"
+            constraintName="fk_my_document_owner_id"
+            referencedTableName="extended_user"
+            referencedColumnNames="id"
+            onDelete="CASCADE"
+            onUpdate="CASCADE"/>
+
+        <createIndex tableName="my_document" indexName="idx_my_document_owner_id">
+            <column name="owner_id"/>
+        </createIndex>
+        <createIndex tableName="my_document" indexName="idx_my_document_renewal_date">
+            <column name="renewal_date"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20260701195000-2" author="copilot">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="my_document" columnName="cost"/>
+        </preConditions>
+        <dropColumn tableName="my_document" columnName="cost"/>
+    </changeSet>
+
+    <changeSet id="20260701195000-3" author="copilot">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="my_document" columnName="currency"/>
+        </preConditions>
+        <dropColumn tableName="my_document" columnName="currency"/>
+    </changeSet>
+
+</databaseChangeLog>

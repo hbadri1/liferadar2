@@ -12,8 +12,10 @@ import { TripPlanService } from 'app/entities/trip-plan/service/trip-plan.servic
 import { TripFormModalComponent } from './trip-form-modal.component';
 import { StepFormModalComponent } from './step-form-modal.component';
 import { SubStepFormModalComponent } from './substep-form-modal.component';
+import { IStepTemplateSelection, StepTemplateModalComponent } from './step-template-modal.component';
 import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
-import { ITripPlanStep, ITripPlanSubStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
+import { ITripPlanStep, ITripPlanSubStep, NewTripPlanStep } from 'app/entities/trip-plan-step/trip-plan-step.model';
+import { TripPlanStepService } from 'app/entities/trip-plan-step/service/trip-plan-step.service';
 
 type TimelineEntry = { kind: 'today'; sortDate: dayjs.Dayjs } | { kind: 'step'; sortDate: dayjs.Dayjs; step: ITripPlanStep };
 
@@ -73,6 +75,7 @@ export default class TripsComponent implements OnInit {
   private appConfig = inject(ApplicationConfigService);
   private translateService = inject(TranslateService);
   private tripPlanEntityService = inject(TripPlanService);
+  private tripPlanStepService = inject(TripPlanStepService);
 
   private readonly tripsUrl = this.appConfig.getEndpointFor('api/trip-plans/my');
   private readonly stepsUrl = (id: number) => this.appConfig.getEndpointFor(`api/trip-plan-steps/by-trip/${id}`);
@@ -225,6 +228,25 @@ export default class TripsComponent implements OnInit {
     );
   }
 
+  openAddStepFromTemplate(): void {
+    const trip = this.selectedTrip();
+    if (!trip?.id) return;
+    if (this.isTripFinished(trip)) return;
+
+    const ref = this.modalService.open(StepTemplateModalComponent, { size: 'lg', centered: true });
+    ref.componentInstance.trip = trip;
+
+    ref.result.then(
+      (selection: IStepTemplateSelection) => {
+        if (!selection || !trip.id) {
+          return;
+        }
+        this.createStepFromTemplate(trip, selection);
+      },
+      () => {},
+    );
+  }
+
   onCalendarCellClick(cell: CalendarCell): void {
     if (!cell.inTripRange || !this.canEdit() || this.selectedTripReadOnly()) {
       return;
@@ -298,6 +320,17 @@ export default class TripsComponent implements OnInit {
     const startDate = this.toDayjsDate(trip.startDate);
     const endDate = this.toDayjsDate(trip.endDate);
     return this.formatDurationDaysHours(startDate, endDate);
+  }
+
+  countdownToJourJ(trip: ITripPlan): string | null {
+    const startDate = this.toDayjsDate(trip.startDate);
+    if (!startDate) return null;
+    const now = dayjs();
+    if (startDate.isBefore(now, 'day') || startDate.isSame(now, 'day')) return null;
+    const totalHours = Math.max(0, startDate.diff(now, 'hour'));
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    return this.translateService.instant('trips.countdownToJourJ', { days, hours });
   }
 
   getTripTypeLabelKey(trip: ITripPlan | null | undefined): string {
@@ -687,6 +720,52 @@ export default class TripsComponent implements OnInit {
       return createdTimestamp;
     }
     return trip.id ?? 0;
+  }
+
+  private createStepFromTemplate(trip: ITripPlan, selection: IStepTemplateSelection): void {
+    const flightDateTime = dayjs(selection.flightDateTime);
+    if (!flightDateTime.isValid()) {
+      this.errorMsg.set('trips.errors.templateInvalidFlightTime');
+      return;
+    }
+
+    const stepStart = flightDateTime.subtract(3, 'hour');
+    const stepEnd = flightDateTime;
+
+    const tripStart = this.toDayjsDate(trip.startDate);
+    const tripEnd = this.toDayjsDate(trip.endDate);
+    if (!tripStart || !tripEnd || stepStart.isBefore(tripStart) || stepEnd.isAfter(tripEnd)) {
+      this.errorMsg.set('trips.errors.templateOutsideTripRange');
+      return;
+    }
+
+    const nextSequence = this.steps().length > 0 ? Math.max(...this.steps().map(step => step.sequence ?? 0)) + 1 : 1;
+    const newTemplateStep: NewTripPlanStep = {
+      id: null,
+      actionName: this.translateService.instant('trips.templates.airportFlight.stepName'),
+      locationName: this.translateService.instant('trips.templates.airportFlight.defaultLocation'),
+      startDate: stepStart,
+      endDate: stepEnd,
+      notes: this.translateService.instant('trips.templates.airportFlight.defaultNotes', {
+        flightTime: stepEnd.format('DD MMM YYYY HH:mm'),
+      }),
+      latitude: null,
+      longitude: null,
+      sequence: nextSequence,
+      tripPlan: { id: trip.id },
+      subSteps: [],
+    };
+
+    const tripId = trip.id;
+    this.tripPlanStepService.create(newTemplateStep).subscribe({
+      next: () => {
+        this.errorMsg.set(null);
+        this.loadSteps(tripId);
+      },
+      error: () => {
+        this.errorMsg.set('trips.errors.saveFailed');
+      },
+    });
   }
 
   private updateTripActions(trip: ITripPlan, actionsJson: string | null): void {

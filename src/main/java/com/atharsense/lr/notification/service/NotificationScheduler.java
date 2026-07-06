@@ -1,11 +1,13 @@
 package com.atharsense.lr.notification.service;
 
 import com.atharsense.lr.config.ApplicationProperties;
+import com.atharsense.lr.domain.MyDocument;
 import com.atharsense.lr.domain.SaaSSubscription.RenewalReminderOption;
 import com.atharsense.lr.notification.domain.enumeration.NotificationSourceType;
 import com.atharsense.lr.notification.domain.enumeration.NotificationType;
 import com.atharsense.lr.notification.service.dto.CreateNotificationRequest;
 import com.atharsense.lr.notification.service.provider.BillingNotificationCandidateProvider;
+import com.atharsense.lr.service.MyDocumentService;
 import com.atharsense.lr.service.SaaSSubscriptionService;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -30,6 +32,7 @@ public class NotificationScheduler {
     private final NotificationStatusMaintenanceService notificationStatusMaintenanceService;
     private final BillingNotificationCandidateProvider billingCandidateProvider;
     private final SaaSSubscriptionService subscriptionService;
+    private final MyDocumentService myDocumentService;
     private final ApplicationProperties applicationProperties;
 
     public NotificationScheduler(
@@ -37,12 +40,14 @@ public class NotificationScheduler {
         NotificationStatusMaintenanceService notificationStatusMaintenanceService,
         BillingNotificationCandidateProvider billingCandidateProvider,
         SaaSSubscriptionService subscriptionService,
+        MyDocumentService myDocumentService,
         ApplicationProperties applicationProperties
     ) {
         this.notificationService = notificationService;
         this.notificationStatusMaintenanceService = notificationStatusMaintenanceService;
         this.billingCandidateProvider = billingCandidateProvider;
         this.subscriptionService = subscriptionService;
+        this.myDocumentService = myDocumentService;
         this.applicationProperties = applicationProperties;
     }
 
@@ -170,9 +175,104 @@ public class NotificationScheduler {
             )
         );
 
+        int expiredDocuments = myDocumentService.markExpiredDocuments(businessDate);
+        if (expiredDocuments > 0) {
+            LOG.info("Marked {} document(s) as expired for business date {}", expiredDocuments, businessDate);
+        }
+
+        myDocumentService.findReminderCandidates(
+            businessDate.plusWeeks(1),
+            MyDocument.RenewalReminderOption.ONE_WEEK
+        ).forEach(candidate ->
+            requests.add(
+                new CreateNotificationRequest(
+                    recipient(candidate.getOwner().getUser().getId(), candidate.getOwner().getUser().getLogin(), candidate.getOwner().getUser().getEmail()),
+                    NotificationType.DOCUMENT_RENEWAL_UPCOMING,
+                    NotificationSourceType.DOCUMENT,
+                    String.valueOf(candidate.getId()),
+                    "Document renewal in 1 week: " + candidate.getName(),
+                    "Your document '" +
+                    candidate.getName() +
+                    "' is due for renewal in 1 week on " +
+                    candidate.getRenewalDate() +
+                    ".",
+                    "/my-documents",
+                    null,
+                    dedupKey("document-renewal-one-week", String.valueOf(candidate.getId()), candidate.getRenewalDate()),
+                    applicationProperties.getNotifications().getScheduler().getDefaultChannels()
+                )
+            )
+        );
+
+        myDocumentService.findReminderCandidates(
+            businessDate.plusDays(1),
+            MyDocument.RenewalReminderOption.TWENTY_FOUR_HOURS
+        ).forEach(candidate ->
+            requests.add(
+                new CreateNotificationRequest(
+                    recipient(candidate.getOwner().getUser().getId(), candidate.getOwner().getUser().getLogin(), candidate.getOwner().getUser().getEmail()),
+                    NotificationType.DOCUMENT_RENEWAL_UPCOMING,
+                    NotificationSourceType.DOCUMENT,
+                    String.valueOf(candidate.getId()),
+                    "Document renewal in 24 hours: " + candidate.getName(),
+                    "Your document '" +
+                    candidate.getName() +
+                    "' is due for renewal in 24 hours on " +
+                    candidate.getRenewalDate() +
+                    ".",
+                    "/my-documents",
+                    null,
+                    dedupKey("document-renewal-24-hours", String.valueOf(candidate.getId()), candidate.getRenewalDate()),
+                    applicationProperties.getNotifications().getScheduler().getDefaultChannels()
+                )
+            )
+        );
+
+        myDocumentService.findDueTodayCandidates(businessDate).forEach(candidate ->
+            requests.add(
+                new CreateNotificationRequest(
+                    recipient(candidate.getOwner().getUser().getId(), candidate.getOwner().getUser().getLogin(), candidate.getOwner().getUser().getEmail()),
+                    NotificationType.DOCUMENT_RENEWAL_DUE_TODAY,
+                    NotificationSourceType.DOCUMENT,
+                    String.valueOf(candidate.getId()),
+                    "Document renewal due today: " + candidate.getName(),
+                    "Your document '" +
+                    candidate.getName() +
+                    "' renewal is due today (" +
+                    candidate.getRenewalDate() +
+                    ").",
+                    "/my-documents",
+                    null,
+                    dedupKey("document-renewal-today", String.valueOf(candidate.getId()), businessDate),
+                    applicationProperties.getNotifications().getScheduler().getDefaultChannels()
+                )
+            )
+        );
+
+        myDocumentService.findOverdueCandidates(businessDate).forEach(candidate ->
+            requests.add(
+                new CreateNotificationRequest(
+                    recipient(candidate.getOwner().getUser().getId(), candidate.getOwner().getUser().getLogin(), candidate.getOwner().getUser().getEmail()),
+                    NotificationType.DOCUMENT_RENEWAL_OVERDUE,
+                    NotificationSourceType.DOCUMENT,
+                    String.valueOf(candidate.getId()),
+                    "Document renewal overdue: " + candidate.getName(),
+                    "Your document '" +
+                    candidate.getName() +
+                    "' renewal is overdue. Renewal date was " +
+                    candidate.getRenewalDate() +
+                    ".",
+                    "/my-documents",
+                    null,
+                    dedupKey("document-renewal-overdue", String.valueOf(candidate.getId()), businessDate),
+                    applicationProperties.getNotifications().getScheduler().getDefaultChannels()
+                )
+            )
+        );
+
         if (!requests.isEmpty()) {
             notificationService.createNotifications(requests);
-            LOG.info("Created {} billing notifications for business date {}", requests.size(), businessDate);
+            LOG.info("Created {} billing/document notifications for business date {}", requests.size(), businessDate);
         }
     }
 
@@ -208,4 +308,3 @@ public class NotificationScheduler {
         return " Amount: " + numberFormat.format(amount) + (StringUtils.isNotBlank(currency) ? " " + currency : "");
     }
 }
-

@@ -112,10 +112,6 @@ public class LifeEvaluationResource {
             Optional<SubPillarItem> subPillarItem = subPillarItemRepository.findById(lifeEvaluation.getSubPillarItem().getId());
             if (subPillarItem.isPresent()) {
                 SubPillarItem item = subPillarItem.orElseThrow();
-                if (!Boolean.TRUE.equals(item.getDoNotReevaluate())) {
-                    item.setDoNotReevaluate(true);
-                    subPillarItemRepository.save(item);
-                }
                 lifeEvaluation.setSubPillarItem(item);
             }
         }

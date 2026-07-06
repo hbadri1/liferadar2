@@ -95,6 +95,15 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    path: 'my-documents',
+    loadComponent: () => import('./my-documents/my-documents.component'),
+    title: 'myDocuments.title',
+    data: {
+      authorities: [Authority.USER],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: 'notifications',
     loadComponent: () => import('./notifications/notifications.component'),
     title: 'notifications.title',

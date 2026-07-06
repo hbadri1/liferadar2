@@ -11,6 +11,7 @@
     "actions": "المهام",
     "selectTripHint": "اختر رحلة لعرض خط سيرها",
     "selectTripHintSub": "ستظهر هنا تفاصيل الرحلة والجدول الزمني",
+    "addStepFromTemplate": "إضافة خطوة من قالب",
     "viewMode": "وضع عرض الرحلة",
     "timelineView": "الخط الزمني",
     "calendarView": "التقويم",
@@ -44,6 +45,7 @@
     "duration": {
       "daysHours": "{{days}}ي {{hours}}س"
     },
+    "countdownToJourJ": "{{days}}ي {{hours}}س حتى يوم الانطلاق",
     "tripType": {
       "personal": "شخصية",
       "family": "عائلية",
@@ -57,6 +59,20 @@
       "disabled": "الخريطة غير مهيأة لهذا البيئة. يمكنك حفظ المحطة بدون تثبيت.",
       "pinned": "تم التثبيت",
       "clearPin": "إزالة التثبيت"
+    },
+    "templates": {
+      "title": "اختر قالباً",
+      "preview": "معاينة",
+      "previewStart": "البداية:",
+      "previewEnd": "النهاية:",
+      "airportFlight": {
+        "title": "رحلة مطار",
+        "description": "ينشئ خطوة واحدة من 3 ساعات قبل الرحلة حتى وقت الرحلة.",
+        "flightDateTime": "وقت الرحلة",
+        "stepName": "رحلة مطار",
+        "defaultLocation": "المطار",
+        "defaultNotes": "تم إنشاء القالب لرحلة عند {{flightTime}}."
+      }
     },
     "fields": {
       "title": "عنوان الرحلة",
@@ -107,7 +123,9 @@
       "stepEndDateAfterTripEnd": "لا يمكن أن يكون تاريخ نهاية الخطوة بعد تاريخ نهاية الرحلة.",
       "stepStartDateAfterEndDate": "يجب أن يكون تاريخ بداية الخطوة قبل أو مساوياً لتاريخ النهاية.",
       "stepDatesOverlap": "هذه الخطوة تتداخل مع خطوة أخرى موجودة. يرجى اختيار نطاق تاريخ مختلف.",
-      "subStepOutsideStepRange": "يجب أن تكون أوقات الخطوة الفرعية ضمن النطاق الزمني للخطوة الرئيسية."
+      "subStepOutsideStepRange": "يجب أن تكون أوقات الخطوة الفرعية ضمن النطاق الزمني للخطوة الرئيسية.",
+      "templateInvalidFlightTime": "يرجى إدخال وقت رحلة صالح.",
+      "templateOutsideTripRange": "يجب أن تبقى خطوة القالب ضمن تاريخ بداية/نهاية الرحلة."
     },
     "warnings": {
       "stepDatesOverlap": "هذه الخطوة تتداخل مع خطوة أخرى موجودة. يمكنك حفظها مع ذلك."

@@ -467,9 +467,9 @@ export default class HomeComponent implements OnInit, OnDestroy {
         return false;
       }
 
-      // evaluationDate is date-only on backend. Use startOf('day') so only evaluations
-      // whose calendar day begins within the last 24 hours are considered recent.
-      return evaluation.evaluationDate.startOf('day').isAfter(cutoff);
+      // evaluationDate is date-only on backend. Use startOf('day') and keep the
+      // 24-hour boundary inclusive so an evaluation exactly 24 hours old still blocks.
+      return !evaluation.evaluationDate.startOf('day').isBefore(cutoff);
     });
   }
 
@@ -498,7 +498,6 @@ export default class HomeComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.subPillarItem = item;
     modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result === 'saved') {
-        item.doNotReevaluate = true;
         this.loadLifeEvaluations();
       }
     });

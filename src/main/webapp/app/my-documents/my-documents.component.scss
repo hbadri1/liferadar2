@@ -1,0 +1,30 @@
+.my-documents-page {
+  .kpi-card {
+    border-radius: 1rem;
+    background: linear-gradient(165deg, rgba(var(--bs-body-bg-rgb), 1), rgba(var(--bs-light-rgb), 0.7));
+  }
+
+  .kpi-card--accent {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(13, 110, 253, 0.02));
+  }
+
+  .kpi-label {
+    font-size: 0.85rem;
+    color: rgba(var(--bs-secondary-rgb), 0.9);
+    margin-bottom: 0.35rem;
+  }
+
+  .card {
+    border-radius: 1rem;
+  }
+
+  table thead th {
+    background: rgba(var(--bs-light-rgb), 0.7);
+    white-space: nowrap;
+  }
+
+  .table > :not(caption) > * > * {
+    padding: 0.9rem 0.8rem;
+  }
+}
+

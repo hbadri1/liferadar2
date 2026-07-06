@@ -69,6 +69,18 @@
   border: 0;
 }
 
+.trip-countdown {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e8650a;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(232, 101, 10, 0.08);
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+
 .date-range-arrow,
 .calendar-nav-arrow {
   display: inline-block;
@@ -136,7 +148,7 @@
   &.timeline-left {
     .timeline-content {
       grid-column: 1;
-      padding-right: 1.5rem;
+      padding-right: 0.75rem;
       text-align: right;
 
       .step-card {
@@ -148,7 +160,7 @@
   &.timeline-right {
     .timeline-content {
       grid-column: 3;
-      padding-left: 1.5rem;
+      padding-left: 0.75rem;
       text-align: left;
     }
   }
@@ -156,7 +168,7 @@
   &.timeline-today {
     .timeline-content {
       grid-column: 3;
-      padding-left: 1.5rem;
+      padding-left: 0.75rem;
       text-align: left;
     }
   }
@@ -268,6 +280,23 @@
   color: #1a1a2e;
   margin-bottom: 0.3rem;
   font-size: 0.9rem;
+
+  .step-duration-inline {
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: #6b7280;
+  }
+}
+
+.substep-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style: disc;
+
+  li {
+    padding: 0.1rem 0;
+    line-height: 1.4;
+  }
 }
 
 .step-location {
@@ -278,7 +307,8 @@
 
 .step-dates {
   font-size: 0.74rem;
-  color: #888;
+  color: #2563eb;
+  font-weight: 500;
   margin-bottom: 0.3rem;
 }
 

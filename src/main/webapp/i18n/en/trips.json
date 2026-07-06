@@ -12,6 +12,7 @@
     "selectTripHint": "Select a journey to view its itinerary",
     "selectTripHintSub": "Your journey details and timeline will appear here",
     "addStep": "Add Step",
+    "addStepFromTemplate": "Add step from template",
     "viewMode": "Journey view mode",
     "timelineView": "Timeline",
     "calendarView": "Calendar",
@@ -45,6 +46,7 @@
     "duration": {
       "daysHours": "{{days}}d {{hours}}h"
     },
+    "countdownToJourJ": "{{days}}d {{hours}}h to D-Day",
     "tripType": {
       "personal": "Personal",
       "family": "Family",
@@ -58,6 +60,20 @@
       "disabled": "Map is not configured for this environment. You can still save the step without pinning.",
       "pinned": "Pinned",
       "clearPin": "Clear Pin"
+    },
+    "templates": {
+      "title": "Choose a template",
+      "preview": "Preview",
+      "previewStart": "Start:",
+      "previewEnd": "End:",
+      "airportFlight": {
+        "title": "Airport Flight",
+        "description": "Creates one step from 3 hours before your flight until flight time.",
+        "flightDateTime": "Flight time",
+        "stepName": "Airport flight",
+        "defaultLocation": "Airport",
+        "defaultNotes": "Template created for flight at {{flightTime}}."
+      }
     },
     "fields": {
       "title": "Journey Title",
@@ -108,7 +124,9 @@
       "stepEndDateAfterTripEnd": "Step end date cannot be after the journey end date.",
       "stepStartDateAfterEndDate": "Step start date must be before or equal to the step end date.",
       "stepDatesOverlap": "This step overlaps another existing step. Please choose a different date range.",
-      "subStepOutsideStepRange": "Substep start/end must be inside the parent step time range."
+      "subStepOutsideStepRange": "Substep start/end must be inside the parent step time range.",
+      "templateInvalidFlightTime": "Please provide a valid flight time.",
+      "templateOutsideTripRange": "The template step must stay within the journey start/end dates."
     },
     "warnings": {
       "stepDatesOverlap": "This step overlaps another existing step. You can still save it."

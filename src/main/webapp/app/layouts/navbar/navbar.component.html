@@ -37,6 +37,11 @@
             <span jhiTranslate="global.menu.expenses">My Finance</span>
           </a>
         </li>
+        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_USER']">
+          <a class="nav-link" routerLink="/my-documents" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+            <span jhiTranslate="global.menu.myDocuments">My Documents</span>
+          </a>
+        </li>
         <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_CHILD']">
           <a class="nav-link" routerLink="/family" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
             <span jhiTranslate="global.menu.family">My Family Space</span>
@@ -223,6 +228,12 @@
             <a class="mobile-nav-link" routerLink="/expenses" (click)="collapseNavbar()">
               <fa-icon icon="chart-bar"></fa-icon>
               <span jhiTranslate="global.menu.expenses">My Finance</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="['ROLE_USER']">
+            <a class="mobile-nav-link" routerLink="/my-documents" (click)="collapseNavbar()">
+              <fa-icon icon="book"></fa-icon>
+              <span jhiTranslate="global.menu.myDocuments">My Documents</span>
             </a>
           </li>
           <li *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_CHILD']">

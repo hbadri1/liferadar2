@@ -1,0 +1,37 @@
+{
+  "myDocuments": {
+    "title": "Mes documents",
+    "subtitle": "Suivez les renouvellements et les rappels au même endroit.",
+    "add": "Ajouter un document",
+    "addTitle": "Ajouter un document",
+    "editTitle": "Modifier le document",
+    "name": "Nom",
+    "type": "Type",
+    "issuer": "Émetteur",
+    "issueDate": "Date d'émission",
+    "renewalDate": "Date de renouvellement",
+    "status": "Statut",
+    "daysToRenewal": "Jours avant renouvellement",
+    "reminder": "Rappel",
+    "noReminder": "Aucun rappel",
+    "notes": "Notes",
+    "loading": "Chargement des documents…",
+    "empty": "Aucun document pour le moment. Ajoutez votre premier document.",
+    "notSpecified": "Non spécifié",
+    "daysLeft": "Il reste {{ days }} jour(s)",
+    "totalDocuments": "Total des documents",
+    "upcomingRenewals": "Renouvellements sur 30 jours",
+    "expiredDocuments": "Documents expirés",
+    "deleteTitle": "Supprimer le document",
+    "deleteMessage": "Voulez-vous supprimer \"{{ name }}\" ?",
+    "statusValues": {
+      "ACTIVE": "Actif",
+      "RENEWED": "Renouvelé",
+      "EXPIRED": "Expiré"
+    },
+    "reminderValues": {
+      "ONE_WEEK": "1 semaine avant",
+      "TWENTY_FOUR_HOURS": "24 heures avant"
+    }
+  }
+}

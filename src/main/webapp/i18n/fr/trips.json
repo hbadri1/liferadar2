@@ -12,6 +12,7 @@
     "selectTripHint": "Sélectionnez un voyage pour voir son itinéraire",
     "selectTripHintSub": "Les détails du voyage et la chronologie apparaîtront ici",
     "addStep": "Ajouter une Étape",
+    "addStepFromTemplate": "Ajouter une étape depuis un modèle",
     "viewMode": "Mode d'affichage du voyage",
     "timelineView": "Chronologie",
     "calendarView": "Calendrier",
@@ -45,6 +46,7 @@
     "duration": {
       "daysHours": "{{days}}j {{hours}}h"
     },
+    "countdownToJourJ": "{{days}}j {{hours}}h avant le Jour J",
     "tripType": {
       "personal": "Personnel",
       "family": "Familial",
@@ -58,6 +60,20 @@
       "disabled": "La carte n'est pas configurée pour cet environnement. Vous pouvez enregistrer l'étape sans épingle.",
       "pinned": "Épinglé",
       "clearPin": "Retirer l'épingle"
+    },
+    "templates": {
+      "title": "Choisir un modèle",
+      "preview": "Aperçu",
+      "previewStart": "Début :",
+      "previewEnd": "Fin :",
+      "airportFlight": {
+        "title": "Vol aéroport",
+        "description": "Crée une étape de 3 heures avant le vol jusqu'à l'heure du vol.",
+        "flightDateTime": "Heure du vol",
+        "stepName": "Vol aéroport",
+        "defaultLocation": "Aéroport",
+        "defaultNotes": "Modèle créé pour le vol à {{flightTime}}."
+      }
     },
     "fields": {
       "title": "Titre du Voyage",
@@ -108,7 +124,9 @@
       "stepEndDateAfterTripEnd": "La date de fin de l'étape ne peut pas être postérieure à la date de fin du voyage.",
       "stepStartDateAfterEndDate": "La date de début de l'étape doit être antérieure ou égale à la date de fin.",
       "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Veuillez choisir une plage de dates différente.",
-      "subStepOutsideStepRange": "Les dates de la sous-étape doivent être comprises dans la plage horaire de l'étape parent."
+      "subStepOutsideStepRange": "Les dates de la sous-étape doivent être comprises dans la plage horaire de l'étape parent.",
+      "templateInvalidFlightTime": "Veuillez saisir une heure de vol valide.",
+      "templateOutsideTripRange": "L'étape du modèle doit rester dans les dates de début/fin du voyage."
     },
     "warnings": {
       "stepDatesOverlap": "Cette étape chevauche une autre étape existante. Vous pouvez quand même l'enregistrer."

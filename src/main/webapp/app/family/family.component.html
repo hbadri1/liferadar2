@@ -84,7 +84,7 @@
   </div>
 
   <!-- Tabs -->
-  <ul class="nav nav-tabs mb-4" role="tablist">
+  <ul class="nav family-tabs family-tabs--main mb-4" role="tablist">
     @if (canManageFamily()) {
       <li class="nav-item" role="presentation">
         <button
@@ -93,6 +93,7 @@
           [class.active]="activeTab() === 'management'"
           (click)="selectTab('management')"
         >
+          <fa-icon icon="users-cog" class="family-tab-icon"></fa-icon>
           <span jhiTranslate="family.tabs.management">Family Management</span>
         </button>
       </li>
@@ -103,6 +104,7 @@
           [class.active]="activeTab() === 'kids-objectives'"
           (click)="selectTab('kids-objectives')"
         >
+          <fa-icon icon="star" class="family-tab-icon"></fa-icon>
           <span jhiTranslate="family.tabs.kidsObjectives">Kids' Objectives</span>
         </button>
       </li>
@@ -115,6 +117,7 @@
           [class.active]="activeTab() === getChildTabId(child.login)"
           (click)="selectTab(getChildTabId(child.login))"
         >
+          <fa-icon icon="child" class="family-tab-icon"></fa-icon>
           {{ 'family.tabs.childObjectives' | translate: { name: getChildDisplayName(child) } }}
         </button>
       </li>
@@ -261,7 +264,7 @@
         </div>
 
         @if (children().length > 0) {
-          <ul class="nav nav-tabs mb-3" role="tablist">
+          <ul class="nav family-tabs family-tabs--sub mb-3" role="tablist">
             <li class="nav-item" role="presentation">
               <button
                 type="button"
@@ -269,6 +272,7 @@
                 [class.active]="managementObjectiveChildLogin() === null"
                 (click)="selectManagementObjectiveChild(null)"
               >
+                <fa-icon icon="layer-group" class="family-tab-icon"></fa-icon>
                 All kids
               </button>
             </li>
@@ -280,6 +284,7 @@
                   [class.active]="managementObjectiveChildLogin() === child.login"
                   (click)="selectManagementObjectiveChild(child.login)"
                 >
+                  <fa-icon icon="child" class="family-tab-icon"></fa-icon>
                   {{ getChildDisplayName(child) }}
                 </button>
               </li>
@@ -389,7 +394,7 @@
     }
   } @else {
     @if (canManageFamily()) {
-      <ul class="nav nav-tabs mb-4" role="tablist">
+      <ul class="nav family-tabs family-tabs--sub mb-4" role="tablist">
         @for (child of objectiveChildren(); track child.login) {
           <li class="nav-item" role="presentation">
             <button
@@ -398,6 +403,7 @@
               [class.active]="activeObjectiveChild()?.login === child.login"
               (click)="selectObjectiveChild(child.login)"
             >
+              <fa-icon icon="child" class="family-tab-icon"></fa-icon>
               {{ getChildDisplayName(child) }}
             </button>
           </li>
@@ -439,7 +445,7 @@
           </div>
 
           @let objectives = getObjectivesForChild(activeChild.login);
-          <ul class="nav nav-tabs mt-3" role="tablist">
+          <ul class="nav family-tabs family-tabs--objectives mt-3" role="tablist">
             @for (objective of objectives; track objective.id) {
               <li class="nav-item" role="presentation">
                 <button
@@ -448,6 +454,7 @@
                   [class.active]="getActiveObjectiveForChild(activeChild.login)?.id === objective.id"
                   (click)="selectObjectiveForChild(activeChild.login, objective.id)"
                 >
+                  <fa-icon icon="bullseye" class="family-tab-icon"></fa-icon>
                   {{ objective.name }}
                 </button>
               </li>

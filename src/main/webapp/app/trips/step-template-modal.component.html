@@ -1,0 +1,62 @@
+<div class="modal-header bg-primary text-white">
+  <h5 class="modal-title">
+    <fa-icon icon="plus" class="me-2"></fa-icon>
+    <span jhiTranslate="trips.addStepFromTemplate">Add Step from Template</span>
+  </h5>
+  <button type="button" class="btn-close btn-close-white" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  @if (errorMsg()) {
+    <div class="alert alert-danger mb-3">{{ errorMsg()! | translate }}</div>
+  }
+
+  <form [formGroup]="form">
+    <label class="form-label fw-semibold" jhiTranslate="trips.templates.title">Choose a template</label>
+
+    <button
+      type="button"
+      class="btn w-100 text-start border mb-3"
+      [class.btn-outline-primary]="selectedTemplate !== 'airportFlight'"
+      [class.btn-primary]="selectedTemplate === 'airportFlight'"
+      (click)="selectTemplate('airportFlight')">
+      <div class="fw-semibold" jhiTranslate="trips.templates.airportFlight.title">Airport Flight</div>
+      <div class="small opacity-75" jhiTranslate="trips.templates.airportFlight.description">
+        Creates one step from 3 hours before your flight until flight time.
+      </div>
+    </button>
+
+    @if (selectedTemplate === 'airportFlight') {
+      <div class="mb-3">
+        <label class="form-label fw-semibold" for="flightDateTime" jhiTranslate="trips.templates.airportFlight.flightDateTime">
+          Flight time
+        </label>
+        <input id="flightDateTime" type="datetime-local" class="form-control" formControlName="flightDateTime" />
+      </div>
+
+      <div class="border rounded bg-light p-3 small">
+        <div class="fw-semibold mb-1" jhiTranslate="trips.templates.preview">Preview</div>
+        <div>
+          <span class="text-muted" jhiTranslate="trips.templates.previewStart">Start:</span>
+          <strong class="ms-1">{{ flightWindowStartLabel }}</strong>
+        </div>
+        <div>
+          <span class="text-muted" jhiTranslate="trips.templates.previewEnd">End:</span>
+          <strong class="ms-1">{{ flightWindowEndLabel }}</strong>
+        </div>
+      </div>
+    }
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    <fa-icon icon="times"></fa-icon>
+    <span class="ms-1" jhiTranslate="entity.action.cancel">Cancel</span>
+  </button>
+  <button type="button" class="btn btn-primary" (click)="save()">
+    <fa-icon icon="save"></fa-icon>
+    <span class="ms-1" jhiTranslate="entity.action.create">Create</span>
+  </button>
+</div>
+

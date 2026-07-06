@@ -1,0 +1,192 @@
+<section class="container py-4 my-documents-page">
+  <header class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1" jhiTranslate="myDocuments.title">My Documents</h1>
+      <p class="text-muted mb-0" jhiTranslate="myDocuments.subtitle">Track renewals and reminders in one place.</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openCreateModal()">
+      <fa-icon icon="plus" class="me-2"></fa-icon>
+      <span jhiTranslate="myDocuments.add">Add Document</span>
+    </button>
+  </header>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <article class="card shadow-sm border-0 kpi-card kpi-card--accent">
+        <div class="card-body">
+          <div class="kpi-label" jhiTranslate="myDocuments.totalDocuments">Total documents</div>
+          <div class="display-6 mb-0 fw-semibold">{{ summary.totalDocuments }}</div>
+        </div>
+      </article>
+    </div>
+    <div class="col-12 col-md-4">
+      <article class="card shadow-sm border-0 kpi-card">
+        <div class="card-body">
+          <div class="kpi-label" jhiTranslate="myDocuments.upcomingRenewals">Renewals in 30 days</div>
+          <div class="display-6 mb-0 fw-semibold text-warning">{{ summary.upcomingRenewals }}</div>
+        </div>
+      </article>
+    </div>
+    <div class="col-12 col-md-4">
+      <article class="card shadow-sm border-0 kpi-card">
+        <div class="card-body">
+          <div class="kpi-label" jhiTranslate="myDocuments.expiredDocuments">Expired documents</div>
+          <div class="display-6 mb-0 fw-semibold text-danger">{{ summary.expiredDocuments }}</div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <section class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      @if (isLoading) {
+        <div class="p-5 text-center text-muted" jhiTranslate="myDocuments.loading">Loading documents…</div>
+      } @else if (documents.length === 0) {
+        <div class="p-5 text-center text-muted" jhiTranslate="myDocuments.empty">No documents yet. Add your first one.</div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th role="button" (click)="sortBy('name')">
+                  <span jhiTranslate="myDocuments.name">Name</span>
+                  <fa-icon [icon]="sortIcon('name')" class="ms-1"></fa-icon>
+                </th>
+                <th>
+                  <span jhiTranslate="myDocuments.type">Type</span>
+                </th>
+                <th role="button" (click)="sortBy('renewalDate')">
+                  <span jhiTranslate="myDocuments.renewalDate">Renewal date</span>
+                  <fa-icon [icon]="sortIcon('renewalDate')" class="ms-1"></fa-icon>
+                </th>
+                <th class="text-center">
+                  <span jhiTranslate="myDocuments.daysToRenewal">Days to renewal</span>
+                </th>
+                <th role="button" (click)="sortBy('status')" class="text-center">
+                  <span jhiTranslate="myDocuments.status">Status</span>
+                  <fa-icon [icon]="sortIcon('status')" class="ms-1"></fa-icon>
+                </th>
+                <th class="text-end">
+                  <span jhiTranslate="entity.action.edit">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (document of documents; track trackById($index, document)) {
+                <tr>
+                  <td>
+                    <div class="fw-semibold">{{ document.name }}</div>
+                    @if (document.issuer) {
+                      <div class="small text-muted">{{ document.issuer }}</div>
+                    }
+                  </td>
+                  <td>{{ document.documentType || ('myDocuments.notSpecified' | translate) }}</td>
+                  <td>
+                    <div>{{ formatDate(document.renewalDate) }}</div>
+                  </td>
+                  <td class="text-center">{{ 'myDocuments.daysLeft' | translate:{ days: getDaysLeft(document) } }}</td>
+                  <td class="text-center">
+                    <span class="badge rounded-pill px-3 py-2" [ngClass]="getStatusBadgeClass(document.status)">
+                      {{ ('myDocuments.statusValues.' + document.status) | translate }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-outline-primary" (click)="openEditModal(document)">
+                        <fa-icon icon="pencil-alt"></fa-icon>
+                      </button>
+                      <button type="button" class="btn btn-outline-danger" (click)="deleteDocument(document)">
+                        <fa-icon icon="trash-alt"></fa-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 gap-2 border-top">
+          <jhi-item-count [params]="{ page, totalItems, itemsPerPage }" />
+          <ngb-pagination
+            [collectionSize]="totalItems"
+            [page]="page"
+            [pageSize]="itemsPerPage"
+            [maxSize]="5"
+            [rotate]="true"
+            [boundaryLinks]="true"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      }
+    </div>
+  </section>
+
+  <ng-template #documentModal>
+    <div class="modal-header">
+      <h5 class="modal-title">
+        {{ (editingDocumentId ? 'myDocuments.editTitle' : 'myDocuments.addTitle') | translate }}
+      </h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="documentForm" (ngSubmit)="saveDocument()">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label" for="docName" jhiTranslate="myDocuments.name">Name</label>
+            <input id="docName" type="text" class="form-control" formControlName="name" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="docType" jhiTranslate="myDocuments.type">Type</label>
+            <input id="docType" type="text" class="form-control" formControlName="documentType" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="docIssuer" jhiTranslate="myDocuments.issuer">Issuer</label>
+            <input id="docIssuer" type="text" class="form-control" formControlName="issuer" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="docIssueDate" jhiTranslate="myDocuments.issueDate">Issue date</label>
+            <input id="docIssueDate" type="date" class="form-control" formControlName="issueDate" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="docRenewalDate" jhiTranslate="myDocuments.renewalDate">Renewal date</label>
+            <input id="docRenewalDate" type="date" class="form-control" formControlName="renewalDate" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="docStatus" jhiTranslate="myDocuments.status">Status</label>
+            <select id="docStatus" class="form-select" formControlName="status">
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ ('myDocuments.statusValues.' + status) | translate }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="docReminder" jhiTranslate="myDocuments.reminder">Reminder</label>
+            <select id="docReminder" class="form-select" formControlName="renewalReminder">
+              <option [ngValue]="null" jhiTranslate="myDocuments.noReminder">No reminder</option>
+              @for (reminder of renewalReminderOptions; track reminder) {
+                <option [ngValue]="reminder">{{ ('myDocuments.reminderValues.' + reminder) | translate }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="docNotes" jhiTranslate="myDocuments.notes">Notes</label>
+            <textarea id="docNotes" rows="3" class="form-control" formControlName="notes"></textarea>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button type="button" class="btn btn-outline-secondary" (click)="closeModal()" jhiTranslate="entity.action.cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="isSaving || documentForm.invalid">
+            <fa-icon icon="save" class="me-2"></fa-icon>
+            <span jhiTranslate="entity.action.save">Save</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+</section>

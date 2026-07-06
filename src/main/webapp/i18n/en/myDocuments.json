@@ -1,0 +1,37 @@
+{
+  "myDocuments": {
+    "title": "My Documents",
+    "subtitle": "Track renewals and reminders in one place.",
+    "add": "Add Document",
+    "addTitle": "Add document",
+    "editTitle": "Edit document",
+    "name": "Name",
+    "type": "Type",
+    "issuer": "Issuer",
+    "issueDate": "Issue date",
+    "renewalDate": "Renewal date",
+    "status": "Status",
+    "daysToRenewal": "Days to renewal",
+    "reminder": "Reminder",
+    "noReminder": "No reminder",
+    "notes": "Notes",
+    "loading": "Loading documents…",
+    "empty": "No documents yet. Add your first one.",
+    "notSpecified": "Not specified",
+    "daysLeft": "{{ days }} day(s) left",
+    "totalDocuments": "Total documents",
+    "upcomingRenewals": "Renewals in 30 days",
+    "expiredDocuments": "Expired documents",
+    "deleteTitle": "Delete document",
+    "deleteMessage": "Do you want to delete \"{{ name }}\"?",
+    "statusValues": {
+      "ACTIVE": "Active",
+      "RENEWED": "Renewed",
+      "EXPIRED": "Expired"
+    },
+    "reminderValues": {
+      "ONE_WEEK": "1 week before",
+      "TWENTY_FOUR_HOURS": "24 hours before"
+    }
+  }
+}
