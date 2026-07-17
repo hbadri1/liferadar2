@@ -1,0 +1,40 @@
+.modal-header {
+  border-bottom: 2px solid #f8d7da;
+  background-color: #fff3cd;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #856404;
+}
+
+.modal-body {
+  padding: 2rem;
+  font-size: 1.05rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 1.5rem;
+}
+
+.modal-footer .btn {
+  min-width: 100px;
+  font-weight: 500;
+}
+
+/* RTL Support for Confirmation Modal */
+[dir='rtl'] :host ::ng-deep {
+  .modal-header {
+    flex-direction: row-reverse;
+  }
+
+  .modal-footer {
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+  }
+
+  .modal-footer .btn {
+    flex-direction: row-reverse;
+  }
+}

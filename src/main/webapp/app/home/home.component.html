@@ -1,570 +1,223 @@
-﻿<div class="row h-100">
-  <div class="col-12">
+<div class="home-dashboard">
+  <div class="container-fluid">
     @if (account() !== null) {
       @if (!isChildOnly()) {
-        <div class="home-header mb-4">
-          <p class="lead home-subtitle mb-0" jhiTranslate="home.subtitle">Your Life Pillars</p>
-        </div>
-      }
-
-      @if (isChildOnly()) {
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body p-4 p-md-5">
-            <div class="child-hero mb-4">
-              <div class="child-hero-illustration" role="img" [attr.aria-label]="'home.child.imageAlt' | translate">
-                @for (face of childCelebrationFaces; track face) {
-                  <img [src]="face" alt="" aria-hidden="true" class="child-hero-face" />
-                }
-                <span class="child-hero-badge" aria-hidden="true">🎉</span>
-              </div>
-              <p class="child-hero-caption text-muted mb-0" jhiTranslate="home.child.imageCaption">Your cheer squad is celebrating you!</p>
-            </div>
-
-            <h3 class="mb-2" jhiTranslate="home.child.title">You are doing great!</h3>
-            <p class="text-muted mb-4" jhiTranslate="home.child.subtitle">Here are some encouraging messages for your day.</p>
-
-            <div class="row g-3 mb-4">
-              <div class="col-md-4">
-                <div class="alert alert-success h-100 mb-0" jhiTranslate="home.child.message1">Every small step you take today matters.</div>
-              </div>
-              <div class="col-md-4">
-                <div class="alert alert-primary h-100 mb-0" jhiTranslate="home.child.message2">Your effort is stronger than any challenge.</div>
-              </div>
-              <div class="col-md-4">
-                <div class="alert alert-warning h-100 mb-0" jhiTranslate="home.child.message3">Keep going, you are building something amazing.</div>
-              </div>
-            </div>
-
-            <div class="d-flex flex-column gap-2">
-              <blockquote class="blockquote mb-0">
-                <p class="mb-0" jhiTranslate="home.child.quote1">"Believe you can, and you are halfway there."</p>
-              </blockquote>
-              <blockquote class="blockquote mb-0">
-                <p class="mb-0" jhiTranslate="home.child.quote2">"Success is the sum of small efforts, repeated day in and day out."</p>
-              </blockquote>
-              <blockquote class="blockquote mb-0">
-                <p class="mb-0" jhiTranslate="home.child.quote3">"You are braver than you believe, and stronger than you seem."</p>
-              </blockquote>
-            </div>
-          </div>
-        </div>
-      } @else {
-
-      <!-- LifeRadar Welcome Description — shown to FamilyAdmin users until dismissed -->
-      @if (isFamilyAdmin() && showWelcomeDescription()) {
-        <div class="welcome-card mb-4" role="region" [attr.aria-label]="'home.welcome.title' | translate">
-          <div class="welcome-card-inner">
-            <div class="welcome-card-header d-flex align-items-start justify-content-between gap-2">
-              <div class="d-flex align-items-center gap-2">
-                <img src="/content/images/liferadar-logo-primary.svg" alt="LifeRadar" class="welcome-logo" aria-hidden="true" />
-                <div>
-                  <h5 class="welcome-title mb-0" jhiTranslate="home.welcome.title">Getting started with LifeRadar</h5>
-                  <p class="welcome-intro mb-0 text-muted" jhiTranslate="home.welcome.intro">
-                    LifeRadar helps you organise, evaluate, and improve every dimension of your life — all in one place.
-                  </p>
-                </div>
-              </div>
-              <button
-                class="btn btn-sm btn-close ms-2 flex-shrink-0"
-                (click)="dismissWelcomeDescription()"
-                [attr.aria-label]="'home.welcome.dismiss' | translate"
-                type="button">
-              </button>
-            </div>
-
-            <div class="welcome-features mt-3">
-              <!-- Pillars -->
-              <div class="welcome-feature">
-                <span class="welcome-feature-icon" aria-hidden="true">🏛️</span>
-                <div>
-                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.pillars.title">Life Pillars</p>
-                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.pillars.desc">
-                    Structure your life into meaningful pillars and sub-pillars — from health and career to family and growth.
-                  </p>
-                </div>
-              </div>
-
-              <!-- Evaluations -->
-              <div class="welcome-feature">
-                <span class="welcome-feature-icon" aria-hidden="true">📊</span>
-                <div>
-                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.evaluations.title">Evaluations</p>
-                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.evaluations.desc">
-                    Periodically score each life area to gain clear insight into where you stand and where to focus.
-                  </p>
-                </div>
-              </div>
-
-              <!-- Decisions -->
-              <div class="welcome-feature">
-                <span class="welcome-feature-icon" aria-hidden="true">✅</span>
-                <div>
-                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.decisions.title">Decisions</p>
-                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.decisions.desc">
-                    Convert your evaluation insights into concrete, actionable decisions that drive real, lasting change.
-                  </p>
-                </div>
-              </div>
-
-              <!-- TickTick -->
-              <div class="welcome-feature">
-                <span class="welcome-feature-icon" aria-hidden="true">🔗</span>
-                <div>
-                  <p class="welcome-feature-title mb-0" jhiTranslate="home.welcome.ticktick.title">TickTick Integration</p>
-                  <p class="welcome-feature-desc mb-0 text-muted" jhiTranslate="home.welcome.ticktick.desc">
-                    Push your decisions and action items straight to TickTick so nothing falls through the cracks.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-
-      <div class="row">
-        <!-- Left Column: Life Pillars (2/3 width) -->
-        <div class="col-lg-8">
-
-          <!-- Toolbar -->
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h6 class="mb-0 text-secondary text-uppercase fw-semibold" style="font-size:0.75rem;letter-spacing:.05em">
-              <fa-icon icon="list" class="me-1"></fa-icon>
-              <span jhiTranslate="liferadarApp.pillar.home.sectionTitle">Life Pillars</span>
-            </h6>
-            <button class="btn btn-success btn-sm" (click)="createNewPillar()">
-              <fa-icon icon="plus"></fa-icon>
-              <span class="ms-1" jhiTranslate="liferadarApp.pillar.home.addPillar">Add Pillar</span>
-            </button>
-          </div>
-
-          <!-- Loading Indicator -->
-          @if (isLoading()) {
-            <div class="text-center my-4">
-              <div class="spinner-border spinner-border-sm text-primary" role="status">
-                <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.loading">Loading pillars...</span>
-              </div>
-              <p class="small text-muted mt-2" jhiTranslate="liferadarApp.pillar.home.loading">Loading pillars...</p>
-            </div>
-          }
-
-          <!-- Tree View -->
-          @if (!isLoading() && pillars().length > 0) {
-            <div class="tree-container">
-              @for (pillar of pillars(); track pillar.id) {
-                @let translation = getTranslation(pillar);
-                <div class="tree-item tree-level-0">
-                  <!-- Pillar Row -->
-                  <div class="tree-row d-flex align-items-center gap-1">
-                    <button
-                      class="btn btn-xs tree-expand-btn"
-                      [class.expanded]="hasSubPillars(pillar.id)"
-                      (click)="viewSubPillars(pillar.id)"
-                      type="button"
-                      [title]="(hasSubPillars(pillar.id) ? 'liferadarApp.pillar.home.collapse' : 'liferadarApp.pillar.home.expand') | translate">
-                      <fa-icon [icon]="hasSubPillars(pillar.id) ? 'minus' : 'plus'"></fa-icon>
-                    </button>
-                    <div class="tree-label tree-text-pair flex-grow-1 d-flex align-items-baseline gap-1 overflow-hidden">
-                      <span class="tree-name text-truncate" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">{{ translation?.name || pillar.code }}</span>
-                      @if (translation?.description) {
-                        <span class="tree-desc text-truncate" dir="ltr">{{ translation?.description }}</span>
-                      }
-                    </div>
-                    <div class="tree-actions d-flex gap-1 flex-shrink-0">
-                      <button class="btn btn-outline-success btn-xs" (click)="createSubPillar(pillar.id)"
-                        [title]="'liferadarApp.pillar.home.addSubPillar' | translate">
-                        <fa-icon icon="plus"></fa-icon>
-                      </button>
-                      <button class="btn btn-outline-primary btn-xs" (click)="editPillar(pillar.id)"
-                        [title]="'entity.action.edit' | translate">
-                        <fa-icon icon="pencil-alt"></fa-icon>
-                      </button>
-                      <button class="btn btn-outline-danger btn-xs" (click)="deletePillar(pillar)"
-                        [title]="'entity.action.delete' | translate">
-                        <fa-icon icon="trash-alt"></fa-icon>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Sub-Pillars loading -->
-                  @if (isLoadingSubPillars(pillar.id)) {
-                    <div class="tree-children d-flex align-items-center gap-2 py-1">
-                      <div class="spinner-border spinner-border-sm text-success" role="status">
-                        <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.loadingSubPillars">Loading sub-pillars...</span>
-                      </div>
-                      <span class="small text-muted" jhiTranslate="liferadarApp.pillar.home.loadingSubPillars">Loading sub-pillars...</span>
-                    </div>
-                  }
-
-                  <!-- Sub-Pillars -->
-                  @if (hasSubPillars(pillar.id) && !isLoadingSubPillars(pillar.id)) {
-                    <div class="tree-children">
-                      @if (getSubPillars(pillar.id).length === 0) {
-                        <div class="tree-empty small text-muted" jhiTranslate="liferadarApp.pillar.home.noSubPillars">No sub-pillars yet.</div>
-                      }
-                      @for (subPillar of getSubPillars(pillar.id); track subPillar.id) {
-                        @let subTranslation = getSubPillarTranslation(subPillar);
-                        <div class="tree-item tree-level-1">
-                          <!-- Sub-Pillar Row -->
-                          <div class="tree-row d-flex align-items-center gap-1">
-                            <button
-                              class="btn btn-xs tree-expand-btn"
-                              [class.expanded]="hasSubPillarItems(subPillar.id)"
-                              (click)="viewSubPillarItems(subPillar.id)"
-                              type="button"
-                              [title]="(hasSubPillarItems(subPillar.id) ? 'liferadarApp.pillar.home.collapse' : 'liferadarApp.pillar.home.expand') | translate">
-                              <fa-icon [icon]="hasSubPillarItems(subPillar.id) ? 'minus' : 'plus'"></fa-icon>
-                            </button>
-                            <div class="tree-label tree-text-pair flex-grow-1 d-flex align-items-baseline gap-1 overflow-hidden">
-                              <span class="tree-name text-truncate" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">{{ subTranslation?.name || subPillar.code }}</span>
-                              @if (subTranslation?.description) {
-                                <span class="tree-desc text-truncate" dir="ltr">{{ subTranslation?.description }}</span>
-                              }
-                            </div>
-                            <div class="tree-actions d-flex gap-1 flex-shrink-0">
-                              <button class="btn btn-outline-success btn-xs" (click)="createSubPillarItem(subPillar.id)"
-                                [title]="'liferadarApp.pillar.home.addItem' | translate">
-                                <fa-icon icon="plus"></fa-icon>
-                              </button>
-                              <button class="btn btn-outline-primary btn-xs" (click)="editSubPillar(subPillar)"
-                                [title]="'entity.action.edit' | translate">
-                                <fa-icon icon="pencil-alt"></fa-icon>
-                              </button>
-                              <button class="btn btn-outline-danger btn-xs" (click)="deleteSubPillar(subPillar)"
-                                [title]="'entity.action.delete' | translate">
-                                <fa-icon icon="trash-alt"></fa-icon>
-                              </button>
-                            </div>
-                          </div>
-
-                          <!-- Items loading -->
-                          @if (isLoadingSubPillarItems(subPillar.id)) {
-                            <div class="tree-children d-flex align-items-center gap-2 py-1">
-                              <div class="spinner-border spinner-border-sm text-secondary" role="status">
-                                <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.loadingItems">Loading items...</span>
-                              </div>
-                              <span class="small text-muted" jhiTranslate="liferadarApp.pillar.home.loadingItems">Loading items...</span>
-                            </div>
-                          }
-
-                          <!-- Items -->
-                          @if (hasSubPillarItems(subPillar.id) && !isLoadingSubPillarItems(subPillar.id)) {
-                            <div class="tree-children">
-                              @if (getSubPillarItems(subPillar.id).length === 0) {
-                                <div class="tree-empty small text-muted" jhiTranslate="liferadarApp.pillar.home.noItems">No items yet.</div>
-                              }
-                              @for (item of getSubPillarItems(subPillar.id); track item.id) {
-                                @let itemName = getSubPillarItemTranslation(item);
-                                @let itemDescription = getSubPillarItemDescription(item);
-                                <div class="tree-row tree-leaf d-flex align-items-center gap-1">
-                                  <span class="tree-leaf-bullet text-muted flex-shrink-0">•</span>
-                                  <div class="tree-text-pair flex-grow-1 d-flex align-items-baseline gap-1 overflow-hidden">
-                                    <span class="tree-name tree-name--item text-truncate" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">{{ itemName || item.code }}</span>
-                                    @if (itemDescription) {
-                                      <span class="tree-desc text-truncate" dir="ltr">{{ itemDescription }}</span>
-                                    }
-                                  </div>
-                                  <div class="tree-actions d-flex gap-1 flex-shrink-0">
-                                    @if (isEvaluationBlocked(item)) {
-                                      <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle px-2"
-                                        [title]="getEvaluationBlockReason(item) | translate">
-                                        <fa-icon icon="check" aria-hidden="true"></fa-icon>
-                                        @if (item.doNotReevaluate) {
-                                          <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.checkedPermanently">Done</span>
-                                        } @else {
-                                          <span class="visually-hidden" jhiTranslate="liferadarApp.pillar.home.checked">Checked</span>
-                                        }
-                                      </span>
-                                    } @else {
-                                      <button class="btn btn-outline-success btn-xs" (click)="createLifeEvaluation(item)"
-                                        [title]="'liferadarApp.pillar.home.createEvaluation' | translate">
-                                        <span jhiTranslate="liferadarApp.pillar.home.createEvaluation">Create Evaluation</span>
-                                      </button>
-                                    }
-                                    <button class="btn btn-outline-primary btn-xs" (click)="editSubPillarItem(item)"
-                                      [title]="'entity.action.edit' | translate">
-                                      <fa-icon icon="pencil-alt"></fa-icon>
-                                    </button>
-                                    <button class="btn btn-outline-danger btn-xs" (click)="deleteSubPillarItem(item)"
-                                      [title]="'entity.action.delete' | translate">
-                                      <fa-icon icon="trash-alt"></fa-icon>
-                                    </button>
-                                  </div>
-                                </div>
-                              }
-                            </div>
-                          }
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
-              }
-            </div>
-          }
-
-          <!-- Empty State -->
-          @if (!isLoading() && pillars().length === 0) {
-            <div class="alert alert-info text-center my-5">
-              <fa-icon icon="info-circle" size="2x" class="mb-3"></fa-icon>
-              <h4 jhiTranslate="liferadarApp.pillar.home.notFound">No Pillars found</h4>
-              <p jhiTranslate="liferadarApp.pillar.home.createFirst">Create your first Pillar to get started!</p>
-              <div class="d-flex gap-2 justify-content-center mt-3">
-                <button class="btn btn-success" (click)="createNewPillar()">
-                  <fa-icon icon="plus"></fa-icon>
-                  <span jhiTranslate="liferadarApp.pillar.home.createLabel">Create new Pillar</span>
-                </button>
-                <button class="btn btn-info" (click)="loadSuggestedPillars()">
-                  <fa-icon icon="lightbulb"></fa-icon>
-                  <span jhiTranslate="liferadarApp.pillar.home.suggested.button">Load Suggested Pillars</span>
-                </button>
-              </div>
-            </div>
-          }
-
-          <div class="score-matrix-card mt-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h6 class="mb-0 text-secondary text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em">
-                <fa-icon icon="th" class="me-1"></fa-icon>
-                <span jhiTranslate="liferadarApp.pillar.home.scoreMatrix.title">Daily Evaluation Average</span>
-              </h6>
-              <small class="text-muted" jhiTranslate="liferadarApp.pillar.home.scoreMatrix.last30Days">Last 30 days</small>
-            </div>
-
-            <div class="score-matrix-grid" [attr.dir]="isArabicLang() ? 'rtl' : 'ltr'">
-              @for (dayAverage of getEvaluationDailyAverageMatrix(); track dayAverage.dateKey) {
-                <div class="score-matrix-cell" [ngClass]="getEvaluationMatrixCellClass(dayAverage.average)"
-                  [title]="dayAverage.count > 0 ? ((dayAverage.average | number:'1.1-1') + ' / 5 (' + dayAverage.count + ')') : '-'">
-                  <span class="score-matrix-date">{{ dayAverage.label }}</span>
-                  @if (dayAverage.average !== null) {
-                    <strong class="score-matrix-value">{{ dayAverage.average | number: '1.1-1' }}</strong>
-                  } @else {
-                    <span class="score-matrix-empty">-</span>
-                  }
-                </div>
-              }
-            </div>
-          </div>
+        <!-- Header Section -->
+        <div class="home-header">
+          <h1 jhiTranslate="home.title">Welcome back</h1>
+          <button class="btn btn-outline-primary btn-sm" (click)="goToLifeRadar()" jhiTranslate="home.goToLifeRadar">
+            Go to Life Radar
+          </button>
         </div>
 
-        <!-- Right Column: Life Evaluations (1/3 width) -->
-        <div class="col-lg-4">
-          <div class="sticky-top" style="top: 20px;">
-            <div class="card shadow-sm">
-              <div class="card-header bg-success text-white d-flex align-items-center justify-content-between gap-2">
-                <div>
-                  <small class="d-block opacity-75" jhiTranslate="liferadarApp.lifeEvaluation.home.last48HoursNote">
-                    Showing evaluations from the latest 48 hours
-                  </small>
-                  <h5 class="mb-0 d-flex align-items-center">
-                    <fa-icon icon="clipboard-check" class="me-2"></fa-icon>
-                    <span jhiTranslate="liferadarApp.lifeEvaluation.home.title">Life Evaluations</span>
-                  </h5>
-                </div>
-                <button
-                  class="btn btn-sm btn-outline-light"
-                  type="button"
-                  (click)="loadLifeEvaluations()"
-                  [disabled]="isLoadingEvaluations()"
-                  [title]="'liferadarApp.lifeEvaluation.home.refreshListLabel' | translate">
-                  <fa-icon icon="sync" [animation]="isLoadingEvaluations() ? 'spin' : undefined"></fa-icon>
-                  <span class="ms-1" jhiTranslate="liferadarApp.lifeEvaluation.home.refreshListLabel">Refresh list</span>
-                </button>
+        <!-- Dashboard Grid -->
+        <div class="row g-3">
+          <!-- Coming Journey Widget -->
+          <div class="col-12 col-md-6 col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h5 class="mb-0" jhiTranslate="home.comingJourney">Coming Journey</h5>
               </div>
-              <div class="card-body evaluations-panel">
-                <!-- Loading Indicator -->
-                @if (isLoadingEvaluations()) {
-                  <div class="text-center my-3">
-                    <div class="spinner-border spinner-border-sm text-success" role="status">
-                      <span class="visually-hidden" jhiTranslate="liferadarApp.lifeEvaluation.home.loading">Loading...</span>
-                    </div>
-                    <p class="small text-muted mt-2" jhiTranslate="liferadarApp.lifeEvaluation.home.loading">Loading...</p>
-                  </div>
-                }
-
-                <!-- Evaluations List -->
-                @if (!isLoadingEvaluations() && getGroupedLifeEvaluations().length > 0) {
-                  <div class="list-group list-group-flush evaluations-list">
-                    @for (group of getGroupedLifeEvaluations(); track group.itemId) {
-                      <div class="list-group-item px-0 py-1 evaluation-group">
-                        @for (evaluation of group.evaluations; track evaluation.id) {
-                          @let decisions = getEvaluationDecisions(evaluation.id);
-                          <div class="border rounded evaluation-card mb-1">
-                            <div class="d-flex justify-content-between align-items-center gap-2 evaluation-row">
-                              <div class="d-flex align-items-center gap-1 flex-grow-1 overflow-hidden">
-                                <span class="small fw-semibold text-truncate evaluation-item-name">{{ group.itemName }}</span>
-                                @if (evaluation.score) {
-                                  <span class="badge evaluation-score-badge" [ngClass]="evaluation.score >= 4 ? 'bg-success' : (evaluation.score >= 2 ? 'bg-warning' : 'bg-danger')">
-                                    {{ evaluation.score }}/5
-                                  </span>
-                                }
-                              </div>
-                              <div class="d-flex gap-1 align-items-center flex-shrink-0">
-                                <button
-                                  class="btn btn-outline-primary btn-xs"
-                                  (click)="createEvaluationDecision(evaluation)"
-                                  type="button"
-                                  [title]="'liferadarApp.lifeEvaluation.home.takeDecision' | translate">
-                                  <fa-icon icon="plus"></fa-icon>
-                                  <span class="visually-hidden" jhiTranslate="liferadarApp.lifeEvaluation.home.takeDecision">Take Decision</span>
-                                </button>
-                                <button
-                                  class="btn btn-outline-danger btn-xs"
-                                  (click)="deleteLifeEvaluation(evaluation)"
-                                  type="button"
-                                  [title]="'liferadarApp.lifeEvaluation.home.deleteEvaluation' | translate">
-                                  <fa-icon icon="trash-alt"></fa-icon>
-                                </button>
-                              </div>
-                            </div>
-
-                            @if (evaluation.notes) {
-                              <p class="mb-0 mt-1 small text-muted evaluation-compact-notes" [dir]="isArabicLang() ? 'rtl' : 'ltr'">
-                                {{ evaluation.notes }}
-                              </p>
-                            }
-
-                            @if (decisions.length > 0) {
-                              <div class="evaluation-decisions-list">
-                                <ul class="mb-0 evaluation-decisions-bullets" [dir]="isArabicLang() ? 'rtl' : 'ltr'">
-                                  @for (decision of decisions; track decision.id) {
-                                    @if (decision.decision) {
-                                      <li class="evaluation-decision-line">
-                                        <span>{{ decision.decision }}</span>
-                                        @if (decision.date) {
-                                          <span class="evaluation-decision-date">({{ decision.date.toDate() | localizedDate: 'dd-MM-yyyy HH:mm': riyadhTimeZone }})</span>
-                                        }
-                                      </li>
-                                    }
-                                  }
-                                </ul>
-                              </div>
-                            }
-                          </div>
-                        }
-                      </div>
-                    }
-                  </div>
-                }
-
-                <!-- Empty State -->
-                @if (!isLoadingEvaluations() && lifeEvaluations().length === 0) {
+              <div class="card-body">
+                @if (loadingTrip()) {
                   <div class="text-center py-4">
-                    <fa-icon icon="info-circle" size="2x" class="text-muted mb-2"></fa-icon>
-                    <p class="small text-muted">
-                      <span jhiTranslate="liferadarApp.lifeEvaluation.home.empty">No evaluations yet.</span>
-                      <br />
-                      <span jhiTranslate="liferadarApp.lifeEvaluation.home.createFromItems">Create from items!</span>
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden" jhiTranslate="loading">Loading...</span>
+                    </div>
+                  </div>
+                } @else if (nearestTrip()) {
+                  <div class="trip-summary mb-3">
+                    <h6 class="trip-title mb-1">{{ nearestTrip()?.title }}</h6>
+                    <p class="text-muted small mb-0">
+                      {{ nearestTrip()?.startDate?.toDate() | localizedDate: 'mediumDate' }} -
+                      {{ nearestTrip()?.endDate?.toDate() | localizedDate: 'mediumDate' }}
                     </p>
                   </div>
+
+                  @if (preparationActions().length > 0) {
+                    <div class="trip-steps">
+                      <h6 class="mb-2" jhiTranslate="home.stepsBefore">Pre-Trip Todos</h6>
+                      <ul class="list-group list-group-flush">
+                        @for (action of preparationActions(); track $index; let index = $index) {
+                          <li class="list-group-item d-flex gap-2">
+                            <div class="form-check flex-grow-1">
+                              <input 
+                                class="form-check-input"
+                                type="checkbox"
+                                [id]="'action-' + index"
+                                [checked]="isStepCompleted(index)"
+                                (change)="toggleStepCompletion(index)"
+                              />
+                              <label class="form-check-label" [for]="'action-' + index">
+                                <div class="fw-500" [class.text-decoration-line-through]="isStepCompleted(index)">
+                                  {{ action.actionText }}
+                                </div>
+                              </label>
+                            </div>
+                            @if (!isStepCompleted(index)) {
+                              <button 
+                                class="btn btn-sm btn-outline-success"
+                                (click)="createDecisionFromAction(action, index)"
+                                [title]="'home.createDecision' | translate"
+                                type="button"
+                              >
+                                <fa-icon icon="plus"></fa-icon>
+                              </button>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  } @else if (nearestTrip()) {
+                    <p class="text-muted small text-center py-2" jhiTranslate="home.noStepsBeforeTrip">
+                      No steps scheduled before the trip
+                    </p>
+                  }
+
+                  <button class="btn btn-primary btn-sm mt-3 w-100" (click)="viewTripDetails()" jhiTranslate="home.viewDetails">
+                    View Details
+                  </button>
+                } @else {
+                  <p class="text-muted text-center py-4" jhiTranslate="home.noUpcomingTrips">No upcoming journeys</p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Expiring Documents Widget -->
+          <div class="col-12 col-md-6 col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h5 class="mb-0" jhiTranslate="home.expiringDocuments">Documents Expiring Soon</h5>
+              </div>
+              <div class="card-body">
+                @if (loadingDocuments()) {
+                  <div class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden" jhiTranslate="loading">Loading...</span>
+                    </div>
+                  </div>
+                } @else if (expiringDocuments().length > 0) {
+                  <div class="documents-list">
+                    <h6 class="mb-2" jhiTranslate="home.nextSixMonths">Next 6 Months</h6>
+                    <ul class="list-group list-group-flush">
+                      @for (doc of expiringDocuments().slice(0, 5); track doc.id) {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                          <div class="flex-grow-1">
+                            <div class="fw-500">{{ doc.name }}</div>
+                            <small class="text-muted">
+                              {{ doc.documentType ?? 'Document' }} • {{ doc.renewalDate | timeUntilExpiry }}
+                            </small>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                    @if (expiringDocuments().length > 5) {
+                      <small class="text-muted d-block mt-2">
+                        + {{ expiringDocuments().length - 5 }} more documents
+                      </small>
+                    }
+                  </div>
+
+                  <button class="btn btn-primary btn-sm mt-3 w-100" (click)="viewAllDocuments()" jhiTranslate="home.viewAllDocuments">
+                    View All Documents
+                  </button>
+                } @else {
+                  <p class="text-muted text-center py-4" jhiTranslate="home.noExpiringDocuments">
+                    No documents expiring in the next 6 months
+                  </p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Monthly Finances Widget -->
+          <div class="col-12 col-md-6 col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h5 class="mb-0" jhiTranslate="home.monthlyFinances">Upcoming Payments</h5>
+              </div>
+              <div class="card-body">
+                @if (loadingExpenses()) {
+                  <div class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden" jhiTranslate="loading">Loading...</span>
+                    </div>
+                  </div>
+                } @else if (monthlyExpenses().length > 0) {
+                  <div class="upcoming-payments">
+                    <h6 class="mb-3" jhiTranslate="home.upcomingPayments">Coming Due</h6>
+                    <ul class="list-group list-group-flush">
+                      @for (expense of monthlyExpenses().slice(0, 5); track expense.id) {
+                        <li class="list-group-item payment-item">
+                          <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="flex-grow-1">
+                              <div class="fw-500">{{ expense.serviceName }}</div>
+                            </div>
+                            @if (expense.autoRenewal) {
+                              <span class="badge bg-danger ms-2" jhiTranslate="home.autoRenew" title="Auto-renewable">
+                                <fa-icon icon="exclamation-circle"></fa-icon>
+                              </span>
+                            }
+                          </div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                              @if (getDaysUntilDue(expense.dueDate) === 0) {
+                                <span jhiTranslate="home.dueToday">Due today</span>
+                              } @else if (getDaysUntilDue(expense.dueDate) === 1) {
+                                <span jhiTranslate="home.dueTomorrow">Due tomorrow</span>
+                              } @else {
+                                <span>Due in {{ getDaysUntilDue(expense.dueDate) }} days</span>
+                              }
+                            </small>
+                            <span class="badge bg-info">{{ expense.monthlyCost | currency: 'SAR': 'symbol': '1.0-0' }}</span>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                    @if (monthlyExpenses().length > 5) {
+                      <small class="text-muted d-block mt-3">
+                        + {{ monthlyExpenses().length - 5 }} more payments
+                      </small>
+                    }
+                  </div>
+
+                  <button class="btn btn-primary btn-sm mt-3 w-100" (click)="viewAllExpenses()" jhiTranslate="home.viewAllExpenses">
+                    View All Subscriptions
+                  </button>
+                } @else {
+                  <p class="text-muted text-center py-4" jhiTranslate="home.noExpenses">No upcoming payments</p>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Family Highlights Widget -->
+          <div class="col-12 col-md-6 col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h5 class="mb-0" jhiTranslate="home.familyHighlights">Family Highlights</h5>
+              </div>
+              <div class="card-body">
+                @if (isFamilyAdmin()) {
+                  <div class="family-content">
+                    <p jhiTranslate="home.familyDescription">
+                      Track your family's milestones and celebrate their achievements
+                    </p>
+                    <button class="btn btn-primary btn-sm" (click)="viewFamily()" jhiTranslate="home.viewFamilyDetails">
+                      View Family Details
+                    </button>
+                  </div>
+                } @else {
+                  <div class="text-center py-4">
+                    <p class="text-muted" jhiTranslate="home.noFamilyAccess">Family features are available for family admins</p>
+                  </div>
                 }
               </div>
             </div>
           </div>
         </div>
-      </div>
       }
-    } @else {
-      <!-- ═══════════════════════════════════════════════════════════
-           LANDING PAGE — unauthenticated users
-           ═══════════════════════════════════════════════════════════ -->
-      <div class="landing-wrapper">
-
-        <!-- Left: hero image -->
-        <div class="landing-hero">
-          <img
-            src="/content/images/homeliferadar.png"
-            alt="LifeRadar"
-            class="landing-hero-img"
-          />
-          <div class="landing-tagline">
-            <p jhiTranslate="home.landing.tagline">Track. Evaluate. Grow.</p>
-          </div>
-        </div>
-
-        <!-- Right: auth panel -->
-        <div class="landing-auth">
-
-          <!-- Brand block -->
-          <div class="landing-brand mb-4">
-            <img src="/content/images/liferadar-logo-primary.svg" alt="Liferadar" class="landing-brand-logo" />
-            <h1 class="landing-brand-name">
-              <span class="brand-life">Life</span><span class="brand-radar">Radar</span>
-            </h1>
-            <p class="landing-brand-sub" jhiTranslate="home.landing.subtitle">
-              Your personal life balance compass
-            </p>
-          </div>
-
-          <!-- Feature pills -->
-          <div class="landing-features mb-4">
-            <span class="feature-pill">
-              <fa-icon icon="chart-bar" class="me-1"></fa-icon>
-              <span jhiTranslate="home.landing.feature.evaluate">Evaluate</span>
-            </span>
-            <span class="feature-pill">
-              <fa-icon icon="list" class="me-1"></fa-icon>
-              <span jhiTranslate="home.landing.feature.pillars">Life Pillars</span>
-            </span>
-            <span class="feature-pill">
-              <fa-icon icon="check-circle" class="me-1"></fa-icon>
-              <span jhiTranslate="home.landing.feature.decisions">Decisions</span>
-            </span>
-          </div>
-
-          <!-- Sign In card -->
-          <div class="auth-card mb-3">
-            <div class="auth-card-header">
-              <fa-icon icon="sign-in-alt" class="me-2"></fa-icon>
-              <span jhiTranslate="home.landing.signin.title">Already have an account?</span>
-            </div>
-            <div class="auth-card-body">
-              <p class="auth-card-desc" jhiTranslate="home.landing.signin.desc">
-                Sign in to access your personalised dashboard.
-              </p>
-              <button class="btn btn-primary btn-auth w-100" (click)="login()">
-                <fa-icon icon="sign-in-alt" class="me-2"></fa-icon>
-                <span jhiTranslate="global.messages.info.authenticated.link">Sign in</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Register card -->
-          <div class="auth-card auth-card--register">
-            <div class="auth-card-header auth-card-header--register">
-              <fa-icon icon="user-plus" class="me-2"></fa-icon>
-              <span jhiTranslate="home.landing.register.title">New here?</span>
-            </div>
-            <div class="auth-card-body">
-              <p class="auth-card-desc" jhiTranslate="home.landing.register.desc">
-                Create a free account and start tracking your life today.
-              </p>
-              <a class="btn btn-success btn-auth w-100" routerLink="/account/register">
-                <fa-icon icon="user-plus" class="me-2"></fa-icon>
-                <span jhiTranslate="global.messages.info.register.link">Register</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Footer note -->
-          <p class="landing-footer-note text-muted mt-4 text-center small">
-            <fa-icon icon="shield-alt" class="me-1"></fa-icon>
-            <span jhiTranslate="home.landing.privacy">Your data stays private and secure.</span>
-          </p>
-
-        </div>
-      </div>
     }
-
-    <!-- ─── Feedback banner — always visible ─────────────────────────── -->
-    <div class="feedback-banner mt-4 mb-2">
-      <span class="feedback-banner-text" jhiTranslate="home.contact.bannerText">
-        Got feedback or questions?
-      </span>
-      <button type="button" class="btn btn-outline-primary btn-sm feedback-banner-btn" (click)="openContactModal()">
-        <fa-icon icon="comment-dots" class="me-1"></fa-icon>
-        <span jhiTranslate="home.contact.bannerButton">We want to hear from you</span>
-      </button>
-    </div>
-
   </div>
 </div>

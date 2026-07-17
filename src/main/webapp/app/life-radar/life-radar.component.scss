@@ -1,0 +1,367 @@
+// ─── Welcome Description Card ────────────────────────────────────────────────
+.welcome-card {
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(31, 183, 166, 0.08) 0%, rgba(70, 82, 104, 0.05) 100%);
+  border: 1px solid rgba(31, 183, 166, 0.2);
+  box-shadow: 0 4px 16px rgba(20, 32, 51, 0.06);
+  overflow: hidden;
+}
+
+.welcome-card-inner {
+  padding: 1rem 1.2rem;
+}
+
+.welcome-logo {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex-shrink: 0;
+}
+
+.welcome-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #142033;
+}
+
+.welcome-intro {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  margin-top: 0.15rem;
+}
+
+.welcome-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem 1rem;
+}
+
+.welcome-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.welcome-feature-icon {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.welcome-feature-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #142033;
+}
+
+.welcome-feature-desc {
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 576px) {
+  .welcome-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Small button variant ─────────────────────────────────────────────────────
+.btn-xs {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.evaluations-panel {
+  padding: 0.75rem;
+}
+
+.evaluations-list .list-group-item {
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+.evaluation-group-title {
+  line-height: 1.15;
+}
+
+.evaluation-card {
+  padding: 0.3rem 0.45rem;
+}
+
+.evaluation-row {
+  min-height: 1.55rem;
+}
+
+.evaluation-item-name {
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.1;
+}
+
+.evaluation-compact-notes {
+  max-width: 9.5rem;
+  line-height: 1.15;
+}
+
+.evaluation-score-badge {
+  font-size: 0.7rem;
+  line-height: 1.1;
+}
+
+.evaluation-decisions-list {
+  margin-top: 0.2rem;
+  padding-top: 0.2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.evaluation-decisions-bullets {
+  margin: 0;
+  padding-inline-start: 1rem;
+}
+
+.evaluation-decision-line {
+  font-size: 0.68rem;
+  color: #6c757d;
+  line-height: 1.2;
+}
+
+.evaluation-decision-date {
+  margin-inline-start: 0.35rem;
+  color: #8a94a4;
+  white-space: nowrap;
+}
+
+.home-header {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+}
+
+.home-subtitle {
+  color: #465268;
+  font-weight: 600;
+}
+
+.child-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  text-align: center;
+}
+
+.child-hero-illustration {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.75rem;
+  width: min(100%, 25rem);
+  padding: 1rem 1.25rem 0.75rem;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 214, 102, 0.35) 0%, rgba(31, 183, 166, 0.12) 100%);
+  overflow: hidden;
+}
+
+.child-hero-face {
+  width: min(5rem, 24vw);
+  max-width: 100%;
+  filter: drop-shadow(0 10px 18px rgba(20, 32, 51, 0.12));
+}
+
+.child-hero-face:nth-child(2) {
+  width: min(5.6rem, 28vw);
+}
+
+.child-hero-badge {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.75rem;
+  font-size: 1.8rem;
+  line-height: 1;
+  transform: rotate(12deg);
+}
+
+.child-hero-caption {
+  max-width: 24rem;
+  font-weight: 500;
+}
+
+.score-matrix-card {
+  border: 1px solid rgba(20, 32, 51, 0.08);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(31, 183, 166, 0.08) 0%, #fff 100%);
+  padding: 0.5rem 0.55rem;
+  box-shadow: 0 16px 36px rgba(20, 32, 51, 0.06);
+}
+
+.score-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.score-matrix-cell {
+  border: 1px solid rgba(20, 32, 51, 0.08);
+  border-radius: 4px;
+  min-height: 42px;
+  padding: 0.2rem 0.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.score-matrix-date {
+  font-size: 0.62rem;
+  color: rgba(20, 32, 51, 0.6);
+}
+
+.score-matrix-value,
+.score-matrix-empty {
+  font-size: 0.74rem;
+}
+
+.score-matrix-empty {
+  color: rgba(20, 32, 51, 0.38);
+}
+
+.score-matrix-cell--empty {
+  background: #f7f9fc;
+}
+
+.score-matrix-cell--low {
+  background: rgba(255, 107, 94, 0.12);
+  border-color: rgba(255, 107, 94, 0.24);
+}
+
+.score-matrix-cell--mid {
+  background: rgba(255, 107, 94, 0.08);
+  border-color: rgba(255, 107, 94, 0.18);
+}
+
+.score-matrix-cell--good {
+  background: rgba(31, 183, 166, 0.12);
+  border-color: rgba(31, 183, 166, 0.22);
+}
+
+.score-matrix-cell--excellent {
+  background: rgba(31, 183, 166, 0.18);
+  border-color: rgba(31, 183, 166, 0.3);
+}
+
+
+@media (max-width: 1200px) {
+  .score-matrix-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .tree-text-pair .tree-desc {
+    display: none;
+  }
+
+  .score-matrix-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .child-hero-illustration {
+    gap: 0.35rem;
+    padding-inline: 0.75rem;
+  }
+
+  .child-hero-badge {
+    right: 0.55rem;
+    font-size: 1.4rem;
+  }
+}
+
+// ─── Feedback banner ─────────────────────────────────────────────────────────
+.feedback-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(31, 183, 166, 0.06) 0%, rgba(31, 183, 166, 0.02) 100%);
+  border: 1px dashed rgba(31, 183, 166, 0.35);
+  text-align: center;
+}
+
+.feedback-banner-text {
+  font-size: 0.88rem;
+  color: #465268;
+}
+
+.feedback-banner-btn {
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+// ─── Contact modal ────────────────────────────────────────────────────────────
+:host ::ng-deep {
+  .contact-modal-header {
+    background: linear-gradient(135deg, #142033 0%, #1e3352 100%);
+    color: #fff;
+    border-bottom: none;
+    padding: 1rem 1.25rem;
+  }
+
+  .contact-modal-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .contact-modal-body {
+    padding: 1.5rem;
+  }
+
+  .contact-modal-intro {
+    font-size: 0.9rem;
+    color: #465268;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .contact-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+   .contact-success-icon {
+     font-size: 3rem;
+     line-height: 1;
+   }
+}
+
+/* RTL Modal Support */
+[dir='rtl'] :host ::ng-deep {
+  .modal-footer {
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+  }
+
+  .modal-header {
+    flex-direction: row-reverse;
+  }
+
+  .btn {
+    flex-direction: row-reverse;
+  }
+
+  fa-icon {
+    margin-right: 0 !important;
+    margin-left: 0.3rem !important;
+  }
+}
+
+
+

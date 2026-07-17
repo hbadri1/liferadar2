@@ -89,6 +89,30 @@
         "successDesc": "شكراً لتواصلك معنا. سنعود إليك قريباً.",
         "error": "حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقاً."
       }
-    }
+    },
+    "comingJourney": "الرحلة القادمة",
+    "expiringDocuments": "الوثائق المنتهية الصلاحية (الأشهر الستة القادمة)",
+    "monthlyFinances": "الشؤون المالية الشهرية",
+    "familyHighlights": "لحظات العائلة",
+    "steps": "الخطوات/الأنشطة",
+    "viewDetails": "عرض التفاصيل",
+    "noUpcomingTrips": "لا توجد رحلات قادمة",
+    "noExpiringDocuments": "لا توجد وثائق منتهية الصلاحية في الأشهر الستة القادمة",
+    "noExpenses": "لا توجد نفقات هذا الشهر",
+    "totalMonthly": "الإجمالي لهذا الشهر",
+    "viewAllDocuments": "عرض جميع الوثائق",
+    "viewAllExpenses": "عرض جميع المصروفات",
+    "familyDescription": "تتبع إنجازات عائلتك واحتفل بنجاحاتهم",
+    "viewFamilyDetails": "عرض تفاصيل العائلة",
+    "noFamilyAccess": "ميزات العائلة متاحة للمسؤولين فقط",
+    "goToLifeRadar": "اذهب إلى Life Radar",
+    "stepsBefore": "المهام قبل الرحلة",
+    "noStepsBeforeTrip": "لا توجد خطوات مخطط لها قبل الرحلة",
+    "createDecision": "إنشاء قرار",
+    "upcomingPayments": "القادمة",
+    "dueToday": "اليوم",
+    "dueTomorrow": "غدا",
+    "dueInDays": "في {{ getDaysUntilDue(expense.dueDate) }} أيام",
+    "autoRenew": "تجديد تلقائي"
   }
 }

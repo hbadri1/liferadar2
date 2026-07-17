@@ -1,0 +1,23 @@
+{
+  "lifeRadar": {
+    "title": "Life Radar",
+    "subtitle": "Vos Piliers de Vie",
+    "child": {
+      "title": "Vous faites du très bon travail!",
+      "subtitle": "Voici quelques messages d'encouragement pour votre journée.",
+      "imageAlt": "Une célébration joyeuse avec des visages souriants vous encourageant.",
+      "imageCaption": "Votre équipe de soutien vous célèbre!",
+      "message1": "Chaque petit pas que vous faites aujourd'hui compte.",
+      "message2": "Vos efforts sont plus forts que n'importe quel défi.",
+      "message3": "Continuez, vous construisez quelque chose d'incroyable.",
+      "quote1": "\"Croyez que vous pouvez, et vous êtes à mi-chemin.\"",
+      "quote2": "\"Le succès est la somme de petits efforts, répétés jour après jour.\"",
+      "quote3": "\"Vous êtes plus courageux que vous ne le croyez, et plus fort que vous ne le semblez.\""
+    },
+    "welcome": {
+      "title": "Commencer avec LifeRadar",
+      "intro": "LifeRadar vous aide à organiser, évaluer et améliorer chaque dimension de votre vie — tout en un seul endroit.",
+      "dismiss": "D'accord, fermer"
+    }
+  }
+}

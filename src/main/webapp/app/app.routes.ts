@@ -14,6 +14,15 @@ const routes: Routes = [
     title: 'home.title',
   },
   {
+    path: 'life-radar',
+    loadComponent: () => import('./life-radar/life-radar.component'),
+    title: 'lifeRadar.title',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT, Authority.CHILD],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: '',
     loadComponent: () => import('./layouts/navbar/navbar.component'),
     outlet: 'navbar',

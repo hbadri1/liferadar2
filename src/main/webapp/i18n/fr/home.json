@@ -89,6 +89,30 @@
         "successDesc": "Merci de nous avoir contactés. Nous vous répondrons bientôt.",
         "error": "Une erreur s'est produite. Veuillez réessayer plus tard."
       }
-    }
+    },
+    "comingJourney": "Prochain Voyage",
+    "expiringDocuments": "Documents à Renouveler (6 Prochains Mois)",
+    "monthlyFinances": "Finances du Mois",
+    "familyHighlights": "Moments en Famille",
+    "steps": "Étapes/Activités",
+    "viewDetails": "Voir les Détails",
+    "noUpcomingTrips": "Pas de voyage prévu",
+    "noExpiringDocuments": "Aucun document à renouveler dans les 6 prochains mois",
+    "noExpenses": "Aucune dépense ce mois-ci",
+    "totalMonthly": "Total pour ce mois",
+    "viewAllDocuments": "Voir Tous les Documents",
+    "viewAllExpenses": "Voir Toutes les Dépenses",
+    "familyDescription": "Suivez les étapes importantes de votre famille et célébrez leurs réussite",
+    "viewFamilyDetails": "Voir les Détails de la Famille",
+    "noFamilyAccess": "Les fonctionnalités familiales sont disponibles pour les administrateurs",
+    "goToLifeRadar": "Aller à Life Radar",
+    "stepsBefore": "Choses à Faire Avant le Voyage",
+    "noStepsBeforeTrip": "Aucune étape prévue avant le voyage",
+    "createDecision": "Créer une Décision",
+    "upcomingPayments": "À venir",
+    "dueToday": "Aujourd'hui",
+    "dueTomorrow": "Demain",
+    "dueInDays": "Dans {{ getDaysUntilDue(expense.dueDate) }} jours",
+    "autoRenew": "Renouvellement automatique"
   }
 }

@@ -1,1053 +1,278 @@
-﻿import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
-import { HttpResponse } from '@angular/common/http';
+import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs/esm';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
+import TimeUntilExpiryPipe from 'app/shared/date/time-until-expiry.pipe';
 import { Authority } from 'app/config/authority.constants';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
-import { IPillar } from 'app/entities/pillar/pillar.model';
-import { PillarService } from 'app/entities/pillar/service/pillar.service';
-import { IPillarTranslation } from 'app/entities/pillar-translation/pillar-translation.model';
-import { ISubPillar } from 'app/entities/sub-pillar/sub-pillar.model';
-import { SubPillarService } from 'app/entities/sub-pillar/service/sub-pillar.service';
-import { ISubPillarTranslation } from 'app/entities/sub-pillar-translation/sub-pillar-translation.model';
-import { ISubPillarItem } from 'app/entities/sub-pillar-item/sub-pillar-item.model';
-import { SubPillarItemService } from 'app/entities/sub-pillar-item/service/sub-pillar-item.service';
-import { ISubPillarItemTranslation } from 'app/entities/sub-pillar-item-translation/sub-pillar-item-translation.model';
-import { PillarCreateModalComponent } from './pillar-create-modal.component';
-import { SubPillarCreateModalComponent } from './sub-pillar-create-modal.component';
-import { SubPillarItemCreateModalComponent } from './sub-pillar-item-create-modal.component';
-import { PillarEditModalComponent } from './pillar-edit-modal.component';
-import { SubPillarEditModalComponent } from './sub-pillar-edit-modal.component';
-import { SubPillarItemEditModalComponent } from './sub-pillar-item-edit-modal.component';
-import { LifeEvaluationCreateModalComponent } from './life-evaluation-create-modal.component';
-import { ILifeEvaluation } from 'app/entities/life-evaluation/life-evaluation.model';
-import { LifeEvaluationService } from 'app/entities/life-evaluation/service/life-evaluation.service';
-import { IEvaluationDecision } from 'app/entities/evaluation-decision/evaluation-decision.model';
+import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
+import { TripPlanService } from 'app/entities/trip-plan/service/trip-plan.service';
+import { IMyDocument } from 'app/my-documents/my-document.model';
+import { MyDocumentService } from 'app/my-documents/my-document.service';
+import { ISaaSSubscription } from 'app/entities/saas-subscription/saas-subscription.model';
+import { SaaSSubscriptionService } from 'app/entities/saas-subscription/service/saas-subscription.service';
 import { EvaluationDecisionService } from 'app/entities/evaluation-decision/service/evaluation-decision.service';
-import { EvaluationDecisionCreateModalComponent } from './evaluation-decision-create-modal.component';
-import { ConfirmationModalComponent } from './confirmation-modal.component';
-import { ContactModalComponent } from './contact-modal.component';
+import { EvaluationDecisionCreateModalComponent } from 'app/home/evaluation-decision-create-modal.component';
+import { AlertService } from 'app/core/util/alert.service';
+
+interface PreparationAction {
+  actionText: string;
+  actionStatus: boolean;
+}
+
+interface TripActions {
+  preparationActions?: PreparationAction[];
+  duringTripActions?: PreparationAction[];
+}
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule],
+  imports: [SharedModule, TimeUntilExpiryPipe, EvaluationDecisionCreateModalComponent],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
-  readonly childCelebrationFaces = [
-    '/content/images/jhipster_family_member_0.svg',
-    '/content/images/jhipster_family_member_1.svg',
-    '/content/images/jhipster_family_member_2.svg',
-  ];
+  isLoading = signal<boolean>(false);
+
+  // Coming Journey
+  nearestTrip = signal<ITripPlan | null>(null);
+  preparationActions = signal<PreparationAction[]>([]);
+  completedActions = signal<Set<number>>(new Set());
+  loadingTrip = signal<boolean>(false);
+
+  // Expiring Documents
+  expiringDocuments = signal<IMyDocument[]>([]);
+  loadingDocuments = signal<boolean>(false);
+
+  // Monthly Finances
+  monthlyExpenses = signal<ISaaSSubscription[]>([]);
+  monthlyTotal = signal<number>(0);
+  loadingExpenses = signal<boolean>(false);
+  currentMonth = computed(() => dayjs().format('MMMM YYYY'));
+
+  // Auth checks
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
     return authorities.includes(Authority.CHILD) && !authorities.includes(Authority.PARENT) && !authorities.includes(Authority.ADMIN);
   });
+
   isFamilyAdmin = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
     return authorities.includes(Authority.PARENT);
   });
 
-  private readonly WELCOME_DISMISSED_KEY = 'liferadar_welcome_dismissed';
-  showWelcomeDescription = signal<boolean>(
-    typeof localStorage !== 'undefined' ? localStorage.getItem('liferadar_welcome_dismissed') !== 'true' : false,
-  );
-
-  dismissWelcomeDescription(): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(this.WELCOME_DISMISSED_KEY, 'true');
-    }
-    this.showWelcomeDescription.set(false);
-  }
-  pillars = signal<IPillar[]>([]);
-  subPillarsMap = signal<Map<number, ISubPillar[]>>(new Map());
-  loadingSubPillars = signal<Set<number>>(new Set());
-  subPillarItemsMap = signal<Map<number, ISubPillarItem[]>>(new Map());
-  loadingSubPillarItems = signal<Set<number>>(new Set());
-  isLoading = signal<boolean>(false);
-  lifeEvaluations = signal<ILifeEvaluation[]>([]);
-  evaluationDecisionsMap = signal<Map<number, IEvaluationDecision[]>>(new Map());
-  isLoadingEvaluations = signal<boolean>(false);
-  readonly riyadhTimeZone = 'Asia/Riyadh';
-
   private readonly destroy$ = new Subject<void>();
 
   private readonly accountService = inject(AccountService);
-  private readonly pillarService = inject(PillarService);
-  private readonly subPillarService = inject(SubPillarService);
-  private readonly subPillarItemService = inject(SubPillarItemService);
-  private readonly lifeEvaluationService = inject(LifeEvaluationService);
+  private readonly tripPlanService = inject(TripPlanService);
+  private readonly myDocumentService = inject(MyDocumentService);
+  private readonly subscriptionService = inject(SaaSSubscriptionService);
   private readonly evaluationDecisionService = inject(EvaluationDecisionService);
-  private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
+  private readonly translateService = inject(TranslateService);
   private readonly modalService = inject(NgbModal);
+  private readonly alertService = inject(AlertService);
 
   ngOnInit(): void {
-    console.log('Home component initialized');
     this.accountService
       .getAuthenticationState()
       .pipe(takeUntil(this.destroy$))
       .subscribe(account => {
-        console.log('Account loaded:', account);
         this.account.set(account);
         if (account) {
-          this.loadDashboardDataForCurrentUser();
-        } else {
-          console.log('No account found - user not authenticated');
+          this.loadDashboardData();
         }
       });
-
-    // Listen for language changes and refresh translations
-    this.translateService.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      console.log('Language changed, refreshing all data with new translations');
-      // Clear cached data and reload everything with new language
-      this.subPillarsMap.set(new Map());
-      this.subPillarItemsMap.set(new Map());
-      this.evaluationDecisionsMap.set(new Map());
-      this.loadDashboardDataForCurrentUser();
-    });
-  }
-
-  private loadDashboardDataForCurrentUser(): void {
-    if (!this.account()) {
-      return;
-    }
-
-    if (this.isChildOnly()) {
-      this.pillars.set([]);
-      this.lifeEvaluations.set([]);
-      return;
-    }
-
-    console.log('Loading pillars for authenticated user');
-    this.loadPillars();
-    this.loadLifeEvaluations();
-  }
-
-  loadPillars(): void {
-    this.isLoading.set(true);
-    console.log('Loading pillars for current user...');
-    this.pillarService
-      .query({ size: 100, eagerload: true })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: HttpResponse<IPillar[]>) => {
-          const deduplicatedPillars = this.deduplicatePillars(res.body ?? []);
-          console.log('Pillars loaded:', deduplicatedPillars);
-          this.pillars.set(deduplicatedPillars);
-          this.isLoading.set(false);
-        },
-        error: error => {
-          console.error('Error loading pillars:', error);
-          this.isLoading.set(false);
-        },
-      });
-  }
-
-  togglePillarDetails(pillarId: number): void {
-    // Method kept for backward compatibility but no longer used
-  }
-
-  isPillarExpanded(pillarId: number): boolean {
-    // Method kept for backward compatibility but no longer used
-    return false;
-  }
-
-  getTranslation(pillar: IPillar): IPillarTranslation | null {
-    if (!pillar.translations || pillar.translations.length === 0) {
-      return null;
-    }
-
-    const currentLang = this.getNormalizedLanguageKey();
-
-    // Try to find translation for current language
-    let translation: IPillarTranslation | null = pillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
-
-    // Fallback to English if current language not found
-    translation ??= pillar.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
-
-    // Fallback to first available translation
-    translation ??= pillar.translations[0] ?? null;
-
-    return translation;
-  }
-
-  private deduplicatePillars(pillars: IPillar[]): IPillar[] {
-    const deduplicatedByKey = new Map<string, IPillar>();
-
-    for (const pillar of pillars) {
-      const key = this.getPillarDuplicateKey(pillar);
-      const existing = deduplicatedByKey.get(key);
-
-      if (!existing) {
-        deduplicatedByKey.set(key, pillar);
-        continue;
-      }
-
-      console.warn('Duplicate pillar detected in home page payload, collapsing duplicates for key:', key);
-      deduplicatedByKey.set(key, this.mergeDuplicatePillars(existing, pillar));
-    }
-
-    return Array.from(deduplicatedByKey.values()).sort((left, right) => (left.id ?? 0) - (right.id ?? 0));
-  }
-
-  private getPillarDuplicateKey(pillar: IPillar): string {
-    const normalizedCode = pillar.code?.trim().toLowerCase();
-    const ownerId = pillar.owner?.id;
-
-    if (ownerId !== undefined && normalizedCode) {
-      return `${ownerId}:${normalizedCode}`;
-    }
-
-    return `id:${pillar.id}`;
-  }
-
-  private mergeDuplicatePillars(first: IPillar, second: IPillar): IPillar {
-    const preferred = this.pickPreferredPillar(first, second);
-    const other = preferred === first ? second : first;
-
-    return {
-      ...preferred,
-      translations: this.mergePillarTranslations(preferred.translations ?? [], other.translations ?? []),
-    };
-  }
-
-  private pickPreferredPillar(first: IPillar, second: IPillar): IPillar {
-    const firstTranslationCount = first.translations?.length ?? 0;
-    const secondTranslationCount = second.translations?.length ?? 0;
-
-    if (firstTranslationCount !== secondTranslationCount) {
-      return firstTranslationCount > secondTranslationCount ? first : second;
-    }
-
-    return (first.id ?? Number.MAX_SAFE_INTEGER) <= (second.id ?? Number.MAX_SAFE_INTEGER) ? first : second;
-  }
-
-  private mergePillarTranslations(
-    primaryTranslations: IPillarTranslation[],
-    secondaryTranslations: IPillarTranslation[],
-  ): IPillarTranslation[] {
-    const translationsByLang = new Map<string, IPillarTranslation>();
-
-    for (const translation of [...primaryTranslations, ...secondaryTranslations]) {
-      const langKey = translation.lang?.toLowerCase() ?? `id:${translation.id ?? translationsByLang.size}`;
-      if (!translationsByLang.has(langKey)) {
-        translationsByLang.set(langKey, translation);
-      }
-    }
-
-    return Array.from(translationsByLang.values());
-  }
-
-  createNewPillar(): void {
-    const modalRef = this.modalService.open(PillarCreateModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      windowClass: 'compact-entity-modal',
-    });
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'saved') {
-        this.loadPillars();
-      }
-    });
-  }
-
-  loadSuggestedPillars(): void {
-    const i18nBase = 'liferadarApp.pillar.home.suggested';
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true, backdrop: 'static' });
-    modalRef.componentInstance.title = this.translateService.instant(`${i18nBase}.title`);
-    modalRef.componentInstance.message = this.translateService.instant(`${i18nBase}.message`);
-    modalRef.componentInstance.confirmButtonText = this.translateService.instant(`${i18nBase}.confirmButton`);
-    modalRef.componentInstance.confirmButtonClass = 'btn-info';
-
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result !== 'confirmed') {
-        return;
-      }
-
-      this.isLoading.set(true);
-      this.pillarService
-        .loadSuggested()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.loadPillars();
-          },
-          error: error => {
-            console.error('Error loading suggested pillars:', error);
-            this.isLoading.set(false);
-          },
-        });
-    });
-  }
-
-  createSubPillar(pillarId: number): void {
-    const modalRef = this.modalService.open(SubPillarCreateModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      windowClass: 'compact-entity-modal',
-    });
-    modalRef.componentInstance.pillarId = pillarId;
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'saved') {
-        this.viewSubPillars(pillarId);
-      }
-    });
-  }
-
-  createSubPillarItem(subPillarId: number): void {
-    const modalRef = this.modalService.open(SubPillarItemCreateModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      windowClass: 'compact-entity-modal',
-    });
-    modalRef.componentInstance.subPillarId = subPillarId;
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'saved') {
-        this.viewSubPillarItems(subPillarId);
-      }
-    });
-  }
-
-  viewSubPillarItems(subPillarId: number): void {
-    const currentMap = new Map(this.subPillarItemsMap());
-
-    if (currentMap.has(subPillarId)) {
-      currentMap.delete(subPillarId);
-      this.subPillarItemsMap.set(currentMap);
-      return;
-    }
-
-    const loadingItemsSet = new Set(this.loadingSubPillarItems());
-    loadingItemsSet.add(subPillarId);
-    this.loadingSubPillarItems.set(loadingItemsSet);
-
-    this.subPillarItemService
-      .query({ 'subPillarId.equals': subPillarId, eagerload: true, size: 100 })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: HttpResponse<ISubPillarItem[]>) => {
-          const items = res.body ?? [];
-          currentMap.set(subPillarId, items);
-          this.subPillarItemsMap.set(currentMap);
-
-          const updatedLoadingSet = new Set(this.loadingSubPillarItems());
-          updatedLoadingSet.delete(subPillarId);
-          this.loadingSubPillarItems.set(updatedLoadingSet);
-        },
-        error: () => {
-          const updatedLoadingSet = new Set(this.loadingSubPillarItems());
-          updatedLoadingSet.delete(subPillarId);
-          this.loadingSubPillarItems.set(updatedLoadingSet);
-        },
-      });
-  }
-
-  getSubPillarItems(subPillarId: number): ISubPillarItem[] {
-    return this.subPillarItemsMap().get(subPillarId) ?? [];
-  }
-
-  isLoadingSubPillarItems(subPillarId: number): boolean {
-    return this.loadingSubPillarItems().has(subPillarId);
-  }
-
-  hasSubPillarItems(subPillarId: number): boolean {
-    return this.subPillarItemsMap().has(subPillarId);
-  }
-
-  editPillar(pillarId: number): void {
-    // Fetch the pillar with translations eagerly loaded
-    this.pillarService
-      .find(pillarId, { eagerload: true })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: HttpResponse<IPillar>) => {
-          const pillarWithTranslations = res.body;
-          if (pillarWithTranslations) {
-            const modalRef = this.modalService.open(PillarEditModalComponent, {
-              size: 'lg',
-              backdrop: 'static',
-              windowClass: 'compact-entity-modal',
-            });
-            modalRef.componentInstance.pillar = pillarWithTranslations;
-            modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-              if (result === 'saved') {
-                this.loadPillars();
-              }
-            });
-          }
-        },
-        error() {
-          console.error('Failed to load pillar with translations');
-        },
-      });
-  }
-
-  editSubPillar(subPillar: ISubPillar): void {
-    if (!subPillar.id) {
-      return;
-    }
-
-    // Fetch the sub-pillar with translations eagerly loaded
-    this.subPillarService
-      .find(subPillar.id, { eagerload: true })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: HttpResponse<ISubPillar>) => {
-          const subPillarWithTranslations = res.body;
-          if (subPillarWithTranslations) {
-            const modalRef = this.modalService.open(SubPillarEditModalComponent, {
-              size: 'lg',
-              backdrop: 'static',
-              windowClass: 'compact-entity-modal',
-            });
-            modalRef.componentInstance.subPillar = subPillarWithTranslations;
-            modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-              if (result === 'saved' && subPillarWithTranslations.pillar?.id) {
-                this.viewSubPillars(subPillarWithTranslations.pillar.id);
-              }
-            });
-          }
-        },
-        error() {
-          console.error('Failed to load sub-pillar with translations');
-        },
-      });
-  }
-
-  editSubPillarItem(item: ISubPillarItem): void {
-    if (!item.id) {
-      return;
-    }
-
-    // Fetch the item with translations eagerly loaded
-    this.subPillarItemService
-      .find(item.id, { eagerload: true })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: HttpResponse<ISubPillarItem>) => {
-          const itemWithTranslations = res.body;
-          if (itemWithTranslations) {
-            const modalRef = this.modalService.open(SubPillarItemEditModalComponent, {
-              size: 'lg',
-              backdrop: 'static',
-              windowClass: 'compact-entity-modal',
-            });
-            modalRef.componentInstance.subPillarItem = itemWithTranslations;
-            modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-              if (result === 'saved' && itemWithTranslations.subPillar?.id) {
-                this.viewSubPillarItems(itemWithTranslations.subPillar.id);
-              }
-            });
-          }
-        },
-        error() {
-          console.error('Failed to load item with translations');
-        },
-      });
-  }
-
-  hasRecentEvaluationForItem(itemId?: number): boolean {
-    if (!itemId) {
-      return false;
-    }
-
-    const cutoff = dayjs().subtract(24, 'hour');
-    return this.lifeEvaluations().some(evaluation => {
-      if (evaluation.subPillarItem?.id !== itemId || !evaluation.evaluationDate) {
-        return false;
-      }
-
-      // evaluationDate is date-only on backend. Use startOf('day') and keep the
-      // 24-hour boundary inclusive so an evaluation exactly 24 hours old still blocks.
-      return !evaluation.evaluationDate.startOf('day').isBefore(cutoff);
-    });
-  }
-
-  isEvaluationBlocked(item: ISubPillarItem): boolean {
-    return Boolean(item.doNotReevaluate) || this.hasRecentEvaluationForItem(item.id);
-  }
-
-  getEvaluationBlockReason(item: ISubPillarItem): string {
-    if (item.doNotReevaluate) {
-      return 'liferadarApp.pillar.home.evaluationLockedPermanently';
-    }
-
-    return 'liferadarApp.pillar.home.evaluationLocked24h';
-  }
-
-  createLifeEvaluation(item: ISubPillarItem): void {
-    if (this.isEvaluationBlocked(item)) {
-      return;
-    }
-
-    const modalRef = this.modalService.open(LifeEvaluationCreateModalComponent, {
-      size: 'md',
-      backdrop: 'static',
-      windowClass: 'compact-evaluation-modal',
-    });
-    modalRef.componentInstance.subPillarItem = item;
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'saved') {
-        this.loadLifeEvaluations();
-      }
-    });
-  }
-
-  deleteSubPillarItem(item: ISubPillarItem): void {
-    const itemName = this.getSubPillarItemTranslation(item) || item.code || 'this item';
-
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true });
-    modalRef.componentInstance.title = 'Delete Item';
-    modalRef.componentInstance.message = `Are you sure you want to delete "${itemName}"? This will also delete all associated evaluations and decisions.`;
-    modalRef.componentInstance.confirmButtonText = 'Delete';
-    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
-
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'confirmed') {
-        this.subPillarItemService
-          .delete(item.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              console.log('Item deleted successfully');
-              // Reload items for the parent sub-pillar
-              if (item.subPillar?.id) {
-                this.viewSubPillarItems(item.subPillar.id);
-              }
-            },
-            error(error) {
-              console.error('Error deleting item:', error);
-            },
-          });
-      }
-    });
-  }
-
-  deletePillar(pillar: IPillar): void {
-    const translation = this.getTranslation(pillar);
-    const pillarName = translation?.name || pillar.code || 'this pillar';
-
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true });
-    modalRef.componentInstance.title = 'Delete Life Pillar';
-    modalRef.componentInstance.message = `Are you sure you want to delete "${pillarName}"? This will also delete all associated sub-pillars, items, evaluations, and decisions.`;
-    modalRef.componentInstance.confirmButtonText = 'Delete';
-    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
-
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'confirmed') {
-        this.pillarService
-          .delete(pillar.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              console.log('Pillar deleted successfully');
-              this.loadPillars();
-            },
-            error(error) {
-              console.error('Error deleting pillar:', error);
-            },
-          });
-      }
-    });
-  }
-
-  deleteSubPillar(subPillar: ISubPillar): void {
-    const translation = this.getSubPillarTranslation(subPillar);
-    const subPillarName = translation?.name || subPillar.code || 'this sub-pillar';
-
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true });
-    modalRef.componentInstance.title = 'Delete Sub-Pillar';
-    modalRef.componentInstance.message = `Are you sure you want to delete "${subPillarName}"? This will also delete all associated items, evaluations, and decisions.`;
-    modalRef.componentInstance.confirmButtonText = 'Delete';
-    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
-
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'confirmed') {
-        this.subPillarService
-          .delete(subPillar.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              console.log('SubPillar deleted successfully');
-              // Reload sub-pillars for the parent pillar
-              if (subPillar.pillar?.id) {
-                this.viewSubPillars(subPillar.pillar.id);
-              }
-            },
-            error(error) {
-              console.error('Error deleting sub-pillar:', error);
-            },
-          });
-      }
-    });
-  }
-
-  viewSubPillars(pillarId: number): void {
-    // Toggle sub-pillars view
-    const currentMap = new Map(this.subPillarsMap());
-
-    if (currentMap.has(pillarId)) {
-      // Already loaded, just remove to hide
-      currentMap.delete(pillarId);
-      this.subPillarsMap.set(currentMap);
-    } else {
-      // Load sub-pillars
-      const loadingPillarsSet = new Set(this.loadingSubPillars());
-      loadingPillarsSet.add(pillarId);
-      this.loadingSubPillars.set(loadingPillarsSet);
-
-      this.subPillarService
-        .query({ 'pillarId.equals': pillarId, size: 100 })
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (res: HttpResponse<ISubPillar[]>) => {
-            const subPillars = res.body ?? [];
-            currentMap.set(pillarId, subPillars);
-            this.subPillarsMap.set(currentMap);
-
-            const updatedLoadingSet = new Set(this.loadingSubPillars());
-            updatedLoadingSet.delete(pillarId);
-            this.loadingSubPillars.set(updatedLoadingSet);
-          },
-          error: () => {
-            const updatedLoadingSet = new Set(this.loadingSubPillars());
-            updatedLoadingSet.delete(pillarId);
-            this.loadingSubPillars.set(updatedLoadingSet);
-          },
-        });
-    }
-  }
-
-  getSubPillars(pillarId: number): ISubPillar[] {
-    return this.subPillarsMap().get(pillarId) ?? [];
-  }
-
-  isLoadingSubPillars(pillarId: number): boolean {
-    return this.loadingSubPillars().has(pillarId);
-  }
-
-  hasSubPillars(pillarId: number): boolean {
-    return this.subPillarsMap().has(pillarId);
-  }
-
-  getSubPillarTranslation(subPillar: ISubPillar): ISubPillarTranslation | null {
-    if (!subPillar.translations || subPillar.translations.length === 0) {
-      return null;
-    }
-
-    const currentLang = this.getNormalizedLanguageKey();
-
-    // Try to find translation for current language
-    let translation: ISubPillarTranslation | null = subPillar.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
-
-    // Fallback to English if current language not found
-    translation ??= subPillar.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
-
-    // Fallback to first available translation
-    translation ??= subPillar.translations[0] ?? null;
-
-    return translation;
-  }
-
-  getSubPillarItemTranslation(item: ISubPillarItem): string | null {
-    return this.getSubPillarItemResolvedTranslation(item)?.name ?? null;
-  }
-
-  getSubPillarItemDescription(item: ISubPillarItem): string | null {
-    return this.getSubPillarItemResolvedTranslation(item)?.description ?? null;
-  }
-
-  private getSubPillarItemResolvedTranslation(item: ISubPillarItem): ISubPillarItemTranslation | null {
-    if (!item.translations || item.translations.length === 0) {
-      return null;
-    }
-
-    const currentLang = this.getNormalizedLanguageKey();
-
-    // Try to find translation for current language
-    let translation: ISubPillarItemTranslation | null = item.translations.find(t => t.lang?.toLowerCase() === currentLang) ?? null;
-
-    // Fallback to English if current language not found
-    translation ??= item.translations.find(t => t.lang?.toLowerCase() === 'en') ?? null;
-
-    // Fallback to first available translation
-    translation ??= item.translations[0] ?? null;
-
-    return translation;
-  }
-
-  private getNormalizedLanguageKey(): string {
-    const lang = (this.translateService.currentLang ?? 'en').toLowerCase();
-    // Map locale variants like ar-ly / fr-ca to their base translation code.
-    return lang.split('-')[0].split('_')[0] || 'en';
-  }
-
-  isArabicLang(): boolean {
-    return this.getNormalizedLanguageKey() === 'ar';
-  }
-
-  getEvaluationDailyAverageMatrix(): { dateKey: string; label: string; average: number | null; count: number }[] {
-    const scoreBuckets = new Map<string, { sum: number; count: number }>();
-
-    for (const evaluation of this.lifeEvaluations()) {
-      const score = evaluation.score;
-      const evaluationDate = evaluation.evaluationDate?.toDate();
-
-      if (score === null || score === undefined || !evaluationDate) {
-        continue;
-      }
-
-      const dayKey = this.toRiyadhDateKey(evaluationDate);
-      const bucket = scoreBuckets.get(dayKey) ?? { sum: 0, count: 0 };
-      bucket.sum += score;
-      bucket.count += 1;
-      scoreBuckets.set(dayKey, bucket);
-    }
-
-    return this.getLastThirtyRiyadhDateKeys().map(dayKey => {
-      const bucket = scoreBuckets.get(dayKey);
-      const average = bucket ? Number((bucket.sum / bucket.count).toFixed(1)) : null;
-
-      return {
-        dateKey: dayKey,
-        label: this.formatMatrixDayLabel(dayKey),
-        average,
-        count: bucket?.count ?? 0,
-      };
-    });
-  }
-
-  getEvaluationMatrixCellClass(average: number | null): string {
-    if (average === null) {
-      return 'score-matrix-cell--empty';
-    }
-    if (average < 2) {
-      return 'score-matrix-cell--low';
-    }
-    if (average < 3.5) {
-      return 'score-matrix-cell--mid';
-    }
-    if (average < 4.5) {
-      return 'score-matrix-cell--good';
-    }
-    return 'score-matrix-cell--excellent';
-  }
-
-  private getLastThirtyRiyadhDateKeys(): string[] {
-    const now = new Date();
-    const dayInMilliseconds = 24 * 60 * 60 * 1000;
-    const keys: string[] = [];
-
-    for (let daysAgo = 29; daysAgo >= 0; daysAgo -= 1) {
-      keys.push(this.toRiyadhDateKey(new Date(now.getTime() - daysAgo * dayInMilliseconds)));
-    }
-
-    return keys;
-  }
-
-  private toRiyadhDateKey(date: Date): string {
-    const parts = new Intl.DateTimeFormat('en-GB', {
-      timeZone: this.riyadhTimeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).formatToParts(date);
-
-    const year = parts.find(part => part.type === 'year')?.value ?? '0000';
-    const month = parts.find(part => part.type === 'month')?.value ?? '00';
-    const day = parts.find(part => part.type === 'day')?.value ?? '00';
-
-    return `${year}-${month}-${day}`;
-  }
-
-  private formatMatrixDayLabel(dateKey: string): string {
-    const [year, month, day] = dateKey.split('-').map(value => Number(value));
-    if (!year || !month || !day) {
-      return dateKey;
-    }
-
-    const language = this.translateService.currentLang || 'en';
-    const middayUtc = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-    return new Intl.DateTimeFormat(language, {
-      timeZone: this.riyadhTimeZone,
-      day: '2-digit',
-      month: '2-digit',
-    }).format(middayUtc);
-  }
-
-  loadLifeEvaluations(): void {
-    this.isLoadingEvaluations.set(true);
-    console.log('Loading life evaluations for current user...');
-    const last48HoursStart = this.getLast48HoursStartDate();
-
-    this.lifeEvaluationService
-      .query({
-        size: 100,
-        sort: ['evaluationDate,desc', 'id,desc'],
-        'evaluationDate.greaterThanOrEqual': last48HoursStart,
-      })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: HttpResponse<ILifeEvaluation[]>) => {
-          const evaluations = res.body ?? [];
-          const itemIds = [
-            ...new Set(
-              evaluations.map(evaluation => evaluation.subPillarItem?.id).filter((id): id is number => id !== undefined && id !== null),
-            ),
-          ];
-
-          if (itemIds.length === 0) {
-            this.lifeEvaluations.set(evaluations);
-            this.loadEvaluationDecisionsForEvaluations(evaluations);
-            this.isLoadingEvaluations.set(false);
-            return;
-          }
-
-          this.subPillarItemService
-            .query({ 'id.in': itemIds.join(','), eagerload: true, size: itemIds.length })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-              next: (itemsRes: HttpResponse<ISubPillarItem[]>) => {
-                const detailedItems = itemsRes.body ?? [];
-                const itemsById = new Map(detailedItems.map(item => [item.id, item]));
-
-                const enrichedEvaluations = evaluations.map(evaluation => {
-                  const itemId = evaluation.subPillarItem?.id;
-                  if (!itemId) {
-                    return evaluation;
-                  }
-
-                  return {
-                    ...evaluation,
-                    subPillarItem: itemsById.get(itemId) ?? evaluation.subPillarItem,
-                  };
-                });
-
-                this.lifeEvaluations.set(enrichedEvaluations);
-                this.loadEvaluationDecisionsForEvaluations(enrichedEvaluations);
-                this.isLoadingEvaluations.set(false);
-              },
-              error: error => {
-                console.error('Error loading evaluation item translations:', error);
-                this.lifeEvaluations.set(evaluations);
-                this.loadEvaluationDecisionsForEvaluations(evaluations);
-                this.isLoadingEvaluations.set(false);
-              },
-            });
-        },
-        error: error => {
-          console.error('Error loading life evaluations:', error);
-          this.isLoadingEvaluations.set(false);
-        },
-      });
-  }
-
-  private getLast48HoursStartDate(): string {
-    const now = Date.now();
-    const fortyEightHoursInMilliseconds = 48 * 60 * 60 * 1000;
-    const startDate = new Date(now - fortyEightHoursInMilliseconds);
-    const year = startDate.getFullYear();
-    const month = `${startDate.getMonth() + 1}`.padStart(2, '0');
-    const day = `${startDate.getDate()}`.padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  private loadEvaluationDecisionsForEvaluations(evaluations: ILifeEvaluation[]): void {
-    const evaluationIds = [
-      ...new Set(evaluations.map(evaluation => evaluation.id).filter((id): id is number => id !== undefined && id !== null)),
-    ];
-
-    if (evaluationIds.length === 0) {
-      this.evaluationDecisionsMap.set(new Map());
-      return;
-    }
-
-    this.evaluationDecisionService
-      .query({ 'lifeEvaluationId.in': evaluationIds.join(','), size: 500, eagerload: true })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: HttpResponse<IEvaluationDecision[]>) => {
-          const decisions = res.body ?? [];
-          const grouped = new Map<number, IEvaluationDecision[]>();
-
-          decisions.forEach(decision => {
-            const evaluationId = decision.lifeEvaluation?.id;
-            if (!evaluationId) {
-              return;
-            }
-
-            if (!grouped.has(evaluationId)) {
-              grouped.set(evaluationId, []);
-            }
-
-            grouped.get(evaluationId)?.push(decision);
-          });
-
-          grouped.forEach((list, evaluationId) => {
-            list.sort((a, b) => {
-              const aTime = a.date?.valueOf() ?? 0;
-              const bTime = b.date?.valueOf() ?? 0;
-              return bTime - aTime;
-            });
-            grouped.set(evaluationId, list);
-          });
-
-          this.evaluationDecisionsMap.set(grouped);
-        },
-        error: error => {
-          console.error('Error loading evaluation decisions:', error);
-          this.evaluationDecisionsMap.set(new Map());
-        },
-      });
-  }
-
-  getEvaluationDecisions(evaluationId?: number): IEvaluationDecision[] {
-    if (!evaluationId) {
-      return [];
-    }
-
-    return this.evaluationDecisionsMap().get(evaluationId) ?? [];
-  }
-
-  getEvaluationItemName(evaluation: ILifeEvaluation): string {
-    const item = evaluation.subPillarItem;
-    if (!item) {
-      return 'N/A';
-    }
-
-    return this.getSubPillarItemTranslation(item) ?? item.code ?? 'N/A';
-  }
-
-  getGroupedLifeEvaluations(): { itemId: string; itemName: string; evaluations: ILifeEvaluation[] }[] {
-    const grouped = new Map<string, { itemId: string; itemName: string; evaluations: ILifeEvaluation[] }>();
-
-    this.lifeEvaluations().forEach(evaluation => {
-      const key = evaluation.subPillarItem?.id ? `${evaluation.subPillarItem.id}` : `unknown-${evaluation.id}`;
-      const itemName = this.getEvaluationItemName(evaluation);
-
-      if (!grouped.has(key)) {
-        grouped.set(key, { itemId: key, itemName, evaluations: [] });
-      }
-
-      grouped.get(key)?.evaluations.push(evaluation);
-    });
-
-    const groups = Array.from(grouped.values());
-
-    groups.forEach(group => {
-      group.evaluations.sort((a, b) => this.compareEvaluationsByDateDesc(a, b));
-    });
-
-    return groups.sort((a, b) => {
-      const latestEvaluationComparison = this.getLatestEvaluationTime(b.evaluations) - this.getLatestEvaluationTime(a.evaluations);
-      if (latestEvaluationComparison !== 0) {
-        return latestEvaluationComparison;
-      }
-
-      return a.itemName.localeCompare(b.itemName);
-    });
-  }
-
-  private compareEvaluationsByDateDesc(a: ILifeEvaluation, b: ILifeEvaluation): number {
-    const aTime = a.evaluationDate?.valueOf() ?? 0;
-    const bTime = b.evaluationDate?.valueOf() ?? 0;
-    if (aTime !== bTime) {
-      return bTime - aTime;
-    }
-
-    return (b.id ?? 0) - (a.id ?? 0);
-  }
-
-  private getLatestEvaluationTime(evaluations: ILifeEvaluation[]): number {
-    return evaluations.reduce((latestTime, evaluation) => Math.max(latestTime, evaluation.evaluationDate?.valueOf() ?? 0), 0);
-  }
-
-  deleteLifeEvaluation(evaluation: ILifeEvaluation): void {
-    if (!evaluation.id) {
-      return;
-    }
-
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true });
-    modalRef.componentInstance.title = 'Delete Evaluation';
-    modalRef.componentInstance.message = `Are you sure you want to delete this evaluation for "${this.getEvaluationItemName(evaluation)}"?`;
-    modalRef.componentInstance.confirmButtonText = 'Delete';
-    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
-
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'confirmed') {
-        this.lifeEvaluationService
-          .delete(evaluation.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => this.loadLifeEvaluations(),
-            error: error => console.error('Error deleting life evaluation:', error),
-          });
-      }
-    });
-  }
-
-  createEvaluationDecision(evaluation: ILifeEvaluation): void {
-    const modalRef = this.modalService.open(EvaluationDecisionCreateModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      windowClass: 'compact-entity-modal',
-    });
-    modalRef.componentInstance.lifeEvaluation = evaluation;
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'saved') {
-        this.loadLifeEvaluations();
-      }
-    });
-  }
-
-  deleteEvaluationDecision(decision: IEvaluationDecision): void {
-    if (!decision.id) {
-      return;
-    }
-
-    const modalRef = this.modalService.open(ConfirmationModalComponent, { centered: true });
-    modalRef.componentInstance.title = 'Delete Decision';
-    modalRef.componentInstance.message = `Are you sure you want to delete this decision?`;
-    modalRef.componentInstance.confirmButtonText = 'Delete';
-    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
-
-    modalRef.closed.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result === 'confirmed') {
-        this.evaluationDecisionService
-          .delete(decision.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => this.loadLifeEvaluations(),
-            error: error => console.error('Error deleting evaluation decision:', error),
-          });
-      }
-    });
-  }
-
-  login(): void {
-    this.router.navigate(['/login']);
-  }
-
-  openContactModal(): void {
-    this.modalService.open(ContactModalComponent, {
-      size: 'md',
-      centered: true,
-      backdrop: 'static',
-    });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private loadDashboardData(): void {
+    this.loadNearestTrip();
+    this.loadExpiringDocuments();
+    this.loadMonthlyExpenses();
+  }
+
+  private loadNearestTrip(): void {
+    this.loadingTrip.set(true);
+    this.tripPlanService.query().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        const trips = response.body ?? [];
+        const now = dayjs();
+
+        // Find the nearest trip that is active or upcoming
+        const sortedTrips = trips
+          .filter(trip => trip.startDate)
+          .sort((a, b) => {
+            const dateA = dayjs(a.startDate);
+            const dateB = dayjs(b.startDate);
+            return Math.abs(dateA.diff(now)) - Math.abs(dateB.diff(now));
+          });
+
+        if (sortedTrips.length > 0) {
+          const trip = sortedTrips[0];
+          this.nearestTrip.set(trip);
+          this.parsePreparationActions(trip);
+        }
+        this.loadingTrip.set(false);
+      },
+      error: () => {
+        this.loadingTrip.set(false);
+      },
+    });
+  }
+
+  private parsePreparationActions(trip: ITripPlan): void {
+    if (!trip.actionsJson) {
+      this.preparationActions.set([]);
+      return;
+    }
+
+    try {
+      const tripActions: TripActions = JSON.parse(trip.actionsJson);
+      const actions = tripActions.preparationActions ?? [];
+      this.preparationActions.set(actions);
+      
+      // Initialize completed actions based on their status
+      const completedSet = new Set<number>();
+      actions.forEach((action, index) => {
+        if (action.actionStatus) {
+          completedSet.add(index);
+        }
+      });
+      this.completedActions.set(completedSet);
+    } catch (e) {
+      console.error('Failed to parse trip actions JSON:', e);
+      this.preparationActions.set([]);
+    }
+  }
+
+  private loadExpiringDocuments(): void {
+    this.loadingDocuments.set(true);
+    this.myDocumentService.query().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        const documents = response.body ?? [];
+        const now = dayjs();
+        const sixMonthsFromNow = now.add(6, 'months');
+
+        const expiring = documents.filter(doc => {
+          const renewalDate = dayjs(doc.renewalDate);
+          return renewalDate.isAfter(now) && renewalDate.isBefore(sixMonthsFromNow);
+        });
+
+        this.expiringDocuments.set(expiring);
+        this.loadingDocuments.set(false);
+      },
+      error: () => {
+        this.loadingDocuments.set(false);
+      },
+    });
+  }
+
+  private loadMonthlyExpenses(): void {
+    this.loadingExpenses.set(true);
+    this.subscriptionService.queryMy().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        const expenses = response.body ?? [];
+        const now = dayjs();
+
+        // Get all active subscriptions with upcoming due dates
+        const upcomingExpenses = expenses
+          .filter(expense => expense.dueDate && dayjs(expense.dueDate).isAfter(now))
+          .sort((a, b) => {
+            const dateA = dayjs(a.dueDate);
+            const dateB = dayjs(b.dueDate);
+            return dateA.diff(dateB);
+          });
+
+        this.monthlyExpenses.set(upcomingExpenses);
+        this.loadingExpenses.set(false);
+      },
+      error: () => {
+        this.loadingExpenses.set(false);
+      },
+    });
+  }
+
+  getDaysUntilDue(dueDate?: dayjs.Dayjs | null): number | null {
+    if (!dueDate) return null;
+    const now = dayjs();
+    const due = dayjs(dueDate);
+    const days = due.diff(now, 'day');
+    return days >= 0 ? days : null;
+  }
+
+  viewTripDetails(): void {
+    if (this.nearestTrip()?.id) {
+      this.router.navigate(['/trips']);
+    }
+  }
+
+  viewAllDocuments(): void {
+    this.router.navigate(['/my-documents']);
+  }
+
+  viewAllExpenses(): void {
+    this.router.navigate(['/expenses']);
+  }
+
+  viewFamily(): void {
+    this.router.navigate(['/family']);
+  }
+
+  goToLifeRadar(): void {
+    this.router.navigate(['/life-radar']);
+  }
+
+  toggleStepCompletion(index: number): void {
+    const completed = this.completedActions();
+    if (completed.has(index)) {
+      completed.delete(index);
+    } else {
+      completed.add(index);
+    }
+    this.completedActions.set(new Set(completed));
+  }
+
+  isStepCompleted(index: number): boolean {
+    return this.completedActions().has(index);
+  }
+
+  createDecisionFromAction(action: PreparationAction, index: number): void {
+    const decisionText = action.actionText;
+    
+    const modalRef = this.modalService.open(EvaluationDecisionCreateModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
+    
+    modalRef.componentInstance.prefillDecision = decisionText;
+    
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          // Mark action as completed after creating decision
+          this.toggleStepCompletion(index);
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Decision created successfully',
+            translationKey: 'home.decisionCreatedSuccess',
+          });
+        }
+      },
+      () => {
+        // Modal dismissed
+      }
+    );
   }
 }

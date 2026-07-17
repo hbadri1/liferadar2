@@ -89,6 +89,30 @@
         "successDesc": "Thank you for reaching out. We will get back to you soon.",
         "error": "Something went wrong. Please try again later."
       }
-    }
+    },
+    "comingJourney": "Coming Journey",
+    "expiringDocuments": "Documents Expiring Soon (Next 6 Months)",
+    "monthlyFinances": "Monthly Finances",
+    "familyHighlights": "Family Highlights",
+    "steps": "Steps/Activities",
+    "viewDetails": "View Details",
+    "noUpcomingTrips": "No upcoming journeys",
+    "noExpiringDocuments": "No documents expiring in the next 6 months",
+    "noExpenses": "No expenses this month",
+    "totalMonthly": "Total for this month",
+    "viewAllDocuments": "View All Documents",
+    "viewAllExpenses": "View All Expenses",
+    "familyDescription": "Track your family's milestones and celebrate their achievements",
+    "viewFamilyDetails": "View Family Details",
+    "noFamilyAccess": "Family features are available for family admins",
+    "goToLifeRadar": "Go to Life Radar",
+    "stepsBefore": "Pre-Trip Todos",
+    "noStepsBeforeTrip": "No steps scheduled before the trip",
+    "createDecision": "Create Decision",
+    "upcomingPayments": "Coming Due",
+    "dueToday": "Due today",
+    "dueTomorrow": "Due tomorrow",
+    "dueInDays": "Due in {{ getDaysUntilDue(expense.dueDate) }} days",
+    "autoRenew": "Auto-renewable"
   }
 }

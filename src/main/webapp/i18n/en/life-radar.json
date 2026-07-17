@@ -1,0 +1,23 @@
+{
+  "lifeRadar": {
+    "title": "Life Radar",
+    "subtitle": "Your Life Pillars",
+    "child": {
+      "title": "You are doing great!",
+      "subtitle": "Here are some encouraging messages for your day.",
+      "imageAlt": "A happy celebration with smiling faces cheering you on.",
+      "imageCaption": "Your cheer squad is celebrating you!",
+      "message1": "Every small step you take today matters.",
+      "message2": "Your effort is stronger than any challenge.",
+      "message3": "Keep going, you are building something amazing.",
+      "quote1": "\"Believe you can, and you are halfway there.\"",
+      "quote2": "\"Success is the sum of small efforts, repeated day in and day out.\"",
+      "quote3": "\"You are braver than you believe, and stronger than you seem.\""
+    },
+    "welcome": {
+      "title": "Getting started with LifeRadar",
+      "intro": "LifeRadar helps you organise, evaluate, and improve every dimension of your life — all in one place.",
+      "dismiss": "Got it, dismiss"
+    }
+  }
+}

@@ -47,6 +47,11 @@
             <span jhiTranslate="global.menu.family">My Family Space</span>
           </a>
         </li>
+        <li class="nav-item" *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">
+          <a class="nav-link" routerLink="/life-radar" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+            <span jhiTranslate="global.menu.lifeRadar">Life Radar</span>
+          </a>
+        </li>
       }
       @if (account() === null) {
         <li class="nav-item">
@@ -240,6 +245,12 @@
             <a class="mobile-nav-link" routerLink="/family" (click)="collapseNavbar()">
               <fa-icon icon="users"></fa-icon>
               <span jhiTranslate="global.menu.family">My Family Space</span>
+            </a>
+          </li>
+          <li *jhiHasAnyAuthority="['ROLE_PARENT', 'ROLE_USER', 'ROLE_ADMIN']">
+            <a class="mobile-nav-link" routerLink="/life-radar" (click)="collapseNavbar()">
+              <fa-icon icon="compass"></fa-icon>
+              <span jhiTranslate="global.menu.lifeRadar">Life Radar</span>
             </a>
           </li>
           <li>
