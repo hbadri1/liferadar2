@@ -4,23 +4,31 @@ import { Authority } from 'app/config/authority.constants';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { PublicRouteAccessService } from 'app/core/auth/public-route-access.service';
+import { AnonymousHomeRouteAccessService } from 'app/core/auth/anonymous-home-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
 import { errorRoute } from './layouts/error/error.route';
 
 const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./life-radar/life-radar.component'),
+    title: 'lifeRadar.title',
+    canMatch: [AnonymousHomeRouteAccessService],
+  },
+  {
+    path: 'dashboard',
     loadComponent: () => import('./home/home.component'),
     title: 'home.title',
+    data: {
+      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT, Authority.CHILD],
+    },
+    canActivate: [UserRouteAccessService],
   },
   {
     path: 'life-radar',
     loadComponent: () => import('./life-radar/life-radar.component'),
     title: 'lifeRadar.title',
-    data: {
-      authorities: [Authority.USER, Authority.ADMIN, Authority.PARENT, Authority.CHILD],
-    },
-    canActivate: [UserRouteAccessService],
   },
   {
     path: '',

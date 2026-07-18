@@ -11,7 +11,7 @@ export const PublicRouteAccessService: CanActivateFn = (_next: ActivatedRouteSna
   return accountService.identity().pipe(
     map(account => {
       if (account) {
-        router.navigate(['']);
+        router.navigate(['/dashboard']);
         return false;
       }
 

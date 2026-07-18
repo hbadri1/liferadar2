@@ -30,6 +30,7 @@ export default class NavbarComponent implements OnInit {
   account = inject(AccountService).trackCurrentAccount();
   unreadNotificationCount = inject(NotificationService).unreadCount;
   currentLanguage = signal('en');
+  homeLink = computed(() => (this.account() === null ? '/' : '/dashboard'));
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
     return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_PARENT') && !authorities.includes('ROLE_ADMIN');

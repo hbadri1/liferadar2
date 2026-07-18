@@ -1,7 +1,7 @@
 ﻿<nav data-cy="navbar" class="navbar navbar-expanded">
   <div class="navbar-container">
     <!-- Logo -->
-    <a class="navbar-logo" routerLink="/" (click)="collapseNavbar()">
+    <a class="navbar-logo" [routerLink]="homeLink()" (click)="collapseNavbar()">
       <img class="logo-img" src="content/images/liferadar-logo-mark.svg" alt="Liferadar logo" />
       <span class="navbar-title">Liferadar</span>
       @if (version) {
@@ -12,7 +12,7 @@
     <!-- Center Navigation Links (Desktop) -->
     <ul class="navbar-menu">
       <li class="nav-item">
-        <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
+        <a class="nav-link" [routerLink]="homeLink()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
           <span jhiTranslate="global.menu.home">Home</span>
         </a>
       </li>
@@ -190,7 +190,7 @@
       <ul class="mobile-nav-items">
         <li class="mobile-section-label">Main</li>
         <li>
-          <a class="mobile-nav-link" routerLink="/" (click)="collapseNavbar()">
+          <a class="mobile-nav-link" [routerLink]="homeLink()" (click)="collapseNavbar()">
             <fa-icon icon="home"></fa-icon>
             <span jhiTranslate="global.menu.home">Home</span>
           </a>
