@@ -66,9 +66,10 @@
 
 // ─── Small button variant ─────────────────────────────────────────────────────
 .btn-xs {
-  padding: 0.2rem 0.4rem;
-  font-size: 0.7rem;
-  line-height: 1;
+  padding: 0.28rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.1;
+  min-height: 2rem;
 }
 
 .spinner-border {
@@ -263,6 +264,28 @@
 }
 
 @media (max-width: 768px) {
+  .btn-xs {
+    min-height: 2.4rem;
+    min-width: 2.4rem;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.82rem;
+  }
+
+  .tree-row {
+    align-items: flex-start !important;
+    gap: 0.35rem !important;
+  }
+
+  .tree-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem !important;
+  }
+
+  .sticky-top {
+    position: static !important;
+  }
+
   .tree-text-pair .tree-desc {
     display: none;
   }
@@ -362,6 +385,5 @@
     margin-left: 0.3rem !important;
   }
 }
-
 
 

@@ -109,6 +109,17 @@
     "stepsBefore": "المهام قبل الرحلة",
     "noStepsBeforeTrip": "لا توجد خطوات مخطط لها قبل الرحلة",
     "createDecision": "إنشاء قرار",
+    "kidObjectives": {
+      "title": "نظرة على أهدافي",
+      "active": "نشطة",
+      "completed": "مكتملة",
+      "dueSoon": "قريبة الاستحقاق",
+      "needsAttention": "تحتاج انتباه",
+      "upcoming": "الأهداف القادمة",
+      "viewAll": "عرض أهدافي",
+      "empty": "لا يوجد لديك أهداف بعد.",
+      "noDeadline": "بدون موعد نهائي"
+    },
     "upcomingPayments": "القادمة",
     "dueToday": "اليوم",
     "dueTomorrow": "غدا",

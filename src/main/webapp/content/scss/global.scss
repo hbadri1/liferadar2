@@ -615,7 +615,8 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
 }
 
 /* Home landing page styles moved from component SCSS to avoid anyComponentStyle budget overflow */
-jhi-home {
+jhi-home,
+jhi-life-radar {
   .tree-container {
     background: #fff;
     border: 1px solid var(--lr-border);
@@ -733,23 +734,25 @@ jhi-home {
 
   .landing-wrapper {
     display: flex;
+    flex-direction: column;
     align-items: stretch;
-    min-height: calc(100vh - 60px);
+    min-height: auto;
     gap: 0;
     background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 60%, #f0fdf4 100%);
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
   }
 
   .landing-hero {
-    flex: 1 1 55%;
+    flex: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background: linear-gradient(160deg, var(--lr-neutral) 0%, #1d4452 100%);
-    padding: 2.5rem;
+    min-height: 190px;
+    padding: 1rem;
     position: relative;
     overflow: hidden;
 
@@ -763,25 +766,25 @@ jhi-home {
   }
 
   .landing-hero-img {
-    max-width: 90%;
-    max-height: 65vh;
+    max-width: 100%;
+    max-height: 170px;
     object-fit: contain;
-    border-radius: 10px;
+    border-radius: 8px;
     filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.35));
     position: relative;
     z-index: 1;
   }
 
   .landing-tagline {
-    margin-top: 1.5rem;
+    margin-top: 0.75rem;
     text-align: center;
     position: relative;
     z-index: 1;
 
     p {
-      font-size: 1.15rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.75);
       margin: 0;
@@ -789,28 +792,29 @@ jhi-home {
   }
 
   .landing-auth {
-    flex: 0 0 380px;
+    flex: none;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 2.5rem 2rem;
+    padding: 1rem 0.85rem;
     background: #fff;
-    border-left: 1px solid var(--lr-border);
+    border-left: none;
+    border-top: 1px solid var(--lr-border);
   }
 
   .landing-brand-logo {
-    width: min(320px, 100%);
+    width: min(220px, 80vw);
     height: auto;
     display: block;
-    margin: 0 auto 1rem;
+    margin: 0 auto 0.75rem;
     filter: drop-shadow(0 16px 32px rgba(var(--lr-neutral-rgb), 0.12));
   }
 
   .landing-brand-name {
-    font-size: 2.4rem;
+    font-size: 1.8rem;
     font-weight: 800;
     line-height: 1;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.25rem;
     letter-spacing: -0.02em;
     color: var(--lr-neutral);
 
@@ -825,7 +829,7 @@ jhi-home {
 
   .landing-brand-sub {
     color: rgba(var(--lr-neutral-rgb), 0.68);
-    font-size: 1rem;
+    font-size: 0.85rem;
     margin: 0;
   }
 
@@ -840,12 +844,12 @@ jhi-home {
     align-items: center;
     background: rgba(var(--lr-primary-rgb), 0.1);
     color: var(--lr-neutral);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 600;
     border-radius: 999px;
-    padding: 0.45rem 0.8rem;
+    padding: 0.35rem 0.62rem;
     border: 1px solid rgba(var(--lr-primary-rgb), 0.16);
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .auth-card {
@@ -861,9 +865,9 @@ jhi-home {
     align-items: center;
     background: linear-gradient(135deg, var(--lr-neutral) 0%, #1d4452 100%);
     color: #fff;
-    padding: 1rem 1.15rem;
+    padding: 0.75rem 0.85rem;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .auth-card-header--register {
@@ -871,13 +875,13 @@ jhi-home {
   }
 
   .auth-card-body {
-    padding: 1.15rem;
+    padding: 0.85rem;
   }
 
   .auth-card-desc {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     color: rgba(var(--lr-neutral-rgb), 0.72);
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.65rem;
   }
 
   .auth-card--register {
@@ -886,45 +890,92 @@ jhi-home {
 
   .btn-auth {
     font-weight: 600;
-    font-size: 0.9rem;
-    min-height: 48px;
-    padding: 0.55rem 1.2rem;
+    font-size: 0.82rem;
+    min-height: 44px;
+    width: 100%;
+    padding: 0.5rem 0.95rem;
     border-radius: 8px;
   }
 
   .landing-footer-note {
-    font-size: 0.8rem;
+    font-size: 0.74rem;
     color: rgba(var(--lr-neutral-rgb), 0.62);
   }
 }
 
-@media (max-width: 900px) {
-  jhi-home {
+@media (min-width: 901px) {
+  jhi-home,
+  jhi-life-radar {
     .landing-wrapper {
-      flex-direction: column;
-      min-height: auto;
+      flex-direction: row;
+      min-height: calc(100vh - 60px);
     }
 
     .landing-hero {
-      flex: none;
-      min-height: 260px;
-      padding: 1.5rem;
+      flex: 1 1 55%;
+      min-height: auto;
+      padding: 2.5rem;
     }
 
     .landing-hero-img {
-      max-height: 220px;
+      max-width: 90%;
+      max-height: 65vh;
     }
 
     .landing-auth {
-      flex: none;
-      padding: 1.5rem 1rem;
-      border-left: none;
-      border-top: 1px solid #e2e8f0;
+      flex: 0 0 380px;
+      padding: 2.5rem 2rem;
+      border-top: none;
+      border-left: 1px solid #e2e8f0;
+    }
+
+    .landing-brand-logo {
+      width: min(320px, 100%);
+    }
+
+    .landing-brand-name {
+      font-size: 2.4rem;
+    }
+
+    .landing-brand-sub {
+      font-size: 1rem;
+    }
+
+    .feature-pill {
+      font-size: 0.78rem;
+      padding: 0.45rem 0.8rem;
+      white-space: nowrap;
+    }
+
+    .auth-card-header {
+      padding: 1rem 1.15rem;
+      font-size: 0.9rem;
+    }
+
+    .auth-card-body {
+      padding: 1.15rem;
+    }
+
+    .auth-card-desc {
+      font-size: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .btn-auth {
+      width: auto;
+      font-size: 0.9rem;
+      min-height: 48px;
+      padding: 0.55rem 1.2rem;
+    }
+
+    .landing-footer-note {
+      font-size: 0.8rem;
     }
   }
 }
 
-[dir='rtl'] jhi-home {
+[dir='rtl'] jhi-home,
+[dir='rtl'] jhi-life-radar {
   .text-end {
     text-align: left !important;
   }
@@ -959,7 +1010,8 @@ jhi-home {
 }
 
 @media (max-width: 900px) {
-  [dir='rtl'] jhi-home .landing-auth {
+  [dir='rtl'] jhi-home .landing-auth,
+  [dir='rtl'] jhi-life-radar .landing-auth {
     border-right: none;
   }
 }

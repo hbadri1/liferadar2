@@ -109,6 +109,17 @@
     "stepsBefore": "Choses à Faire Avant le Voyage",
     "noStepsBeforeTrip": "Aucune étape prévue avant le voyage",
     "createDecision": "Créer une Décision",
+    "kidObjectives": {
+      "title": "Insights de mes objectifs",
+      "active": "Actifs",
+      "completed": "Terminés",
+      "dueSoon": "Bientôt dus",
+      "needsAttention": "À surveiller",
+      "upcoming": "Objectifs à venir",
+      "viewAll": "Voir mes objectifs",
+      "empty": "Vous n'avez pas encore d'objectifs.",
+      "noDeadline": "Aucune échéance"
+    },
     "upcomingPayments": "À venir",
     "dueToday": "Aujourd'hui",
     "dueTomorrow": "Demain",

@@ -109,6 +109,17 @@
     "stepsBefore": "Pre-Trip Todos",
     "noStepsBeforeTrip": "No steps scheduled before the trip",
     "createDecision": "Create Decision",
+    "kidObjectives": {
+      "title": "My Objectives Insights",
+      "active": "Active",
+      "completed": "Completed",
+      "dueSoon": "Due Soon",
+      "needsAttention": "Needs Attention",
+      "upcoming": "Upcoming Objectives",
+      "viewAll": "View My Objectives",
+      "empty": "You do not have any objectives yet.",
+      "noDeadline": "No deadline"
+    },
     "upcomingPayments": "Coming Due",
     "dueToday": "Due today",
     "dueTomorrow": "Due tomorrow",

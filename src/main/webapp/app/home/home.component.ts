@@ -20,6 +20,8 @@ import { SaaSSubscriptionService } from 'app/entities/saas-subscription/service/
 import { EvaluationDecisionService } from 'app/entities/evaluation-decision/service/evaluation-decision.service';
 import { EvaluationDecisionCreateModalComponent } from 'app/home/evaluation-decision-create-modal.component';
 import { AlertService } from 'app/core/util/alert.service';
+import { GoalService } from 'app/goals/goal.service';
+import { IGoal } from 'app/goals/goal.model';
 
 interface PreparationAction {
   actionText: string;
@@ -45,6 +47,11 @@ export default class HomeComponent implements OnInit, OnDestroy {
   nearestTrip = signal<ITripPlan | null>(null);
   preparationActions = signal<PreparationAction[]>([]);
   completedActions = signal<Set<number>>(new Set());
+  visiblePreparationActions = computed(() =>
+    this.preparationActions()
+      .map((action, index) => ({ action, index }))
+      .filter(item => !this.completedActions().has(item.index)),
+  );
   loadingTrip = signal<boolean>(false);
 
   // Expiring Documents
@@ -56,6 +63,44 @@ export default class HomeComponent implements OnInit, OnDestroy {
   monthlyTotal = signal<number>(0);
   loadingExpenses = signal<boolean>(false);
   currentMonth = computed(() => dayjs().format('MMMM YYYY'));
+
+  // Kid objectives insights
+  kidObjectives = signal<IGoal[]>([]);
+  loadingKidObjectives = signal<boolean>(false);
+  kidObjectiveInsights = computed(() => {
+    const goals = this.kidObjectives();
+    const now = dayjs().startOf('day');
+    const soonThreshold = now.add(14, 'day');
+
+    const active = goals.filter(goal => !['COMPLETED', 'CANCELLED', 'ARCHIVED'].includes(goal.status)).length;
+    const completed = goals.filter(goal => goal.status === 'COMPLETED').length;
+    const atRisk = goals.filter(goal => ['AT_RISK', 'BLOCKED'].includes(goal.status)).length;
+    const dueSoon = goals.filter(goal => {
+      if (!goal.targetDate || ['COMPLETED', 'CANCELLED', 'ARCHIVED'].includes(goal.status)) {
+        return false;
+      }
+      const target = dayjs(goal.targetDate);
+      return target.isAfter(now.subtract(1, 'day')) && target.isBefore(soonThreshold.add(1, 'day'));
+    }).length;
+
+    const topObjectives = goals
+      .filter(goal => !['COMPLETED', 'CANCELLED', 'ARCHIVED'].includes(goal.status))
+      .sort((a, b) => {
+        const aDate = a.targetDate ? dayjs(a.targetDate).valueOf() : Number.MAX_SAFE_INTEGER;
+        const bDate = b.targetDate ? dayjs(b.targetDate).valueOf() : Number.MAX_SAFE_INTEGER;
+        return aDate - bDate;
+      })
+      .slice(0, 4);
+
+    return {
+      total: goals.length,
+      active,
+      completed,
+      atRisk,
+      dueSoon,
+      topObjectives,
+    };
+  });
 
   // Auth checks
   isChildOnly = computed(() => {
@@ -75,6 +120,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   private readonly myDocumentService = inject(MyDocumentService);
   private readonly subscriptionService = inject(SaaSSubscriptionService);
   private readonly evaluationDecisionService = inject(EvaluationDecisionService);
+  private readonly goalService = inject(GoalService);
   private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
   private readonly modalService = inject(NgbModal);
@@ -98,9 +144,31 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   private loadDashboardData(): void {
+    if (this.isChildOnly()) {
+      this.loadKidObjectives();
+      return;
+    }
+
     this.loadNearestTrip();
     this.loadExpiringDocuments();
     this.loadMonthlyExpenses();
+  }
+
+  private loadKidObjectives(): void {
+    this.loadingKidObjectives.set(true);
+    this.goalService
+      .getMyGoals(false)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: goals => {
+          this.kidObjectives.set(goals ?? []);
+          this.loadingKidObjectives.set(false);
+        },
+        error: () => {
+          this.kidObjectives.set([]);
+          this.loadingKidObjectives.set(false);
+        },
+      });
   }
 
   private loadNearestTrip(): void {
@@ -224,6 +292,10 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   viewAllExpenses(): void {
     this.router.navigate(['/expenses']);
+  }
+
+  viewMyObjectives(): void {
+    this.router.navigate(['/goals']);
   }
 
   viewFamily(): void {

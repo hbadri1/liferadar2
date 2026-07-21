@@ -1,7 +1,79 @@
 <div class="home-dashboard">
   <div class="container-fluid">
     @if (account() !== null) {
-      @if (!isChildOnly()) {
+      @if (isChildOnly()) {
+        <div class="row g-2 kid-objectives-row">
+          <div class="col-12">
+            <div class="card kid-objectives-card">
+              <div class="card-header">
+                <h5 class="mb-0" jhiTranslate="home.kidObjectives.title">My Objectives Insights</h5>
+              </div>
+              <div class="card-body">
+                @if (loadingKidObjectives()) {
+                  <div class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden" jhiTranslate="loading">Loading...</span>
+                    </div>
+                  </div>
+                } @else if (kidObjectiveInsights().total > 0) {
+                  <div class="kid-objectives-metrics mb-3">
+                    <div class="metric-item">
+                      <small class="text-muted" jhiTranslate="home.kidObjectives.active">Active</small>
+                      <strong>{{ kidObjectiveInsights().active }}</strong>
+                    </div>
+                    <div class="metric-item">
+                      <small class="text-muted" jhiTranslate="home.kidObjectives.completed">Completed</small>
+                      <strong>{{ kidObjectiveInsights().completed }}</strong>
+                    </div>
+                    <div class="metric-item">
+                      <small class="text-muted" jhiTranslate="home.kidObjectives.dueSoon">Due Soon</small>
+                      <strong>{{ kidObjectiveInsights().dueSoon }}</strong>
+                    </div>
+                    <div class="metric-item">
+                      <small class="text-muted" jhiTranslate="home.kidObjectives.needsAttention">Needs Attention</small>
+                      <strong>{{ kidObjectiveInsights().atRisk }}</strong>
+                    </div>
+                  </div>
+
+                  @if (kidObjectiveInsights().topObjectives.length > 0) {
+                    <h6 class="mb-2" jhiTranslate="home.kidObjectives.upcoming">Upcoming Objectives</h6>
+                    <ul class="list-group list-group-flush">
+                      @for (goal of kidObjectiveInsights().topObjectives; track goal.id) {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                          <div class="flex-grow-1 pe-2">
+                            <div class="fw-500">{{ goal.title }}</div>
+                            <small class="text-muted">
+                              @if (goal.targetDate) {
+                                {{ goal.targetDate | localizedDate: 'mediumDate' }}
+                              } @else {
+                                <span jhiTranslate="home.kidObjectives.noDeadline">No deadline</span>
+                              }
+                            </small>
+                          </div>
+                          <span
+                            class="badge"
+                            [ngClass]="goal.status === 'AT_RISK' || goal.status === 'BLOCKED' ? 'bg-danger' : (goal.status === 'IN_PROGRESS' ? 'bg-info' : 'bg-secondary')"
+                          >
+                            {{ goal.status }}
+                          </span>
+                        </li>
+                      }
+                    </ul>
+                  }
+
+                  <button class="btn btn-primary btn-sm mt-3 w-100" (click)="viewMyObjectives()" jhiTranslate="home.kidObjectives.viewAll">
+                    View My Objectives
+                  </button>
+                } @else {
+                  <p class="text-muted text-center py-4" jhiTranslate="home.kidObjectives.empty">
+                    You do not have any objectives yet.
+                  </p>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      } @else {
         <!-- Header Section -->
         <div class="home-header">
           <h1 jhiTranslate="home.title">Welcome back</h1>
@@ -34,36 +106,34 @@
                     </p>
                   </div>
 
-                  @if (preparationActions().length > 0) {
+                  @if (visiblePreparationActions().length > 0) {
                     <div class="trip-steps">
                       <h6 class="mb-2" jhiTranslate="home.stepsBefore">Pre-Trip Todos</h6>
                       <ul class="list-group list-group-flush">
-                        @for (action of preparationActions(); track $index; let index = $index) {
+                        @for (item of visiblePreparationActions(); track item.index) {
                           <li class="list-group-item d-flex gap-2">
                             <div class="form-check flex-grow-1">
                               <input 
                                 class="form-check-input"
                                 type="checkbox"
-                                [id]="'action-' + index"
-                                [checked]="isStepCompleted(index)"
-                                (change)="toggleStepCompletion(index)"
+                                [id]="'action-' + item.index"
+                                [checked]="isStepCompleted(item.index)"
+                                (change)="toggleStepCompletion(item.index)"
                               />
-                              <label class="form-check-label" [for]="'action-' + index">
-                                <div class="fw-500" [class.text-decoration-line-through]="isStepCompleted(index)">
-                                  {{ action.actionText }}
+                              <label class="form-check-label" [for]="'action-' + item.index">
+                                <div class="fw-500" [class.text-decoration-line-through]="isStepCompleted(item.index)">
+                                  {{ item.action.actionText }}
                                 </div>
                               </label>
                             </div>
-                            @if (!isStepCompleted(index)) {
-                              <button 
-                                class="btn btn-sm btn-outline-success"
-                                (click)="createDecisionFromAction(action, index)"
-                                [title]="'home.createDecision' | translate"
-                                type="button"
-                              >
-                                <fa-icon icon="plus"></fa-icon>
-                              </button>
-                            }
+                            <button
+                              class="btn btn-sm btn-outline-success"
+                              (click)="createDecisionFromAction(item.action, item.index)"
+                              [title]="'home.createDecision' | translate"
+                              type="button"
+                            >
+                              <fa-icon icon="plus"></fa-icon>
+                            </button>
                           </li>
                         }
                       </ul>
