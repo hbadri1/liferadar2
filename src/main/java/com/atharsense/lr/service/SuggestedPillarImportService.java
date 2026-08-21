@@ -284,13 +284,15 @@ public class SuggestedPillarImportService {
         User currentUser = userRepository.findOneByLogin(currentLogin)
             .orElseThrow(() -> new BadRequestAlertException("User not found", ENTITY_NAME, "usernotfound"));
 
-        return extendedUserRepository.findOneByUserId(currentUser.getId()).orElseGet(() -> {
-            ExtendedUser extendedUser = new ExtendedUser();
-            extendedUser.setUser(currentUser);
-            extendedUser.setFullName(buildFullName(currentUser));
-            extendedUser.setActive(currentUser.isActivated());
-            return extendedUserRepository.save(extendedUser);
-        });
+        return extendedUserRepository.findOneByUserId(currentUser.getId())
+            .or(() -> extendedUserRepository.findOneByUser(currentUser))
+            .orElseGet(() -> {
+                ExtendedUser extendedUser = new ExtendedUser();
+                extendedUser.setUser(currentUser);
+                extendedUser.setFullName(buildFullName(currentUser));
+                extendedUser.setActive(currentUser.isActivated());
+                return extendedUserRepository.save(extendedUser);
+            });
     }
 
     private String buildFullName(User user) {

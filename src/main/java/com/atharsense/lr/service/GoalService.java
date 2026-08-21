@@ -136,8 +136,10 @@ public class GoalService {
 
         // 2. Goals shared via GoalShare records ───────────────────────────
         List<GoalShare> shares = goalShareRepository.findBySharedWithUserLogin(login);
+        System.out.println("DEBUG child login=" + login + " currentUserIsChild=" + currentUserIsChild + " shares=" + shares);
         for (GoalShare share : shares) {
             Goal g = share.getGoal();
+            System.out.println("DEBUG share goal=" + g + " ownerUser=" + (g != null && g.getOwner()!=null ? g.getOwner().getUser() : null));
             if (combinedIds.contains(g.getId())) continue;
             if (!includeArchived && Boolean.TRUE.equals(g.getIsArchived())) continue;
             if (currentUserIsChild && !isVisibleToChild(g)) continue;
@@ -149,10 +151,12 @@ public class GoalService {
 
         // 3. Direct family query (belt-and-suspenders for new members / missed shares) ──
         Long familyId = resolveCurrentUserFamilyId(login);
+        System.out.println("DEBUG familyId=" + familyId + " for login=" + login);
         if (familyId != null) {
             List<Goal> familyGoals = goalRepository
                 .findByOwnerUserFamilyIdAndVisibilityAndIsArchivedFalseOrderByCreatedDateDesc(
                     familyId, GoalVisibility.FAMILY_SHARED);
+            System.out.println("DEBUG familyGoals=" + familyGoals);
             for (Goal g : familyGoals) {
                 if (combinedIds.contains(g.getId())) continue;
                 if (currentUserIsChild && !isVisibleToChild(g)) continue;
@@ -693,8 +697,12 @@ public class GoalService {
             return false;
         }
         return userRepository.findOneByLogin(ownerLogin)
-            .map(ownerUser -> ownerUser.getAuthorities().stream()
-                .anyMatch(auth -> "ROLE_USER".equals(auth.getName()) || "USER".equals(auth.getName())))
+            .map(ownerUser -> {
+                if (ownerUser.getAuthorities() == null || ownerUser.getAuthorities().isEmpty()) {
+                    return true;
+                }
+                return ownerUser.getAuthorities().stream().noneMatch(auth -> "ROLE_CHILD".equals(auth.getName()));
+            })
             .orElse(false);
     }
 }

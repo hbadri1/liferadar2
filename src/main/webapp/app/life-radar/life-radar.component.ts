@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
-import { Authority } from 'app/config/authority.constants';
+import { Authority, hasAnyMatchingAuthority } from 'app/config/authority.constants';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { IPillar } from 'app/entities/pillar/pillar.model';
@@ -50,24 +50,19 @@ export default class LifeRadarComponent implements OnInit, OnDestroy {
   ];
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes(Authority.CHILD) && !authorities.includes(Authority.PARENT) && !authorities.includes(Authority.ADMIN);
+    return (
+      hasAnyMatchingAuthority(authorities, Authority.CHILD) && !hasAnyMatchingAuthority(authorities, [Authority.PARENT, Authority.ADMIN])
+    );
   });
   isFamilyAdmin = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes(Authority.PARENT);
+    return hasAnyMatchingAuthority(authorities, Authority.PARENT);
   });
 
   private readonly WELCOME_DISMISSED_KEY = 'liferadar_welcome_dismissed';
   showWelcomeDescription = signal<boolean>(
     typeof localStorage !== 'undefined' ? localStorage.getItem('liferadar_welcome_dismissed') !== 'true' : false,
   );
-
-  dismissWelcomeDescription(): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(this.WELCOME_DISMISSED_KEY, 'true');
-    }
-    this.showWelcomeDescription.set(false);
-  }
   pillars = signal<IPillar[]>([]);
   subPillarsMap = signal<Map<number, ISubPillar[]>>(new Map());
   loadingSubPillars = signal<Set<number>>(new Set());
@@ -90,6 +85,13 @@ export default class LifeRadarComponent implements OnInit, OnDestroy {
   private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly modalService = inject(NgbModal);
+
+  dismissWelcomeDescription(): void {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(this.WELCOME_DISMISSED_KEY, 'true');
+    }
+    this.showWelcomeDescription.set(false);
+  }
 
   ngOnInit(): void {
     console.log('Home component initialized');

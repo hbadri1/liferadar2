@@ -222,6 +222,14 @@ describe('Account Service', () => {
 
         expect(hasAuthority).toBe(true);
       });
+
+      it('should match authorities with or without the ROLE_ prefix', () => {
+        service.authenticate(accountWithAuthorities(['USER']));
+
+        const hasAuthority = service.hasAnyAuthority(Authority.USER);
+
+        expect(hasAuthority).toBe(true);
+      });
     });
 
     describe('hasAnyAuthority array parameter', () => {
@@ -242,6 +250,14 @@ describe('Account Service', () => {
         service.authenticate(accountWithAuthorities([Authority.USER]));
 
         const hasAuthority = service.hasAnyAuthority([Authority.USER, Authority.ADMIN]);
+
+        expect(hasAuthority).toBe(true);
+      });
+
+      it('should match array keys when authorities are stored without the ROLE_ prefix', () => {
+        service.authenticate(accountWithAuthorities(['ADMIN', 'CHILD']));
+
+        const hasAuthority = service.hasAnyAuthority([Authority.ADMIN, Authority.PARENT]);
 
         expect(hasAuthority).toBe(true);
       });

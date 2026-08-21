@@ -10,6 +10,7 @@ import { ConfirmationModalComponent } from 'app/home/confirmation-modal.componen
 import { FamilyObjectiveModalComponent } from './family-objective-modal.component';
 import { FamilyProgressModalComponent } from './family-progress-modal.component';
 import { FamilyMemberModalComponent } from './family-member-modal.component';
+import { Authority, hasAnyMatchingAuthority } from 'app/config/authority.constants';
 import {
   ChildUser,
   ParentUser,
@@ -111,28 +112,32 @@ export default class FamilyComponent implements OnInit {
   isChild = computed(() => {
     const acc = this.account();
     if (!acc) return false;
-    const authorities: string[] = acc.authorities ?? [];
-    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_PARENT') && !authorities.includes('ROLE_ADMIN');
+    const authorities: string[] = acc.authorities;
+    return (
+      hasAnyMatchingAuthority(authorities, Authority.CHILD) && !hasAnyMatchingAuthority(authorities, [Authority.PARENT, Authority.ADMIN])
+    );
   });
 
   /** Family management tab is only visible for parents (ROLE_PARENT). */
   canManageFamily = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_PARENT') || authorities.includes('ROLE_ADMIN');
+    return hasAnyMatchingAuthority(authorities, [Authority.PARENT, Authority.ADMIN]);
   });
 
   /** Can add parents for family accounts when user has ROLE_PARENT. */
   canManageParents = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_PARENT') || authorities.includes('ROLE_ADMIN');
+    return hasAnyMatchingAuthority(authorities, [Authority.PARENT, Authority.ADMIN]);
   });
 
   /** True when the logged-in user has ROLE_PARENT and can view kids' objectives */
   isParent = computed(() => {
     const acc = this.account();
     if (!acc) return false;
-    const authorities: string[] = acc.authorities ?? [];
-    return authorities.includes('ROLE_PARENT') && !authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_ADMIN');
+    const authorities: string[] = acc.authorities;
+    return (
+      hasAnyMatchingAuthority(authorities, Authority.PARENT) && !hasAnyMatchingAuthority(authorities, [Authority.CHILD, Authority.ADMIN])
+    );
   });
 
   headerSubtitleKey = computed(() => (this.isChild() ? 'family.childSubtitle' : 'family.subtitle'));
@@ -173,10 +178,10 @@ export default class FamilyComponent implements OnInit {
     const children = this.objectiveChildren();
     if (this.canManageFamily()) {
       const selectedLogin = this.activeObjectiveChildLogin();
-      return children.find(child => child.login === selectedLogin) ?? children[0] ?? null;
+      return children.find(child => child.login === selectedLogin) ?? children[0];
     }
 
-    return children.find(child => this.getChildTabId(child.login) === this.activeTab()) ?? null;
+    return children.find(child => this.getChildTabId(child.login) === this.activeTab());
   });
 
   objectiveGroups = computed<FamilyObjectiveGroup[]>(() => {

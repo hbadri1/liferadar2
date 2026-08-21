@@ -11,6 +11,7 @@ import { LoginService } from 'app/login/login.service';
 import { LANGUAGES } from 'app/config/language.constants';
 import { CURRENCIES, TIMEZONES } from 'app/shared/constants/preferences.constants';
 import TodoAppsComponent from 'app/account/todoapps/todoapps.component';
+import { hasAnyMatchingAuthority } from 'app/config/authority.constants';
 
 const initialAccount: Account = {} as Account;
 
@@ -69,11 +70,6 @@ export default class SettingsComponent implements OnInit {
     });
   }
 
-  private checkFamilyManagementStatus(account: Account): void {
-    const hasParentRole = account.authorities?.includes('ROLE_PARENT') ?? false;
-    this.canManageFamily.set(hasParentRole);
-  }
-
   save(): void {
     this.success.set(false);
 
@@ -105,6 +101,11 @@ export default class SettingsComponent implements OnInit {
         },
       });
     }
+  }
+
+  private checkFamilyManagementStatus(account: Account): void {
+    const hasParentRole = hasAnyMatchingAuthority(account.authorities, 'PARENT');
+    this.canManageFamily.set(hasParentRole);
   }
 
   private refreshSessionAfterRoleChange(): void {

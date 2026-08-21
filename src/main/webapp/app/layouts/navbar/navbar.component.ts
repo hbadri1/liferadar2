@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import SharedModule from 'app/shared/shared.module';
 import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
+import { Authority, hasAnyMatchingAuthority } from 'app/config/authority.constants';
 import { LANGUAGES } from 'app/config/language.constants';
 import { AccountService } from 'app/core/auth/account.service';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
@@ -33,7 +34,9 @@ export default class NavbarComponent implements OnInit {
   homeLink = computed(() => (this.account() === null ? '/' : '/dashboard'));
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes('ROLE_CHILD') && !authorities.includes('ROLE_PARENT') && !authorities.includes('ROLE_ADMIN');
+    return (
+      hasAnyMatchingAuthority(authorities, Authority.CHILD) && !hasAnyMatchingAuthority(authorities, [Authority.PARENT, Authority.ADMIN])
+    );
   });
   entitiesNavbarItems: NavbarItem[] = [];
 

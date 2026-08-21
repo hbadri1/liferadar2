@@ -7,6 +7,7 @@ import { catchError, shareReplay, tap } from 'rxjs/operators';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { Account } from 'app/core/auth/account.model';
+import { hasAnyMatchingAuthority } from 'app/config/authority.constants';
 import { ApplicationConfigService } from '../config/application-config.service';
 
 @Injectable({ providedIn: 'root' })
@@ -42,10 +43,9 @@ export class AccountService {
     if (!userIdentity) {
       return false;
     }
-    if (!Array.isArray(authorities)) {
-      authorities = [authorities];
-    }
-    return userIdentity.authorities.some((authority: string) => authorities.includes(authority));
+
+    const requestedAuthorities = Array.isArray(authorities) ? authorities : [authorities];
+    return hasAnyMatchingAuthority(userIdentity.authorities, requestedAuthorities);
   }
 
   identity(force?: boolean): Observable<Account | null> {

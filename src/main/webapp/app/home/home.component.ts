@@ -8,7 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
 import TimeUntilExpiryPipe from 'app/shared/date/time-until-expiry.pipe';
-import { Authority } from 'app/config/authority.constants';
+import { Authority, hasAnyMatchingAuthority } from 'app/config/authority.constants';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ITripPlan } from 'app/entities/trip-plan/trip-plan.model';
@@ -105,12 +105,14 @@ export default class HomeComponent implements OnInit, OnDestroy {
   // Auth checks
   isChildOnly = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes(Authority.CHILD) && !authorities.includes(Authority.PARENT) && !authorities.includes(Authority.ADMIN);
+    return (
+      hasAnyMatchingAuthority(authorities, Authority.CHILD) && !hasAnyMatchingAuthority(authorities, [Authority.PARENT, Authority.ADMIN])
+    );
   });
 
   isFamilyAdmin = computed(() => {
     const authorities: string[] = this.account()?.authorities ?? [];
-    return authorities.includes(Authority.PARENT);
+    return hasAnyMatchingAuthority(authorities, Authority.PARENT);
   });
 
   private readonly destroy$ = new Subject<void>();
@@ -173,31 +175,34 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   private loadNearestTrip(): void {
     this.loadingTrip.set(true);
-    this.tripPlanService.query().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response) => {
-        const trips = response.body ?? [];
-        const now = dayjs();
+    this.tripPlanService
+      .query()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: response => {
+          const trips = response.body ?? [];
+          const now = dayjs();
 
-        // Find the nearest trip that is active or upcoming
-        const sortedTrips = trips
-          .filter(trip => trip.startDate)
-          .sort((a, b) => {
-            const dateA = dayjs(a.startDate);
-            const dateB = dayjs(b.startDate);
-            return Math.abs(dateA.diff(now)) - Math.abs(dateB.diff(now));
-          });
+          // Find the nearest trip that is active or upcoming
+          const sortedTrips = trips
+            .filter(trip => trip.startDate)
+            .sort((a, b) => {
+              const dateA = dayjs(a.startDate);
+              const dateB = dayjs(b.startDate);
+              return Math.abs(dateA.diff(now)) - Math.abs(dateB.diff(now));
+            });
 
-        if (sortedTrips.length > 0) {
-          const trip = sortedTrips[0];
-          this.nearestTrip.set(trip);
-          this.parsePreparationActions(trip);
-        }
-        this.loadingTrip.set(false);
-      },
-      error: () => {
-        this.loadingTrip.set(false);
-      },
-    });
+          if (sortedTrips.length > 0) {
+            const trip = sortedTrips[0];
+            this.nearestTrip.set(trip);
+            this.parsePreparationActions(trip);
+          }
+          this.loadingTrip.set(false);
+        },
+        error: () => {
+          this.loadingTrip.set(false);
+        },
+      });
   }
 
   private parsePreparationActions(trip: ITripPlan): void {
@@ -210,7 +215,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
       const tripActions: TripActions = JSON.parse(trip.actionsJson);
       const actions = tripActions.preparationActions ?? [];
       this.preparationActions.set(actions);
-      
+
       // Initialize completed actions based on their status
       const completedSet = new Set<number>();
       actions.forEach((action, index) => {
@@ -227,49 +232,55 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   private loadExpiringDocuments(): void {
     this.loadingDocuments.set(true);
-    this.myDocumentService.query().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response) => {
-        const documents = response.body ?? [];
-        const now = dayjs();
-        const sixMonthsFromNow = now.add(6, 'months');
+    this.myDocumentService
+      .query()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: response => {
+          const documents = response.body ?? [];
+          const now = dayjs();
+          const sixMonthsFromNow = now.add(6, 'months');
 
-        const expiring = documents.filter(doc => {
-          const renewalDate = dayjs(doc.renewalDate);
-          return renewalDate.isAfter(now) && renewalDate.isBefore(sixMonthsFromNow);
-        });
+          const expiring = documents.filter(doc => {
+            const renewalDate = dayjs(doc.renewalDate);
+            return renewalDate.isAfter(now) && renewalDate.isBefore(sixMonthsFromNow);
+          });
 
-        this.expiringDocuments.set(expiring);
-        this.loadingDocuments.set(false);
-      },
-      error: () => {
-        this.loadingDocuments.set(false);
-      },
-    });
+          this.expiringDocuments.set(expiring);
+          this.loadingDocuments.set(false);
+        },
+        error: () => {
+          this.loadingDocuments.set(false);
+        },
+      });
   }
 
   private loadMonthlyExpenses(): void {
     this.loadingExpenses.set(true);
-    this.subscriptionService.queryMy().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response) => {
-        const expenses = response.body ?? [];
-        const now = dayjs();
+    this.subscriptionService
+      .queryMy()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: response => {
+          const expenses = response.body ?? [];
+          const now = dayjs();
 
-        // Get all active subscriptions with upcoming due dates
-        const upcomingExpenses = expenses
-          .filter(expense => expense.dueDate && dayjs(expense.dueDate).isAfter(now))
-          .sort((a, b) => {
-            const dateA = dayjs(a.dueDate);
-            const dateB = dayjs(b.dueDate);
-            return dateA.diff(dateB);
-          });
+          // Get all active subscriptions with upcoming due dates
+          const upcomingExpenses = expenses
+            .filter(expense => expense.dueDate && dayjs(expense.dueDate).isAfter(now))
+            .sort((a, b) => {
+              const dateA = dayjs(a.dueDate);
+              const dateB = dayjs(b.dueDate);
+              return dateA.diff(dateB);
+            });
 
-        this.monthlyExpenses.set(upcomingExpenses);
-        this.loadingExpenses.set(false);
-      },
-      error: () => {
-        this.loadingExpenses.set(false);
-      },
-    });
+          this.monthlyExpenses.set(upcomingExpenses);
+          this.loadingExpenses.set(false);
+        },
+        error: () => {
+          this.loadingExpenses.set(false);
+        },
+      });
   }
 
   getDaysUntilDue(dueDate?: dayjs.Dayjs | null): number | null {
@@ -322,16 +333,16 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   createDecisionFromAction(action: PreparationAction, index: number): void {
     const decisionText = action.actionText;
-    
+
     const modalRef = this.modalService.open(EvaluationDecisionCreateModalComponent, {
       size: 'lg',
       backdrop: 'static',
     });
-    
+
     modalRef.componentInstance.prefillDecision = decisionText;
-    
+
     modalRef.result.then(
-      (result) => {
+      result => {
         if (result) {
           // Mark action as completed after creating decision
           this.toggleStepCompletion(index);
@@ -344,7 +355,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
       },
       () => {
         // Modal dismissed
-      }
+      },
     );
   }
 }
